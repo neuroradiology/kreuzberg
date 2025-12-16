@@ -2,18 +2,20 @@
 
 This guide covers PDFium linking options for the Kreuzberg Rust crate. PDFium is required for PDF extraction, and you have multiple strategies to choose from depending on your deployment needs.
 
-**Note:** Language bindings (Python, TypeScript, Ruby, Java, Go) automatically bundle PDFium and are not affected by these options.
+**Note:** Language bindings (Python, TypeScript, Ruby, Java, Go) use the `full` feature by default, which now includes **static PDFium linking** (`pdf-static`).
 
 ## Quick Decision Matrix
 
 Choose your PDFium linking strategy based on your use case:
 
-| Strategy | Feature | Download | Link Type | Binary Size | Runtime Deps | Use Case | Complexity |
-|----------|---------|----------|-----------|-------------|--------------|----------|------------|
-| **Download + Dynamic** | `pdf` (default) | Yes | Dynamic | ~40 MB | libpdfium.so/dylib | Development, standard deployments | Simple |
-| **Download + Static** | `pdf-static` | Yes | Static | ~200 MB | None | Single binary distribution | Medium |
-| **Bundled** | `pdf-bundled` | Yes | Dynamic | ~150 MB | Extracted at runtime | Self-contained executables | Medium |
-| **System** | `pdf-system` | No | Dynamic | ~40 MB | System libpdfium | Package managers, Linux distros | Complex |
+| Strategy | Feature | Download | Link Type | Binary Size | Runtime Deps | Default For | Use Case | Complexity |
+|----------|---------|----------|-----------|-------------|--------------|-------------|----------|------------|
+| **Download + Dynamic** | `pdf` | Yes | Dynamic | ~40 MB | libpdfium.so/dylib | Custom builds | Development, standard deployments | Simple |
+| **Download + Static** | `pdf-static` | Yes | Static | ~200 MB | None | `full`, `server`, `cli` | Single binary distribution | Medium |
+| **Bundled** | `pdf-bundled` | Yes | Dynamic | ~150 MB | Extracted at runtime | Legacy (use `pdf-static` instead) | Self-contained executables | Medium |
+| **System** | `pdf-system` | No | Dynamic | ~40 MB | System libpdfium | Package managers | Package managers, Linux distros | Complex |
+
+**⚠️ BREAKING CHANGE (v4.0.0-rc.10+):** The `full` feature bundle now uses `pdf-static` instead of `pdf-bundled`. This applies to all language bindings and the `server`/`cli` bundles.
 
 **Quick recommendations:**
 

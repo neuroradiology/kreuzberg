@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { promises as fs } from "fs";
 import path from "path";
 import type {
@@ -19,6 +19,20 @@ import type {
 // This eliminates the 154MB bloat from the repository
 
 function getRootDir(): string {
+	if (typeof process !== "undefined" && typeof process.cwd === "function") {
+		const cwd = process.cwd();
+		const candidates = [cwd, path.resolve(cwd, ".."), path.resolve(cwd, "../.."), path.resolve(cwd, "../../..")];
+		for (const candidate of candidates) {
+			// Prefer the directory that contains `test_documents/`.
+			// In CI, tests run from `e2e/wasm-workers`, so the repo root is `../..`.
+			if (existsSync(path.join(candidate, "test_documents"))) {
+				return candidate;
+			}
+			if (existsSync(path.join(candidate, "Cargo.toml"))) {
+				return candidate;
+			}
+		}
+	}
 	const __filename = new URL(import.meta.url).pathname;
 	const __dirname = path.dirname(__filename);
 	return path.resolve(__dirname, "../../");
@@ -32,7 +46,7 @@ export function getFixture(fixturePath: string): Uint8Array {
 	}
 
 	const rootDir = getRootDir();
-	const fullPath = path.join(rootDir, "fixtures", fixturePath + ".json");
+	const fullPath = path.join(rootDir, "test_documents", fixturePath);
 
 	try {
 		const data = readFileSync(fullPath);
@@ -49,7 +63,7 @@ export async function getFixtureAsync(fixturePath: string): Promise<Uint8Array> 
 	}
 
 	const rootDir = getRootDir();
-	const fullPath = path.join(rootDir, "fixtures", fixturePath + ".json");
+	const fullPath = path.join(rootDir, "test_documents", fixturePath);
 
 	try {
 		const data = await fs.readFile(fullPath);

@@ -1,15 +1,15 @@
-import { defineConfig } from "vitest/config";
-import miniflare from "miniflare/vitest";
+import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
 
-export default defineConfig({
-	plugins: [miniflare.getPlugin()],
+export default defineWorkersConfig({
 	test: {
 		globals: true,
-		environment: "miniflare",
-		environmentOptions: {
-			modules: true,
-			scriptPath: new URL("./tests/index.ts", import.meta.url),
-			bindings: {},
+		poolOptions: {
+			workers: {
+				main: "./tests/index.ts",
+				wrangler: {
+					configPath: "./wrangler.toml",
+				},
+			},
 		},
 		testTimeout: 60000,
 	},

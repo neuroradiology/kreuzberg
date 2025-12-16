@@ -31,7 +31,7 @@ cbindgen = "0.29"
 tempfile = { workspace = true }
 
 [features]
-default = ["html", "embeddings"]
-core = ["html"]
+default = ["html"]
 html = ["html-to-markdown-rs"]
 embeddings = ["kreuzberg/embeddings"]
+pdf-static = ["kreuzberg/pdf-static"]

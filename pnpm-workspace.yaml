@@ -1,9 +1,8 @@
 packages:
   - "."
-  - "crates/kreuzberg-core-types"
-  - "crates/kreuzberg-node"
-  - "crates/kreuzberg-wasm"
-  - "examples/wasm-browser"
-  - "examples/wasm-cloudflare-workers"
-  - "examples/typescript"
-  - 'e2e/smoke/node'
+  - "crates/*"
+  - "packages/*"
+  - "examples/*"
+  - "examples/**/*"
+  - 'e2e/**/*'
+  - "e2e/*"

@@ -15,8 +15,8 @@ categories = ["api-bindings", "text-processing"]
 crate-type = ["cdylib"]
 
 [dependencies]
-kreuzberg = { path = "../kreuzberg", features = ["full", "embeddings"] }
-kreuzberg-ffi = { path = "../kreuzberg-ffi" }
+kreuzberg = { path = "../kreuzberg", features = ["full", "pdf-static", "embeddings"] }
+kreuzberg-ffi = { path = "../kreuzberg-ffi", features = ["embeddings"] }
 napi = { version = "3", default-features = false, features = ["napi8", "async", "serde-json"] }
 napi-derive = "3"
 tokio = { workspace = true }

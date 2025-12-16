@@ -412,7 +412,7 @@ jobs:
 
       - name: Build WASM package
         shell: bash
-        run: scripts/ci/wasm/pnpm-build-wasm.sh bundler
+        run: scripts/ci/wasm/pnpm-build-wasm.sh deno
         env:
           RUSTFLAGS: ${{ env.WASM_RUSTFLAGS }}
 

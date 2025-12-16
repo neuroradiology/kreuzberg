@@ -761,18 +761,18 @@ fn to_title_case(s: &str) -> String {
 }
 
 fn write_vitest_config(output_dir: &Utf8Path) -> Result<()> {
-    let vitest_config = r#"import { defineConfig } from "vitest/config";
-import miniflare from "miniflare/vitest";
+    let vitest_config = r#"import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
 
-export default defineConfig({
-    plugins: [miniflare.getPlugin()],
+export default defineWorkersConfig({
     test: {
         globals: true,
-        environment: "miniflare",
-        environmentOptions: {
-            modules: true,
-            scriptPath: new URL("./tests/index.ts", import.meta.url),
-            bindings: {},
+        poolOptions: {
+            workers: {
+                main: "./tests/index.ts",
+                wrangler: {
+                    configPath: "./wrangler.toml",
+                },
+            },
         },
         testTimeout: 60000,
     },

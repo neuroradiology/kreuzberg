@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+- **`full` feature now uses static PDFium linking (`pdf-static`)**
+  - Previous behavior: `full` feature included `pdf-bundled` (embeds dynamic library)
+  - New behavior: `full` feature now includes `pdf-static` (static linking, no runtime PDFium dependency)
+  - Impact: Binaries using `full` feature are now ~50MB smaller but ~200MB larger (embedded static lib vs external dynamic lib)
+  - **On macOS**: Automatically falls back to dynamic linking if static library unavailable (development-friendly)
+  - **On Linux/Windows**: Requires `PDFIUM_STATIC_LIB_PATH` environment variable pointing to static PDFium libraries
+  - **WASM Exception**: `wasm-target` bundle unchanged (no PDF support, cannot use static linking)
+  - **Migration**: Use `pdf-bundled` feature for old behavior; see [PDFium Linking Guide](docs/guides/pdfium-linking.md#migration-guide)
+
+### Added
+- **Dependency cleanup and optimization across all bindings**
+  - `kreuzberg-ffi`: Now uses minimal default features (`html` only), drastically reducing bloat for Java/Go/TypeScript/Ruby consumers
+  - Added explicit `embeddings` feature to `kreuzberg-node` and `kreuzberg-ffi` when needed for optional OCR/ML features
+  - Removed unused `core` feature alias from `kreuzberg-ffi` (dead code)
+  - Removed redundant `api` and `mcp` (server features) from `kreuzberg-py` (not exposed in Python API)
+  - Added `pdf-static` passthrough feature to `kreuzberg-ffi` for static linking in bindings
+  - Consolidated workspace dependencies: `toml` version now managed in `Cargo.toml` workspace.dependencies
+
 ### Fixed
 - **Node/WASM TypeScript bindings: Complete strict typing and JSDoc coverage**
   - Replaced all `any` types with proper type definitions (`unknown` with runtime guards)
@@ -26,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All 13 previously undocumented methods now have complete @param/@return/@raise/@example tags
   - Documentation fully aligned with RBS type definitions and Node/WASM TypeScript bindings
   - All tests passing (207 examples, 0 failures), Rubocop clean, Steep type checking passes
+- **Ruby gem publishing: Switched to comprehensive vendoring script**
+  - Publish workflow now uses `scripts/ci/ruby/vendor-kreuzberg-core.sh` (comprehensive) instead of `scripts/publish/ruby/vendor-kreuzberg-crate.sh` (minimal)
+  - Ensures all vendored crates are included: `kreuzberg`, `kreuzberg-ffi`, `kreuzberg-tesseract`, `rb-sys`
+  - Vendor Cargo.lock is now properly updated when dependencies change, eliminating risk of stale dependencies in published gems
 
 ## [4.0.0-rc.9] - 2025-12-15
 

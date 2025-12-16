@@ -890,7 +890,7 @@ jobs:
 
       - name: Vendor kreuzberg core crate
         shell: bash
-        run: scripts/publish/ruby/vendor-kreuzberg-crate.sh
+        run: scripts/ci/ruby/vendor-kreuzberg-core.sh
 
       - name: Build gem (Unix)
         if: runner.os != 'Windows'
