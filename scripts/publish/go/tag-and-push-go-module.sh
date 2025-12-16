@@ -4,7 +4,7 @@ set -euo pipefail
 tag="${1:?Release tag argument required (e.g. v4.0.0-rc.7)}"
 
 version="${tag#v}"
-module_tag="packages/go/v${version}"
+module_tag="packages/go/v4/v${version}"
 
 # Check if tag already exists
 if git rev-parse "$module_tag" >/dev/null 2>&1; then

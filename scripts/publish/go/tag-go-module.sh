@@ -4,9 +4,9 @@
 #
 # For Go modules in subdirectories, the Go proxy expects tags with the
 # module path prefix. This script creates a lightweight annotated tag
-# for the Go module at packages/go/kreuzberg.
+# for the Go module at packages/go/v4.
 #
-# Convention: packages/go/v<version>
+# Convention: packages/go/v4/v<version>
 #
 # Arguments:
 #   $1: Release tag (e.g., v4.0.0-rc.7)
@@ -23,7 +23,7 @@ tag="${1:?Release tag argument required}"
 version="${tag#v}"
 
 # Module path prefix for Go module tagging
-module_prefix="packages/go"
+module_prefix="packages/go/v4"
 module_tag="${module_prefix}/v${version}"
 
 echo "Creating Go module tag: $module_tag"
@@ -33,4 +33,4 @@ echo "Creating Go module tag: $module_tag"
 git tag "$module_tag" "$tag"
 
 echo "✅ Go module tag created: $module_tag"
-echo "   This enables: go get github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg@v${version}"
+echo "   This enables: go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v${version}"

@@ -18,7 +18,7 @@ The Go binding exposes the same extraction capabilities as the other languages t
 Add the package to your `go.mod`:
 
 ```bash title="Terminal"
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg@latest
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
 ```
 
 Build the FFI library and set library paths:
@@ -50,7 +50,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 func main() {
@@ -76,7 +76,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 func main() {
@@ -1039,7 +1039,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
@@ -1228,7 +1228,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"
+	"github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 //export myCustomProcessor
@@ -1461,7 +1461,7 @@ task e2e:go:verify
 
 # Manual test with library path
 export LD_LIBRARY_PATH=$PWD/target/release:$LD_LIBRARY_PATH
-go test -v ./packages/go/kreuzberg
+go test -v ./packages/go/v4
 ```
 
 ---
@@ -1496,7 +1496,7 @@ func uint32Ptr(u uint32) *uint32 {
 
 ## Related Resources
 
-- **Source:** [packages/go/kreuzberg/](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/kreuzberg) (Go binding implementation)
+- **Source:** [packages/go/v4/](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v4) (Go binding implementation)
 - **FFI Bridge:** [crates/kreuzberg-ffi/](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-ffi) (C FFI layer)
 - **Rust Core:** [crates/kreuzberg/](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg) (extraction logic)
 - **E2E Tests:** [e2e/go/](https://github.com/kreuzberg-dev/kreuzberg/tree/main/e2e/go) (auto-generated test fixtures)

@@ -196,7 +196,7 @@ fileInput.addEventListener('change', async (e) => {
 
 WASM bindings work in:
 - Modern browsers (Chrome 74+, Firefox 79+, Safari 14+, Edge 79+)
-- Node.js 18.17+ (with `--experimental-wasm-modules`)
+- Node.js 22+
 - Deno 1.35+
 - Bun 0.6+
 - Cloudflare Workers

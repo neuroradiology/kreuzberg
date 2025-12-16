@@ -4,7 +4,7 @@ set -euo pipefail
 mode="${1:-check}"
 
 root="$(git rev-parse --show-toplevel)"
-go_dir="$root/packages/go"
+go_dir="$root/packages/go/v4"
 
 cd "$go_dir"
 export PKG_CONFIG_PATH="$go_dir/../../crates/kreuzberg-ffi:${PKG_CONFIG_PATH:-}"
@@ -15,7 +15,7 @@ fix)
 	golangci-lint run --config "$root/.golangci.yml" --fix ./...
 	;;
 check)
-	"$root/scripts/go/format_check.sh"
+	"$root/scripts/go/v4/format_check.sh"
 	golangci-lint run --config "$root/.golangci.yml" ./...
 	;;
 *)

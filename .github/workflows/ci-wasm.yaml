@@ -332,7 +332,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["18", "20", "22"]
+        node-version: ["22", "25"]
     steps:
       - uses: actions/checkout@v4
 

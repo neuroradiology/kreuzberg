@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	kreuzberg "github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"
+	kreuzberg "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
 )
 
 // Configuration Tests

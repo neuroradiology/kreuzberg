@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
-      - 'packages/go/**'
+      - 'packages/go/v4/**'
       - 'crates/**'
       - 'scripts/**'
       - 'scripts/ci/go/**'
@@ -21,7 +21,7 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
-      - 'packages/go/**'
+      - 'packages/go/v4/**'
       - 'crates/**'
       - 'scripts/**'
       - 'scripts/ci/go/**'
@@ -86,7 +86,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.25'
-          cache-dependency-path: packages/go/go.sum
+          cache-dependency-path: packages/go/v4/go.sum
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium
@@ -208,7 +208,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.25"
-          cache-dependency-path: packages/go/go.sum
+          cache-dependency-path: packages/go/v4/go.sum
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Breaking Changes
+- **Go bindings: Module path restructured to v4 for semantic versioning compliance**
+  - Old module path: `github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg`
+  - New module path: `github.com/kreuzberg-dev/kreuzberg/packages/go/v4`
+  - Old import statement: `import "github.com/kreuzberg-dev/kreuzberg/packages/go/kreuzberg"`
+  - New import statement: `import "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"`
+  - All users must update their import statements and run `go mod tidy`
+  - Package name remains `package kreuzberg` (only module path changes)
+  - Git tag format changed from `packages/go/v<version>` to `packages/go/v4/v<version>`
+  - Migration guide: See `/packages/go/v4/README.md`
 - **`full` feature now uses static PDFium linking (`pdf-static`)**
   - Previous behavior: `full` feature included `pdf-bundled` (embeds dynamic library)
   - New behavior: `full` feature now includes `pdf-static` (static linking, no runtime PDFium dependency)
@@ -27,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Consolidated workspace dependencies: `toml` version now managed in `Cargo.toml` workspace.dependencies
 
 ### Fixed
+- **Go bindings: Complete struct field documentation and Context.Context support**
+  - Added comprehensive documentation comments for all 37+ struct fields across types.go and config.go
+  - Documented field semantics, valid value ranges, defaults, and usage patterns for IDE tooltips
+  - Added `ExtractFileWithContext()`, `ExtractBytesWithContext()`, `BatchExtractFilesWithContext()`, and `BatchExtractBytesWithContext()` for context cancellation support
+  - Context cancellation is checked before extraction starts; note that extraction operations cannot be interrupted once started
+  - Added concurrent extraction test suite with goroutine-based tests for thread safety verification
+  - All GoDoc documentation now properly accessible in IDE tooltips and `go doc` output
 - **Node/WASM TypeScript bindings: Complete strict typing and JSDoc coverage**
   - Replaced all `any` types with proper type definitions (`unknown` with runtime guards)
   - Fixed `Metadata` index signature to use `[key: string]: unknown` instead of `any`
