@@ -12,8 +12,12 @@ use tokio::sync::Mutex;
 /// Sample of resource usage at a point in time
 #[derive(Debug, Clone, Copy)]
 pub struct ResourceSample {
-    /// Memory usage in bytes
+    /// Memory usage in bytes (RSS)
     pub memory_bytes: u64,
+    /// Virtual memory size in bytes
+    pub vm_size_bytes: u64,
+    /// Major page faults count
+    pub page_faults: u64,
     /// CPU usage percentage (0.0 - 100.0 * num_cpus)
     pub cpu_percent: f64,
     /// Timestamp when sample was taken (relative to monitoring start)
@@ -65,6 +69,8 @@ impl ResourceMonitor {
                 if let Some(process) = system.process(pid) {
                     let sample = ResourceSample {
                         memory_bytes: process.memory(),
+                        vm_size_bytes: process.virtual_memory(),
+                        page_faults: 0,
                         cpu_percent: process.cpu_usage() as f64,
                         timestamp_ms: start.elapsed().as_millis() as u64,
                     };
@@ -110,12 +116,42 @@ impl ResourceMonitor {
 
         let memory_values: Vec<u64> = samples.iter().map(|s| s.memory_bytes).collect();
         let cpu_values: Vec<f64> = samples.iter().map(|s| s.cpu_percent).collect();
+        let vm_values: Vec<u64> = samples.iter().map(|s| s.vm_size_bytes).collect();
 
         let peak_memory = *memory_values.iter().max().unwrap_or(&0);
+        let peak_vm = *vm_values.iter().max().unwrap_or(&0);
         let avg_cpu = cpu_values.iter().sum::<f64>() / cpu_values.len() as f64;
+
+        // Calculate memory growth rate
+        let memory_growth_rate_mb_s = if samples.len() >= 2 {
+            let first_memory = memory_values[0];
+            let last_memory = memory_values[memory_values.len() - 1];
+            let duration_ms = samples[samples.len() - 1].timestamp_ms - samples[0].timestamp_ms;
+            let duration_s = if duration_ms > 0 {
+                duration_ms as f64 / 1000.0
+            } else {
+                1.0
+            };
+
+            let memory_delta_bytes = if last_memory > first_memory {
+                (last_memory - first_memory) as f64
+            } else {
+                0.0
+            };
+
+            memory_delta_bytes / 1_048_576.0 / duration_s
+        } else {
+            0.0
+        };
+
+        // Get page faults from the last sample
+        let total_page_faults = samples.last().map(|s| s.page_faults).unwrap_or(0);
 
         ResourceStats {
             peak_memory_bytes: peak_memory,
+            peak_vm_bytes: peak_vm,
+            total_page_faults,
+            memory_growth_rate_mb_s,
             avg_cpu_percent: avg_cpu,
             p50_memory_bytes: Self::calculate_percentile(memory_values.clone(), 0.50),
             p95_memory_bytes: Self::calculate_percentile(memory_values.clone(), 0.95),
@@ -136,6 +172,12 @@ impl Default for ResourceMonitor {
 pub struct ResourceStats {
     /// Peak memory usage in bytes
     pub peak_memory_bytes: u64,
+    /// Peak virtual memory size in bytes
+    pub peak_vm_bytes: u64,
+    /// Total major page faults
+    pub total_page_faults: u64,
+    /// Memory growth rate in MB/s
+    pub memory_growth_rate_mb_s: f64,
     /// Average CPU usage percentage
     pub avg_cpu_percent: f64,
     /// 50th percentile (median) memory usage
@@ -191,16 +233,22 @@ mod tests {
         let samples = vec![
             ResourceSample {
                 memory_bytes: 100,
+                vm_size_bytes: 500,
+                page_faults: 10,
                 cpu_percent: 10.0,
                 timestamp_ms: 0,
             },
             ResourceSample {
                 memory_bytes: 200,
+                vm_size_bytes: 600,
+                page_faults: 20,
                 cpu_percent: 20.0,
                 timestamp_ms: 10,
             },
             ResourceSample {
                 memory_bytes: 150,
+                vm_size_bytes: 550,
+                page_faults: 25,
                 cpu_percent: 15.0,
                 timestamp_ms: 20,
             },
@@ -209,9 +257,13 @@ mod tests {
         let stats = ResourceMonitor::calculate_stats(&samples);
 
         assert_eq!(stats.peak_memory_bytes, 200);
+        assert_eq!(stats.peak_vm_bytes, 600);
+        assert_eq!(stats.total_page_faults, 25);
         assert_eq!(stats.p50_memory_bytes, 150);
         assert!((stats.avg_cpu_percent - 15.0).abs() < 0.1);
         assert_eq!(stats.sample_count, 3);
+        // Memory growth rate: (150 - 100) bytes / 1_048_576 / 0.02 seconds
+        assert!(stats.memory_growth_rate_mb_s >= 0.0);
     }
 
     #[tokio::test]

@@ -1,5 +1,9 @@
 //! Benchmark harness CLI
 
+#[cfg(feature = "memory-profiling")]
+#[global_allocator]
+static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 use benchmark_harness::{BenchmarkConfig, BenchmarkMode, FixtureManager, Result};
 use clap::{Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
