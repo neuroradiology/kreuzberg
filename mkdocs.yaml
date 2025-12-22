@@ -9,6 +9,7 @@ copyright: Copyright &copy; 2023-2025 Kreuzberg.dev
 
 theme:
   name: material
+  custom_dir: docs/overrides
   logo: assets/logo.svg
   favicon: assets/favicon.ico
   palette:
@@ -17,14 +18,14 @@ theme:
       primary: custom
       accent: custom
       toggle:
-        icon: material/weather-night
+        icon: moon
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: custom
       accent: custom
       toggle:
-        icon: material/weather-sunny
+        icon: sun
         name: Switch to light mode
   font:
     text: Inter
@@ -53,7 +54,8 @@ theme:
     - content.action.edit
     - content.action.view
   icon:
-    repo: fontawesome/brands/github
+    repo: github
+    search: search
   language: en
 
 markdown_extensions:
@@ -66,6 +68,9 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      options:
+        custom_icons:
+          - docs/overrides/.icons
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
