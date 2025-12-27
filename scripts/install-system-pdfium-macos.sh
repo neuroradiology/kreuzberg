@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-readonly PDFIUM_VERSION="${PDFIUM_VERSION:-7529}"
+readonly PDFIUM_VERSION="${PDFIUM_VERSION:-7578}"
 readonly PREFIX="${PREFIX:-/usr/local}"
 
 readonly RED='\033[0;31m'
