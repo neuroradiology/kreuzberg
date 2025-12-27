@@ -95,26 +95,36 @@ glob)
 	for pattern in "$@"; do
 		# Use find with -path for glob matching
 		# Convert glob to find path expression
-		# This is a simplified glob handler - may need enhancement for complex globs
 
 		if [[ "$pattern" == *"**"* ]]; then
-			# Handle ** recursive glob
+			# Handle ** recursive glob (e.g., "crates/kreuzberg/**/*.rs")
+			# Extract the base directory and file extension/name pattern
 			base_dir=$(echo "$pattern" | cut -d'*' -f1 | sed 's|/$||')
-			file_pattern=$(echo "$pattern" | sed "s|^$base_dir/||" | sed 's|\*\*/||' | sed 's|\*|.*|g')
+
+			# Get the suffix after the ** (e.g., "/*.rs" from "crates/kreuzberg/**/*.rs")
+			# Remove everything up to and including **/
+			suffix="${pattern#*\*\*/}"
+
+			# Extract filename pattern (e.g., "*.rs" from "/*.rs")
+			# Remove leading / if present
+			if [[ "$suffix" == /* ]]; then
+				name_pattern="${suffix#/}"
+			else
+				name_pattern="$suffix"
+			fi
 
 			if [[ -d "$base_dir" ]]; then
+				# Find all files recursively using -name for filename matching
+				# This is more portable and reliable than bash regex
 				find "$base_dir" -type f \
 					! -path "*/.*" \
 					! -path "*/target/*" \
 					! -path "*/node_modules/*" \
 					! -path "*/.venv/*" \
-					-exec bash -c "
-              file=\"\$1\"
-              pattern=\"$file_pattern\"
-              if [[ \"\$file\" =~ \$pattern ]]; then
-                $HASH_CMD \"\$file\" 2>/dev/null || true
-              fi
-            " _ {} \; >>"$TEMP_HASHES"
+					-name "$name_pattern" \
+					-exec "$HASH_CMD" {} \; 2>/dev/null >>"$TEMP_HASHES" || true
+			else
+				warn "Directory not found: $base_dir"
 			fi
 		else
 			# Simple glob (no **)

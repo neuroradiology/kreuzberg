@@ -155,7 +155,7 @@ runs:
         cache-paths: |
           target/release/libkreuzberg_ffi.*
           target/release/kreuzberg_ffi.*
-          crates/kreuzberg-ffi/kreuzberg-ffi.pc
+          kreuzberg-ffi.pc
         operation: restore
 
     # Skip build if cache hit (optional)
@@ -242,7 +242,8 @@ runs:
         echo "=== Validating FFI Artifacts ==="
 
         # Define cache paths to check
-        CACHE_PATHS="target/release/libkreuzberg_ffi.* target/release/kreuzberg_ffi.* crates/kreuzberg-ffi/kreuzberg-ffi.pc"
+        # Note: .pc file is optional and may be in repo root or different location
+        CACHE_PATHS="target/release/libkreuzberg_ffi.* target/release/kreuzberg_ffi.*"
 
         # Run validation script
         scripts/ci/cache/validate-cache.sh ffi $CACHE_PATHS || {
