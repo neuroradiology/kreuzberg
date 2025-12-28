@@ -52,6 +52,20 @@ tasks:
     cmds:
       - mix test --warnings-as-errors
 
+  test:app:
+    desc: Run Elixir test app
+    dir: tests/test_apps/elixir
+    cmds:
+      - mix deps.get
+      - mix test
+
+  test:app:ci:
+    desc: Run Elixir test app (CI mode)
+    dir: tests/test_apps/elixir
+    cmds:
+      - mix deps.get
+      - mix test --warnings-as-errors --exclude ocr
+
   lint:
     desc: Lint Elixir code with Credo
     dir: packages/elixir
