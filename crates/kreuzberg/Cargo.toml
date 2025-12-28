@@ -231,15 +231,6 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 criterion = { workspace = true }
 image = { workspace = true, default-features = false, features = ["png"] }
 
-[[bench]]
-name = "otel_overhead"
-harness = false
-
-[[bench]]
-name = "token_reduction"
-harness = true
-required-features = ["quality"]
-
 [target.'cfg(not(target_os = "windows"))'.dependencies]
 pprof = { version = "0.15.0", features = ["flamegraph"], optional = true }
 

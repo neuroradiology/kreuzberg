@@ -90,8 +90,7 @@ fn test_extract_chars_preserves_order() {
         if (char_data.y - last_y).abs() <= y_line_threshold && char_data.x < last_x - 1.0 {
             // This is acceptable if it's a new line or small variation
             if last_x != f32::NEG_INFINITY && (char_data.y - last_y).abs() <= y_line_threshold {
-                assert!(
-                    false,
+                panic!(
                     "Characters should be left-to-right on same line: {} < {} at y={}",
                     char_data.x, last_x, char_data.y
                 );
@@ -316,5 +315,161 @@ fn test_merge_max_merge_distance_threshold() {
         blocks.iter().map(|b| b.text.len()).sum::<usize>(),
         3,
         "Expected all 3 characters to be preserved"
+    );
+}
+
+/// Test edge case with zero font size.
+///
+/// This test ensures the algorithm handles zero or near-zero font sizes gracefully
+/// without panicking or causing division by zero.
+#[test]
+fn test_merge_zero_font_size() {
+    // Create characters with zero font size (edge case)
+    let chars = vec![
+        CharData {
+            text: "A".to_string(),
+            x: 0.0,
+            y: 10.0,
+            font_size: 0.0,
+            width: 0.0,
+            height: 0.0,
+        },
+        CharData {
+            text: "B".to_string(),
+            x: 1.0,
+            y: 10.0,
+            font_size: 0.0,
+            width: 0.0,
+            height: 0.0,
+        },
+    ];
+
+    // Should not panic
+    let blocks = merge_chars_into_blocks(chars);
+
+    // Should still produce some output
+    assert!(!blocks.is_empty(), "Should produce blocks even with zero font size");
+}
+
+/// Test IOU calculation with zero area boxes.
+///
+/// This test validates that IOU calculations handle degenerate bounding boxes
+/// with zero area without panicking.
+#[test]
+fn test_iou_zero_area_boxes() {
+    // Two boxes with zero area (point-like)
+    let bbox1 = create_bbox(0.0, 0.0, 0.0, 0.0);
+    let bbox2 = create_bbox(5.0, 5.0, 0.0, 0.0);
+
+    // Should not panic and should return 0 or similar
+    let iou = bbox1.iou(&bbox2);
+    assert!(
+        iou >= 0.0 && iou <= 1.0,
+        "IOU should be in valid range for zero-area boxes"
+    );
+
+    // Intersection ratio should also be safe
+    let ratio = bbox1.intersection_ratio(&bbox2);
+    assert!(
+        ratio >= 0.0 && ratio <= 1.0,
+        "Intersection ratio should be in valid range"
+    );
+}
+
+/// Test IOU calculation with identical boxes.
+///
+/// This test validates that identical boxes have IOU of 1.0 (perfect overlap).
+#[test]
+fn test_iou_identical_boxes() {
+    // Two identical boxes
+    let bbox1 = create_bbox(10.0, 20.0, 30.0, 40.0);
+    let bbox2 = create_bbox(10.0, 20.0, 30.0, 40.0);
+
+    // IOU should be 1.0 for identical boxes
+    let iou = bbox1.iou(&bbox2);
+    assert!(
+        (iou - 1.0).abs() < 0.001,
+        "Identical boxes should have IOU of 1.0, got {}",
+        iou
+    );
+
+    // Intersection ratio should also be 1.0
+    let ratio = bbox1.intersection_ratio(&bbox2);
+    assert!(
+        (ratio - 1.0).abs() < 0.001,
+        "Identical boxes should have intersection ratio of 1.0, got {}",
+        ratio
+    );
+}
+
+/// Test contains() method with various box configurations.
+#[test]
+fn test_contains_method() {
+    let large_box = create_bbox(0.0, 0.0, 100.0, 100.0);
+    let small_box = create_bbox(10.0, 10.0, 50.0, 50.0);
+    let outside_box = create_bbox(110.0, 110.0, 150.0, 150.0);
+
+    // Small box should be contained in large box
+    assert!(large_box.contains(&small_box), "Large box should contain small box");
+
+    // Large box should not be contained in small box
+    assert!(
+        !small_box.contains(&large_box),
+        "Small box should not contain large box"
+    );
+
+    // Outside box should not be contained
+    assert!(
+        !large_box.contains(&outside_box),
+        "Large box should not contain outside box"
+    );
+}
+
+/// Test center() method for bounding box centerpoint calculation.
+#[test]
+fn test_center_method() {
+    let bbox = create_bbox(0.0, 0.0, 100.0, 100.0);
+    let center = bbox.center();
+
+    assert_eq!(center.0, 50.0, "Center X should be 50.0");
+    assert_eq!(center.1, 50.0, "Center Y should be 50.0");
+
+    // Test with offset box
+    let offset_bbox = create_bbox(20.0, 30.0, 80.0, 70.0);
+    let offset_center = offset_bbox.center();
+
+    assert_eq!(offset_center.0, 60.0, "Offset center X should be 60.0");
+    assert_eq!(offset_center.1, 65.0, "Offset center Y should be 65.0");
+}
+
+/// Test merge() method for combining bounding boxes.
+#[test]
+fn test_merge_method() {
+    let bbox1 = create_bbox(0.0, 0.0, 50.0, 50.0);
+    let bbox2 = create_bbox(30.0, 30.0, 100.0, 100.0);
+
+    let merged = bbox1.merge(&bbox2);
+
+    assert_eq!(merged.left, 0.0, "Merged left should be 0.0");
+    assert_eq!(merged.top, 0.0, "Merged top should be 0.0");
+    assert_eq!(merged.right, 130.0, "Merged right should be 130.0");
+    assert_eq!(merged.bottom, 130.0, "Merged bottom should be 130.0");
+}
+
+/// Test relaxed_iou() method with expansion factor.
+#[test]
+fn test_relaxed_iou_method() {
+    let bbox1 = create_bbox(0.0, 0.0, 10.0, 10.0);
+    let bbox2 = create_bbox(15.0, 15.0, 25.0, 25.0);
+
+    // Without relaxation, IOU should be 0
+    let normal_iou = bbox1.iou(&bbox2);
+    assert!(normal_iou < 0.01, "Non-overlapping boxes should have near-zero IOU");
+
+    // With relaxation, IOU should increase
+    let relaxed_iou = bbox1.relaxed_iou(&bbox2, 0.5);
+    assert!(
+        relaxed_iou > normal_iou,
+        "Relaxed IOU should be greater than normal IOU"
     );
 }

@@ -121,6 +121,66 @@ pub fn test_config_with_ocr() -> kreuzberg::core::config::ExtractionConfig {
     }
 }
 
+// PDF-specific test helpers (only available with pdf feature)
+#[cfg(feature = "pdf")]
+pub mod pdf_helpers {
+    use kreuzberg::core::config::ExtractionConfig;
+    use kreuzberg::pdf::hierarchy::{BoundingBox, CharData};
+
+    /// Create a bounding box with simple coordinates.
+    ///
+    /// # Arguments
+    ///
+    /// * `left` - Left x-coordinate
+    /// * `top` - Top y-coordinate
+    /// * `right` - Right x-coordinate
+    /// * `bottom` - Bottom y-coordinate
+    ///
+    /// # Returns
+    ///
+    /// A new BoundingBox with the specified coordinates
+    pub fn create_bounding_box(left: f32, top: f32, right: f32, bottom: f32) -> BoundingBox {
+        BoundingBox {
+            left,
+            top,
+            right,
+            bottom,
+        }
+    }
+
+    /// Create a character data with minimal parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `text` - Character text content
+    /// * `x` - X position
+    /// * `y` - Y position
+    /// * `font_size` - Font size in points
+    ///
+    /// # Returns
+    ///
+    /// A new CharData with calculated width and height
+    pub fn create_char_data(text: &str, x: f32, y: f32, font_size: f32) -> CharData {
+        CharData {
+            text: text.to_string(),
+            x,
+            y,
+            font_size,
+            width: font_size * 0.6,
+            height: font_size,
+        }
+    }
+
+    /// Create a default extraction configuration for testing hierarchy extraction.
+    ///
+    /// # Returns
+    ///
+    /// A new ExtractionConfig with PDF hierarchy options enabled
+    pub fn create_hierarchy_extraction_config() -> ExtractionConfig {
+        ExtractionConfig::default()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

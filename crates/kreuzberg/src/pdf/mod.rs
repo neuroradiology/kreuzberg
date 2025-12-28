@@ -56,6 +56,8 @@ pub mod table;
 #[cfg(feature = "pdf")]
 pub mod text;
 
+#[cfg(feature = "pdf")]
+pub use crate::core::config::HierarchyConfig;
 #[cfg(all(feature = "pdf", feature = "bundled-pdfium"))]
 pub use bundled::extract_bundled_pdfium;
 #[cfg(feature = "pdf")]
@@ -63,7 +65,10 @@ pub use error::PdfError;
 #[cfg(feature = "pdf")]
 pub use fonts::{cached_font_count, get_font_descriptors, initialize_font_cache};
 #[cfg(feature = "pdf")]
-pub use hierarchy::{BoundingBox, CharData, extract_chars_with_fonts};
+pub use hierarchy::{
+    BoundingBox, CharData, FontSizeCluster, HierarchyLevel, TextBlock, assign_hierarchy_levels,
+    assign_hierarchy_levels_from_clusters, cluster_font_sizes, extract_chars_with_fonts, should_trigger_ocr,
+};
 #[cfg(feature = "pdf")]
 pub use images::{PdfImage, PdfImageExtractor, extract_images_from_pdf};
 #[cfg(feature = "pdf")]

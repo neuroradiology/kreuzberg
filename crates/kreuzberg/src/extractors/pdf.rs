@@ -271,7 +271,7 @@ impl PdfExtractor {
         config: &ExtractionConfig,
     ) -> Result<PdfExtractionPhaseResult> {
         let (native_text, _boundaries, page_contents, pdf_metadata) =
-            crate::pdf::text::extract_text_and_metadata_from_pdf_document(document, config.pages.as_ref())?;
+            crate::pdf::text::extract_text_and_metadata_from_pdf_document(document, Some(config))?;
 
         let tables = extract_tables_from_document(document, &pdf_metadata)?;
 

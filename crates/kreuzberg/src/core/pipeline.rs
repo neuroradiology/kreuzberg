@@ -669,19 +669,21 @@ mod tests {
     #[tokio::test]
     #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
     async fn test_pipeline_with_keyword_extraction() {
-        let _guard = REGISTRY_TEST_GUARD.lock().unwrap();
-        crate::plugins::registry::get_validator_registry()
-            .write()
-            .unwrap()
-            .shutdown_all()
-            .unwrap();
-        crate::plugins::registry::get_post_processor_registry()
-            .write()
-            .unwrap()
-            .shutdown_all()
-            .unwrap();
+        {
+            let _guard = REGISTRY_TEST_GUARD.lock().unwrap();
+            crate::plugins::registry::get_validator_registry()
+                .write()
+                .unwrap()
+                .shutdown_all()
+                .unwrap();
+            crate::plugins::registry::get_post_processor_registry()
+                .write()
+                .unwrap()
+                .shutdown_all()
+                .unwrap();
 
-        let _ = crate::keywords::register_keyword_processor();
+            let _ = crate::keywords::register_keyword_processor();
+        }
 
         let result = ExtractionResult {
             content: r#"
@@ -731,7 +733,9 @@ Natural language processing enables computers to understand human language.
     #[tokio::test]
     #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
     async fn test_pipeline_without_keyword_config() {
-        let _guard = REGISTRY_TEST_GUARD.lock().unwrap();
+        {
+            let _guard = REGISTRY_TEST_GUARD.lock().unwrap();
+        }
         let result = ExtractionResult {
             content: "Machine learning and artificial intelligence.".to_string(),
             mime_type: "text/plain".to_string(),

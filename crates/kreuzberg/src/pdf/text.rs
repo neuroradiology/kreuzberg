@@ -10,7 +10,6 @@ use crate::types::{PageBoundary, PageContent};
 use pdfium_render::prelude::*;
 
 /// Result type for PDF text extraction with optional page tracking.
-#[allow(dead_code)]
 type PdfTextExtractionResult = (String, Option<Vec<PageBoundary>>, Option<Vec<PageContent>>);
 
 pub struct PdfTextExtractor {
@@ -39,7 +38,7 @@ impl PdfTextExtractor {
             }
         })?;
 
-        let (content, _, _) = extract_text_from_pdf_document(&document, None)?;
+        let (content, _, _) = extract_text_from_pdf_document(&document, None, None)?;
         Ok(content)
     }
 
@@ -118,7 +117,7 @@ pub type PdfUnifiedExtractionResult = (
 /// # Arguments
 ///
 /// * `document` - The PDF document to extract from
-/// * `page_config` - Optional page configuration for boundary tracking and page markers
+/// * `extraction_config` - Optional extraction configuration for hierarchy and page tracking
 ///
 /// # Returns
 ///
@@ -135,9 +134,10 @@ pub type PdfUnifiedExtractionResult = (
 /// calling text and metadata extraction separately.
 pub fn extract_text_and_metadata_from_pdf_document(
     document: &PdfDocument<'_>,
-    page_config: Option<&PageConfig>,
+    extraction_config: Option<&crate::core::config::ExtractionConfig>,
 ) -> Result<PdfUnifiedExtractionResult> {
-    let (text, boundaries, page_contents) = extract_text_from_pdf_document(document, page_config)?;
+    let page_config = extraction_config.and_then(|c| c.pages.as_ref());
+    let (text, boundaries, page_contents) = extract_text_from_pdf_document(document, page_config, extraction_config)?;
 
     let metadata = crate::pdf::metadata::extract_metadata_from_document_impl(document, boundaries.as_deref())?;
 
@@ -150,6 +150,7 @@ pub fn extract_text_and_metadata_from_pdf_document(
 ///
 /// * `document` - The PDF document to extract text from
 /// * `page_config` - Optional page configuration for boundary tracking and page markers
+/// * `extraction_config` - Optional extraction configuration for hierarchy detection
 ///
 /// # Returns
 ///
@@ -170,6 +171,7 @@ pub fn extract_text_and_metadata_from_pdf_document(
 pub fn extract_text_from_pdf_document(
     document: &PdfDocument<'_>,
     page_config: Option<&PageConfig>,
+    extraction_config: Option<&crate::core::config::ExtractionConfig>,
 ) -> Result<PdfTextExtractionResult> {
     if page_config.is_none() {
         return extract_text_lazy_fast_path(document);
@@ -177,7 +179,7 @@ pub fn extract_text_from_pdf_document(
 
     let config = page_config.unwrap();
 
-    extract_text_lazy_with_tracking(document, config)
+    extract_text_lazy_with_tracking(document, config, extraction_config)
 }
 
 /// Fast path for text extraction without page tracking.
@@ -235,12 +237,19 @@ fn extract_text_lazy_fast_path(document: &PdfDocument<'_>) -> Result<PdfTextExtr
 /// adaptive strategy to minimize reallocations while maintaining low peak
 /// memory usage.
 ///
+/// When hierarchy extraction is enabled, extracts text hierarchy (H1-H6 levels)
+/// from font size clustering and assigns semantic heading levels to text blocks.
+///
 /// # Performance Optimization
 ///
 /// Uses a two-phase approach: sample first 5 pages to estimate average
 /// page size, then reserve capacity for remaining pages. This reduces
 /// allocations from O(n) to O(log n) while keeping memory efficient.
-fn extract_text_lazy_with_tracking(document: &PdfDocument<'_>, config: &PageConfig) -> Result<PdfTextExtractionResult> {
+fn extract_text_lazy_with_tracking(
+    document: &PdfDocument<'_>,
+    config: &PageConfig,
+    extraction_config: Option<&crate::core::config::ExtractionConfig>,
+) -> Result<PdfTextExtractionResult> {
     let mut content = String::new();
     let page_count = document.pages().len() as usize;
     let mut boundaries = Vec::with_capacity(page_count);
@@ -249,6 +258,18 @@ fn extract_text_lazy_with_tracking(document: &PdfDocument<'_>, config: &PageConf
     } else {
         None
     };
+
+    // Check if hierarchy extraction is enabled
+    let should_extract_hierarchy = extraction_config
+        .and_then(|cfg| cfg.pdf_options.as_ref())
+        .and_then(|pdf_cfg| pdf_cfg.hierarchy.as_ref())
+        .map(|h_cfg| h_cfg.enabled)
+        .unwrap_or(false);
+
+    let hierarchy_config = extraction_config
+        .and_then(|cfg| cfg.pdf_options.as_ref())
+        .and_then(|pdf_cfg| pdf_cfg.hierarchy.as_ref())
+        .cloned();
 
     let mut total_sample_size = 0usize;
     let mut sample_count = 0;
@@ -288,11 +309,19 @@ fn extract_text_lazy_with_tracking(document: &PdfDocument<'_>, config: &PageConf
         });
 
         if let Some(ref mut pages) = page_contents {
+            // Extract hierarchy if enabled
+            let hierarchy = if should_extract_hierarchy {
+                extract_page_hierarchy(&page, hierarchy_config.as_ref())?
+            } else {
+                None
+            };
+
             pages.push(PageContent {
                 page_number,
                 content: page_text_ref.to_owned(),
                 tables: Vec::new(),
                 images: Vec::new(),
+                hierarchy,
             });
         }
 
@@ -305,6 +334,106 @@ fn extract_text_lazy_with_tracking(document: &PdfDocument<'_>, config: &PageConf
     }
 
     Ok((content, Some(boundaries), page_contents))
+}
+
+/// Extract text hierarchy from a single PDF page.
+///
+/// Uses font size clustering to identify heading levels (H1-H6) and assigns
+/// hierarchy levels to text blocks based on their font sizes.
+///
+/// # Arguments
+///
+/// * `page` - The PDF page to extract hierarchy from
+/// * `hierarchy_config` - Configuration for hierarchy extraction
+///
+/// # Returns
+///
+/// Optional PageHierarchy containing hierarchical blocks with heading levels
+fn extract_page_hierarchy(
+    page: &pdfium_render::prelude::PdfPage,
+    hierarchy_config: Option<&crate::core::config::HierarchyConfig>,
+) -> Result<Option<crate::types::PageHierarchy>> {
+    use crate::pdf::hierarchy::{
+        HierarchyLevel, assign_hierarchy_levels, cluster_font_sizes, extract_chars_with_fonts, merge_chars_into_blocks,
+    };
+    use crate::types::HierarchicalBlock;
+
+    // Check if config is present and hierarchy is enabled
+    let config = match hierarchy_config {
+        Some(cfg) if cfg.enabled => cfg,
+        _ => return Ok(None),
+    };
+
+    // Extract characters with font information
+    let char_data = extract_chars_with_fonts(page)?;
+
+    if char_data.is_empty() {
+        return Ok(None);
+    }
+
+    // Merge characters into text blocks
+    let text_blocks = merge_chars_into_blocks(char_data);
+
+    if text_blocks.is_empty() {
+        return Ok(None);
+    }
+
+    // Cluster by font sizes
+    let k_clusters = config.k_clusters.min(text_blocks.len());
+    let clusters = cluster_font_sizes(&text_blocks, k_clusters)?;
+
+    if clusters.is_empty() {
+        return Ok(None);
+    }
+
+    // Assign hierarchy levels using KMeans-based clustering
+    let kmeans_result = crate::pdf::hierarchy::KMeansResult {
+        labels: text_blocks
+            .iter()
+            .map(|block| {
+                // Find which cluster this block belongs to
+                let mut min_dist = f32::INFINITY;
+                let mut best_cluster = 0u32;
+                for (idx, cluster) in clusters.iter().enumerate() {
+                    let dist = (block.font_size - cluster.centroid).abs();
+                    if dist < min_dist {
+                        min_dist = dist;
+                        best_cluster = idx as u32;
+                    }
+                }
+                best_cluster
+            })
+            .collect(),
+    };
+
+    let hierarchy_blocks = assign_hierarchy_levels(&text_blocks, &kmeans_result);
+
+    // Convert to output format
+    let blocks: Vec<HierarchicalBlock> = hierarchy_blocks
+        .into_iter()
+        .map(|hb| HierarchicalBlock {
+            text: hb.text,
+            font_size: hb.font_size,
+            level: match hb.hierarchy_level {
+                HierarchyLevel::H1 => "h1".to_string(),
+                HierarchyLevel::H2 => "h2".to_string(),
+                HierarchyLevel::H3 => "h3".to_string(),
+                HierarchyLevel::H4 => "h4".to_string(),
+                HierarchyLevel::H5 => "h5".to_string(),
+                HierarchyLevel::H6 => "h6".to_string(),
+                HierarchyLevel::Body => "body".to_string(),
+            },
+            bbox: if config.include_bbox {
+                Some((hb.bbox.left, hb.bbox.top, hb.bbox.right, hb.bbox.bottom))
+            } else {
+                None
+            },
+        })
+        .collect();
+
+    let block_count = blocks.len();
+
+    Ok(Some(crate::types::PageHierarchy { block_count, blocks }))
 }
 
 #[cfg(test)]

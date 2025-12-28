@@ -387,6 +387,57 @@ pub struct PageContent {
     /// Arc semantics in-memory for zero-copy sharing.
     #[serde(skip_serializing_if = "Vec::is_empty", default, with = "serde_vec_arc")]
     pub images: Vec<Arc<ExtractedImage>>,
+
+    /// Hierarchy information for the page (when hierarchy extraction is enabled)
+    ///
+    /// Contains text hierarchy levels (H1-H6) extracted from the page content.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hierarchy: Option<PageHierarchy>,
+}
+
+/// Page hierarchy structure containing heading levels and block information.
+///
+/// Used when PDF text hierarchy extraction is enabled. Contains hierarchical
+/// blocks with heading levels (H1-H6) for semantic document structure.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PageHierarchy {
+    /// Number of hierarchy blocks on this page
+    pub block_count: usize,
+
+    /// Hierarchical blocks with heading levels
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub blocks: Vec<HierarchicalBlock>,
+}
+
+/// A text block with hierarchy level assignment.
+///
+/// Represents a block of text with semantic heading information extracted from
+/// font size clustering and hierarchical analysis.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HierarchicalBlock {
+    /// The text content of this block
+    pub text: String,
+
+    /// The font size of the text in this block
+    pub font_size: f32,
+
+    /// The hierarchy level of this block (H1-H6 or Body)
+    ///
+    /// Levels correspond to HTML heading tags:
+    /// - "h1": Top-level heading
+    /// - "h2": Secondary heading
+    /// - "h3": Tertiary heading
+    /// - "h4": Quaternary heading
+    /// - "h5": Quinary heading
+    /// - "h6": Senary heading
+    /// - "body": Body text (no heading level)
+    pub level: String,
+
+    /// Bounding box information for the block
+    ///
+    /// Contains coordinates as (left, top, right, bottom) in PDF units.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bbox: Option<(f32, f32, f32, f32)>,
 }
 
 /// Excel/spreadsheet metadata.
@@ -1527,6 +1578,7 @@ mod tests {
                 }),
             ],
             images: Vec::new(),
+            hierarchy: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();
@@ -1574,6 +1626,7 @@ mod tests {
             content: "Page with images".to_string(),
             tables: Vec::new(),
             images: vec![image1, image2],
+            hierarchy: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();
@@ -1599,6 +1652,7 @@ mod tests {
             content: "Page 1".to_string(),
             tables: vec![Arc::clone(&shared_table)],
             images: Vec::new(),
+            hierarchy: None,
         };
 
         let page2 = PageContent {
@@ -1606,6 +1660,7 @@ mod tests {
             content: "Page 2".to_string(),
             tables: vec![Arc::clone(&shared_table)],
             images: Vec::new(),
+            hierarchy: None,
         };
 
         assert!(Arc::ptr_eq(&page1.tables[0], &page2.tables[0]));
@@ -1626,6 +1681,7 @@ mod tests {
             content: "No tables or images".to_string(),
             tables: Vec::new(),
             images: Vec::new(),
+            hierarchy: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();
