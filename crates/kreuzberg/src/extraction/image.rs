@@ -205,6 +205,7 @@ pub fn extract_text_from_image_with_ocr(
             content: ocr_result[byte_offset..frame_end].to_string(),
             tables: vec![],
             images: vec![],
+            hierarchy: None,
         });
 
         byte_offset = frame_end;

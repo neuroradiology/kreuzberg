@@ -307,6 +307,60 @@ pub struct PdfConfig {
     /// Extract PDF metadata
     #[serde(default = "default_true")]
     pub extract_metadata: bool,
+
+    /// Hierarchy extraction configuration (None = hierarchy extraction disabled)
+    #[serde(default)]
+    pub hierarchy: Option<HierarchyConfig>,
+}
+
+/// Hierarchy extraction configuration for PDF text structure analysis.
+///
+/// Enables extraction of document hierarchy levels (H1-H6) based on font size
+/// clustering and semantic analysis. When enabled, hierarchical blocks are
+/// included in page content.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HierarchyConfig {
+    /// Enable hierarchy extraction
+    #[serde(default = "default_true")]
+    pub enabled: bool,
+
+    /// Number of font size clusters to use for hierarchy levels (1-7)
+    ///
+    /// Default: 6, which provides H1-H6 heading levels with body text.
+    /// Larger values create more fine-grained hierarchy levels.
+    #[serde(default = "default_k_clusters")]
+    pub k_clusters: usize,
+
+    /// Include bounding box information in hierarchy blocks
+    #[serde(default = "default_true")]
+    pub include_bbox: bool,
+
+    /// OCR coverage threshold for smart OCR triggering (0.0-1.0)
+    ///
+    /// Determines when OCR should be triggered based on text block coverage.
+    /// OCR is triggered when text blocks cover less than this fraction of the page.
+    /// Default: 0.5 (trigger OCR if less than 50% of page has text)
+    #[serde(default = "default_ocr_coverage_threshold")]
+    pub ocr_coverage_threshold: Option<f32>,
+}
+
+impl Default for HierarchyConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            k_clusters: 6,
+            include_bbox: true,
+            ocr_coverage_threshold: None,
+        }
+    }
+}
+
+fn default_k_clusters() -> usize {
+    6
+}
+
+fn default_ocr_coverage_threshold() -> Option<f32> {
+    None
 }
 
 /// Token reduction configuration.

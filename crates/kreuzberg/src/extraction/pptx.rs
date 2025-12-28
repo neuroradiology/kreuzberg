@@ -242,6 +242,7 @@ impl ContentBuilder {
                 content: slide_content,
                 tables: Vec::new(),
                 images: Vec::new(),
+                hierarchy: None,
             });
         }
     }
