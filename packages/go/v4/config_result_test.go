@@ -684,3 +684,101 @@ func TestResultFromJSON(t *testing.T) {
 		t.Error("Success should be true")
 	}
 }
+
+func TestHierarchyConfigFromJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		json    string
+		wantErr bool
+		check   func(t *testing.T, cfg *kreuzberg.ExtractionConfig)
+	}{
+		{
+			name:    "config with hierarchy enabled",
+			json:    `{"pdf_options": {"hierarchy": {"enabled": true}}}`,
+			wantErr: false,
+			check: func(t *testing.T, cfg *kreuzberg.ExtractionConfig) {
+				if cfg == nil || cfg.PdfOptions == nil || cfg.PdfOptions.Hierarchy == nil {
+					t.Fatal("hierarchy config should not be nil")
+				}
+				if cfg.PdfOptions.Hierarchy.Enabled == nil || !*cfg.PdfOptions.Hierarchy.Enabled {
+					t.Error("hierarchy enabled should be true")
+				}
+			},
+		},
+		{
+			name:    "config with hierarchy k_clusters",
+			json:    `{"pdf_options": {"hierarchy": {"enabled": true, "k_clusters": 8}}}`,
+			wantErr: false,
+			check: func(t *testing.T, cfg *kreuzberg.ExtractionConfig) {
+				if cfg == nil || cfg.PdfOptions == nil || cfg.PdfOptions.Hierarchy == nil {
+					t.Fatal("hierarchy config should not be nil")
+				}
+				if cfg.PdfOptions.Hierarchy.KClusters == nil || *cfg.PdfOptions.Hierarchy.KClusters != 8 {
+					t.Error("k_clusters should be 8")
+				}
+			},
+		},
+		{
+			name:    "config with hierarchy include_bbox",
+			json:    `{"pdf_options": {"hierarchy": {"enabled": true, "include_bbox": false}}}`,
+			wantErr: false,
+			check: func(t *testing.T, cfg *kreuzberg.ExtractionConfig) {
+				if cfg == nil || cfg.PdfOptions == nil || cfg.PdfOptions.Hierarchy == nil {
+					t.Fatal("hierarchy config should not be nil")
+				}
+				if cfg.PdfOptions.Hierarchy.IncludeBbox == nil || *cfg.PdfOptions.Hierarchy.IncludeBbox {
+					t.Error("include_bbox should be false")
+				}
+			},
+		},
+		{
+			name:    "config with hierarchy ocr_coverage_threshold",
+			json:    `{"pdf_options": {"hierarchy": {"enabled": true, "ocr_coverage_threshold": 0.75}}}`,
+			wantErr: false,
+			check: func(t *testing.T, cfg *kreuzberg.ExtractionConfig) {
+				if cfg == nil || cfg.PdfOptions == nil || cfg.PdfOptions.Hierarchy == nil {
+					t.Fatal("hierarchy config should not be nil")
+				}
+				if cfg.PdfOptions.Hierarchy.OcrCoverageThreshold == nil || *cfg.PdfOptions.Hierarchy.OcrCoverageThreshold != 0.75 {
+					t.Error("ocr_coverage_threshold should be 0.75")
+				}
+			},
+		},
+		{
+			name:    "config with complete hierarchy",
+			json:    `{"pdf_options": {"hierarchy": {"enabled": true, "k_clusters": 6, "include_bbox": true, "ocr_coverage_threshold": 0.5}}}`,
+			wantErr: false,
+			check: func(t *testing.T, cfg *kreuzberg.ExtractionConfig) {
+				if cfg == nil || cfg.PdfOptions == nil || cfg.PdfOptions.Hierarchy == nil {
+					t.Fatal("hierarchy config should not be nil")
+				}
+				h := cfg.PdfOptions.Hierarchy
+				if h.Enabled == nil || !*h.Enabled {
+					t.Error("enabled should be true")
+				}
+				if h.KClusters == nil || *h.KClusters != 6 {
+					t.Error("k_clusters should be 6")
+				}
+				if h.IncludeBbox == nil || !*h.IncludeBbox {
+					t.Error("include_bbox should be true")
+				}
+				if h.OcrCoverageThreshold == nil || *h.OcrCoverageThreshold != 0.5 {
+					t.Error("ocr_coverage_threshold should be 0.5")
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg, err := kreuzberg.ConfigFromJSON(tt.json)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ConfigFromJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && tt.check != nil {
+				tt.check(t, cfg)
+			}
+		})
+	}
+}

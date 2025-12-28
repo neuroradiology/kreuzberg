@@ -6,6 +6,7 @@ const config = {
 		extractImages: true,
 		extractMetadata: true,
 		passwords: ['password1', 'password2'],
+		hierarchy: { enabled: true, kClusters: 6, includeBbox: true }
 	},
 };
 

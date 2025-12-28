@@ -46,7 +46,7 @@ fi
 
 echo ""
 log_info "Test 5: DOCX file mime detection"
-if [ -f "/Users/naamanhirschfeld/workspace/kreuzberg-dev/test_apps/docker/fixtures/sample.docx" ]; then
+if [ -f "$(dirname "$0")/../fixtures/sample.docx" ]; then
 	mime=""
 	mime=$(docker exec kreuzberg-full-test file -b --mime-type /fixtures/sample.docx 2>&1)
 	if assert_contains "$mime" "officedocument\|word\|application" "DOCX mime type detected"; then
@@ -60,7 +60,7 @@ fi
 
 echo ""
 log_info "Test 6: XLSX file mime detection"
-if [ -f "/Users/naamanhirschfeld/workspace/kreuzberg-dev/test_apps/docker/fixtures/sample.xlsx" ]; then
+if [ -f "$(dirname "$0")/../fixtures/sample.xlsx" ]; then
 	mime=""
 	mime=$(docker exec kreuzberg-full-test file -b --mime-type /fixtures/sample.xlsx 2>&1)
 	if assert_contains "$mime" "spreadsheet\|sheet\|application" "XLSX mime type detected"; then

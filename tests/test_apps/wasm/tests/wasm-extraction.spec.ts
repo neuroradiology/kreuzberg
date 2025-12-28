@@ -33,7 +33,7 @@ const getTestDocument = (relativePath: string): Uint8Array => {
 		return new Uint8Array(readFileSync(path));
 	} catch (_error) {
 		const fallbackPath = resolve(
-			"/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzberg/test_documents",
+			process.env.TEST_DOCS_DIR || resolve(__dirname, "../../../test_documents"),
 			relativePath,
 		);
 		return new Uint8Array(readFileSync(fallbackPath));

@@ -101,7 +101,6 @@ tasks:
 
   format:check:
     desc: Check Go code formatting without modifications (gofmt)
-    dir: packages/go/v4
     cmds:
       - scripts/go/format_check.sh
 

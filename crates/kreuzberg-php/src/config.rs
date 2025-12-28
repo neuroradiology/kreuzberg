@@ -3,6 +3,7 @@
 //! Provides PHP-friendly wrappers around the Rust configuration structs.
 
 use ext_php_rs::prelude::*;
+use kreuzberg::core::config::HierarchyConfig as RustHierarchyConfig;
 
 /// Main extraction configuration.
 ///
@@ -355,8 +356,8 @@ impl HierarchyConfig {
 }
 
 impl HierarchyConfig {
-    pub fn to_rust(&self) -> kreuzberg::HierarchyConfig {
-        kreuzberg::HierarchyConfig {
+    pub fn to_rust(&self) -> RustHierarchyConfig {
+        RustHierarchyConfig {
             enabled: self.enabled,
             k_clusters: self.k_clusters,
             include_bbox: self.include_bbox,
@@ -364,7 +365,7 @@ impl HierarchyConfig {
         }
     }
 
-    pub fn from_rust(config: kreuzberg::HierarchyConfig) -> Self {
+    pub fn from_rust(config: RustHierarchyConfig) -> Self {
         Self {
             enabled: config.enabled,
             k_clusters: config.k_clusters,

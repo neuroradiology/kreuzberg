@@ -14,6 +14,7 @@ func main() {
 			ExtractImages:   kreuzberg.BoolPtr(true),
 			ExtractMetadata: kreuzberg.BoolPtr(true),
 			Passwords:       pw,
+			Hierarchy:       &kreuzberg.HierarchyConfig{},
 		},
 	})
 	if err != nil {

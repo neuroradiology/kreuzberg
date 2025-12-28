@@ -7,7 +7,14 @@ var config = new ExtractionConfig
     {
         ExtractImages = true,
         ExtractMetadata = true,
-        Passwords = new List<string> { "password1", "password2" }
+        Passwords = new List<string> { "password1", "password2" },
+        Hierarchy = new HierarchyConfig
+        {
+            Enabled = true,
+            KClusters = 6,
+            IncludeBbox = true,
+            OcrCoverageThreshold = 0.5f
+        }
     }
 };
 

@@ -3175,6 +3175,645 @@ type PostProcessorConfig struct {
 }
 ```
 
+### HierarchyConfig
+
+Document hierarchy detection configuration controlling font size clustering and hierarchy level assignment. Extracts document structure (H1-H6 headings and body text) by analyzing font sizes and spatial positioning of text blocks.
+
+#### Rust
+
+```rust title="hierarchy_config.rs"
+pub struct HierarchyConfig {
+    /// Enable hierarchy extraction
+    pub enabled: bool,
+
+    /// Number of font size clusters to use for hierarchy levels (1-7)
+    /// Default: 6 (provides H1-H6 heading levels with body text)
+    pub k_clusters: usize,
+
+    /// Include bounding box information in hierarchy blocks
+    pub include_bbox: bool,
+
+    /// OCR coverage threshold for smart OCR triggering (0.0-1.0)
+    /// Default: 0.5 (trigger OCR if less than 50% of page has text)
+    pub ocr_coverage_threshold: Option<f32>,
+}
+```
+
+#### Python
+
+```python title="hierarchy_config.py"
+class HierarchyConfig:
+    """Hierarchy detection configuration for document structure analysis."""
+
+    def __init__(
+        self,
+        enabled: bool = True,
+        k_clusters: int = 6,
+        include_bbox: bool = True,
+        ocr_coverage_threshold: float | None = None
+    ):
+        self.enabled = enabled
+        self.k_clusters = k_clusters
+        self.include_bbox = include_bbox
+        self.ocr_coverage_threshold = ocr_coverage_threshold
+```
+
+#### TypeScript
+
+```typescript title="hierarchy_config.ts"
+export interface HierarchyConfig {
+    /** Enable hierarchy extraction. Default: true. */
+    enabled?: boolean;
+
+    /** Number of font size clusters (2-10). Default: 6. */
+    kClusters?: number;
+
+    /** Include bounding box information. Default: true. */
+    includeBbox?: boolean;
+
+    /** OCR coverage threshold (0.0-1.0). Default: null. */
+    ocrCoverageThreshold?: number | null;
+}
+```
+
+#### Ruby
+
+```ruby title="hierarchy_config.rb"
+class Kreuzberg::Config::Hierarchy
+    attr_reader :enabled, :k_clusters, :include_bbox, :ocr_coverage_threshold
+
+    def initialize(
+        enabled: true,
+        k_clusters: 6,
+        include_bbox: true,
+        ocr_coverage_threshold: nil
+    )
+        @enabled = enabled
+        @k_clusters = k_clusters
+        @include_bbox = include_bbox
+        @ocr_coverage_threshold = ocr_coverage_threshold
+    end
+end
+```
+
+#### Java
+
+```java title="HierarchyConfig.java"
+public final class HierarchyConfig {
+    private final boolean enabled;
+    private final int kClusters;
+    private final boolean includeBbox;
+    private final Double ocrCoverageThreshold;
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public boolean isEnabled() { return enabled; }
+    public int getKClusters() { return kClusters; }
+    public boolean isIncludeBbox() { return includeBbox; }
+    public Double getOcrCoverageThreshold() { return ocrCoverageThreshold; }
+
+    public static final class Builder {
+        private boolean enabled = true;
+        private int kClusters = 6;
+        private boolean includeBbox = true;
+        private Double ocrCoverageThreshold;
+
+        public Builder enabled(boolean enabled) { ... }
+        public Builder kClusters(int kClusters) { ... }
+        public Builder includeBbox(boolean includeBbox) { ... }
+        public Builder ocrCoverageThreshold(Double threshold) { ... }
+        public HierarchyConfig build() { ... }
+    }
+}
+```
+
+#### Go
+
+```go title="hierarchy_config.go"
+// HierarchyConfig controls PDF hierarchy extraction based on font sizes.
+type HierarchyConfig struct {
+    // Enable hierarchy extraction. Default: true.
+    Enabled *bool `json:"enabled,omitempty"`
+
+    // Number of font size clusters (2-10). Default: 6.
+    KClusters *int `json:"k_clusters,omitempty"`
+
+    // Include bounding box information. Default: true.
+    IncludeBbox *bool `json:"include_bbox,omitempty"`
+
+    // OCR coverage threshold (0.0-1.0). Default: null.
+    OcrCoverageThreshold *float64 `json:"ocr_coverage_threshold,omitempty"`
+}
+```
+
+#### C#
+
+```csharp title="HierarchyConfig.cs"
+public sealed class HierarchyConfig
+{
+    /// <summary>
+    /// Whether hierarchy detection is enabled.
+    /// </summary>
+    [JsonPropertyName("enabled")]
+    public bool? Enabled { get; set; }
+
+    /// <summary>
+    /// Number of k clusters for hierarchy detection.
+    /// </summary>
+    [JsonPropertyName("k_clusters")]
+    public int? KClusters { get; set; }
+
+    /// <summary>
+    /// Whether to include bounding box information in hierarchy output.
+    /// </summary>
+    [JsonPropertyName("include_bbox")]
+    public bool? IncludeBbox { get; set; }
+
+    /// <summary>
+    /// OCR coverage threshold for hierarchy detection (0.0-1.0).
+    /// </summary>
+    [JsonPropertyName("ocr_coverage_threshold")]
+    public float? OcrCoverageThreshold { get; set; }
+}
+```
+
+**Fields:**
+
+- `enabled`: Enable or disable hierarchy extraction (Default: `true`)
+- `k_clusters`: Number of font size clusters for hierarchy classification (Range: 2-10, Default: 6)
+  - 6 clusters map to H1-H6 heading levels plus body text
+  - Larger values create finer-grained hierarchy distinctions
+  - Smaller values group more font sizes together
+- `include_bbox`: Include bounding box coordinates in output (Default: `true`)
+  - When true, each block includes left, top, right, bottom coordinates in PDF units
+  - When false, reduces output size but loses spatial positioning information
+- `ocr_coverage_threshold`: Trigger OCR when text coverage falls below threshold (Range: 0.0-1.0, Default: `null`)
+  - `0.5` = OCR triggers if less than 50% of page has extractable text
+  - `null` = OCR triggering controlled by other config settings
+  - Useful for detecting scanned or image-heavy documents
+
+**Example Usage:**
+
+```rust
+use kreuzberg::core::config::HierarchyConfig;
+
+let hierarchy = HierarchyConfig {
+    enabled: true,
+    k_clusters: 6,
+    include_bbox: true,
+    ocr_coverage_threshold: Some(0.5),
+};
+```
+
+```python
+from kreuzberg import HierarchyConfig, ExtractionConfig, PdfConfig
+
+hierarchy = HierarchyConfig(
+    enabled=True,
+    k_clusters=6,
+    include_bbox=True,
+    ocr_coverage_threshold=0.5
+)
+
+pdf_config = PdfConfig(hierarchy=hierarchy)
+config = ExtractionConfig(pdf_options=pdf_config)
+```
+
+```typescript
+const hierarchyConfig: HierarchyConfig = {
+    enabled: true,
+    kClusters: 6,
+    includeBbox: true,
+    ocrCoverageThreshold: 0.5
+};
+
+const pdfConfig: PdfConfig = {
+    hierarchy: hierarchyConfig
+};
+```
+
+```java
+HierarchyConfig hierarchyConfig = HierarchyConfig.builder()
+    .enabled(true)
+    .kClusters(6)
+    .includeBbox(true)
+    .ocrCoverageThreshold(0.5)
+    .build();
+
+PdfConfig pdfConfig = PdfConfig.builder()
+    .hierarchy(hierarchyConfig)
+    .build();
+```
+
+```go
+hierarchyConfig := &kreuzberg.HierarchyConfig{
+    Enabled:              kreuzberg.BoolPtr(true),
+    KClusters:           kreuzberg.IntPtr(6),
+    IncludeBbox:         kreuzberg.BoolPtr(true),
+    OcrCoverageThreshold: kreuzberg.FloatPtr(0.5),
+}
+
+pdfConfig := &kreuzberg.PdfConfig{
+    Hierarchy: hierarchyConfig,
+}
+```
+
+## PageHierarchy
+
+Output structure containing extracted document hierarchy with text blocks and their hierarchy levels. Returned in extraction results when hierarchy extraction is enabled.
+
+### Rust
+
+```rust title="page_hierarchy.rs"
+pub struct PageHierarchy {
+    /// Total number of hierarchy blocks extracted from the page
+    pub block_count: usize,
+
+    /// Array of hierarchical text blocks ordered by document position
+    pub blocks: Vec<HierarchicalBlock>,
+}
+```
+
+### Python
+
+```python title="page_hierarchy.py"
+class PageHierarchy(TypedDict):
+    """Document hierarchy structure with text blocks and levels."""
+    block_count: int
+    blocks: list[HierarchicalBlock]
+```
+
+### TypeScript
+
+```typescript title="page_hierarchy.ts"
+export interface PageHierarchy {
+    /** Total number of hierarchy blocks extracted from the page */
+    blockCount: number;
+
+    /** Array of hierarchical text blocks ordered by document position */
+    blocks: HierarchicalBlock[];
+}
+```
+
+### Ruby
+
+```ruby title="page_hierarchy.rb"
+class Kreuzberg::Result::PageHierarchy
+    attr_reader :block_count, :blocks
+end
+```
+
+### Java
+
+```java title="PageHierarchy.java"
+public record PageHierarchy(
+    int blockCount,
+    List<HierarchicalBlock> blocks
+) {}
+```
+
+### Go
+
+```go title="page_hierarchy.go"
+type PageHierarchy struct {
+    BlockCount int                   `json:"block_count"`
+    Blocks     []HierarchicalBlock    `json:"blocks"`
+}
+```
+
+### C#
+
+```csharp title="PageHierarchy.cs"
+public record PageHierarchy
+{
+    [JsonPropertyName("block_count")]
+    public required int BlockCount { get; init; }
+
+    [JsonPropertyName("blocks")]
+    public required List<HierarchicalBlock> Blocks { get; init; }
+}
+```
+
+**Fields:**
+
+- `block_count`: Total number of text blocks in the hierarchy (useful for batch processing)
+- `blocks`: Array of `HierarchicalBlock` objects in document order (top-to-bottom, left-to-right)
+
+## HierarchicalBlock
+
+A single text block with assigned hierarchy level and spatial information. Represents a unit of text (heading or body paragraph) within the document structure.
+
+### Rust
+
+```rust title="hierarchical_block.rs"
+#[derive(Debug, Clone)]
+pub struct HierarchicalBlock {
+    /// The text content of this block
+    pub text: String,
+
+    /// Hierarchy level: "h1", "h2", "h3", "h4", "h5", "h6", or "body"
+    pub level: HierarchyLevel,
+
+    /// Font size in points (derived from PDF or OCR)
+    pub font_size: f32,
+
+    /// Bounding box coordinates in PDF units (if include_bbox=true)
+    /// Format: (left, top, right, bottom)
+    pub bbox: Option<BoundingBox>,
+
+    /// Index position of this block in the blocks array
+    pub block_index: usize,
+}
+
+pub enum HierarchyLevel {
+    H1 = 1,
+    H2 = 2,
+    H3 = 3,
+    H4 = 4,
+    H5 = 5,
+    H6 = 6,
+    Body = 0,
+}
+
+pub struct BoundingBox {
+    pub left: f32,
+    pub top: f32,
+    pub right: f32,
+    pub bottom: f32,
+}
+```
+
+### Python
+
+```python title="hierarchical_block.py"
+class HierarchicalBlock(TypedDict, total=False):
+    """A text block with hierarchy level assignment."""
+    text: str
+    level: Literal["h1", "h2", "h3", "h4", "h5", "h6", "body"]
+    font_size: float
+    bbox: tuple[float, float, float, float] | None
+    block_index: int
+```
+
+### TypeScript
+
+```typescript title="hierarchical_block.ts"
+export interface HierarchicalBlock {
+    /** The text content of this block */
+    text: string;
+
+    /** Hierarchy level: "h1" through "h6" or "body" */
+    level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body";
+
+    /** Font size in points */
+    fontSize: number;
+
+    /** Bounding box [left, top, right, bottom] in PDF coordinates, or null */
+    bbox?: [number, number, number, number] | null;
+
+    /** Index position of this block in the blocks array */
+    blockIndex: number;
+}
+```
+
+### Ruby
+
+```ruby title="hierarchical_block.rb"
+class Kreuzberg::Result::HierarchicalBlock
+    attr_reader :text, :level, :font_size, :bbox, :block_index
+end
+```
+
+### Java
+
+```java title="HierarchicalBlock.java"
+public record HierarchicalBlock(
+    String text,
+    String level,  // "h1", "h2", ..., "h6", "body"
+    float fontSize,
+    Optional<BoundingBox> bbox,
+    int blockIndex
+) {}
+
+public record BoundingBox(
+    float left,
+    float top,
+    float right,
+    float bottom
+) {}
+```
+
+### Go
+
+```go title="hierarchical_block.go"
+type HierarchicalBlock struct {
+    Text       string      `json:"text"`
+    Level      string      `json:"level"`  // "h1", "h2", ..., "h6", "body"
+    FontSize   float32     `json:"font_size"`
+    Bbox       *BoundingBox `json:"bbox,omitempty"`
+    BlockIndex int         `json:"block_index"`
+}
+
+type BoundingBox struct {
+    Left   float32 `json:"left"`
+    Top    float32 `json:"top"`
+    Right  float32 `json:"right"`
+    Bottom float32 `json:"bottom"`
+}
+```
+
+### C#
+
+```csharp title="HierarchicalBlock.cs"
+public record HierarchicalBlock
+{
+    [JsonPropertyName("text")]
+    public required string Text { get; init; }
+
+    [JsonPropertyName("level")]
+    public required string Level { get; init; }  // "h1", "h2", ..., "h6", "body"
+
+    [JsonPropertyName("font_size")]
+    public required float FontSize { get; init; }
+
+    [JsonPropertyName("bbox")]
+    public BoundingBox? Bbox { get; init; }
+
+    [JsonPropertyName("block_index")]
+    public required int BlockIndex { get; init; }
+}
+
+public record BoundingBox
+{
+    [JsonPropertyName("left")]
+    public required float Left { get; init; }
+
+    [JsonPropertyName("top")]
+    public required float Top { get; init; }
+
+    [JsonPropertyName("right")]
+    public required float Right { get; init; }
+
+    [JsonPropertyName("bottom")]
+    public required float Bottom { get; init; }
+}
+```
+
+**Fields:**
+
+- `text`: Complete text content of the block (normalized and trimmed)
+  - Whitespace is collapsed for consistency
+  - Preserves original character content
+  - Empty strings are included in output
+
+- `level`: Hierarchy level classification
+  - `"h1"` through `"h6"`: Heading levels assigned by font size clustering
+  - `"body"`: Body text or smaller headings (cluster 6+)
+  - Assignment based on font size centroid similarity
+
+- `font_size`: Average font size of text in this block (in points)
+  - Derived from PDF font metrics or OCR confidence
+  - Used internally for hierarchy level assignment
+  - Useful for downstream styling or filtering
+
+- `bbox`: Bounding box in PDF coordinate system (optional)
+  - Format: `[left, top, right, bottom]` in PDF units
+  - Top-left origin (0,0), Y increases downward
+  - `null` when `include_bbox=false` in config
+  - Enables precise text positioning, highlighting, or spatial queries
+  - Coordinates are in points (1/72 inch)
+
+- `block_index`: Zero-indexed position in the blocks array
+  - Useful for document position tracking
+  - Enables block-to-source mapping
+  - Matches order in extraction output
+
+**Hierarchy Level Assignment Algorithm:**
+
+1. Extract font sizes from all text blocks
+2. Apply K-means clustering with k=`k_clusters` parameter
+3. Sort clusters by centroid size (descending)
+4. Map clusters to hierarchy levels:
+   - Cluster 0 (largest font) → H1
+   - Cluster 1 → H2
+   - Cluster 2 → H3
+   - Cluster 3 → H4
+   - Cluster 4 → H5
+   - Cluster 5 → H6
+   - Cluster 6+ (smallest font) → Body
+5. Assign levels based on block's font size similarity to cluster centroids
+
+**Example Usage:**
+
+```rust
+use kreuzberg::types::ExtractionResult;
+
+if let Some(pages) = result.pages {
+    for page in pages {
+        if let Some(hierarchy) = &page.hierarchy {
+            println!("Found {} blocks:", hierarchy.block_count);
+            for block in &hierarchy.blocks {
+                println!("  [{:?}] {}", block.level, block.text);
+                if let Some(bbox) = &block.bbox {
+                    println!("    Position: ({}, {}) to ({}, {})",
+                        bbox.left, bbox.top, bbox.right, bbox.bottom);
+                }
+            }
+        }
+    }
+}
+```
+
+```python
+from kreuzberg import extract_file
+
+result = extract_file('document.pdf')
+
+if result.get('pages'):
+    for page in result['pages']:
+        if 'hierarchy' in page:
+            hierarchy = page['hierarchy']
+            print(f"Found {hierarchy['block_count']} blocks:")
+            for block in hierarchy['blocks']:
+                print(f"  [{block['level']}] {block['text']}")
+                if block.get('bbox'):
+                    left, top, right, bottom = block['bbox']
+                    print(f"    Position: ({left}, {top}) to ({right}, {bottom})")
+```
+
+```typescript
+import { extract } from 'kreuzberg';
+
+const result = await extract('document.pdf');
+
+if (result.pages) {
+    for (const page of result.pages) {
+        if (page.hierarchy) {
+            const { blockCount, blocks } = page.hierarchy;
+            console.log(`Found ${blockCount} blocks:`);
+            for (const block of blocks) {
+                console.log(`  [${block.level}] ${block.text}`);
+                if (block.bbox) {
+                    const [left, top, right, bottom] = block.bbox;
+                    console.log(`    Position: (${left}, ${top}) to (${right}, ${bottom})`);
+                }
+            }
+        }
+    }
+}
+```
+
+```java
+ExtractionResult result = kreuzberg.extract(new File("document.pdf"));
+
+if (result.pages() != null) {
+    for (PageContent page : result.pages()) {
+        page.hierarchy().ifPresent(hierarchy -> {
+            System.out.println("Found " + hierarchy.blockCount() + " blocks:");
+            for (HierarchicalBlock block : hierarchy.blocks()) {
+                System.out.println("  [" + block.level() + "] " + block.text());
+                block.bbox().ifPresent(bbox -> {
+                    System.out.printf("    Position: (%.1f, %.1f) to (%.1f, %.1f)%n",
+                        bbox.left(), bbox.top(), bbox.right(), bbox.bottom());
+                });
+            }
+        });
+    }
+}
+```
+
+```go
+result, _ := kreuzberg.Extract("document.pdf", nil)
+
+if result.Pages != nil {
+    for _, page := range result.Pages {
+        if page.Hierarchy != nil {
+            hierarchy := page.Hierarchy
+            fmt.Printf("Found %d blocks:\n", hierarchy.BlockCount)
+            for _, block := range hierarchy.Blocks {
+                fmt.Printf("  [%s] %s\n", block.Level, block.Text)
+                if block.Bbox != nil {
+                    bbox := block.Bbox
+                    fmt.Printf("    Position: (%.1f, %.1f) to (%.1f, %.1f)\n",
+                        bbox.Left, bbox.Top, bbox.Right, bbox.Bottom)
+                }
+            }
+        }
+    }
+}
+```
+
+**Common Use Cases:**
+
+1. **Document Structure Extraction**: Build table of contents from H1-H6 blocks
+2. **Content Filtering**: Extract only body text or headings at specific levels
+3. **Spatial Highlighting**: Use bbox coordinates for PDF annotation and visual markup
+4. **Semantic Chunking**: Group blocks by hierarchy level for AI processing
+5. **Accessibility**: Generate proper HTML semantic structure from hierarchy levels
+6. **Document Analysis**: Calculate reading complexity and structure metrics
+
 ## Type Mappings
 
 Cross-language type equivalents showing how Kreuzberg types map across Rust, Python, TypeScript, Ruby, Java, and Go:

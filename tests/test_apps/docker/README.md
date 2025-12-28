@@ -40,7 +40,7 @@ The test suite validates:
 Docker Compose profiles allow selective testing. Choose one:
 
 ```bash
-cd /Users/naamanhirschfeld/workspace/kreuzberg-dev/test_apps/docker/
+cd <kreuzberg-root>/test_apps/docker/
 
 # Start ONLY core image tests
 docker-compose --profile core up -d

@@ -8,6 +8,7 @@ async def main() -> None:
             extract_images=True,
             extract_metadata=True,
             passwords=["password1", "password2"],
+            hierarchy=HierarchyConfig(enabled=True, k_clusters=6)
         )
     )
     result = await extract_file("document.pdf", config=config)

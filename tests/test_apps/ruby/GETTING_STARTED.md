@@ -15,7 +15,7 @@ This will compile the native extensions (may take 2-5 minutes).
 ### 2. Run the Tests
 
 ```bash
-cd /Users/naamanhirschfeld/workspace/kreuzberg-dev/test_apps/ruby
+cd <kreuzberg-root>/test_apps/ruby
 ruby main_test.rb
 ```
 
@@ -148,7 +148,7 @@ gem install kreuzberg --pre --user-install
 
 ## File Locations
 
-All test files are in: `/Users/naamanhirschfeld/workspace/kreuzberg-dev/test_apps/ruby/`
+All test files are in: `<kreuzberg-root>/test_apps/ruby/`
 
 Key files:
 - `main_test.rb` - The comprehensive test suite

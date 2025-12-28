@@ -291,6 +291,132 @@ config = ExtractionConfig(
 - Document structure analysis
 - Page-filtered search results
 
+### PDF Hierarchy Detection
+
+Automatically detect and extract document structure from PDF documents using K-means clustering to identify semantic hierarchies of blocks.
+
+**Algorithm Overview:**
+
+The PDF hierarchy detection system analyzes PDF content blocks to infer document structure without relying on explicit heading tags or format markers. The approach uses K-means clustering to identify semantic levels and group related content:
+
+1. **Block Analysis**: Extracts all text blocks from PDF with position, size, and styling information
+2. **Feature Extraction**: Computes features for each block including size, indentation, font characteristics, and position
+3. **K-means Clustering**: Groups blocks into semantic levels (typically 3-5 levels) representing document hierarchy
+4. **Hierarchy Inference**: Maps clustered blocks to hierarchical levels (title, section, subsection, paragraph, etc.)
+5. **Relationship Detection**: Links related blocks using spatial proximity and semantic similarity
+
+**K-means Clustering Details:**
+
+The clustering algorithm identifies optimal semantic levels by analyzing block characteristics:
+
+- **Number of Clusters**: Automatically determined (typically 3-5 levels) based on content distribution
+- **Features Used**: Font size, text weight, indentation, position, text length
+- **Convergence**: Iterative refinement until cluster stability
+- **Output**: Each block assigned to a semantic level with confidence scores
+
+**Configuration Options:**
+
+```python title="hierarchy_config.py"
+from kreuzberg import ExtractionConfig, PdfConfig, HierarchyConfig
+
+config = ExtractionConfig(
+    pdf_options=PdfConfig(
+        hierarchy_detection=HierarchyConfig(
+            enabled=True,                      # Enable hierarchy detection
+            k_clusters=6,                      # Number of clusters for semantic levels
+            include_bbox=True,                 # Include bounding box in output
+            ocr_coverage_threshold=None        # OCR coverage threshold (None = auto)
+        )
+    )
+)
+```
+
+**Output Structure:**
+
+```python
+# Access hierarchy from extraction result
+result = extract_file("document.pdf", config=config)
+
+# Hierarchy blocks available at page level
+for page in result.pages:
+    for block in page.hierarchy.blocks:
+        print(f"Level {block.level}: {block.text}")
+        print(f"Font Size: {block.font_size}")
+        print(f"Bounding Box: {block.bbox}")
+```
+
+**Use Cases:**
+
+**1. Retrieval Augmented Generation (RAG)**
+- Build hierarchical knowledge bases with semantic structure
+- Improve retrieval precision by understanding document context
+- Support structured queries using hierarchy levels
+- Enable context-aware chunk selection during retrieval
+
+**2. Document Indexing**
+- Create multi-level indexes for better navigation
+- Support breadcrumb-style navigation in user interfaces
+- Index content by semantic section for faster lookup
+- Generate table of contents automatically
+
+**3. Semantic Chunking**
+- Respect logical document structure when splitting content
+- Keep related sections together despite content length
+- Assign semantic metadata to chunks based on hierarchy
+- Preserve hierarchical context for embeddings
+
+**4. Content Analysis**
+- Identify document structure patterns
+- Analyze section-level statistics and summaries
+- Generate outline or abstract from hierarchy
+- Detect anomalies in document structure
+
+**5. Knowledge Base Construction**
+- Organize extracted content into structured collections
+- Map hierarchy to graph databases or knowledge graphs
+- Support structured navigation and exploration
+- Enable hierarchy-aware search and filtering
+
+**Integration with Other Features:**
+
+The hierarchy detection integrates seamlessly with other Kreuzberg features:
+
+```python title="combined_features.py"
+from kreuzberg import ExtractionConfig, ChunkingConfig, EmbeddingConfig, PdfConfig, HierarchyDetectionConfig
+
+config = ExtractionConfig(
+    # Enable hierarchy detection
+    pdf_options=PdfConfig(
+        hierarchy_detection=HierarchyDetectionConfig(enabled=True)
+    ),
+    # Combine with semantic chunking
+    chunking=ChunkingConfig(
+        max_chars=1000,
+        max_overlap=200
+    ),
+    # Generate embeddings for chunks
+    embeddings=EmbeddingConfig(
+        model=EmbeddingModelType.preset("balanced")
+    )
+)
+
+result = extract_file("document.pdf", config=config)
+
+# Use hierarchy information to enrich chunks
+for chunk in result.chunks:
+    # Find which hierarchy block this chunk belongs to
+    containing_block = find_hierarchy_block(chunk, result)
+    print(f"Chunk belongs to: {containing_block.text}")
+    print(f"Semantic level: {containing_block.level}")
+```
+
+**Performance Characteristics:**
+
+- **Time Complexity**: O(n·k·i) where n = blocks, k = clusters, i = iterations (typically < 100ms for average documents)
+- **Memory Usage**: Linear with document size (O(n) for n blocks)
+- **GPU Support**: Optional GPU acceleration for large documents (100+ pages)
+- **Caching**: Results cached based on document content hash
+
 ## Batch Processing
 
 ### Parallel Extraction

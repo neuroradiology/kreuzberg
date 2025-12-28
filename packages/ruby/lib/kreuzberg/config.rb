@@ -239,6 +239,13 @@ module Kreuzberg
           ocr_coverage_threshold: @ocr_coverage_threshold
         }.compact
       end
+
+      def self.from_h(hash)
+        return nil if hash.nil?
+        return hash if hash.is_a?(self)
+
+        new(**hash.transform_keys(&:to_sym)) if hash.is_a?(Hash)
+      end
     end
 
     # PDF-specific options
