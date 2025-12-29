@@ -31,16 +31,16 @@ defmodule Kreuzberg.Image do
   """
 
   @type t :: %__MODULE__{
-    data: binary() | nil,
-    format: String.t() | nil,
-    width: integer() | nil,
-    height: integer() | nil,
-    mime_type: String.t() | nil,
-    ocr_text: String.t() | nil,
-    page_number: integer() | nil,
-    file_size: integer() | nil,
-    dpi: integer() | nil
-  }
+          data: binary() | nil,
+          format: String.t() | nil,
+          width: integer() | nil,
+          height: integer() | nil,
+          mime_type: String.t() | nil,
+          ocr_text: String.t() | nil,
+          page_number: integer() | nil,
+          file_size: integer() | nil,
+          dpi: integer() | nil
+        }
 
   defstruct [
     :data,
@@ -236,7 +236,8 @@ defmodule Kreuzberg.Image do
       nil
   """
   @spec aspect_ratio(t()) :: float() | nil
-  def aspect_ratio(%__MODULE__{width: w, height: h}) when is_integer(w) and is_integer(h) and h > 0 do
+  def aspect_ratio(%__MODULE__{width: w, height: h})
+      when is_integer(w) and is_integer(h) and h > 0 do
     w / h
   end
 

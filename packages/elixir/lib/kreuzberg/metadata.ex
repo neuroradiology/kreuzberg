@@ -40,22 +40,22 @@ defmodule Kreuzberg.Metadata do
   """
 
   @type t :: %__MODULE__{
-    language: String.t() | nil,
-    author: String.t() | nil,
-    created_date: String.t() | nil,
-    page_count: integer() | nil,
-    title: String.t() | nil,
-    subject: String.t() | nil,
-    keywords: String.t() | nil,
-    producer: String.t() | nil,
-    creator: String.t() | nil,
-    modified_date: String.t() | nil,
-    creation_date: String.t() | nil,
-    trapped: boolean() | nil,
-    file_size: integer() | nil,
-    version: String.t() | nil,
-    encryption: boolean() | nil
-  }
+          language: String.t() | nil,
+          author: String.t() | nil,
+          created_date: String.t() | nil,
+          page_count: integer() | nil,
+          title: String.t() | nil,
+          subject: String.t() | nil,
+          keywords: String.t() | nil,
+          producer: String.t() | nil,
+          creator: String.t() | nil,
+          modified_date: String.t() | nil,
+          creation_date: String.t() | nil,
+          trapped: boolean() | nil,
+          file_size: integer() | nil,
+          version: String.t() | nil,
+          encryption: boolean() | nil
+        }
 
   defstruct [
     :language,

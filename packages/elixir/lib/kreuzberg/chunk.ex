@@ -29,13 +29,13 @@ defmodule Kreuzberg.Chunk do
   @type embedding :: list(float())
 
   @type t :: %__MODULE__{
-    text: String.t(),
-    embedding: embedding() | nil,
-    metadata: map() | nil,
-    token_count: integer() | nil,
-    start_position: integer() | nil,
-    confidence: float() | nil
-  }
+          text: String.t(),
+          embedding: embedding() | nil,
+          metadata: map() | nil,
+          token_count: integer() | nil,
+          start_position: integer() | nil,
+          confidence: float() | nil
+        }
 
   defstruct [
     :text,

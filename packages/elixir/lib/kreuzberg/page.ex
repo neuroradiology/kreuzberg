@@ -28,12 +28,12 @@ defmodule Kreuzberg.Page do
   """
 
   @type t :: %__MODULE__{
-    number: integer() | nil,
-    content: String.t() | nil,
-    width: float() | nil,
-    height: float() | nil,
-    index: integer() | nil
-  }
+          number: integer() | nil,
+          content: String.t() | nil,
+          width: float() | nil,
+          height: float() | nil,
+          index: integer() | nil
+        }
 
   defstruct [
     :number,

@@ -255,12 +255,13 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
       metadata = %Kreuzberg.Metadata{title: "Report"}
       table = %Kreuzberg.Table{headers: ["Col1", "Col2"]}
 
-      result = Kreuzberg.ExtractionResult.new(
-        "content",
-        "application/pdf",
-        metadata,
-        [table]
-      )
+      result =
+        Kreuzberg.ExtractionResult.new(
+          "content",
+          "application/pdf",
+          metadata,
+          [table]
+        )
 
       assert result.content == "content"
       assert result.mime_type == "application/pdf"
@@ -274,12 +275,13 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
       metadata_map = %{"title" => "Report", "page_count" => 5}
       table_map = %{"cells" => [["A", "B"]]}
 
-      result = Kreuzberg.ExtractionResult.new(
-        "text",
-        "text/plain",
-        metadata_map,
-        [table_map]
-      )
+      result =
+        Kreuzberg.ExtractionResult.new(
+          "text",
+          "text/plain",
+          metadata_map,
+          [table_map]
+        )
 
       assert is_struct(result.metadata, Kreuzberg.Metadata)
       assert result.metadata.title == "Report"
@@ -289,13 +291,14 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
     test "normalizes chunks to structs" do
       chunk_map = %{"text" => "chunk", "embedding" => [0.1, 0.2]}
 
-      result = Kreuzberg.ExtractionResult.new(
-        "content",
-        "text/plain",
-        %Kreuzberg.Metadata{},
-        [],
-        chunks: [chunk_map]
-      )
+      result =
+        Kreuzberg.ExtractionResult.new(
+          "content",
+          "text/plain",
+          %Kreuzberg.Metadata{},
+          [],
+          chunks: [chunk_map]
+        )
 
       assert result.chunks != nil
       chunk = Enum.at(result.chunks, 0)
@@ -306,13 +309,14 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
     test "normalizes images to structs" do
       image_map = %{"format" => "png", "width" => 800}
 
-      result = Kreuzberg.ExtractionResult.new(
-        "content",
-        "text/plain",
-        %Kreuzberg.Metadata{},
-        [],
-        images: [image_map]
-      )
+      result =
+        Kreuzberg.ExtractionResult.new(
+          "content",
+          "text/plain",
+          %Kreuzberg.Metadata{},
+          [],
+          images: [image_map]
+        )
 
       assert result.images != nil
       image = Enum.at(result.images, 0)
@@ -323,13 +327,14 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
     test "normalizes pages to structs" do
       page_map = %{"number" => 1, "content" => "page text"}
 
-      result = Kreuzberg.ExtractionResult.new(
-        "content",
-        "text/plain",
-        %Kreuzberg.Metadata{},
-        [],
-        pages: [page_map]
-      )
+      result =
+        Kreuzberg.ExtractionResult.new(
+          "content",
+          "text/plain",
+          %Kreuzberg.Metadata{},
+          [],
+          pages: [page_map]
+        )
 
       assert result.pages != nil
       page = Enum.at(result.pages, 0)
@@ -349,8 +354,8 @@ defmodule KreuzbergTest.Unit.StructRefactoringTest do
       result = Kreuzberg.ExtractionResult.new("content", "text/plain", metadata)
 
       assert %Kreuzberg.ExtractionResult{
-        metadata: %Kreuzberg.Metadata{title: title}
-      } = result
+               metadata: %Kreuzberg.Metadata{title: title}
+             } = result
 
       assert title == "Test"
     end

@@ -30,15 +30,15 @@ defmodule Kreuzberg.Table do
   @type cell_value :: String.t() | number() | map() | list() | nil
 
   @type t :: %__MODULE__{
-    cells: list(list(cell_value())) | nil,
-    rows: list(map()) | nil,
-    columns: list(map()) | nil,
-    headers: list(String.t()) | nil,
-    markdown: String.t() | nil,
-    html: String.t() | nil,
-    page_number: integer() | nil,
-    bounds: list(number()) | nil
-  }
+          cells: list(list(cell_value())) | nil,
+          rows: list(map()) | nil,
+          columns: list(map()) | nil,
+          headers: list(String.t()) | nil,
+          markdown: String.t() | nil,
+          html: String.t() | nil,
+          page_number: integer() | nil,
+          bounds: list(number()) | nil
+        }
 
   defstruct [
     :cells,

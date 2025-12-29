@@ -200,7 +200,7 @@ jobs:
           package-tarball: crates/kreuzberg-node
 
   test-typescript:
-    name: TypeScript Tests (Node ${{ matrix.node-version }}, ${{ matrix.os }})
+    name: TypeScript Tests (${{ matrix.os }})
     if: ${{ github.actor != 'dependabot[bot]' }}
     needs: build-and-smoke-node
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 360 || 180 }}
