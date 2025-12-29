@@ -185,7 +185,7 @@ jobs:
       - name: Stage PDFium runtime
         uses: ./.github/actions/stage-pdfium-runtime
         with:
-          destination: target/release
+          destination: ${{ env.CARGO_TARGET_DIR || 'target' }}/release
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -413,7 +413,7 @@ jobs:
       - name: Stage PDFium runtime
         uses: ./.github/actions/stage-pdfium-runtime
         with:
-          destination: target/release
+          destination: ${{ env.CARGO_TARGET_DIR || 'target' }}/release
 
       - name: Install gem
         shell: bash

@@ -153,7 +153,7 @@ runs:
           ffi-${{ inputs.ffi-crate }}-${{ inputs.platform }}-rust-
           ffi-${{ inputs.ffi-crate }}-${{ inputs.platform }}-
         cache-paths: |
-          target/release/
+          ${{ env.CARGO_TARGET_DIR || 'target' }}/release/
           kreuzberg-ffi.pc
         operation: restore
 
@@ -212,11 +212,12 @@ runs:
         fi
 
         # Detect library path based on FFI crate
+        TARGET_DIR="${CARGO_TARGET_DIR:-target}"
         LIBRARY_PATH=""
-        for candidate in target/release/libkreuzberg_ffi.so \
-                         target/release/libkreuzberg_ffi.dylib \
-                         target/release/kreuzberg_ffi.dll \
-                         target/release/libkreuzberg_ffi.a; do
+        for candidate in "$TARGET_DIR/release/libkreuzberg_ffi.so" \
+                         "$TARGET_DIR/release/libkreuzberg_ffi.dylib" \
+                         "$TARGET_DIR/release/kreuzberg_ffi.dll" \
+                         "$TARGET_DIR/release/libkreuzberg_ffi.a"; do
           if [[ -e "$candidate" ]]; then
             LIBRARY_PATH="$candidate"
             break
@@ -240,8 +241,9 @@ runs:
 
         echo "=== Validating FFI Artifacts ==="
 
+        TARGET_DIR="${CARGO_TARGET_DIR:-target}"
         # Run validation script with directory path
-        scripts/ci/cache/validate-cache.sh ffi target/release/ || {
+        scripts/ci/cache/validate-cache.sh ffi "$TARGET_DIR/release/" || {
           echo "❌ Validation failed"
           exit 1
         }
@@ -256,7 +258,7 @@ runs:
         binding-name: ${{ inputs.ffi-crate }}
         cache-key: ${{ steps.generate-cache-key.outputs.cache-key }}
         cache-paths: |
-          target/release/
+          ${{ env.CARGO_TARGET_DIR || 'target' }}/release/
           kreuzberg-ffi.pc
         operation: save
 
