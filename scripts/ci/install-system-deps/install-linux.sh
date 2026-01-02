@@ -28,6 +28,8 @@ packages=(
   libssl-dev
   pkg-config
   build-essential
+  php-cli
+  php-dev
 )
 
 echo "Installing dependencies..."
@@ -79,6 +81,16 @@ if command -v tesseract >/dev/null 2>&1; then
   tesseract --list-langs | head -10 || true
 else
   echo "(tesseract CLI not available)"
+fi
+
+echo ""
+echo "PHP:"
+if command -v php >/dev/null 2>&1; then
+  php --version | head -1
+  echo "✓ PHP available"
+else
+  echo "::error::PHP not found after installation"
+  exit 1
 fi
 
 echo ""

@@ -39,6 +39,21 @@ else
   echo "✓ Tesseract language packs already installed"
 fi
 
+if ! brew list php &>/dev/null; then
+  echo "Installing PHP..."
+  retry_with_backoff brew install php || {
+    echo "::error::Failed to install PHP after retries"
+    exit 1
+  }
+else
+  echo "✓ PHP already installed"
+fi
+
+if ! command -v php >/dev/null 2>&1; then
+  echo "PHP not on PATH after install; attempting brew link..."
+  brew link --overwrite php >/dev/null 2>&1 || true
+fi
+
 if [ -d "/Applications/LibreOffice.app" ]; then
   echo "✓ LibreOffice already present"
 else
@@ -77,5 +92,15 @@ tesseract --list-langs | head -5
 echo ""
 echo "LibreOffice:"
 soffice --version 2>/dev/null || echo "⚠ Warning: soffice not fully available"
+
+echo ""
+echo "PHP:"
+if command -v php >/dev/null 2>&1; then
+  php --version | head -1
+else
+  echo "::error::PHP not found on PATH after installation"
+  echo "PATH=$PATH"
+  exit 1
+fi
 
 echo "::endgroup::"

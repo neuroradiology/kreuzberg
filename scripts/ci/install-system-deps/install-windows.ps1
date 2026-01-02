@@ -76,10 +76,30 @@ else {
   Write-Host "✓ LibreOffice already installed"
 }
 
+Write-Host "Installing PHP..."
+$phpInstalled = $false
+try {
+  & php --version 2>$null
+  Write-Host "✓ PHP already installed"
+  $phpInstalled = $true
+}
+catch {
+  Write-Host "PHP not found, installing via Chocolatey..."
+  if (-not (Retry-Command { choco install -y php --no-progress } -MaxAttempts 3)) {
+    Write-Host "::warning::Failed to install PHP via Chocolatey, will rely on shivammathur/setup-php action"
+  }
+  else {
+    Write-Host "✓ PHP installed via Chocolatey"
+    $phpInstalled = $true
+  }
+}
+
 Write-Host "Configuring PATH..."
 $paths = @(
   "C:\Program Files\LibreOffice\program",
-  "C:\Program Files\Tesseract-OCR"
+  "C:\Program Files\Tesseract-OCR",
+  "C:\tools\php",
+  "C:\Program Files\PHP"
 )
 
 foreach ($path in $paths) {
@@ -118,6 +138,16 @@ if ($tesseractPath) {
 }
 else {
   Write-Host "  ⚠ Could not determine tesseract path"
+}
+
+Write-Host ""
+Write-Host "PHP:"
+try {
+  & php --version
+  Write-Host "✓ PHP available"
+}
+catch {
+  Write-Host "⚠ Warning: PHP not currently available on PATH (will be set up by shivammathur/setup-php action)"
 }
 
 Write-Host "::endgroup::"

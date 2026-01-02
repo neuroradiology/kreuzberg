@@ -58,9 +58,42 @@ else
   EXT_FILE="libkreuzberg_php.${EXT_SUFFIX}"
 fi
 
+echo "Looking for extension file: ${TARGET_DIR}/${EXT_FILE}"
+
+# Debug: list contents of target/release directory
+if [[ -d "${TARGET_DIR}" ]]; then
+  echo "Contents of ${TARGET_DIR}:"
+  shopt -s nullglob
+  files=("${TARGET_DIR}"/*kreuzberg* "${TARGET_DIR}"/*.dll "${TARGET_DIR}"/*.so "${TARGET_DIR}"/*.dylib)
+  if [[ ${#files[@]} -gt 0 ]]; then
+    ls -la "${files[@]}"
+  else
+    echo "No kreuzberg binaries found"
+  fi
+else
+  echo "::error::Target directory does not exist: ${TARGET_DIR}"
+  exit 1
+fi
+
 if [[ ! -f "${TARGET_DIR}/${EXT_FILE}" ]]; then
   echo "::error::Extension file not found: ${TARGET_DIR}/${EXT_FILE}" >&2
-  exit 1
+  # Try alternative names
+  echo "Attempting to find alternative file names..."
+  for ext in .dll .so .dylib; do
+    for prefix in libkreuzberg_php kreuzberg_php; do
+      candidate="${TARGET_DIR}/${prefix}${ext}"
+      if [[ -f "$candidate" ]]; then
+        echo "::notice::Found candidate: $candidate"
+        EXT_FILE="${prefix}${ext}"
+        break 2
+      fi
+    done
+  done
+
+  if [[ ! -f "${TARGET_DIR}/${EXT_FILE}" ]]; then
+    echo "::error::Extension file not found: ${TARGET_DIR}/${EXT_FILE}" >&2
+    exit 1
+  fi
 fi
 
 PKG_NAME="kreuzberg-${VERSION}-${PLATFORM}"
