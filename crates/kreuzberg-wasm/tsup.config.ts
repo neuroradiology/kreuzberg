@@ -19,22 +19,13 @@ export default defineConfig({
 	sourcemap: true,
 	clean: true,
 	shims: false,
-	platform: "neutral",
+	platform: "node",
 	target: "es2022",
 	external: [
 		"@kreuzberg/core",
 		"tesseract-wasm",
-		"fs",
-		"node:fs/promises",
-		"path",
-		"node:path",
-		"url",
-		"node:url",
-		"util",
-		"node:util",
-		// WASM module - keep external to avoid bundling Node.js fs dependency
-		// The wasm-pack generated module uses require('fs') which cannot be bundled
-		// for neutral platform targets
+		// WASM module - keep external to avoid bundling
+		// The wasm-pack generated module should not be bundled
 		"../pkg/kreuzberg_wasm.js",
 		"./pkg/kreuzberg_wasm.js",
 		"./kreuzberg_wasm.js",

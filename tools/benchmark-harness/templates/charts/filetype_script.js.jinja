@@ -15,7 +15,7 @@ new Chart(document.getElementById('filetype-chart'), {
                 label: '{{ fw }}',
                 data: [
                     {%- for ext in data.extensions -%}
-                        {%- if data.extension_metrics.get(ext) and data.extension_metrics.get(ext).get(fw) -%}
+                        {%- if ext in data.extension_metrics and fw in data.extension_metrics[ext] -%}
                             {{ data.extension_metrics[ext][fw].p95_duration_ms }}
                         {%- else -%}
                             0

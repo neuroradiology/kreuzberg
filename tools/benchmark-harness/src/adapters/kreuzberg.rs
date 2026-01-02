@@ -542,7 +542,30 @@ pub fn create_elixir_sync_adapter() -> Result<SubprocessAdapter> {
 
     let args = vec![script_path.to_string_lossy().to_string(), "sync".to_string()];
 
-    let env = build_library_env()?;
+    let mut env = build_library_env()?;
+
+    // Add Elixir package path for the compiled kreuzberg package
+    let elixir_pkg_path = workspace_root()?.join("packages/elixir");
+    if elixir_pkg_path.exists() {
+        env.push(("MIX_EXTS".to_string(), elixir_pkg_path.to_string_lossy().to_string()));
+
+        // Set ERL_LIBS to include both _build/dev and _build/prod
+        let dev_path = elixir_pkg_path.join("_build/dev/lib");
+        let prod_path = elixir_pkg_path.join("_build/prod/lib");
+
+        let erl_libs = if prod_path.exists() {
+            prod_path.to_string_lossy().to_string()
+        } else if dev_path.exists() {
+            dev_path.to_string_lossy().to_string()
+        } else {
+            String::new()
+        };
+
+        if !erl_libs.is_empty() {
+            env.push(("ERL_LIBS".to_string(), prepend_env("ERL_LIBS", &erl_libs, ":")));
+        }
+    }
+
     Ok(SubprocessAdapter::new("kreuzberg-elixir-sync", command, args, env))
 }
 
@@ -553,7 +576,30 @@ pub fn create_elixir_batch_adapter() -> Result<SubprocessAdapter> {
 
     let args = vec![script_path.to_string_lossy().to_string(), "batch".to_string()];
 
-    let env = build_library_env()?;
+    let mut env = build_library_env()?;
+
+    // Add Elixir package path for the compiled kreuzberg package
+    let elixir_pkg_path = workspace_root()?.join("packages/elixir");
+    if elixir_pkg_path.exists() {
+        env.push(("MIX_EXTS".to_string(), elixir_pkg_path.to_string_lossy().to_string()));
+
+        // Set ERL_LIBS to include both _build/dev and _build/prod
+        let dev_path = elixir_pkg_path.join("_build/dev/lib");
+        let prod_path = elixir_pkg_path.join("_build/prod/lib");
+
+        let erl_libs = if prod_path.exists() {
+            prod_path.to_string_lossy().to_string()
+        } else if dev_path.exists() {
+            dev_path.to_string_lossy().to_string()
+        } else {
+            String::new()
+        };
+
+        if !erl_libs.is_empty() {
+            env.push(("ERL_LIBS".to_string(), prepend_env("ERL_LIBS", &erl_libs, ":")));
+        }
+    }
+
     Ok(SubprocessAdapter::with_batch_support(
         "kreuzberg-elixir-batch",
         command,

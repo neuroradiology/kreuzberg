@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "4.0.0-rc.23"
+version = "4.0.0-rc.24"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2474,21 +2474,21 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "4.0.0-rc.23"
+version = "4.0.0-rc.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74df9499619b501556ec73f5292138fdf9afe2ad6f86dbd54507b7d6eaf2e429"
+checksum = "6c3ce28c3d25a65160f7e8b409cb3e90e1bfa067096cf5dfd2b99d8a9866738c"
 dependencies = [
  "cc",
  "cmake",
  "libc",
- "reqwest 0.12.28",
  "thiserror 2.0.17",
+ "ureq",
  "zip 7.0.0",
 ]
 
 [[package]]
 name = "kreuzberg_rustler"
-version = "4.0.0-rc.23"
+version = "4.0.0-rc.24"
 dependencies = [
  "kreuzberg",
  "rustler",
@@ -4507,7 +4507,6 @@ checksum = "eddd3ca559203180a307f12d114c268abf583f59b03cb906fd0b3ff8646c1147"
 dependencies = [
  "base64 0.22.1",
  "bytes",
- "futures-channel",
  "futures-core",
  "futures-util",
  "h2",

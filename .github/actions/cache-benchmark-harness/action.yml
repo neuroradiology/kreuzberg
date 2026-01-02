@@ -84,8 +84,8 @@ runs:
         echo "=== Computing Kreuzberg Dependency Hash ==="
 
         # Compute hash for kreuzberg crate (dependency)
-        KREUZBERG_HASH=$(scripts/ci/cache/compute-hash.sh \
-          "crates/kreuzberg/**" \
+        KREUZBERG_HASH=$(scripts/ci/cache/compute-hash.sh --dirs \
+          "crates/kreuzberg" \
           2>&1 | grep "^[a-f0-9]*$")
 
         if [[ -z "$KREUZBERG_HASH" ]]; then

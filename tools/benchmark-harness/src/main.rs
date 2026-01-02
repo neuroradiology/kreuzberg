@@ -241,7 +241,7 @@ async fn main() -> Result<()> {
 
             config.validate()?;
 
-            let extraction_config = if ocr {
+            let mut extraction_config = if ocr {
                 ExtractionConfig {
                     ocr: Some(OcrConfig {
                         backend: "tesseract".to_string(),
@@ -253,6 +253,7 @@ async fn main() -> Result<()> {
             } else {
                 ExtractionConfig::default()
             };
+            extraction_config.max_concurrent_extractions = Some(config.max_concurrent);
 
             let mut registry = AdapterRegistry::new();
 
@@ -321,7 +322,7 @@ async fn main() -> Result<()> {
                 kreuzberg_count, total_requested
             );
 
-            use benchmark_harness::adapters::external::{
+            use benchmark_harness::adapters::{
                 create_docling_adapter, create_docling_batch_adapter, create_markitdown_adapter, create_mineru_adapter,
                 create_mineru_batch_adapter, create_pandoc_adapter, create_pdfplumber_adapter,
                 create_pdfplumber_batch_adapter, create_pymupdf4llm_adapter, create_tika_batch_adapter,
@@ -330,137 +331,18 @@ async fn main() -> Result<()> {
 
             let mut external_count = 0;
 
-            if let Ok(adapter) = create_docling_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ docling (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ docling (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ docling (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_docling_batch_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ docling-batch (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ docling-batch (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ docling-batch (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_markitdown_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ markitdown (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ markitdown (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ markitdown (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_pandoc_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ pandoc (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ pandoc (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ pandoc (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_unstructured_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ unstructured (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ unstructured (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ unstructured (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_tika_sync_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ tika-sync (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ tika-sync (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ tika-sync (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_tika_batch_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ tika-batch (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ tika-batch (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ tika-batch (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_pymupdf4llm_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ pymupdf4llm (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ pymupdf4llm (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ pymupdf4llm (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_pdfplumber_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ pdfplumber (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ pdfplumber (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ pdfplumber (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_pdfplumber_batch_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ pdfplumber-batch (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ pdfplumber-batch (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ pdfplumber-batch (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_mineru_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ mineru (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ mineru (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ mineru (initialization failed)");
-            }
-
-            if let Ok(adapter) = create_mineru_batch_adapter() {
-                if let Ok(()) = registry.register(Arc::new(adapter)) {
-                    eprintln!("[adapter] ✓ mineru-batch (registered)");
-                    external_count += 1;
-                } else {
-                    eprintln!("[adapter] ✗ mineru-batch (registration failed)");
-                }
-            } else {
-                eprintln!("[adapter] ✗ mineru-batch (initialization failed)");
-            }
+            try_register!("docling", create_docling_adapter, external_count);
+            try_register!("docling-batch", create_docling_batch_adapter, external_count);
+            try_register!("markitdown", create_markitdown_adapter, external_count);
+            try_register!("pandoc", create_pandoc_adapter, external_count);
+            try_register!("unstructured", create_unstructured_adapter, external_count);
+            try_register!("tika-sync", create_tika_sync_adapter, external_count);
+            try_register!("tika-batch", create_tika_batch_adapter, external_count);
+            try_register!("pymupdf4llm", create_pymupdf4llm_adapter, external_count);
+            try_register!("pdfplumber", create_pdfplumber_adapter, external_count);
+            try_register!("pdfplumber-batch", create_pdfplumber_batch_adapter, external_count);
+            try_register!("mineru", create_mineru_adapter, external_count);
+            try_register!("mineru-batch", create_mineru_batch_adapter, external_count);
 
             eprintln!(
                 "[adapter] Open source extraction frameworks: {}/12 available",

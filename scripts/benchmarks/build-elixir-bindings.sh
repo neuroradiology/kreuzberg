@@ -17,7 +17,7 @@ if [ ! -d "$LIB_DIR" ]; then
   exit 1
 fi
 
-setup_rust_ffi_paths "$REPO_ROOT"
+setup_all_library_paths "$REPO_ROOT"
 
 echo "Elixir bindings build environment:"
 echo "  REPO_ROOT: $REPO_ROOT"

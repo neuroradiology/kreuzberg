@@ -13,6 +13,12 @@ on:
         required: false
         default: "900"
         type: string
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/benchmark-harness/**'
+      - '.github/workflows/benchmarks.yaml'
 
 env:
   ITERATIONS: "3"
@@ -46,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -64,6 +70,7 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: benchmarks-setup
+          use-sccache: true
 
       - name: Cache PDFium
         uses: ./.github/actions/cache-pdfium
@@ -81,8 +88,16 @@ jobs:
       - name: Install Task
         uses: ./.github/actions/install-task
 
-      - name: Build workspace (native libs + harness)
-        run: task rust:build:release
+      - name: Cache benchmark harness
+        uses: ./.github/actions/cache-benchmark-harness
+        with:
+          build-profile: release
+
+      - name: Build FFI library
+        uses: ./.github/actions/build-rust-ffi
+        with:
+          crate-name: kreuzberg-ffi
+          build-profile: release
 
       - name: Log disk space before artifact upload
         run: scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
@@ -112,7 +127,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -172,7 +187,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -244,7 +259,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -316,7 +331,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -388,7 +403,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -463,7 +478,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -538,7 +553,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -602,7 +617,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -666,7 +681,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -756,7 +771,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -846,7 +861,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -882,6 +897,9 @@ jobs:
         with:
           ort-version: ${{ env.ORT_VERSION }}
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Build FFI library
         id: ffi
         shell: bash
@@ -900,8 +918,9 @@ jobs:
         working-directory: packages/go/v4
         run: go mod download
 
-      - name: Install Task
-        uses: ./.github/actions/install-task
+      - name: Prime benchmark Go modules
+        working-directory: tools/benchmark-harness/scripts
+        run: go mod download
 
       - name: Build Go bindings
         run: task go:build:bindings
@@ -937,7 +956,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -973,6 +992,9 @@ jobs:
         with:
           ort-version: ${{ env.ORT_VERSION }}
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Build FFI library
         id: ffi
         shell: bash
@@ -991,8 +1013,9 @@ jobs:
         working-directory: packages/go/v4
         run: go mod download
 
-      - name: Install Task
-        uses: ./.github/actions/install-task
+      - name: Prime benchmark Go modules
+        working-directory: tools/benchmark-harness/scripts
+        run: go mod download
 
       - name: Build Go bindings
         run: task go:build:bindings
@@ -1028,7 +1051,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1065,6 +1088,9 @@ jobs:
         with:
           ort-version: ${{ env.ORT_VERSION }}
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Build FFI library
         id: ffi
         shell: bash
@@ -1078,9 +1104,6 @@ jobs:
         run: |
           echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
-
-      - name: Install Task
-        uses: ./.github/actions/install-task
 
       - name: Build Java bindings
         run: task java:build:bindings
@@ -1115,7 +1138,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1186,8 +1209,8 @@ jobs:
           path: benchmark-results/
           retention-days: 30
 
-  bench-elixir-async:
-    name: kreuzberg-elixir-async (${{ matrix.mode }})
+  bench-elixir-sync:
+    name: kreuzberg-elixir-sync (${{ matrix.mode }})
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -1200,7 +1223,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1223,7 +1246,7 @@ jobs:
       - name: Setup Rust toolchain
         uses: ./.github/actions/setup-rust
         with:
-          cache-key-prefix: benchmarks-elixir-async
+          cache-key-prefix: benchmarks-elixir-sync
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -1240,11 +1263,13 @@ jobs:
         uses: ./.github/actions/install-task
 
       - name: Build Elixir bindings
+        env:
+          KREUZBERG_BUILD: "1"
         run: task elixir:build:bindings
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-elixir-async
+          FRAMEWORK: kreuzberg-elixir-sync
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           TIMEOUT: ${{ github.event.inputs.timeout }}
@@ -1254,7 +1279,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: benchmarks-kreuzberg-elixir-async-${{ matrix.mode }}-${{ github.run_id }}
+          name: benchmarks-kreuzberg-elixir-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 30
 
@@ -1272,7 +1297,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1312,6 +1337,8 @@ jobs:
         uses: ./.github/actions/install-task
 
       - name: Build Elixir bindings
+        env:
+          KREUZBERG_BUILD: "1"
         run: task elixir:build:bindings
 
       - name: Run benchmark
@@ -1344,7 +1371,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1398,7 +1425,7 @@ jobs:
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build PHP bindings
-        run: task php:build:bindings
+        run: task php:build:ci
 
       - name: Run benchmark
         env:
@@ -1430,7 +1457,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1484,7 +1511,7 @@ jobs:
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build PHP bindings
-        run: task php:build:bindings
+        run: task php:build:ci
 
       - name: Run benchmark
         env:
@@ -1502,6 +1529,7 @@ jobs:
           path: benchmark-results/
           retention-days: 30
 
+  # Third-party benchmarks are temporarily disabled while kreuzberg variants are stabilized.
   bench-docling:
     name: docling (${{ matrix.mode }})
     needs: setup
@@ -1516,7 +1544,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1585,7 +1613,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1654,7 +1682,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1709,6 +1737,81 @@ jobs:
           path: benchmark-results/
           retention-days: 30
 
+  bench-pandoc:
+    name: pandoc (${{ matrix.mode }})
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [single-file, batch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+
+      - name: Free disk space
+        run: scripts/ci/benchmarks/free-disk-space.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.setup.outputs.artifact-name }}
+          path: target/release
+
+      - name: Restore benchmark binary permissions
+        run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: ./.github/actions/setup-openssl
+
+      - name: Setup Rust toolchain
+        uses: ./.github/actions/setup-rust
+        with:
+          cache-key-prefix: benchmarks-pandoc
+
+      - name: Setup Python
+        uses: ./.github/actions/setup-python-env
+        with:
+          python-version: "3.11"
+          cache-prefix: benchmark-python
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Sync benchmark dependencies
+        run: uv sync --group benchmark --no-install-workspace
+
+      - name: Install pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+          pandoc --version
+
+      - name: Run benchmark
+        env:
+          FRAMEWORK: pandoc
+          MODE: ${{ matrix.mode }}
+          ITERATIONS: ${{ env.ITERATIONS }}
+          TIMEOUT: ${{ github.event.inputs.timeout }}
+        run: scripts/benchmarks/run-benchmark.sh
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmarks-pandoc-${{ matrix.mode }}-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
   bench-unstructured:
     name: unstructured (${{ matrix.mode }})
     needs: setup
@@ -1723,7 +1826,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1792,7 +1895,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1859,7 +1962,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1926,7 +2029,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -1995,7 +2098,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -2064,7 +2167,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -2133,7 +2236,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -2202,7 +2305,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Free disk space
         run: scripts/ci/benchmarks/free-disk-space.sh
@@ -2259,7 +2362,7 @@ jobs:
 
   aggregate-results:
     name: Aggregate Results & Generate Visualizations
-    needs: [setup, bench-native, bench-python-sync, bench-python-async, bench-python-batch, bench-node-async, bench-node-batch, bench-wasm-async, bench-wasm-batch, bench-ruby-sync, bench-ruby-batch, bench-go-sync, bench-go-batch, bench-java-sync, bench-csharp-sync, bench-elixir-async, bench-elixir-batch, bench-php-sync, bench-php-batch, bench-docling, bench-docling-batch, bench-markitdown, bench-unstructured, bench-tika-sync, bench-tika-batch, bench-pymupdf4llm, bench-pdfplumber, bench-pdfplumber-batch, bench-mineru, bench-mineru-batch]
+    needs: [setup, bench-native, bench-python-sync, bench-python-async, bench-python-batch, bench-node-async, bench-node-batch, bench-wasm-async, bench-wasm-batch, bench-ruby-sync, bench-ruby-batch, bench-go-sync, bench-go-batch, bench-java-sync, bench-csharp-sync, bench-elixir-sync, bench-elixir-batch, bench-php-sync, bench-php-batch, bench-docling, bench-docling-batch, bench-markitdown, bench-pandoc, bench-unstructured, bench-tika-sync, bench-tika-batch, bench-pymupdf4llm, bench-pdfplumber, bench-pdfplumber-batch, bench-mineru, bench-mineru-batch]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
