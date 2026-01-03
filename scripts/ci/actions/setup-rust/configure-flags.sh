@@ -32,6 +32,12 @@ fi
 
 base="${RUSTFLAGS:+$RUSTFLAGS }-D warnings"
 
+# On macOS, add linker flags for undefined symbol lookup (needed for PHP/Python/Ruby extensions)
+if [[ "$RUNNER_OS" == "macOS" ]] || [[ "$(uname)" == "Darwin" ]]; then
+  echo "Detected macOS, adding -undefined dynamic_lookup for extension builds"
+  base+=" -C link-arg=-undefined -C link-arg=dynamic_lookup"
+fi
+
 check_output=""
 if ! check_output="$(printf 'fn main() {}\n' | RUSTC_COLOR=never rustc -W unpredictable-function-pointer-comparisons - 2>&1)"; then
   :

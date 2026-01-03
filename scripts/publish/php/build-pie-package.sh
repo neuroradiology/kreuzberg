@@ -180,7 +180,15 @@ echo "Creating tarball: ${TARBALL_NAME}"
 tar -czf "${OUTPUT_DIR}/${TARBALL_NAME}" -C "${OUTPUT_DIR}" "${PKG_NAME}"
 
 cd "${OUTPUT_DIR}"
-shasum -a 256 "${TARBALL_NAME}" >"${TARBALL_NAME}.sha256"
+# Use sha256sum (cross-platform) instead of shasum (not available on Windows)
+if command -v sha256sum &>/dev/null; then
+  sha256sum "${TARBALL_NAME}" >"${TARBALL_NAME}.sha256"
+elif command -v shasum &>/dev/null; then
+  shasum -a 256 "${TARBALL_NAME}" >"${TARBALL_NAME}.sha256"
+else
+  echo "::error::Neither sha256sum nor shasum command found" >&2
+  exit 1
+fi
 
 echo "::notice::PIE package created: ${TARBALL_NAME}"
 echo "Package size: $(du -h "${TARBALL_NAME}" | cut -f1)"
