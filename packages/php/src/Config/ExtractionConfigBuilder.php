@@ -33,7 +33,7 @@ class ExtractionConfigBuilder
     private ?ImageExtractionConfig $imageExtraction = null;
     private ?PageConfig $page = null;
     private ?LanguageDetectionConfig $languageDetection = null;
-    private ?KeywordConfig $keyword = null;
+    private ?KeywordConfig $keywords = null;
     private bool $extractImages = false;
     private bool $extractTables = true;
     private bool $preserveFormatting = false;
@@ -131,7 +131,7 @@ class ExtractionConfigBuilder
      */
     public function withKeyword(?KeywordConfig $keyword): self
     {
-        $this->keyword = $keyword;
+        $this->keywords = $keyword;
         return $this;
     }
 
@@ -198,7 +198,7 @@ class ExtractionConfigBuilder
             imageExtraction: $this->imageExtraction,
             page: $this->page,
             languageDetection: $this->languageDetection,
-            keywords: $this->keyword,
+            keywords: $this->keywords,
             extractImages: $this->extractImages,
             extractTables: $this->extractTables,
             preserveFormatting: $this->preserveFormatting,
