@@ -265,8 +265,6 @@ RSpec.describe Kreuzberg do
       expect(results).to all(be_a(Kreuzberg::Result))
 
       expect(batch_duration).to be < 60
-
-      puts "Batch extraction time for #{file_count} files: #{batch_duration.round(3)}s"
     ensure
       FileUtils.remove_entry(temp_dir)
     end
