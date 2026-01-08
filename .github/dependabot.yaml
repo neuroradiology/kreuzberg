@@ -4,3 +4,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # Ignore vendored kreuzberg dependencies in Ruby/Elixir native extensions
+      # These use relative path dependencies that Dependabot cannot resolve
+      - dependency-name: "kreuzberg"
+      - dependency-name: "kreuzberg-ffi"

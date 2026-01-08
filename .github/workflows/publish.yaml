@@ -1130,17 +1130,37 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         working-directory: packages/ruby
-        run: bundle exec rake build
+        timeout-minutes: 60
+        run: |
+          echo "Starting gem build..."
+          if ! bundle exec rake build 2>&1 | tee build.log; then
+            echo "ERROR: Rake build command failed with exit code ${PIPESTATUS[0]}" >&2
+            exit 1
+          fi
+          echo "Rake build command completed"
 
       - name: Verify gem was built
         if: runner.os != 'Windows'
         shell: bash
         working-directory: packages/ruby
         run: |
-          if [ ! -d pkg ] || [ -z "$(ls -A pkg/*.gem 2>/dev/null)" ]; then
-            echo "ERROR: Gem was not built successfully" >&2
+          if [ ! -d pkg ]; then
+            echo "ERROR: pkg directory does not exist" >&2
+            echo "Working directory contents:" >&2
+            ls -la >&2
             exit 1
           fi
+          if [ -z "$(ls -A pkg/*.gem 2>/dev/null)" ]; then
+            echo "ERROR: No .gem files found in pkg directory" >&2
+            echo "pkg directory contents:" >&2
+            ls -la pkg/ >&2
+            echo "" >&2
+            echo "Last 50 lines of build log:" >&2
+            tail -50 build.log >&2 || echo "build.log not found" >&2
+            exit 1
+          fi
+          echo "✓ Gem built successfully:"
+          ls -lh pkg/*.gem
 
       - name: Check disk space after build (Unix)
         if: runner.os != 'Windows'
