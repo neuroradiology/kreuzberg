@@ -25,6 +25,13 @@ foreach ($key in $envVars.Keys) {
   Add-Content -Path $env:GITHUB_ENV -Value "$key=$value"
 }
 
+# Ensure OpenSSL binaries are in PATH for subsequent steps
+$opensslBin = "$vcpkgRoot\bin"
+if (Test-Path $opensslBin) {
+  Write-Host "  Adding $opensslBin to GITHUB_PATH"
+  Add-Content -Path $env:GITHUB_PATH -Value $opensslBin -Encoding utf8
+}
+
 Write-Host "OpenSSL environment configuration completed" -ForegroundColor Green
 Write-Host "Summary:" -ForegroundColor Green
 Write-Host "  OPENSSL_DIR=$vcpkgRoot"

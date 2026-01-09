@@ -61,6 +61,12 @@ echo "CMake:"
 if command -v cmake >/dev/null 2>&1; then
   cmake --version | head -1
   echo "✓ CMake available"
+  # Ensure cmake binary directory is in GITHUB_PATH for subsequent steps
+  CMAKE_BIN="$(dirname "$(command -v cmake)")"
+  if [[ -n "$GITHUB_PATH" && -d "$CMAKE_BIN" ]]; then
+    echo "$CMAKE_BIN" >>"$GITHUB_PATH"
+    echo "✓ Added cmake directory to GITHUB_PATH: $CMAKE_BIN"
+  fi
 else
   echo "::error::CMake not found after installation"
   exit 1

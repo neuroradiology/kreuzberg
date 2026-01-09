@@ -45,6 +45,11 @@ if ([string]::IsNullOrWhiteSpace($env:PKG_CONFIG_PATH)) {
 
 $env:PATH = "${ffiPath};$($env:PATH)"
 
+# Persist FFI path to GITHUB_PATH for subsequent steps
+if (Test-Path $ffiPath) {
+  Add-Content -Path $env:GITHUB_PATH -Value $ffiPath -Encoding utf8
+}
+
 # Convert FFI path to MSYS2 format for CGO flags
 $msys2FfiPath = ConvertTo-Msys2Path $ffiPath
 $msys2IncludePath = "$msys2RepoRoot/crates/kreuzberg-ffi/include"
@@ -52,6 +57,8 @@ $msys2IncludePath = "$msys2RepoRoot/crates/kreuzberg-ffi/include"
 $mingwBin = "C:\msys64\mingw64\bin"
 if (Test-Path (Join-Path $mingwBin "x86_64-w64-mingw32-gcc.exe")) {
   $env:PATH = "${mingwBin};$($env:PATH)"
+  # Persist MinGW bin to GITHUB_PATH for subsequent steps
+  Add-Content -Path $env:GITHUB_PATH -Value $mingwBin -Encoding utf8
   $env:CC = "x86_64-w64-mingw32-gcc"
   $env:CXX = "x86_64-w64-mingw32-g++"
   $env:AR = "x86_64-w64-mingw32-ar"
@@ -75,7 +82,7 @@ if ($env:KREUZBERG_GO_LINKER_VERBOSE -eq "1") {
 $cgoLdflags = "-L$msys2FfiPath $linkerVerboseFlags".Trim()
 
 # Add libraries to PATH for runtime discovery
-Add-Content -Path $env:GITHUB_ENV -Value "PATH=$env:PATH"
+# Note: PATH modifications are now handled via GITHUB_PATH above
 Add-Content -Path $env:GITHUB_ENV -Value "PKG_CONFIG_PATH=$pkgConfigPath"
 Add-Content -Path $env:GITHUB_ENV -Value "CGO_ENABLED=$cgoEnabled"
 Add-Content -Path $env:GITHUB_ENV -Value "CGO_CFLAGS=$cgoCflags"

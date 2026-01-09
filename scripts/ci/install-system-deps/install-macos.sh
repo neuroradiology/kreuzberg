@@ -10,9 +10,13 @@ echo "::group::Installing macOS dependencies"
 
 if [[ -d "/opt/homebrew/bin" ]]; then
   export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
+  echo "/opt/homebrew/bin" >>"$GITHUB_PATH"
+  echo "/opt/homebrew/sbin" >>"$GITHUB_PATH"
 fi
 if [[ -d "/usr/local/bin" ]]; then
   export PATH="/usr/local/bin:/usr/local/sbin:${PATH}"
+  echo "/usr/local/bin" >>"$GITHUB_PATH"
+  echo "/usr/local/sbin" >>"$GITHUB_PATH"
 fi
 
 if ! brew list cmake &>/dev/null; then
@@ -93,6 +97,12 @@ echo "::group::Verifying macOS installations"
 echo "CMake:"
 if command -v cmake >/dev/null 2>&1; then
   cmake --version | head -1
+  # Ensure cmake binary directory is in GITHUB_PATH for subsequent steps
+  CMAKE_BIN="$(dirname "$(command -v cmake)")"
+  if [[ -n "$GITHUB_PATH" && -d "$CMAKE_BIN" ]]; then
+    echo "$CMAKE_BIN" >>"$GITHUB_PATH"
+    echo "✓ Added cmake directory to GITHUB_PATH: $CMAKE_BIN"
+  fi
 else
   echo "::error::CMake not found on PATH after installation"
   echo "PATH=$PATH"

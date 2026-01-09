@@ -19,6 +19,11 @@ fi
   echo "PKG_CONFIG_PATH=${PKG_CONFIG_DIR}:${PKG_CONFIG_PATH:-}"
 } >>"$GITHUB_ENV"
 
+# Ensure OpenSSL binaries are in PATH for subsequent steps
+if [[ -n "${GITHUB_PATH:-}" && -d "${OPENSSL_ROOT}/bin" ]]; then
+  echo "${OPENSSL_ROOT}/bin" >>"$GITHUB_PATH"
+fi
+
 echo "OpenSSL configuration completed:"
 echo "  OPENSSL_DIR=${OPENSSL_ROOT}"
 echo "  PKG_CONFIG_PATH=${PKG_CONFIG_DIR}"

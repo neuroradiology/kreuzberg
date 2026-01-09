@@ -27,3 +27,8 @@ echo "OpenSSL include path: $prefix/include"
   echo "OPENSSL_INCLUDE_DIR=$prefix/include"
   echo "PKG_CONFIG_PATH=$prefix/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
 } >>"$GITHUB_ENV"
+
+# Ensure OpenSSL binaries are in PATH for subsequent steps
+if [[ -n "${GITHUB_PATH:-}" && -d "$prefix/bin" ]]; then
+  echo "$prefix/bin" >>"$GITHUB_PATH"
+fi
