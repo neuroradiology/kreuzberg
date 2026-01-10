@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Html {
     public class HtmlTests
     {
-        [Fact]
+        [SkippableFact]
         public void HtmlComplexLayout()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("web/taylor_swift.html");
@@ -18,7 +18,7 @@ namespace Kreuzberg.E2E.Html {
             TestHelpers.AssertMinContentLength(result, 1000);
         }
 
-        [Fact]
+        [SkippableFact]
         public void HtmlSimpleTable()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("web/simple_table.html");

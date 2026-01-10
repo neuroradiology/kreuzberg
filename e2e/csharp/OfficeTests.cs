@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Office {
     public class OfficeTests
     {
-        [Fact]
+        [SkippableFact]
         public void OfficeDocLegacy()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("legacy_office/unit_test_lists.doc");
@@ -18,7 +18,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("office/document.docx");
@@ -28,7 +28,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 10);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxEquations()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/equations.docx");
@@ -38,7 +38,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxFake()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/fake.docx");
@@ -48,7 +48,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxFormatting()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_formatting.docx");
@@ -58,7 +58,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxHeaders()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_headers.docx");
@@ -68,7 +68,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxLists()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/unit_test_lists.docx");
@@ -78,7 +78,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeDocxTables()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/docx_tables.docx");
@@ -90,7 +90,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertTableCount(result, 1, null);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficePptLegacy()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("legacy_office/simple.ppt");
@@ -100,7 +100,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 10);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficePptxBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("presentations/simple.pptx");
@@ -110,7 +110,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 50);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficePptxImages()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("presentations/powerpoint_with_image.pptx");
@@ -120,7 +120,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 20);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficePptxPitchDeck()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("presentations/pitch_deck_presentation.pptx");
@@ -130,7 +130,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 100);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeXlsLegacy()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/test_excel.xls");
@@ -140,7 +140,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMinContentLength(result, 10);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeXlsxBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/stanley_cups.xlsx");
@@ -155,7 +155,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMetadata(metadataNode, "sheet_names", @"{""contains"": [""Stanley Cups""]}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeXlsxMultiSheet()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/excel_multi_sheet.xlsx");
@@ -167,7 +167,7 @@ namespace Kreuzberg.E2E.Office {
             TestHelpers.AssertMetadata(metadataNode, "sheet_count", @"{""gte"": 2}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void OfficeXlsxOfficeExample()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("office/excel.xlsx");

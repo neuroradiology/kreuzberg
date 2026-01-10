@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Ocr {
     public class OcrTests
     {
-        [Fact]
+        [SkippableFact]
         public void OcrImageHelloWorld()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("images/test_hello_world.png");
@@ -19,7 +19,7 @@ namespace Kreuzberg.E2E.Ocr {
             TestHelpers.AssertContentContainsAny(result, new[] { "hello", "world" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void OcrImageNoText()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("images/flower_no_text.jpg");
@@ -29,7 +29,7 @@ namespace Kreuzberg.E2E.Ocr {
             TestHelpers.AssertMaxContentLength(result, 200);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OcrPdfImageOnlyGerman()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/image_only_german_pdf.pdf");
@@ -41,7 +41,7 @@ namespace Kreuzberg.E2E.Ocr {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void OcrPdfRotated90()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/ocr_test_rotated_90.pdf");
@@ -51,7 +51,7 @@ namespace Kreuzberg.E2E.Ocr {
             TestHelpers.AssertMinContentLength(result, 10);
         }
 
-        [Fact]
+        [SkippableFact]
         public void OcrPdfTesseract()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/ocr_test.pdf");

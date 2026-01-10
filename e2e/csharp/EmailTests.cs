@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Email {
     public class EmailTests
     {
-        [Fact]
+        [SkippableFact]
         public void EmailSampleEml()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("email/sample_email.eml");

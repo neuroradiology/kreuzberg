@@ -136,10 +136,7 @@ tasks:
   e2e:generate:
     desc: Generate C# E2E tests from fixtures
     cmds:
-      - cmd: bash scripts/task/e2e-generate.sh csharp
-        platforms: [linux, darwin]
-      - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
-        platforms: [windows]
+      - cargo run -p kreuzberg-e2e-generator -- generate --lang csharp --fixtures fixtures --output e2e
 
   e2e:lint:
     desc: Lint C# E2E code

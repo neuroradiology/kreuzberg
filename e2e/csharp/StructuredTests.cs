@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Structured {
     public class StructuredTests
     {
-        [Fact]
+        [SkippableFact]
         public void StructuredJsonBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("json/sample_document.json");
@@ -19,7 +19,7 @@ namespace Kreuzberg.E2E.Structured {
             TestHelpers.AssertContentContainsAny(result, new[] { "Sample Document", "Test Author" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void StructuredJsonSimple()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.json");
@@ -30,7 +30,7 @@ namespace Kreuzberg.E2E.Structured {
             TestHelpers.AssertContentContainsAny(result, new[] { "{", "name" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void StructuredYamlSimple()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.yaml");

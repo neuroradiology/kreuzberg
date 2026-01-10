@@ -537,7 +537,7 @@ fn render_config_expression(config: &Map<String, Value>) -> Result<String> {
 
 fn render_test(buffer: &mut String, fixture: &Fixture) -> Result<()> {
     let test_name = sanitize_method_name(&fixture.id);
-    writeln!(buffer, "        [Fact]")?;
+    writeln!(buffer, "        [SkippableFact]")?;
     writeln!(buffer, "        public void {}()", test_name)?;
     writeln!(buffer, "        {{")?;
 

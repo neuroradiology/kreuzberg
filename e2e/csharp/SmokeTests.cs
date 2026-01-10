@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Smoke {
     public class SmokeTests
     {
-        [Fact]
+        [SkippableFact]
         public void SmokeDocxBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("documents/fake.docx");
@@ -19,7 +19,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertContentContainsAny(result, new[] { "Lorem", "ipsum", "document", "text" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokeHtmlBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("web/simple_table.html");
@@ -30,7 +30,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertContentContainsAny(result, new[] { "#", "**", "simple", "HTML" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokeImagePng()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("images/sample.png");
@@ -41,7 +41,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertMetadata(metadataNode, "format", @"{""eq"": ""PNG""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokeJsonBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("data_formats/simple.json");
@@ -51,7 +51,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertMinContentLength(result, 5);
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokePdfBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fake_memo.pdf");
@@ -62,7 +62,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertContentContainsAny(result, new[] { "May 5, 2023", "To Whom it May Concern" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokeTxtBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("text/report.txt");
@@ -72,7 +72,7 @@ namespace Kreuzberg.E2E.Smoke {
             TestHelpers.AssertMinContentLength(result, 5);
         }
 
-        [Fact]
+        [SkippableFact]
         public void SmokeXlsxBasic()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("spreadsheets/stanley_cups.xlsx");

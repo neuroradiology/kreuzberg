@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Xml {
     public class XmlTests
     {
-        [Fact]
+        [SkippableFact]
         public void XmlPlantCatalog()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("xml/plant_catalog.xml");

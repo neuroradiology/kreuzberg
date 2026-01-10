@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Pdf {
     public class PdfTests
     {
-        [Fact]
+        [SkippableFact]
         public void PdfAssemblyTechnical()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/assembly_language_for_beginners_al4_b_en.pdf");
@@ -21,7 +21,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfBayesianDataAnalysis()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/bayesian_data_analysis_third_edition_13th_feb_2020.pdf");
@@ -34,7 +34,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfCodeAndFormula()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/code_and_formula.pdf");
@@ -44,7 +44,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMinContentLength(result, 100);
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfDeepLearning()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fundamentals_of_deep_learning_2014.pdf");
@@ -57,7 +57,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfEmbeddedImages()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/embedded_images_tables.pdf");
@@ -68,7 +68,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertTableCount(result, 0, null);
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfGoogleDoc()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/google_doc_document.pdf");
@@ -80,7 +80,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfLargeCiml()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/a_course_in_machine_learning_ciml_v0_9_all.pdf");
@@ -93,7 +93,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfNonEnglishGerman()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/5_level_paging_and_5_level_ept_intel_revision_1_1_may_2017.pdf");
@@ -106,7 +106,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfRightToLeft()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/right_to_left_01.pdf");
@@ -118,7 +118,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertMetadata(metadataNode, "format_type", @"{""eq"": ""pdf""}");
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfSimpleText()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/fake_memo.pdf");
@@ -129,7 +129,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertContentContainsAny(result, new[] { "May 5, 2023", "To Whom it May Concern", "Mallori" });
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfTablesLarge()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/large.pdf");
@@ -140,7 +140,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertTableCount(result, 1, null);
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfTablesMedium()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/medium.pdf");
@@ -151,7 +151,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertTableCount(result, 1, null);
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfTablesSmall()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs_with_tables/tiny.pdf");
@@ -163,7 +163,7 @@ namespace Kreuzberg.E2E.Pdf {
             TestHelpers.AssertTableCount(result, 1, null);
         }
 
-        [Fact]
+        [SkippableFact]
         public void PdfTechnicalStatLearning()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("pdfs/an_introduction_to_statistical_learning_with_applications_in_r_islr_sixth_printing.pdf");

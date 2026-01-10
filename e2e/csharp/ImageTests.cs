@@ -8,7 +8,7 @@ using Kreuzberg.E2E;
 namespace Kreuzberg.E2E.Image {
     public class ImageTests
     {
-        [Fact]
+        [SkippableFact]
         public void ImageMetadataOnly()
         {
             TestHelpers.SkipIfLegacyOfficeDisabled("images/example.jpg");
