@@ -47,6 +47,7 @@ export function formatFramework(framework: string): string {
 		csharp: "Kreuzberg (C#)",
 		elixir: "Kreuzberg (Elixir)",
 		php: "Kreuzberg (PHP)",
+		wasm: "Kreuzberg (WebAssembly)",
 	};
 
 	return frameworkMap[framework.toLowerCase()] || framework;
@@ -122,7 +123,7 @@ export function transformThroughputData(data: AggregatedBenchmarkData, fileTypes
 		}
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => String(a.name).localeCompare(String(b.name)));
 }
 
 /**
@@ -159,7 +160,7 @@ export function transformMemoryData(data: AggregatedBenchmarkData, fileTypes?: s
 		}
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => String(a.name).localeCompare(String(b.name)));
 }
 
 /**
@@ -196,7 +197,7 @@ export function transformDurationData(data: AggregatedBenchmarkData, fileTypes?:
 		}
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => String(a.name).localeCompare(String(b.name)));
 }
 
 /**
@@ -223,7 +224,7 @@ export function transformColdStartData(data: AggregatedBenchmarkData): ChartData
 		chartData.push(dataPoint);
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => String(a.name).localeCompare(String(b.name)));
 }
 
 /**
@@ -381,7 +382,7 @@ export function transformForColdStartChart(
 		chartData.push(dataPoint);
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**
@@ -450,7 +451,7 @@ function transformPercentileData(
 		});
 	});
 
-	return chartData;
+	return chartData.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**
