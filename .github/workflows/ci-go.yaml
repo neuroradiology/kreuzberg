@@ -177,7 +177,19 @@ jobs:
         run: |
           echo "=== Building FFI Library ==="
           echo "Building kreuzberg-ffi from source (no caching)"
-          cargo build --release --package kreuzberg-ffi
+          echo ""
+          echo "Cargo version:"
+          cargo --version
+          echo ""
+          echo "Rustc version:"
+          rustc --version
+          echo ""
+          echo "Starting build with verbose logging..."
+          cargo build --release --package kreuzberg-ffi --verbose 2>&1
+          BUILD_EXIT=$?
+          echo ""
+          echo "Build exit code: $BUILD_EXIT"
+          exit $BUILD_EXIT
 
       - name: Setup Go CGO environment
         uses: ./.github/actions/setup-go-cgo-env
@@ -189,21 +201,53 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo "=== FFI Build Artifacts ==="
-          echo "target/release/:"
-          ls -lh target/release/libkreuzberg_ffi* 2>/dev/null || echo "  (none found)"
+          echo "=== FFI Build Artifacts Verification ==="
           echo ""
+          echo "--- Release target directory ---"
+          ls -lh target/release/libkreuzberg_ffi* 2>/dev/null || echo "  No artifacts found in target/release/"
+          echo ""
+          echo "--- Windows GNU target directory ---"
           if [[ -d "target/x86_64-pc-windows-gnu/release" ]]; then
-            echo "target/x86_64-pc-windows-gnu/release/:"
-            ls -lh target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi* 2>/dev/null || echo "  (none found)"
+            ls -lh target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi* 2>/dev/null || echo "  No artifacts found in Windows GNU target/"
+          else
+            echo "  Directory does not exist"
           fi
           echo ""
-          echo "pkg-config file:"
-          ls -lh crates/kreuzberg-ffi/kreuzberg-ffi.pc 2>/dev/null || echo "  (not found)"
+          echo "--- pkg-config file ---"
+          ls -lh crates/kreuzberg-ffi/kreuzberg-ffi.pc 2>/dev/null || echo "  Not found"
+          echo ""
+          echo "--- All .a and .dll files in target/ ---"
+          find target/release -maxdepth 1 \( -name "*.a" -o -name "*.dll" -o -name "*.so" -o -name "*.dylib" \) -exec ls -lh {} \; 2>/dev/null || echo "  None found"
+          echo ""
+          echo "--- Computing checksums ---"
+          shopt -s nullglob
+          for file in target/release/libkreuzberg_ffi* target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi*; do
+            if [[ -f "$file" ]]; then
+              echo "  $(sha256sum "$file" 2>/dev/null || md5sum "$file")"
+            fi
+          done
+          shopt -u nullglob
 
       - name: Build Go bindings
         shell: bash
-        run: task go:build:ci
+        run: |
+          echo "::group::Go Bindings Build"
+          echo "=== Go Environment ==="
+          go version
+          go env
+          echo ""
+          echo "=== CGO Configuration ==="
+          echo "CGO_ENABLED: ${CGO_ENABLED:-<not set>}"
+          echo "CGO_CFLAGS: ${CGO_CFLAGS:-<not set>}"
+          echo "CGO_LDFLAGS: ${CGO_LDFLAGS:-<not set>}"
+          echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:-<not set>}"
+          echo ""
+          echo "=== Building Go bindings with verbose output ==="
+          time task go:build:ci -v
+          GO_BUILD_EXIT=$?
+          echo "Go build exit code: $GO_BUILD_EXIT"
+          echo "::endgroup::"
+          exit $GO_BUILD_EXIT
         env:
           CGO_ENABLED: ${{ env.CGO_ENABLED }}
           CGO_CFLAGS: ${{ env.CGO_CFLAGS }}
@@ -390,7 +434,36 @@ jobs:
 
       - name: Run Go tests
         shell: bash
-        run: task go:test:ci
+        run: |
+          echo "::group::Go Test Execution"
+          echo "=== Pre-test Environment Diagnostics ==="
+          echo "Go version:"
+          go version
+          echo ""
+          echo "Go environment:"
+          go env
+          echo ""
+          echo "=== CGO and Library Configuration ==="
+          echo "CGO_ENABLED: ${CGO_ENABLED:-<not set>}"
+          echo "CGO_CFLAGS: ${CGO_CFLAGS:-<not set>}"
+          echo "CGO_LDFLAGS: ${CGO_LDFLAGS:-<not set>}"
+          echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:-<not set>}"
+          echo ""
+          echo "=== Library Path Configuration ==="
+          echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-<not set>}"
+          echo "DYLD_LIBRARY_PATH: ${DYLD_LIBRARY_PATH:-<not set>}"
+          echo "DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-<not set>}"
+          echo ""
+          echo "=== Verifying FFI Libraries Before Tests ==="
+          find target/release -maxdepth 1 \( -name "libkreuzberg_ffi*" \) -exec ls -lh {} \; 2>/dev/null || echo "  No FFI libraries found"
+          echo ""
+          echo "=== Running Go tests with verbose output and full output ==="
+          time task go:test:ci -v 2>&1
+          GO_TEST_EXIT=$?
+          echo ""
+          echo "Go test exit code: $GO_TEST_EXIT"
+          echo "::endgroup::"
+          exit $GO_TEST_EXIT
         env:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}
@@ -404,11 +477,26 @@ jobs:
 
       - name: Generate Go E2E tests
         shell: bash
-        run: task go:e2e:generate
+        run: |
+          echo "::group::E2E Test Generation"
+          echo "=== Generating Go E2E tests with verbose output ==="
+          time task go:e2e:generate -v 2>&1
+          E2E_GEN_EXIT=$?
+          echo "E2E generation exit code: $E2E_GEN_EXIT"
+          echo "::endgroup::"
+          exit $E2E_GEN_EXIT
 
       - name: Run E2E tests
         shell: bash
-        run: task go:e2e:test
+        run: |
+          echo "::group::E2E Test Execution"
+          echo "=== Running E2E tests with verbose output ==="
+          time task go:e2e:test -v 2>&1
+          E2E_TEST_EXIT=$?
+          echo ""
+          echo "E2E test exit code: $E2E_TEST_EXIT"
+          echo "::endgroup::"
+          exit $E2E_TEST_EXIT
         env:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}
