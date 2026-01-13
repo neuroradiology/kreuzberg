@@ -4,8 +4,8 @@ use kreuzberg::{ExtractionConfig, TokenReductionConfig};
 fn main() {
     let config = ExtractionConfig {
         token_reduction: Some(TokenReductionConfig {
-            mode: Some("moderate".to_string()),
-            preserve_important_words: Some(true),
+            mode: "moderate".to_string(),
+            preserve_important_words: true,
         }),
         ..Default::default()
     };

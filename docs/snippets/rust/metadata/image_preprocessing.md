@@ -6,11 +6,11 @@ fn main() {
         ocr: Some(OcrConfig {
             tesseract_config: Some(TesseractConfig {
                 preprocessing: Some(ImagePreprocessingConfig {
-                    target_dpi: Some(300),
-                    denoise: Some(true),
-                    deskew: Some(true),
-                    contrast_enhance: Some(true),
-                    binarization_method: Some("otsu".to_string()),
+                    target_dpi: 300,
+                    denoise: true,
+                    deskew: true,
+                    contrast_enhance: true,
+                    binarization_method: "otsu".to_string(),
                     ..Default::default()
                 }),
                 ..Default::default()

@@ -6,7 +6,7 @@ async fn main() -> kreuzberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "paddleocr".to_string(),
-            language: Some("en".to_string()),
+            language: "en".to_string(),
             ..Default::default()
         }),
         ..Default::default()

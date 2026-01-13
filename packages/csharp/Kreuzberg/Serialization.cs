@@ -392,6 +392,35 @@ internal class MetadataConverter : JsonConverter<Metadata>
                         metadata.Pages = JsonSerializer.Deserialize<PageStructure>(ref reader, options);
                     }
                     break;
+                case "keywords":
+                    // Handle keywords - could be extracted keywords (objects) or format keywords (strings)
+                    if (reader.TokenType == JsonTokenType.StartArray)
+                    {
+                        using var keywordsDoc = JsonDocument.ParseValue(ref reader);
+                        var keywordsNode = JsonNode.Parse(keywordsDoc.RootElement.GetRawText());
+
+                        // Check if this is extracted keywords (array of objects with "text" property)
+                        if (keywordsNode is JsonArray keywordsArray && keywordsArray.Count > 0)
+                        {
+                            var firstItem = keywordsArray[0];
+                            if (firstItem is JsonObject firstObj && firstObj.ContainsKey("text"))
+                            {
+                                // It's extracted keywords - deserialize as List<ExtractedKeyword>
+                                var extractedKeywords = JsonSerializer.Deserialize<List<ExtractedKeyword>>(
+                                    keywordsDoc.RootElement.GetRawText(), Serialization.Options);
+                                if (extractedKeywords != null && extractedKeywords.Count > 0)
+                                {
+                                    metadata.Keywords = extractedKeywords;
+                                }
+                            }
+                            else
+                            {
+                                // It's format-specific keywords (strings) - store for format metadata
+                                formatFields[propertyName!] = keywordsNode;
+                            }
+                        }
+                    }
+                    break;
                 default:
                     // Store format-specific fields
                     if (reader.TokenType == JsonTokenType.StartObject)
@@ -469,6 +498,13 @@ internal class MetadataConverter : JsonConverter<Metadata>
         {
             writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Pages") ?? "Pages");
             JsonSerializer.Serialize(writer, value.Pages, options);
+        }
+
+        // Write extracted keywords (from YAKE/RAKE algorithms)
+        if (value.Keywords != null && value.Keywords.Count > 0)
+        {
+            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Keywords") ?? "keywords");
+            JsonSerializer.Serialize(writer, value.Keywords, options);
         }
 
         // Write format-specific fields
@@ -631,13 +667,24 @@ internal class MetadataConverter : JsonConverter<Metadata>
                 htmlMetadata.TextDirection = textDirection?.AsValue().GetValue<string>();
             }
 
-            // Extract keywords list
-            if (node.TryGetPropertyValue("keywords", out var keywords) && keywords?.GetValueKind() != JsonValueKind.Null)
+            // Extract keywords list - only if they are strings (HTML meta keywords)
+            // If keywords are objects, they're extracted keywords (YAKE/RAKE) and handled separately
+            if (node.TryGetPropertyValue("keywords", out var keywords) && keywords?.GetValueKind() == JsonValueKind.Array)
             {
-                var keywordsList = JsonSerializer.Deserialize<List<string>>(keywords.ToJsonString(), Serialization.Options);
-                if (keywordsList != null && keywordsList.Count > 0)
+                var keywordsArray = keywords.AsArray();
+                if (keywordsArray.Count > 0)
                 {
-                    htmlMetadata.Keywords = keywordsList;
+                    var firstKeyword = keywordsArray[0];
+                    if (firstKeyword?.GetValueKind() == JsonValueKind.String)
+                    {
+                        // It's a string array - HTML meta keywords
+                        var keywordsList = JsonSerializer.Deserialize<List<string>>(keywords.ToJsonString(), Serialization.Options);
+                        if (keywordsList != null && keywordsList.Count > 0)
+                        {
+                            htmlMetadata.Keywords = keywordsList;
+                        }
+                    }
+                    // If it's an object array, it's extracted keywords - handled at the metadata level
                 }
             }
 
@@ -945,6 +992,18 @@ internal static class Serialization
             recognized.UnionWith(FormatFields.GetValueOrDefault(metadata.FormatType, Array.Empty<string>()));
         }
 
+        // Handle extracted keywords (from YAKE/RAKE algorithms) at the root level
+        // These are distinct from format-specific keywords (like HTML meta keywords)
+        if (root.TryGetProperty("keywords", out var keywordsElement) && keywordsElement.ValueKind == JsonValueKind.Array)
+        {
+            var extractedKeywords = TryDeserializeExtractedKeywords(keywordsElement);
+            if (extractedKeywords != null && extractedKeywords.Count > 0)
+            {
+                metadata.Keywords = extractedKeywords;
+                recognized.Add("keywords"); // Mark as recognized so it doesn't go to Additional
+            }
+        }
+
         ApplyFormatMetadata(root, metadata);
         var additional = new JsonObject();
         foreach (var property in root.EnumerateObject())
@@ -1076,14 +1135,25 @@ internal static class Serialization
 
         }
 
-        // Extract keywords list
-        if (root.TryGetProperty("keywords", out var keywords) && keywords.ValueKind != JsonValueKind.Null)
+        // Extract keywords list - only if they are strings (HTML meta keywords)
+        // If keywords are objects, they're extracted keywords (YAKE/RAKE) and handled separately
+        if (root.TryGetProperty("keywords", out var keywords) && keywords.ValueKind == JsonValueKind.Array)
         {
-            var keywordsList = DeserializeElement<List<string>>(keywords);
-            if (keywordsList != null && keywordsList.Count > 0)
+            // Check if this is a string array (HTML meta keywords) vs object array (extracted keywords)
+            using var keywordsEnumerator = keywords.EnumerateArray();
+            if (keywordsEnumerator.MoveNext())
             {
-                htmlMetadata.Keywords = keywordsList;
-
+                var firstKeyword = keywordsEnumerator.Current;
+                if (firstKeyword.ValueKind == JsonValueKind.String)
+                {
+                    // It's a string array - HTML meta keywords
+                    var keywordsList = DeserializeElement<List<string>>(keywords);
+                    if (keywordsList != null && keywordsList.Count > 0)
+                    {
+                        htmlMetadata.Keywords = keywordsList;
+                    }
+                }
+                // If it's an object array, it's extracted keywords - handled at the metadata level
             }
         }
 
@@ -1312,6 +1382,47 @@ internal static class Serialization
     private static T? DeserializeElement<T>(JsonElement element)
     {
         return JsonSerializer.Deserialize<T>(element.GetRawText(), Options);
+    }
+
+    /// <summary>
+    /// Attempts to deserialize a JSON array as extracted keywords (from YAKE/RAKE algorithms).
+    /// Returns null if the array contains simple strings (format-specific keywords like HTML meta keywords).
+    /// </summary>
+    private static List<ExtractedKeyword>? TryDeserializeExtractedKeywords(JsonElement keywordsArray)
+    {
+        if (keywordsArray.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        // Check if the first element is an object (extracted keyword) or a string (format keyword)
+        using var enumerator = keywordsArray.EnumerateArray();
+        if (!enumerator.MoveNext())
+        {
+            return null; // Empty array
+        }
+
+        var firstElement = enumerator.Current;
+        if (firstElement.ValueKind != JsonValueKind.Object)
+        {
+            return null; // It's a string array (format-specific keywords)
+        }
+
+        // Check if the object has the expected ExtractedKeyword properties
+        if (!firstElement.TryGetProperty("text", out _))
+        {
+            return null; // Not an extracted keyword object
+        }
+
+        // Deserialize as extracted keywords
+        try
+        {
+            return JsonSerializer.Deserialize<List<ExtractedKeyword>>(keywordsArray.GetRawText(), Options);
+        }
+        catch
+        {
+            return null; // Deserialization failed, probably not extracted keywords
+        }
     }
 
     private static JsonNode? ParseNode(JsonElement element)

@@ -3,26 +3,26 @@ use kreuzberg::{extract_file_sync, ChunkingConfig, ExtractionConfig, OcrConfig, 
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = ExtractionConfig {
-        use_cache: Some(true),
+        use_cache: true,
         ocr: Some(OcrConfig {
-            backend: Some("tesseract".into()),
-            language: Some("eng+deu".into()),
-            tesseract: Some(TesseractConfig {
-                psm: Some(6),
+            backend: "tesseract".to_string(),
+            language: "eng+deu".to_string(),
+            tesseract_config: Some(TesseractConfig {
+                psm: 6,
                 ..Default::default()
             }),
             ..Default::default()
         }),
         chunking: Some(ChunkingConfig {
-            max_chars: Some(1000),
-            max_overlap: Some(200),
+            max_chars: 1000,
+            max_overlap: 200,
             ..Default::default()
         }),
-        enable_quality_processing: Some(true),
+        enable_quality_processing: true,
         ..Default::default()
     };
 
-    let result = extract_file_sync("document.pdf", None::<&str>, Some(config))?;
+    let result = extract_file_sync("document.pdf", None, &config)?;
     println!("Content length: {}", result.content.len());
     Ok(())
 }

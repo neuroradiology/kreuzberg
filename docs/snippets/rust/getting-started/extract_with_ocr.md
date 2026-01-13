@@ -5,8 +5,8 @@ fn main() -> kreuzberg::Result<()> {
     let config = ExtractionConfig {
         force_ocr: true,
         ocr: Some(OcrConfig {
-            backend: Some("tesseract".to_string()),
-            language: Some("eng".to_string()),
+            backend: "tesseract".to_string(),
+            language: "eng".to_string(),
             ..Default::default()
         }),
         ..Default::default()

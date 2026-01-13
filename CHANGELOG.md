@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Fixed header include path for external users**: `plugins_test_helpers.go` now uses the bundled header at `internal/ffi/kreuzberg.h` instead of a relative path to the monorepo ([#280](https://github.com/kreuzberg-dev/kreuzberg/issues/280))
   - Users installing via `go get` no longer get compilation errors about missing header files
 
+#### C# SDK
+- **Keyword extraction deserialization**: Fixed `JsonException` when using keyword extraction - keywords are now properly deserialized as `ExtractedKeyword` objects with `Text`, `Score`, `Algorithm`, and `Positions` properties instead of expecting plain strings ([#285](https://github.com/kreuzberg-dev/kreuzberg/issues/285))
+  - Added `ExtractedKeyword` class to `Models.cs`
+  - Updated `Serialization.cs` to handle keyword objects from YAKE/RAKE algorithms
+
+#### Documentation
+- **Rust OCR code examples**: Fixed incorrect `Some(...)` wrapper in OcrConfig examples - `backend` and `language` fields are plain `String` types, not `Option<String>` ([#284](https://github.com/kreuzberg-dev/kreuzberg/issues/284))
+  - Updated all Rust doc snippets in `docs/snippets/rust/` to use correct types
+- **HTMLToMarkdownConfig migration guide**: Clarified that `HTMLToMarkdownConfig` was intentionally removed in v4; HTML-to-Markdown conversion now uses sensible defaults from `html-to-markdown-rs` library ([#282](https://github.com/kreuzberg-dev/kreuzberg/issues/282))
+
+#### Distribution
+- **Homebrew tap visibility**: Made `kreuzberg-dev/homebrew-tap` repository public to enable `brew install kreuzberg-dev/tap/kreuzberg` ([#283](https://github.com/kreuzberg-dev/kreuzberg/issues/283))
+
 ---
 
 ## [4.0.2] - 2026-01-12

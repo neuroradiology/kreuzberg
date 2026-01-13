@@ -377,6 +377,13 @@ public sealed class Metadata
     [JsonPropertyName("pages")]
     public PageStructure? Pages { get; set; }
 
+    /// <summary>
+    /// Extracted keywords from keyword extraction algorithms (YAKE, RAKE).
+    /// These are distinct from format-specific keywords (like HTML meta keywords).
+    /// </summary>
+    [JsonPropertyName("keywords")]
+    public List<ExtractedKeyword>? Keywords { get; set; }
+
     [JsonExtensionData]
     public JsonObject? Additional { get; set; }
 }
@@ -427,6 +434,36 @@ public sealed class ErrorMetadata
 
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents an extracted keyword from keyword extraction algorithms (YAKE, RAKE).
+/// </summary>
+public sealed class ExtractedKeyword
+{
+    /// <summary>
+    /// The keyword text.
+    /// </summary>
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Relevance score (higher is better, algorithm-specific range).
+    /// </summary>
+    [JsonPropertyName("score")]
+    public float Score { get; set; }
+
+    /// <summary>
+    /// Algorithm that extracted this keyword (e.g., "yake", "rake").
+    /// </summary>
+    [JsonPropertyName("algorithm")]
+    public string Algorithm { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional positions where keyword appears in text (character offsets).
+    /// </summary>
+    [JsonPropertyName("positions")]
+    public List<int>? Positions { get; set; }
 }
 
 public sealed class PdfMetadata

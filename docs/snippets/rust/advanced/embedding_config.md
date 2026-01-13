@@ -4,16 +4,14 @@ use kreuzberg::{ChunkingConfig, EmbeddingConfig, EmbeddingModelType, ExtractionC
 fn main() {
     let config = ExtractionConfig {
         chunking: Some(ChunkingConfig {
-            max_chars: Some(1000),
+            max_chars: 1000,
             embedding: Some(EmbeddingConfig {
-                model: Some(EmbeddingModelType {
-                    r#type: "preset".to_string(),
-                    name: Some("all-mpnet-base-v2".to_string()),
-                    ..Default::default()
-                }),
-                batch_size: Some(16),
-                normalize: Some(true),
-                show_download_progress: Some(true),
+                model: EmbeddingModelType::Preset {
+                    name: "all-mpnet-base-v2".to_string(),
+                },
+                batch_size: 16,
+                normalize: true,
+                show_download_progress: true,
                 ..Default::default()
             }),
             ..Default::default()
