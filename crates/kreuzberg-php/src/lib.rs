@@ -28,7 +28,7 @@ pub mod validation;
 ///
 /// # Returns
 ///
-/// Version string in semver format (e.g., "4.0.6")
+/// Version string in semver format (e.g., "4.0.7")
 ///
 /// # Example
 ///
