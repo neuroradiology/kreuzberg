@@ -1,0 +1,3 @@
+recursive-include kreuzberg *.py
+recursive-include kreuzberg *.pyi
+include kreuzberg/py.typed

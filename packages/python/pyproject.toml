@@ -4,7 +4,7 @@ requires = ["maturin>=1,<2"]
 
 [project]
 name = "kreuzberg"
-version = "4.0.6"
+version = "4.0.7"
 description = "High-performance document intelligence library for Python. Extract text, metadata, and structured data from PDFs, Office documents, images, and 50+ formats. Powered by Rust core for 10-50x speed improvements."
 readme = "README.md"
 keywords = [
@@ -84,14 +84,6 @@ scripts.kreuzberg = "kreuzberg.__main__:main"
 module-name = "kreuzberg._internal_bindings"
 manifest-path = "../../crates/kreuzberg-py/Cargo.toml"
 include = [
-    { path = "kreuzberg/_internal_bindings.pyi", format = [
-        "sdist",
-        "wheel",
-    ] },
-    { path = "kreuzberg/py.typed", format = [
-        "sdist",
-        "wheel",
-    ] },
     { path = "kreuzberg/kreuzberg-cli", format = "wheel" },
     { path = "kreuzberg/kreuzberg-cli.exe", format = "wheel" },
 ]
