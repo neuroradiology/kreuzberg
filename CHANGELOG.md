@@ -21,25 +21,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive error handling for invalid inputs
 
 #### Core
-- **Element-based output format**: New `OutputFormat::ElementBased` option provides Unstructured.io-compatible semantic element extraction
+- **Djot markup format support**: New `.djot` file extraction with comprehensive Djot syntax support
+  - Full parser implementation with structured representation via `DjotContent` type
+  - Supports headings, paragraphs, lists (ordered, unordered, task, definition), tables, code blocks, emphasis, links, images, footnotes, math expressions
+  - YAML frontmatter extraction with metadata preservation
+  - Shared frontmatter utilities between Markdown and Djot extractors
+  - Feature-gated behind `djot` feature flag (enabled by default)
+  - 39 comprehensive tests covering Unicode, tables, roundtrip conversion, and edge cases
+
+- **Content output format configuration**: New `ContentFormat` enum for configurable text output formatting
+  - Converts extracted content from ANY file format to Plain, Markdown, Djot, or HTML
+  - Post-processing pipeline applies format transformation after extraction
+  - Configuration via `config.content_format` field in `ExtractionConfig` (defaults to `Plain`)
+  - CLI support with `--content-format` flag and `KREUZBERG_CONTENT_FORMAT` environment variable
+  - Independent from `result_format` (Unified vs ElementBased structure)
+
+- **Element-based output format**: New `ResultFormat::ElementBased` option provides Unstructured.io-compatible semantic element extraction
   - Extracts structured elements: titles, paragraphs, lists, tables, images, page breaks, headings, code blocks, block quotes, headers, footers
   - Each element includes rich metadata: bounding boxes, page numbers, confidence scores, hierarchy information
   - Transformation pipeline converts unified output to element-based format via `extraction::transform` module
   - Added `Element`, `ElementType`, `ElementMetadata`, and `BoundingBox` types to core types module
   - Supports PDF hierarchy detection for semantic heading levels
-  - Configuration via `config.output_format` field (defaults to `Unified`)
+  - Configuration via `config.result_format` field (defaults to `Unified`)
 
 #### Language Bindings
-- **Python**: Element-based output support with full type hints
-  - New `output_format` parameter in extraction config accepting `"unified"` or `"element_based"`
-  - `Element`, `ElementType`, `ElementMetadata`, `BoundingBox` types exported from `kreuzberg.types`
-  - Result includes `elements` field when using element-based format
+- **Python**: Enhanced output configuration with full type hints
+  - Content format support: `content_format` parameter accepting `"plain"`, `"markdown"`, `"djot"`, or `"html"`
+  - Element-based output: `result_format` parameter accepting `"unified"` or `"element_based"`
+  - `Element`, `ElementType`, `ElementMetadata`, `BoundingBox`, `DjotContent` types exported from `kreuzberg.types`
+  - Result includes `elements` field when using element-based format, `djot_content` when available
   - Compatible with Unstructured.io API for migration
 
-- **TypeScript/Node.js**: Element-based output with strict TypeScript interfaces
-  - `Element`, `ElementType`, `ElementMetadata`, `BoundingBox` interfaces in `@kreuzberg/core`
-  - `outputFormat: "unified" | "element_based"` configuration option
-  - Result type includes optional `elements` array
+- **TypeScript/Node.js**: Enhanced output configuration with strict TypeScript interfaces
+  - Content format support: `contentFormat: "plain" | "markdown" | "djot" | "html"` option
+  - Element-based output: `resultFormat: "unified" | "element_based"` option
+  - `Element`, `ElementType`, `ElementMetadata`, `BoundingBox`, `DjotContent` interfaces in `@kreuzberg/core`
+  - Result type includes optional `elements` array and `djotContent` field
 
 - **Ruby**: Element-based output with idiomatic Ruby types
   - `Element`, `ElementType`, `ElementMetadata`, `BoundingBox` classes in `Kreuzberg::Types`
@@ -71,12 +88,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `:output_format` option in config accepting `:unified` or `:element_based`
   - Result map includes `:elements` key with element list
 
-- **WASM**: Element-based output with TypeScript definitions
-  - Element types exported to WASM TypeScript bindings
-  - `output_format` configuration option
-  - Elements accessible from extraction result
+- **PHP**, **Go**, **Java**, **C#**, **Ruby**, **Elixir**, **WASM**: All language bindings updated with:
+  - Content format configuration support (`content_format` / `contentFormat` / equivalent)
+  - Result format configuration for element-based output (`result_format` / `resultFormat` / equivalent)
+  - `DjotContent` type bindings where applicable
+  - Dual format support: control both output structure (unified/element-based) and content formatting (plain/markdown/djot/html)
 
 #### Documentation
+- **Djot format documentation**: New format reference and usage examples
+  - Added `.djot` to supported formats table with MIME type `text/x-djot`
+  - CLI usage examples for `--content-format djot` flag
+  - Environment variable support documentation (`KREUZBERG_CONTENT_FORMAT`)
+  - Configuration reference updates for `content_format` field
+  - Format count updated from 56 to 57 supported formats
 - **Migration guides**: New documentation for Unstructured.io users
   - `docs/migration/from-unstructured.md`: Step-by-step migration guide with code examples
   - `docs/comparisons/kreuzberg-vs-unstructured.md`: Feature comparison and compatibility matrix
@@ -85,6 +109,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Code snippets for element-based extraction in all 10 languages
 
 ### Fixed
+
+#### Documentation
+- **MkDocs build**: Fixed broken benchmark documentation links in `docs/concepts/performance.md`
+  - Commented out references to non-existent benchmark pages to fix strict mode build failures
+  - Build now passes with 667 pages generated successfully
 
 #### Python
 - **Type exports**: Fixed missing type exports in `kreuzberg.types.__all__`
