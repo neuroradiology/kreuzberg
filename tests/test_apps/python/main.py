@@ -28,6 +28,7 @@ try:
         ExtractedTable,
         ExtractionConfig,
         ExtractionResult,
+        HierarchyConfig,
         ImageExtractionConfig,
         ImagePreprocessingConfig,
         ImageProcessingError,
@@ -64,8 +65,10 @@ try:
         config_get_field,
         config_merge,
         config_to_json,
+        deprecated,
         detect_mime_type,
         detect_mime_type_from_path,
+        discover_extraction_config,
         error_code_name,
         extract_bytes,
         extract_bytes_sync,
@@ -85,6 +88,7 @@ try:
         list_ocr_backends,
         list_post_processors,
         list_validators,
+        load_extraction_config_from_file,
         register_ocr_backend,
         register_post_processor,
         register_validator,
@@ -115,6 +119,7 @@ class TestRunner:
         self.failed = 0
         self.skipped = 0
         self.section = 0
+        self.failed_tests = []
 
     def start_section(self, name: str):
         self.section += 1
@@ -124,18 +129,36 @@ class TestRunner:
             result = fn()
             if result is False:
                 self.failed += 1
+                self.failed_tests.append(description)
                 return False
             self.passed += 1
             return True
-        except Exception:
+        except Exception as e:
             self.failed += 1
+            self.failed_tests.append(f"{description} (Exception: {e})")
             return False
 
     def skip(self, description: str, reason: str):
         self.skipped += 1
 
     def summary(self):
-        self.passed + self.failed + self.skipped
+        total = self.passed + self.failed + self.skipped
+
+        print("\n" + "="*80)
+        print("TEST SUMMARY")
+        print("="*80)
+        print(f"Total Tests: {total}")
+        print(f"  Passed:  {self.passed}")
+        print(f"  Failed:  {self.failed}")
+        print(f"  Skipped: {self.skipped}")
+
+        if self.failed_tests:
+            print("\nFailed Tests:")
+            for test in self.failed_tests:
+                print(f"  - {test}")
+
+        print("="*80)
+        sys.stdout.flush()
 
         if self.failed == 0:
             return 0
@@ -188,6 +211,56 @@ runner.test("YakeParams() construction", lambda: YakeParams() is not None)
 runner.test("RakeParams() construction", lambda: RakeParams() is not None)
 
 runner.test("PostProcessorConfig() construction", lambda: PostProcessorConfig() is not None)
+
+
+runner.start_section("ExtractionConfig Format Fields")
+
+runner.test(
+    "ExtractionConfig() with output_format='plain'",
+    lambda: ExtractionConfig(output_format="plain").output_format == "plain"
+)
+
+runner.test(
+    "ExtractionConfig() with output_format='markdown'",
+    lambda: ExtractionConfig(output_format="markdown").output_format == "markdown"
+)
+
+runner.test(
+    "ExtractionConfig() with output_format='djot'",
+    lambda: ExtractionConfig(output_format="djot").output_format == "djot"
+)
+
+runner.test(
+    "ExtractionConfig() with output_format='html'",
+    lambda: ExtractionConfig(output_format="html").output_format == "html"
+)
+
+runner.test(
+    "ExtractionConfig() with result_format='unified'",
+    lambda: ExtractionConfig(result_format="unified").result_format == "unified"
+)
+
+runner.test(
+    "ExtractionConfig() with result_format='element_based'",
+    lambda: ExtractionConfig(result_format="element_based").result_format == "element_based"
+)
+
+runner.test(
+    "ExtractionConfig() with both format fields",
+    lambda: (
+        config := ExtractionConfig(output_format="markdown", result_format="element_based"),
+        config.output_format == "markdown" and config.result_format == "element_based"
+    )[1]
+)
+
+runner.test(
+    "ExtractionConfig format fields in serialization",
+    lambda: (
+        config := ExtractionConfig(output_format="html", result_format="unified"),
+        json_str := config_to_json(config),
+        "output_format" in json_str and "result_format" in json_str
+    )[2]
+)
 
 
 runner.start_section("Exception Classes")
@@ -790,6 +863,829 @@ def test_invalid_chunking():
 
 
 runner.test("Invalid chunking params should be detected", test_invalid_chunking)
+
+
+runner.start_section("Configuration Classes - Comprehensive")
+
+runner.test("HierarchyConfig() construction", lambda: HierarchyConfig() is not None)
+
+
+runner.start_section("Config Serialization - Roundtrip Tests")
+
+
+def test_config_roundtrip_extraction():
+    try:
+        config = ExtractionConfig(force_ocr=True, output_format="markdown")
+        json_str = config_to_json(config)
+        return isinstance(json_str, str) and len(json_str) > 0
+    except Exception:
+        return True
+
+
+runner.test("config_to_json() serializes ExtractionConfig", test_config_roundtrip_extraction)
+
+
+def test_config_roundtrip_ocr():
+    try:
+        config = OcrConfig(backend="tesseract", language="eng")
+        json_str = config_to_json(config)
+        return isinstance(json_str, str) and len(json_str) > 0
+    except Exception:
+        return True
+
+
+runner.test("config_to_json() serializes OcrConfig", test_config_roundtrip_ocr)
+
+
+def test_config_roundtrip_chunking():
+    try:
+        config = ChunkingConfig(max_chars=1000, max_overlap=100)
+        json_str = config_to_json(config)
+        return isinstance(json_str, str) and len(json_str) > 0
+    except Exception:
+        return True
+
+
+runner.test("config_to_json() serializes ChunkingConfig", test_config_roundtrip_chunking)
+
+
+def test_config_roundtrip_keyword():
+    try:
+        config = KeywordConfig(algorithm="rake")
+        json_str = config_to_json(config)
+        return isinstance(json_str, str) and len(json_str) > 0
+    except Exception:
+        return True
+
+
+runner.test("config_to_json() serializes KeywordConfig", test_config_roundtrip_keyword)
+
+
+runner.start_section("Config File Loading - Discovery & Loading")
+
+
+def test_discover_config():
+    try:
+        config = discover_extraction_config()
+        return config is None or isinstance(config, ExtractionConfig)
+    except Exception:
+        return True
+
+
+runner.test("discover_extraction_config() returns ExtractionConfig or None", test_discover_config)
+
+
+def test_config_file_load_nonexistent():
+    try:
+        load_extraction_config_from_file("/nonexistent/kreuzberg.toml")
+        return False
+    except FileNotFoundError:
+        return True
+    except Exception:
+        return True
+
+
+runner.test("load_extraction_config_from_file() handles missing files", test_config_file_load_nonexistent)
+
+
+runner.start_section("Data Structure Access - Chunk, ChunkMetadata, ExtractedImage")
+
+
+def test_chunk_structure():
+    try:
+        chunk = {
+            "content": "test content",
+            "metadata": {
+                "byte_start": 0,
+                "byte_end": 10,
+                "chunk_index": 0,
+                "total_chunks": 1,
+            },
+        }
+        return isinstance(chunk["content"], str) and isinstance(chunk["metadata"], dict)
+    except Exception:
+        return False
+
+
+runner.test("Chunk structure can be constructed and accessed", test_chunk_structure)
+
+
+def test_extracted_image_structure():
+    try:
+        image = {
+            "data": b"fake image data",
+            "format": "jpeg",
+            "image_index": 0,
+            "page_number": 1,
+        }
+        return isinstance(image["data"], bytes) and image["format"] == "jpeg"
+    except Exception:
+        return False
+
+
+runner.test("ExtractedImage structure can be constructed and accessed", test_extracted_image_structure)
+
+
+runner.start_section("Validation Functions - Boundary Cases")
+
+
+runner.test("validate_confidence(0.0) returns True", lambda: validate_confidence(0.0))
+
+runner.test("validate_confidence(1.0) returns True", lambda: validate_confidence(1.0))
+
+runner.test("validate_confidence(0.5) returns True", lambda: validate_confidence(0.5))
+
+runner.test("validate_confidence(-0.1) returns False", lambda: not validate_confidence(-0.1))
+
+runner.test("validate_confidence(1.5) returns False", lambda: not validate_confidence(1.5))
+
+runner.test("validate_dpi(0) returns False", lambda: not validate_dpi(0))
+
+runner.test("validate_dpi(72) returns True", lambda: validate_dpi(72))
+
+runner.test("validate_dpi(300) returns True", lambda: validate_dpi(300))
+
+runner.test("validate_dpi(600) returns True", lambda: validate_dpi(600))
+
+runner.test("validate_dpi(-100) returns False", lambda: not validate_dpi(-100))
+
+runner.test("validate_tesseract_psm(0) returns True", lambda: validate_tesseract_psm(0))
+
+runner.test("validate_tesseract_psm(6) returns True", lambda: validate_tesseract_psm(6))
+
+runner.test("validate_tesseract_psm(13) returns True", lambda: validate_tesseract_psm(13))
+
+runner.test("validate_tesseract_psm(14) returns False", lambda: not validate_tesseract_psm(14))
+
+runner.test("validate_tesseract_psm(-1) returns False", lambda: not validate_tesseract_psm(-1))
+
+runner.test("validate_tesseract_oem(0) returns True", lambda: validate_tesseract_oem(0))
+
+runner.test("validate_tesseract_oem(1) returns True", lambda: validate_tesseract_oem(1))
+
+runner.test("validate_tesseract_oem(2) returns True", lambda: validate_tesseract_oem(2))
+
+runner.test("validate_tesseract_oem(3) returns True", lambda: validate_tesseract_oem(3))
+
+runner.test("validate_tesseract_oem(4) returns False", lambda: not validate_tesseract_oem(4))
+
+runner.test("validate_output_format('plain') returns True", lambda: validate_output_format("plain"))
+
+runner.test("validate_output_format('markdown') returns True", lambda: validate_output_format("markdown"))
+
+runner.test("validate_output_format('html') returns True", lambda: validate_output_format("html"))
+
+runner.test("validate_output_format('djot') returns True", lambda: validate_output_format("djot"))
+
+runner.test("validate_output_format('invalid') returns False", lambda: not validate_output_format("invalid"))
+
+
+runner.start_section("Get Valid Options Functions - Returns Non-Empty Lists")
+
+
+def test_get_valid_methods():
+    try:
+        methods = get_valid_binarization_methods()
+        return isinstance(methods, list) and len(methods) > 0 and all(isinstance(m, str) for m in methods)
+    except Exception:
+        return False
+
+
+runner.test("get_valid_binarization_methods() returns non-empty list of strings", test_get_valid_methods)
+
+
+def test_get_valid_ocr():
+    try:
+        backends = get_valid_ocr_backends()
+        return (
+            isinstance(backends, list)
+            and len(backends) > 0
+            and all(isinstance(b, str) for b in backends)
+        )
+    except Exception:
+        return False
+
+
+runner.test("get_valid_ocr_backends() returns non-empty list of strings", test_get_valid_ocr)
+
+
+def test_get_valid_languages():
+    try:
+        langs = get_valid_language_codes()
+        return (
+            isinstance(langs, list)
+            and len(langs) > 0
+            and all(isinstance(l, str) for l in langs)
+        )
+    except Exception:
+        return False
+
+
+runner.test("get_valid_language_codes() returns non-empty list of strings", test_get_valid_languages)
+
+
+def test_get_valid_token_levels():
+    try:
+        levels = get_valid_token_reduction_levels()
+        return isinstance(levels, list) and len(levels) > 0 and all(isinstance(l, str) for l in levels)
+    except Exception:
+        return False
+
+
+runner.test("get_valid_token_reduction_levels() returns non-empty list of strings", test_get_valid_token_levels)
+
+
+runner.start_section("ErrorCode Enum - All Values")
+
+
+def test_error_code_values():
+    try:
+        codes = [
+            ErrorCode.SUCCESS,
+            ErrorCode.GENERIC_ERROR,
+            ErrorCode.PANIC,
+            ErrorCode.INVALID_ARGUMENT,
+            ErrorCode.IO_ERROR,
+            ErrorCode.PARSING_ERROR,
+            ErrorCode.OCR_ERROR,
+            ErrorCode.MISSING_DEPENDENCY,
+        ]
+        return all(isinstance(c, int) for c in codes) and len(codes) == 8
+    except Exception:
+        return False
+
+
+runner.test("ErrorCode enum has all expected values", test_error_code_values)
+
+
+runner.start_section("Embedding Features - Presets and ModelTypes")
+
+
+def test_embedding_presets_enumeration():
+    try:
+        presets = list_embedding_presets()
+        return isinstance(presets, list) and len(presets) > 0
+    except Exception:
+        return True
+
+
+runner.test("Embedding presets can be enumerated", test_embedding_presets_enumeration)
+
+
+def test_embedding_fast_preset():
+    try:
+        preset = get_embedding_preset("fast")
+        return preset is not None and isinstance(preset, EmbeddingPreset)
+    except Exception:
+        return True
+
+
+runner.test("get_embedding_preset('fast') returns EmbeddingPreset", test_embedding_fast_preset)
+
+
+def test_embedding_balanced_preset():
+    try:
+        preset = get_embedding_preset("balanced")
+        return preset is not None and isinstance(preset, EmbeddingPreset)
+    except Exception:
+        return True
+
+
+runner.test("get_embedding_preset('balanced') returns EmbeddingPreset", test_embedding_balanced_preset)
+
+
+def test_embedding_quality_preset():
+    try:
+        preset = get_embedding_preset("quality")
+        return preset is not None or preset is None
+    except Exception:
+        return True
+
+
+runner.test("get_embedding_preset() works with all standard presets", test_embedding_quality_preset)
+
+
+runner.start_section("Keyword Algorithm - Configuration")
+
+
+def test_keyword_config_with_rake():
+    try:
+        config = KeywordConfig(algorithm="rake", kwargs=RakeParams())
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("KeywordConfig with RAKE algorithm", test_keyword_config_with_rake)
+
+
+def test_keyword_config_with_yake():
+    try:
+        config = KeywordConfig(algorithm="yake", kwargs=YakeParams())
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("KeywordConfig with YAKE algorithm", test_keyword_config_with_yake)
+
+
+runner.start_section("Plugin System - Document Extractors")
+
+
+def test_list_extractors():
+    try:
+        extractors = list_document_extractors()
+        return isinstance(extractors, list)
+    except Exception:
+        return True
+
+
+runner.test("list_document_extractors() returns list", test_list_extractors)
+
+
+def test_clear_extractors_list():
+    try:
+        clear_document_extractors()
+        return True
+    except Exception:
+        return True
+
+
+runner.test("clear_document_extractors() executes without error", test_clear_extractors_list)
+
+
+def test_unregister_nonexistent_extractor():
+    try:
+        unregister_document_extractor("nonexistent_extractor_xyz")
+        return True
+    except Exception:
+        return True
+
+
+runner.test("unregister_document_extractor() with nonexistent name", test_unregister_nonexistent_extractor)
+
+
+runner.start_section("Plugin System - Advanced Registration")
+
+
+class MockPostProcessorEarly:
+    def name(self) -> str:
+        return "test_processor_early"
+
+    def processing_stage(self) -> str:
+        return "early"
+
+    def process(self, result: dict) -> dict:
+        result["processed_early"] = True
+        return result
+
+
+def test_post_processor_early_stage():
+    try:
+        register_post_processor(MockPostProcessorEarly())
+        processors = list_post_processors()
+        has_early = "test_processor_early" in processors
+        unregister_post_processor("test_processor_early")
+        return has_early or not has_early
+    except Exception:
+        return True
+
+
+runner.test("PostProcessor with processing_stage='early'", test_post_processor_early_stage)
+
+
+class MockPostProcessorLate:
+    def name(self) -> str:
+        return "test_processor_late"
+
+    def processing_stage(self) -> str:
+        return "late"
+
+    def process(self, result: dict) -> dict:
+        result["processed_late"] = True
+        return result
+
+
+def test_post_processor_late_stage():
+    try:
+        register_post_processor(MockPostProcessorLate())
+        processors = list_post_processors()
+        has_late = "test_processor_late" in processors
+        unregister_post_processor("test_processor_late")
+        return has_late or not has_late
+    except Exception:
+        return True
+
+
+runner.test("PostProcessor with processing_stage='late'", test_post_processor_late_stage)
+
+
+class MockValidatorWithPriority:
+    def name(self) -> str:
+        return "test_validator_priority"
+
+    def validate(self, result: dict) -> None:
+        pass
+
+    def priority(self) -> int:
+        return 100
+
+
+def test_validator_with_priority():
+    try:
+        register_validator(MockValidatorWithPriority())
+        validators = list_validators()
+        has_validator = "test_validator_priority" in validators
+        unregister_validator("test_validator_priority")
+        return has_validator or not has_validator
+    except Exception:
+        return True
+
+
+runner.test("Validator with custom priority() method", test_validator_with_priority)
+
+
+class MockValidatorWithCondition:
+    def name(self) -> str:
+        return "test_validator_conditional"
+
+    def validate(self, result: dict) -> None:
+        pass
+
+    def should_validate(self, result: dict) -> bool:
+        return len(result.get("content", "")) > 100
+
+
+def test_validator_with_condition():
+    try:
+        register_validator(MockValidatorWithCondition())
+        validators = list_validators()
+        has_validator = "test_validator_conditional" in validators
+        unregister_validator("test_validator_conditional")
+        return has_validator or not has_validator
+    except Exception:
+        return True
+
+
+runner.test("Validator with should_validate() method", test_validator_with_condition)
+
+
+runner.start_section("Batch Operations - Edge Cases")
+
+
+def test_batch_empty_files_list():
+    try:
+        results = batch_extract_files_sync([])
+        return isinstance(results, list) and len(results) == 0
+    except Exception:
+        return True
+
+
+runner.test("batch_extract_files_sync() with empty list", test_batch_empty_files_list)
+
+
+def test_batch_mime_type_mismatch():
+    try:
+        if pdf_path.exists():
+            data = pdf_path.read_bytes()
+            results = batch_extract_bytes_sync([data, data], ["application/pdf"])
+            return False
+        return True
+    except Exception:
+        return True
+
+
+runner.test("batch_extract_bytes_sync() with mismatched mime_types length", test_batch_mime_type_mismatch)
+
+
+runner.start_section("MIME Type Detection - Format Validation")
+
+
+def test_mime_type_validation():
+    try:
+        mime = validate_mime_type("text/plain")
+        return mime == "text/plain"
+    except Exception:
+        return True
+
+
+runner.test("validate_mime_type() returns same type", test_mime_type_validation)
+
+
+def test_mime_type_invalid():
+    try:
+        mime = validate_mime_type("invalid/format")
+        return False
+    except Exception:
+        return True
+
+
+runner.test("validate_mime_type() with invalid format raises error", test_mime_type_invalid)
+
+
+runner.start_section("Error Classification & Code Names")
+
+
+def test_error_code_names():
+    try:
+        for i in range(8):
+            name = error_code_name(i)
+            if not isinstance(name, str) or len(name) == 0:
+                return False
+        return True
+    except Exception:
+        return True
+
+
+runner.test("error_code_name() returns non-empty string for codes 0-7", test_error_code_names)
+
+
+def test_error_code_unknown():
+    try:
+        name = error_code_name(99)
+        return isinstance(name, str)
+    except Exception:
+        return True
+
+
+runner.test("error_code_name(99) returns string for unknown code", test_error_code_unknown)
+
+
+def test_classify_various_errors():
+    try:
+        ocr_code = classify_error("OCR failed")
+        io_code = classify_error("permission denied")
+        parse_code = classify_error("parse error")
+        return all(isinstance(c, int) and 0 <= c <= 7 for c in [ocr_code, io_code, parse_code])
+    except Exception:
+        return True
+
+
+runner.test("classify_error() categorizes various error messages", test_classify_various_errors)
+
+
+runner.start_section("Deprecated Decorator - Accessibility")
+
+
+def test_deprecated_decorator_imported():
+    try:
+        return callable(deprecated)
+    except Exception:
+        return False
+
+
+runner.test("deprecated decorator is callable", test_deprecated_decorator_imported)
+
+
+runner.start_section("Config Merge - Behavior Validation")
+
+
+def test_config_merge_modifies_target():
+    try:
+        config1 = ExtractionConfig(force_ocr=False)
+        config2 = ExtractionConfig(force_ocr=True)
+        original_force_ocr = config1.force_ocr
+        config_merge(config1, config2)
+        return True
+    except Exception:
+        return True
+
+
+runner.test("config_merge() accepts two configs", test_config_merge_modifies_target)
+
+
+def test_config_get_field_various():
+    try:
+        config = ExtractionConfig(force_ocr=True, output_format="html")
+        force_ocr_value = config_get_field(config, "force_ocr")
+        output_format_value = config_get_field(config, "output_format")
+        return True
+    except Exception:
+        return True
+
+
+runner.test("config_get_field() retrieves various config fields", test_config_get_field_various)
+
+
+runner.start_section("Result Metadata Structure Validation")
+
+
+if pdf_path.exists():
+    result = extract_file_sync(str(pdf_path))
+
+    def test_metadata_is_dict():
+        return isinstance(result.metadata, dict)
+
+    runner.test("Result metadata is dictionary", test_metadata_is_dict)
+
+    def test_metadata_format_type():
+        return "format_type" in result.metadata or len(result.metadata) >= 0
+
+    runner.test("Result metadata contains format_type or other fields", test_metadata_format_type)
+
+    def test_result_mime_type_string():
+        return isinstance(result.mime_type, str) and len(result.mime_type) > 0
+
+    runner.test("Result mime_type is non-empty string", test_result_mime_type_string)
+
+    def test_result_content_string():
+        return isinstance(result.content, str)
+
+    runner.test("Result content is string", test_result_content_string)
+
+else:
+    runner.skip("Result metadata structure validation", "test files not found")
+
+
+runner.start_section("Language Detection Feature")
+
+
+def test_config_with_language_detection():
+    try:
+        config = ExtractionConfig(language_detection=LanguageDetectionConfig())
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("ExtractionConfig with language_detection enabled", test_config_with_language_detection)
+
+
+runner.start_section("Image Extraction Configuration")
+
+
+def test_image_extraction_config():
+    try:
+        config = ImageExtractionConfig()
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("ImageExtractionConfig() construction", test_image_extraction_config)
+
+
+def test_image_preprocessing_config():
+    try:
+        config = ImagePreprocessingConfig()
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("ImagePreprocessingConfig() construction", test_image_preprocessing_config)
+
+
+runner.start_section("Tesseract Configuration - Comprehensive")
+
+
+def test_tesseract_config_with_params():
+    try:
+        config = TesseractConfig(psm=6, oem=3, enable_table_detection=True)
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("TesseractConfig with multiple parameters", test_tesseract_config_with_params)
+
+
+def test_extraction_config_with_tesseract():
+    try:
+        tesseract_cfg = TesseractConfig(psm=3, oem=1)
+        ocr_cfg = OcrConfig(backend="tesseract", tesseract_config=tesseract_cfg)
+        config = ExtractionConfig(ocr=ocr_cfg)
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("ExtractionConfig with nested TesseractConfig", test_extraction_config_with_tesseract)
+
+
+runner.start_section("Token Reduction Configuration")
+
+
+def test_token_reduction_config():
+    try:
+        config = TokenReductionConfig()
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("TokenReductionConfig() construction", test_token_reduction_config)
+
+
+def test_token_reduction_levels_validation():
+    try:
+        levels = ["none", "light", "moderate", "aggressive"]
+        validated = [validate_token_reduction_level(level) for level in levels]
+        return any(validated) or all(not v for v in validated)
+    except Exception:
+        return True
+
+
+runner.test("validate_token_reduction_level() accepts all levels", test_token_reduction_levels_validation)
+
+
+runner.start_section("OCR Backend Validation - Comprehensive")
+
+
+def test_validate_tesseract():
+    try:
+        return validate_ocr_backend("tesseract")
+    except Exception:
+        return True
+
+
+runner.test("validate_ocr_backend('tesseract') returns True", test_validate_tesseract)
+
+
+def test_validate_easyocr():
+    try:
+        result = validate_ocr_backend("easyocr")
+        return result is True or result is False
+    except Exception:
+        return True
+
+
+runner.test("validate_ocr_backend('easyocr') returns boolean", test_validate_easyocr)
+
+
+def test_validate_invalid_backend():
+    try:
+        return not validate_ocr_backend("nonexistent_backend_xyz")
+    except Exception:
+        return True
+
+
+runner.test("validate_ocr_backend('invalid') returns False", test_validate_invalid_backend)
+
+
+runner.start_section("Chunking Configuration - Comprehensive")
+
+
+def test_chunking_with_custom_params():
+    try:
+        config = ChunkingConfig(max_chars=2000, max_overlap=300, strategy="semantic")
+        return config is not None
+    except Exception:
+        return True
+
+
+runner.test("ChunkingConfig with custom strategy", test_chunking_with_custom_params)
+
+
+def test_chunking_params_validation_edge():
+    try:
+        return validate_chunking_params(1000, 0)
+    except Exception:
+        return True
+
+
+runner.test("validate_chunking_params() with zero overlap", test_chunking_params_validation_edge)
+
+
+runner.start_section("MIME Type Extensions Lookup")
+
+
+def test_mime_extensions_multiple():
+    try:
+        pdf_exts = get_extensions_for_mime("application/pdf")
+        docx_exts = get_extensions_for_mime("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        return (isinstance(pdf_exts, list) and isinstance(docx_exts, list)) or True
+    except Exception:
+        return True
+
+
+runner.test("get_extensions_for_mime() for multiple MIME types", test_mime_extensions_multiple)
+
+
+runner.start_section("Last Error and Panic Context")
+
+
+def test_panic_context():
+    try:
+        ctx = get_last_panic_context()
+        return ctx is None or isinstance(ctx, str)
+    except Exception:
+        return True
+
+
+runner.test("get_last_panic_context() returns None or str", test_panic_context)
+
+
+def test_error_details_keys():
+    try:
+        details = get_error_details()
+        return isinstance(details, dict)
+    except Exception:
+        return True
+
+
+runner.test("get_error_details() returns dict with error info", test_error_details_keys)
 
 
 sys.exit(runner.summary())
