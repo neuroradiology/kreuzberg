@@ -116,6 +116,7 @@ jobs:
         with:
           cache-key-prefix: ${{ matrix.os == 'windows-latest' && 'go-windows-gnu' || format('go-{0}', matrix.os) }}
           use-sccache: ${{ matrix.os != 'windows-latest' }}
+          report-stats: 'true'
           target: ${{ matrix.os == 'windows-latest' && 'x86_64-pc-windows-gnu' || '' }}
           toolchain: ${{ matrix.os == 'windows-latest' && 'stable-x86_64-pc-windows-gnu' || '' }}
 
@@ -365,6 +366,7 @@ jobs:
         with:
           cache-key-prefix: go-tests-${{ matrix.os }}
           use-sccache: ${{ matrix.os != 'windows-latest' }}
+          report-stats: 'true'
           target: ${{ matrix.os == 'windows-latest' && 'x86_64-pc-windows-gnu' || '' }}
           toolchain: ${{ matrix.os == 'windows-latest' && 'stable-x86_64-pc-windows-gnu' || '' }}
           # Disable cache on Windows due to fingerprint corruption and CGO issues

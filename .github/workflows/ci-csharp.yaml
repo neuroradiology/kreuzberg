@@ -94,6 +94,8 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: csharp-${{ matrix.os }}
+          use-sccache: 'true'
+          report-stats: 'true'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5

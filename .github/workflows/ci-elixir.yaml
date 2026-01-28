@@ -108,6 +108,8 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: elixir-${{ matrix.os }}
+          use-sccache: 'true'
+          report-stats: 'true'
 
       - name: Detect partial cache hit and clean stale fingerprints
         shell: bash

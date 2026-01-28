@@ -29,6 +29,10 @@ inputs:
     description: Report sccache statistics after builds
     required: false
     default: 'true'
+  shared-core-cache:
+    description: Enable shared cache for FFI core libraries across language bindings
+    required: false
+    default: 'false'
   disable-cache:
     description: Disable build artifact caching (useful for Windows where fingerprints get corrupted)
     required: false
@@ -76,9 +80,9 @@ runs:
           ~/.cargo/registry/cache
           ~/.cargo/git/db
           target/
-        key: ${{ inputs.cache-key-prefix }}-v3-${{ runner.os }}-${{ inputs.target || 'default' }}-${{ steps.cargo-hash.outputs.hash }}
+        key: ${{ inputs.shared-core-cache == 'true' && format('ffi-core-v3-{0}-{1}', runner.os, steps.cargo-hash.outputs.hash) || format('{0}-v3-{1}-{2}-{3}', inputs.cache-key-prefix, runner.os, inputs.target || 'default', steps.cargo-hash.outputs.hash) }}
         restore-keys: |
-          ${{ inputs.cache-key-prefix }}-v3-${{ runner.os }}-${{ inputs.target || 'default' }}-
+          ${{ inputs.shared-core-cache == 'true' && format('ffi-core-v3-{0}-', runner.os) || format('{0}-v3-{1}-{2}-', inputs.cache-key-prefix, runner.os, inputs.target || 'default') }}
 
     - name: Cache cargo-llvm-cov
       uses: actions/cache@v5

@@ -98,6 +98,8 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: php-${{ matrix.os }}
+          use-sccache: 'true'
+          report-stats: 'true'
 
       - name: Detect partial cache hit and clean stale fingerprints
         shell: bash
@@ -230,6 +232,8 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           cache-key-prefix: php-test-${{ matrix.os }}
+          use-sccache: 'true'
+          report-stats: 'true'
           # Disable cache on Windows due to fingerprint corruption issues
           disable-cache: ${{ matrix.os == 'windows-latest' }}
 

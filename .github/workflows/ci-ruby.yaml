@@ -122,6 +122,8 @@ jobs:
           cache-key-prefix: ruby-${{ matrix.os }}
           toolchain: ${{ runner.os == 'Windows' && 'stable-x86_64-pc-windows-msvc' || '' }}
           target: ${{ runner.os == 'Windows' && 'x86_64-pc-windows-msvc' || '' }}
+          use-sccache: 'true'
+          report-stats: 'true'
 
       - name: Detect partial cache hit and clean stale fingerprints
         shell: bash
@@ -524,6 +526,8 @@ jobs:
           cache-key-prefix: ruby-test-${{ matrix.os }}
           toolchain: ${{ runner.os == 'Windows' && 'stable-x86_64-pc-windows-msvc' || '' }}
           target: ${{ runner.os == 'Windows' && 'x86_64-pc-windows-msvc' || '' }}
+          use-sccache: 'true'
+          report-stats: 'true'
 
       - name: Detect partial cache hit and clean stale fingerprints
         shell: bash
