@@ -12,20 +12,20 @@ namespace Kreuzberg\Types;
  * @property-read string $blockType Type of block element
  * @property-read int|null $level Heading level (1-6) or nesting level for lists
  * @property-read string|null $content Text content for inline elements
- * @property-read array<FormattedBlock>|null $children Child blocks for list items and containers
+ * @property-read array<FormattedBlock> $children Child blocks for list items and containers
  * @property-read array<string, mixed>|null $attributes HTML/CSS attributes (id, class, etc.)
  */
 readonly class FormattedBlock
 {
     /**
-     * @param array<FormattedBlock>|null $children
+     * @param array<FormattedBlock> $children
      * @param array<string, mixed>|null $attributes
      */
     public function __construct(
         public string $blockType,
         public ?int $level = null,
         public ?string $content = null,
-        public ?array $children = null,
+        public array $children = [],
         public ?array $attributes = null,
     ) {
     }
@@ -46,7 +46,7 @@ readonly class FormattedBlock
         /** @var string|null $content */
         $content = $data['content'] ?? null;
 
-        $children = null;
+        $children = [];
         if (isset($data['children'])) {
             /** @var array<array<string, mixed>> $childrenData */
             $childrenData = $data['children'];

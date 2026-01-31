@@ -182,9 +182,7 @@ if (!function_exists('kreuzberg_extract_file')) {
                     'images' => $images,
                 ],
             ],
-            'embeddings' => [],
             'keywords' => [],
-            'tesseract' => [],
         ];
     }
 }
@@ -330,9 +328,7 @@ if (!function_exists('kreuzberg_extract_bytes')) {
                 'tables' => [],
                 'images' => $images,
             ]],
-            'embeddings' => [],
             'keywords' => [],
-            'tesseract' => [],
         ];
     }
 }
@@ -430,9 +426,7 @@ if (!function_exists('kreuzberg_batch_extract_files')) {
                     'tables' => [],
                     'images' => $images,
                 ]],
-                'embeddings' => [],
                 'keywords' => [],
-                'tesseract' => [],
             ];
         }
         return $results;
@@ -545,9 +539,7 @@ if (!function_exists('kreuzberg_batch_extract_bytes')) {
                     'tables' => [],
                     'images' => $images,
                 ]],
-                'embeddings' => [],
                 'keywords' => [],
-                'tesseract' => [],
             ];
         }
         return $results;

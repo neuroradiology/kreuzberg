@@ -16,8 +16,6 @@ namespace Kreuzberg\Types;
  * @property-read array<ExtractedImage>|null $images Extracted images (with nested OCR results)
  * @property-read array<PageContent>|null $pages Per-page content when page extraction is enabled
  * @property-read array<Keyword>|null $keywords Extracted keywords with scores if KeywordConfig provided
- * @property-read array<mixed, mixed>|null $embeddings Generated embeddings if enabled
- * @property-read array<mixed, mixed>|null $tesseract Tesseract OCR configuration results if enabled
  * @property-read array<Element>|null $elements Semantic elements when output_format='element_based'
  * @property-read DjotContent|null $djotContent Structured Djot content when output_format='djot'
  */
@@ -29,9 +27,7 @@ readonly class ExtractionResult
      * @param array<Chunk>|null $chunks
      * @param array<ExtractedImage>|null $images
      * @param array<PageContent>|null $pages
-     * @param array<mixed, mixed>|null $embeddings
      * @param array<Keyword>|null $keywords
-     * @param array<mixed, mixed>|null $tesseract
      * @param array<Element>|null $elements
      * @param DjotContent|null $djotContent
      */
@@ -44,9 +40,7 @@ readonly class ExtractionResult
         public ?array $chunks = null,
         public ?array $images = null,
         public ?array $pages = null,
-        public ?array $embeddings = null,
         public ?array $keywords = null,
-        public ?array $tesseract = null,
         public ?array $elements = null,
         public ?DjotContent $djotContent = null,
     ) {
@@ -107,51 +101,6 @@ readonly class ExtractionResult
             );
         }
 
-        // If embeddings field exists in data, use it
-        $embeddings = $data['embeddings'] ?? null;
-        if (is_array($embeddings)) {
-            // Convert each embedding to a proper object with vector property
-            $embeddings = array_map(
-                static function ($embedding) {
-                    if (is_object($embedding)) {
-                        // If it's already an object, ensure it has the vector property
-                        if (property_exists($embedding, 'vector')) {
-                            // Ensure vector is an array
-                            if (!is_array($embedding->vector)) {
-                                $embedding->vector = (array)$embedding->vector;
-                            }
-                            return $embedding;
-                        }
-                        // If no vector property, convert the whole object to array and wrap in vector
-                        return (object) ['vector' => (array)$embedding];
-                    } elseif (is_array($embedding)) {
-                        // If it's an array, wrap it or use it as vector
-                        if (isset($embedding['vector'])) {
-                            return (object) $embedding;
-                        }
-                        return (object) ['vector' => $embedding];
-                    }
-                    return $embedding;
-                },
-                $embeddings,
-            );
-        } else {
-            $embeddings = null;
-        }
-
-        // If no embeddings field but chunks have embeddings, extract them
-        if ($embeddings === null && $chunks !== null) {
-            $chunkEmbeddings = [];
-            foreach ($chunks as $chunk) {
-                if ($chunk instanceof Chunk && $chunk->embedding !== null) {
-                    $chunkEmbeddings[] = (object) ['vector' => $chunk->embedding];
-                }
-            }
-            if (!empty($chunkEmbeddings)) {
-                $embeddings = $chunkEmbeddings;
-            }
-        }
-
         $keywords = null;
         if (isset($data['keywords'])) {
             /** @var array<array<string, mixed>> $keywordsData */
@@ -163,11 +112,6 @@ readonly class ExtractionResult
                     $keywordsData,
                 );
             }
-        }
-
-        $tesseract = $data['tesseract'] ?? null;
-        if (!is_array($tesseract)) {
-            $tesseract = null;
         }
 
         $elements = null;
@@ -201,9 +145,7 @@ readonly class ExtractionResult
             chunks: $chunks,
             images: $images,
             pages: $pages,
-            embeddings: $embeddings,
             keywords: $keywords,
-            tesseract: $tesseract,
             elements: $elements,
             djotContent: $djotContent,
         );

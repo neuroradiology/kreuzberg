@@ -11,7 +11,6 @@ namespace Kreuzberg\Types;
  * and postprocessors enabled.
  *
  * @property-read string|null $language Document language (ISO 639-1 code)
- * @property-read string|null $date Document date (ISO 8601 format)
  * @property-read string|null $subject Document subject
  * @property-read string|null $formatType Format discriminator ("pdf", "excel", "email", etc.)
  * @property-read string|null $title Document title
@@ -20,8 +19,10 @@ namespace Kreuzberg\Types;
  * @property-read string|null $createdAt Creation date (ISO 8601)
  * @property-read string|null $modifiedAt Modification date (ISO 8601)
  * @property-read string|null $createdBy Creator/application name
- * @property-read string|null $producer Producer/generator
+ * @property-read string|null $modifiedBy Modifier name
  * @property-read int|null $pageCount Number of pages
+ * @property-read int|null $sheetCount Number of sheets (for spreadsheets)
+ * @property-read string|null $format Image format (e.g., "PNG", "JPEG") for image documents
  * @property-read array<string, mixed> $custom Additional custom metadata from postprocessors
  */
 readonly class Metadata
@@ -33,7 +34,6 @@ readonly class Metadata
      */
     public function __construct(
         public ?string $language = null,
-        public ?string $date = null,
         public ?string $subject = null,
         public ?string $formatType = null,
         public ?string $title = null,
@@ -42,8 +42,10 @@ readonly class Metadata
         public ?string $createdAt = null,
         public ?string $modifiedAt = null,
         public ?string $createdBy = null,
-        public ?string $producer = null,
+        public ?string $modifiedBy = null,
         public ?int $pageCount = null,
+        public ?int $sheetCount = null,
+        public ?string $format = null,
         public array $custom = [],
     ) {
     }
@@ -57,7 +59,6 @@ readonly class Metadata
     {
         $knownFields = [
             'language',
-            'date',
             'subject',
             'format_type',
             'title',
@@ -66,15 +67,15 @@ readonly class Metadata
             'created_at',
             'modified_at',
             'created_by',
-            'producer',
+            'modified_by',
             'page_count',
+            'pageCount',
+            'sheet_count',
+            'format',
         ];
 
         /** @var string|null $language */
         $language = $data['language'] ?? null;
-
-        /** @var string|null $date */
-        $date = $data['date'] ?? null;
 
         /** @var string|null $subject */
         $subject = $data['subject'] ?? null;
@@ -100,11 +101,17 @@ readonly class Metadata
         /** @var string|null $createdBy */
         $createdBy = $data['created_by'] ?? null;
 
-        /** @var string|null $producer */
-        $producer = $data['producer'] ?? null;
+        /** @var string|null $modifiedBy */
+        $modifiedBy = $data['modified_by'] ?? null;
 
         /** @var int|null $pageCount */
-        $pageCount = $data['page_count'] ?? null;
+        $pageCount = $data['page_count'] ?? $data['pageCount'] ?? null;
+
+        /** @var int|null $sheetCount */
+        $sheetCount = $data['sheet_count'] ?? null;
+
+        /** @var string|null $format */
+        $format = $data['format'] ?? null;
 
         $custom = [];
         foreach ($data as $key => $value) {
@@ -115,7 +122,6 @@ readonly class Metadata
 
         return new self(
             language: $language,
-            date: $date,
             subject: $subject,
             formatType: $formatType,
             title: $title,
@@ -124,8 +130,10 @@ readonly class Metadata
             createdAt: $createdAt,
             modifiedAt: $modifiedAt,
             createdBy: $createdBy,
-            producer: $producer,
+            modifiedBy: $modifiedBy,
             pageCount: $pageCount,
+            sheetCount: $sheetCount,
+            format: $format,
             custom: $custom,
         );
     }
