@@ -47,15 +47,11 @@ tokio = { version = "1.49.0", features = [
 
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149" }
-
 thiserror = "2.0.18"
 anyhow = "1.0"
 libc = "0.2.180"
-
 async-trait = "0.1.89"
-
 tracing = "0.1"
-
 ahash = "0.8.12"
 base64 = "0.22.1"
 bytes = { version = "1", features = ["serde"] }
@@ -66,18 +62,11 @@ parking_lot = "0.12.5"
 html-to-markdown-rs = { version = "2.24.5", default-features = false }
 reqwest = { version = "0.13.1", default-features = false }
 image = { version = "0.25.9", default-features = false }
-
 clap = { version = "4.5", features = ["derive", "color", "suggestions"] }
-
 toml = "0.9.11"
-
 tempfile = "3.24.0"
 criterion = { version = "0.8", features = ["html_reports"] }
-
 lzma-rust2 = { version = "0.15.7" }
-
-# Fix for WASM builds: ensure getrandom has wasm_js feature enabled
-# This is needed because ring/rustls depend on getrandom without the wasm_js feature
 getrandom = { version = "0.3.4", features = ["wasm_js"] }
 
 [profile.release]
