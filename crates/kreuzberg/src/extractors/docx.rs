@@ -346,6 +346,7 @@ impl DocumentExtractor for DocxExtractor {
             images: Some(vec![]),
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

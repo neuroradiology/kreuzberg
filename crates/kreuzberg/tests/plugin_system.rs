@@ -61,6 +61,7 @@ impl DocumentExtractor for FailingExtractor {
                 images: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
                 djot_content: None,
             })
         }
@@ -308,6 +309,7 @@ fn test_extractor_priority_ordering_complex() {
                 images: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
                 djot_content: None,
             })
         }
@@ -470,6 +472,7 @@ async fn test_processor_execution_order_within_stage() {
         images: None,
         pages: None,
         elements: None,
+        ocr_elements: None,
         djot_content: None,
     };
 
@@ -507,6 +510,7 @@ async fn test_processor_error_propagation() {
         images: None,
         pages: None,
         elements: None,
+        ocr_elements: None,
         djot_content: None,
     };
 
@@ -681,6 +685,7 @@ async fn test_validator_content_validation() {
         images: None,
         pages: None,
         elements: None,
+        ocr_elements: None,
         djot_content: None,
     };
 
@@ -697,6 +702,7 @@ async fn test_validator_content_validation() {
         images: None,
         pages: None,
         elements: None,
+        ocr_elements: None,
         djot_content: None,
     };
 

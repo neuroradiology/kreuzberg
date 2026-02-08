@@ -234,6 +234,7 @@ impl DocumentExtractor for MarkdownExtractor {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

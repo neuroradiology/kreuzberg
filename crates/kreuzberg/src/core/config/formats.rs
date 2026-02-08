@@ -12,6 +12,8 @@ use std::str::FromStr;
 /// Controls the format of the `content` field in `ExtractionResult`.
 /// When set to `Markdown`, `Djot`, or `Html`, the output will be formatted
 /// accordingly. `Plain` returns the raw extracted text.
+/// `Structured` returns JSON with full OCR element data including bounding
+/// boxes and confidence scores.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum OutputFormat {
@@ -24,6 +26,19 @@ pub enum OutputFormat {
     Djot,
     /// HTML format
     Html,
+    /// Structured JSON format with full OCR element metadata.
+    ///
+    /// This format preserves all spatial and confidence information from
+    /// the OCR backend, including bounding boxes (rectangles or quadrilaterals),
+    /// detection and recognition confidence scores, rotation information,
+    /// and hierarchical element levels.
+    ///
+    /// Ideal for:
+    /// - Layout analysis and document understanding
+    /// - Searchable PDF generation
+    /// - Building custom document viewers
+    /// - Extracting maximum information from OCR results
+    Structured,
 }
 
 impl std::fmt::Display for OutputFormat {
@@ -33,6 +48,7 @@ impl std::fmt::Display for OutputFormat {
             OutputFormat::Markdown => write!(f, "markdown"),
             OutputFormat::Djot => write!(f, "djot"),
             OutputFormat::Html => write!(f, "html"),
+            OutputFormat::Structured => write!(f, "structured"),
         }
     }
 }
@@ -46,8 +62,9 @@ impl FromStr for OutputFormat {
             "markdown" | "md" => Ok(OutputFormat::Markdown),
             "djot" => Ok(OutputFormat::Djot),
             "html" => Ok(OutputFormat::Html),
+            "structured" | "json" => Ok(OutputFormat::Structured),
             _ => Err(format!(
-                "Invalid output format: '{}'. Valid formats: plain, text, markdown, md, djot, html",
+                "Invalid output format: '{}'. Valid formats: plain, text, markdown, md, djot, html, structured, json",
                 s
             )),
         }
@@ -89,6 +106,14 @@ mod tests {
     }
 
     #[test]
+    fn test_output_format_from_str_structured() {
+        assert_eq!("structured".parse::<OutputFormat>().unwrap(), OutputFormat::Structured);
+        assert_eq!("STRUCTURED".parse::<OutputFormat>().unwrap(), OutputFormat::Structured);
+        assert_eq!("json".parse::<OutputFormat>().unwrap(), OutputFormat::Structured);
+        assert_eq!("JSON".parse::<OutputFormat>().unwrap(), OutputFormat::Structured);
+    }
+
+    #[test]
     fn test_output_format_from_str_invalid() {
         let result = "invalid".parse::<OutputFormat>();
         assert!(result.is_err());
@@ -103,6 +128,7 @@ mod tests {
         assert_eq!(OutputFormat::Markdown.to_string(), "markdown");
         assert_eq!(OutputFormat::Djot.to_string(), "djot");
         assert_eq!(OutputFormat::Html.to_string(), "html");
+        assert_eq!(OutputFormat::Structured.to_string(), "structured");
     }
 
     #[test]
@@ -118,6 +144,7 @@ mod tests {
             OutputFormat::Markdown,
             OutputFormat::Djot,
             OutputFormat::Html,
+            OutputFormat::Structured,
         ] {
             let json = serde_json::to_string(&format).unwrap();
             let deserialized: OutputFormat = serde_json::from_str(&json).unwrap();
@@ -131,5 +158,9 @@ mod tests {
         assert_eq!(serde_json::to_string(&OutputFormat::Markdown).unwrap(), "\"markdown\"");
         assert_eq!(serde_json::to_string(&OutputFormat::Djot).unwrap(), "\"djot\"");
         assert_eq!(serde_json::to_string(&OutputFormat::Html).unwrap(), "\"html\"");
+        assert_eq!(
+            serde_json::to_string(&OutputFormat::Structured).unwrap(),
+            "\"structured\""
+        );
     }
 }

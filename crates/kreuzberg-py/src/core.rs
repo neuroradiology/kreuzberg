@@ -15,6 +15,7 @@ fn extract_format_strings(config: &ExtractionConfig) -> (Option<String>, Option<
         kreuzberg::core::config::formats::OutputFormat::Markdown => Some("markdown".to_string()),
         kreuzberg::core::config::formats::OutputFormat::Djot => Some("djot".to_string()),
         kreuzberg::core::config::formats::OutputFormat::Html => Some("html".to_string()),
+        kreuzberg::core::config::formats::OutputFormat::Structured => Some("structured".to_string()),
     };
     let result_fmt = match config.inner.result_format {
         kreuzberg::types::OutputFormat::Unified => Some("unified".to_string()),

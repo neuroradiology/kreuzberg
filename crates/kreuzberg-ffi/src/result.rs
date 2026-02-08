@@ -426,6 +426,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         }
     }
 

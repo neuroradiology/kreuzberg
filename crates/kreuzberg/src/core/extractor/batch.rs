@@ -129,6 +129,7 @@ pub async fn batch_extract_file(
                     djot_content: None,
                     pages: None,
                     elements: None,
+                    ocr_elements: None,
                 });
             }
             Err(join_err) => {
@@ -254,6 +255,7 @@ pub async fn batch_extract_bytes(
                     djot_content: None,
                     pages: None,
                     elements: None,
+                    ocr_elements: None,
                 });
             }
             Err(join_err) => {

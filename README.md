@@ -61,7 +61,7 @@ Extract text and metadata from a wide range of file formats (75+), generate embe
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, and document extractors
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, C#, PHP, and Elixir
 - **75+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
-- **OCR support** – Tesseract (all languages via native binding), EasyOCR/PaddleOCR (Python), Guten (Node.js), extensible via plugin API
+- **OCR support** – Tesseract (all bindings), PaddleOCR (all native bindings), EasyOCR (Python), extensible via plugin API
 - **High performance** – Rust core with native PDFium, SIMD optimizations and full parallelism
 - **Flexible deployment** – Use as library, CLI tool, REST API server, or MCP server
 - **Memory efficient** – Streaming parsers for multi-GB files
@@ -73,7 +73,7 @@ Extract text and metadata from a wide range of file formats (75+), generate embe
 Each language binding provides comprehensive documentation with examples and best practices. Choose your platform to get started:
 
 **Scripting Languages:**
-- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, EasyOCR, PaddleOCR)
+- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, PaddleOCR, EasyOCR)
 - **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby)** – RubyGems package, idiomatic Ruby API, native bindings
 - **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php)** – Composer package, modern PHP 8.2+ support, type-safe API
 - **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir)** – Hex package, OTP integration, concurrent processing
@@ -122,14 +122,14 @@ Complete architecture coverage across all language bindings:
 
 To use embeddings functionality:
 
-1. **Install ONNX Runtime 1.22.x**:
+1. **Install ONNX Runtime 1.23+**:
    - Linux: Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) (Debian packages may have older versions)
    - macOS: `brew install onnxruntime`
    - Windows: Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases)
 
 2. Use embeddings in your code - see [Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)
 
-**Note:** Kreuzberg requires ONNX Runtime version 1.22.x for embeddings. All other Kreuzberg features work without ONNX Runtime.
+**Note:** Kreuzberg requires ONNX Runtime version 1.23+ for embeddings. All other Kreuzberg features work without ONNX Runtime.
 
 ## Supported Formats
 

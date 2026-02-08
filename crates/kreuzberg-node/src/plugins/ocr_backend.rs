@@ -141,6 +141,7 @@ impl RustOcrBackend for JsOcrBackend {
             pages: None,
             elements: None,
             djot_content: None,
+            ocr_elements: None,
         })
     }
 

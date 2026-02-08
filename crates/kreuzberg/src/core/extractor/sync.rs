@@ -202,6 +202,7 @@ pub fn batch_extract_bytes_sync(
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         }));
     }
     Ok(results)

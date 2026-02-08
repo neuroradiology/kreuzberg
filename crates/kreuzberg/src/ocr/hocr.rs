@@ -23,7 +23,10 @@ pub fn convert_hocr_to_markdown(
     opts.output_format = match format {
         KreuzbergOutputFormat::Markdown => LibOutputFormat::Markdown,
         KreuzbergOutputFormat::Djot => LibOutputFormat::Djot,
-        KreuzbergOutputFormat::Plain | KreuzbergOutputFormat::Html => LibOutputFormat::Markdown,
+        // Plain, Html, and Structured default to Markdown for hOCR conversion
+        KreuzbergOutputFormat::Plain | KreuzbergOutputFormat::Html | KreuzbergOutputFormat::Structured => {
+            LibOutputFormat::Markdown
+        }
     };
 
     convert(hocr_html, Some(opts)).map_err(|e| OcrError::ProcessingFailed(format!("hOCR conversion failed: {}", e)))

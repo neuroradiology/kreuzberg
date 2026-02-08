@@ -91,6 +91,7 @@ impl DocumentExtractor for OpmlExtractor {
             images: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

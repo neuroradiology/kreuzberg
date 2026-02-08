@@ -15,8 +15,11 @@ fn map_output_format(format: KreuzbergOutputFormat) -> LibOutputFormat {
     match format {
         KreuzbergOutputFormat::Markdown => LibOutputFormat::Markdown,
         KreuzbergOutputFormat::Djot => LibOutputFormat::Djot,
-        // Plain and Html default to Markdown for HTML conversions
-        KreuzbergOutputFormat::Plain | KreuzbergOutputFormat::Html => LibOutputFormat::Markdown,
+        // Plain, Html, and Structured default to Markdown for HTML conversions
+        // Structured output includes the converted content plus full element metadata
+        KreuzbergOutputFormat::Plain | KreuzbergOutputFormat::Html | KreuzbergOutputFormat::Structured => {
+            LibOutputFormat::Markdown
+        }
     }
 }
 

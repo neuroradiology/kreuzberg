@@ -128,6 +128,7 @@ impl DocumentExtractor for MockExtractor {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         })
     }

@@ -137,6 +137,7 @@ impl DocumentExtractor for EpubExtractor {
             images: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

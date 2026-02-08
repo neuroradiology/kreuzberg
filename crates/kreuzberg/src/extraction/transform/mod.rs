@@ -306,6 +306,7 @@ mod tests {
                 },
             ]),
             elements: None,
+            ocr_elements: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -392,6 +393,7 @@ mod tests {
                 hierarchy: None,
             }]),
             elements: None,
+            ocr_elements: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -434,6 +436,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);
@@ -466,6 +469,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let elements = transform_extraction_result_to_elements(&result);

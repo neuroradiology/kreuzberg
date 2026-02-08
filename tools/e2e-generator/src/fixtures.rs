@@ -166,6 +166,9 @@ pub struct Assertions {
     pub output_format_is: Option<String>,
     #[serde(default)]
     pub result_format_is: Option<String>,
+    /// OCR-specific assertions for element-based structured output
+    #[serde(default)]
+    pub ocr_elements: Option<OcrElementAssertion>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -219,6 +222,24 @@ pub struct ElementAssertion {
     pub min_count: Option<usize>,
     #[serde(default)]
     pub types_include: Option<Vec<String>>,
+}
+
+/// OCR-specific assertions for structured element output
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct OcrElementAssertion {
+    /// Whether the result should have OCR elements
+    #[serde(default)]
+    pub has_elements: Option<bool>,
+    /// Whether OCR elements should have geometry (bounding boxes)
+    #[serde(default)]
+    pub elements_have_geometry: Option<bool>,
+    /// Whether OCR elements should have confidence scores
+    #[serde(default)]
+    pub elements_have_confidence: Option<bool>,
+    /// Minimum number of OCR elements expected
+    #[serde(default)]
+    pub min_count: Option<usize>,
 }
 
 #[allow(dead_code)]
@@ -493,6 +514,11 @@ pub fn load_fixtures(fixtures_dir: &Utf8Path) -> Result<Vec<Fixture>> {
 /// - Workers target cannot run Office fixtures (LibreOffice not available)
 /// - Workers target has a 500KB size limit for documents
 pub fn should_include_for_wasm(fixture: &Fixture, target: WasmTarget) -> bool {
+    // PaddleOCR requires ONNX Runtime which is not available in WASM
+    if fixture.skip().requires_feature.iter().any(|f| f == "paddle-ocr") {
+        return false;
+    }
+
     if target == WasmTarget::Workers && fixture.category() == "office" {
         return false;
     }

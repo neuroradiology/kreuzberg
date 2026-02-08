@@ -77,6 +77,7 @@ impl PptxExtractor {
                         djot_content: None,
                         pages: None,
                         elements: None,
+                        ocr_elements: None,
                     };
                     image.ocr_result = Some(Box::new(extraction_result));
                 }
@@ -201,6 +202,7 @@ impl DocumentExtractor for PptxExtractor {
             images,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 
@@ -266,6 +268,7 @@ impl DocumentExtractor for PptxExtractor {
             images,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

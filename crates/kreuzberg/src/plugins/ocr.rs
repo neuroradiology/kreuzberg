@@ -44,6 +44,7 @@ pub enum OcrBackendType {
 /// use kreuzberg::{Result, OcrConfig};
 /// use async_trait::async_trait;
 /// use std::path::Path;
+/// use std::borrow::Cow;
 /// use kreuzberg::types::{ExtractionResult, Metadata};
 ///
 /// struct CustomOcrBackend;
@@ -70,6 +71,7 @@ pub enum OcrBackendType {
 ///             djot_content: None,
 ///             pages: None,
 ///             elements: None,
+///             ocr_elements: None,
 ///         })
 ///     }
 ///
@@ -114,6 +116,7 @@ pub trait OcrBackend: Plugin {
     /// # use kreuzberg::{Result, OcrConfig};
     /// # use async_trait::async_trait;
     /// # use std::path::Path;
+    /// # use std::borrow::Cow;
     /// # use kreuzberg::types::{ExtractionResult, Metadata};
     /// # struct MyOcr;
     /// # impl Plugin for MyOcr {
@@ -151,6 +154,7 @@ pub trait OcrBackend: Plugin {
     ///         djot_content: None,
     ///         pages: None,
     ///         elements: None,
+    ///         ocr_elements: None,
     ///     })
     /// }
     /// # }
@@ -300,6 +304,7 @@ pub trait OcrBackend: Plugin {
 /// use async_trait::async_trait;
 /// use std::sync::Arc;
 /// use std::path::Path;
+/// use std::borrow::Cow;
 ///
 /// struct CustomOcr;
 ///
@@ -324,6 +329,7 @@ pub trait OcrBackend: Plugin {
 ///             djot_content: None,
 ///             pages: None,
 ///             elements: None,
+///             ocr_elements: None,
 ///         })
 ///     }
 ///     fn supports_language(&self, _: &str) -> bool { true }
@@ -488,6 +494,7 @@ mod tests {
                 djot_content: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
             })
         }
 
@@ -513,8 +520,7 @@ mod tests {
         let config = OcrConfig {
             backend: "mock".to_string(),
             language: "eng".to_string(),
-            tesseract_config: None,
-            output_format: None,
+            ..Default::default()
         };
 
         let result = backend.process_image(b"fake image data", &config).await.unwrap();
@@ -601,8 +607,7 @@ mod tests {
         let config = OcrConfig {
             backend: "mock".to_string(),
             language: "eng".to_string(),
-            tesseract_config: None,
-            output_format: None,
+            ..Default::default()
         };
 
         let result = backend.process_file(path, &config).await.unwrap();
@@ -639,8 +644,7 @@ mod tests {
         let config = OcrConfig {
             backend: "mock".to_string(),
             language: "eng".to_string(),
-            tesseract_config: None,
-            output_format: None,
+            ..Default::default()
         };
 
         let result = backend.process_image(b"", &config).await;

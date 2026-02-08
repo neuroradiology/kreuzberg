@@ -108,6 +108,20 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
                 result.content = format!("<pre>{}</pre>", escaped_content);
             }
         }
+        OutputFormat::Structured => {
+            // Structured output serializes the full ExtractionResult to JSON,
+            // including OCR elements with bounding boxes and confidence scores.
+            // The content field retains the text representation while the full
+            // structured data is available via JSON serialization of the result.
+            //
+            // The actual JSON serialization happens at the API layer when
+            // returning results. Here we just ensure elements are preserved
+            // and update the mime_type to indicate structured output.
+            result.metadata.additional.insert(
+                Cow::Borrowed("output_format"),
+                serde_json::Value::String("structured".to_string()),
+            );
+        }
     }
 }
 
@@ -138,6 +152,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Plain);
@@ -160,6 +175,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: Some(DjotContent {
                 plain_text: "Hello World".to_string(),
                 blocks: vec![FormattedBlock {
@@ -204,6 +220,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
@@ -226,6 +243,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -249,6 +267,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -272,6 +291,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Markdown);
@@ -302,6 +322,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Djot);
@@ -335,6 +356,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         apply_output_format(&mut result, OutputFormat::Html);
@@ -382,6 +404,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: Some(djot_content),
         };
 

@@ -299,6 +299,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -329,6 +330,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -363,6 +365,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -385,6 +388,7 @@ mod tests {
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 

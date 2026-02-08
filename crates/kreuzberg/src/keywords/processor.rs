@@ -116,6 +116,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -147,6 +148,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -174,6 +176,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -201,6 +204,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -239,6 +243,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -266,6 +271,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 
@@ -279,6 +285,7 @@ machine learning that uses neural networks with multiple layers.
             images: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
             djot_content: None,
         };
 

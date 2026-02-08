@@ -443,6 +443,7 @@ impl DocumentExtractor for FictionBookExtractor {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

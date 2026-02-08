@@ -117,6 +117,7 @@ impl DocumentExtractor for TypstExtractor {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

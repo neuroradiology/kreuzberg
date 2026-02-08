@@ -553,6 +553,7 @@ mod tests {
                 pages: None,
                 elements: None,
                 djot_content: None,
+                ocr_elements: None,
             };
 
             let py_result =
@@ -583,6 +584,7 @@ mod tests {
                 pages: None,
                 elements: None,
                 djot_content: None,
+                ocr_elements: None,
             };
             rust_result
                 .metadata

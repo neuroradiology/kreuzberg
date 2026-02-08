@@ -18,6 +18,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### MIME Type Mappings
 - Added `.docbook` (`application/docbook+xml`) and `.jats` (`application/x-jats+xml`) file extension mappings.
 
+### Added
+
+#### OCR
+- **PaddleOCR backend via ONNX Runtime**: Added a new OCR backend (`kreuzberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
+- **Unified OCR element output architecture**: Extraction results now include structured `OcrElement` data with bounding geometry (rectangles and quadrilaterals), per-element confidence scores, rotation information, and hierarchical levels (word, line, block, page). Available from both PaddleOCR and Tesseract backends.
+- **PaddleOCR support in all bindings**: PaddleOCR is available across Python, Rust, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, and Elixir bindings via the `paddle-ocr` feature flag.
+- **PaddleOCR CLI support**: The `kreuzberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
+- **Shared ORT discovery**: Added `ort_discovery` module for finding ONNX Runtime shared libraries across platforms, shared between PaddleOCR and future ONNX-based backends.
+- **PaddleOCR model setup GitHub Action**: Added `.github/actions/setup-paddle-ocr-models/` action for CI pipelines to download and cache PaddleOCR model files.
+
+#### CI
+- **PaddleOCR CI integration**: Added PaddleOCR to the CI/publish pipelines with dedicated test jobs and model caching.
+
+#### musl Linux Support
+- **Re-enabled musl targets**: Added `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl` targets for CLI binaries, Python wheels (musllinux), and Node.js native bindings. Resolves glibc 2.38+ requirement for prebuilt CLI binaries on older distros like Ubuntu 22.04 (#364).
+- **musl CI workflows**: Added dedicated `ci-musl.yaml` workflow for CLI musl build validation with Alpine container smoke tests, and musllinux Python wheel builds to `ci-python.yaml`.
+- **PDFium musl awareness**: Build script now downloads musl-specific PDFium binaries and uses `libstdc++` consistently for all Linux targets (including musl).
+- **musl C++ cross-compilation**: Added `resolve_cxx_compiler()` and `create_musl_cxx_wrapper()` to `kreuzberg-tesseract` build script for correct C++ header resolution when cross-compiling from glibc host to musl target. Skips `-ldl` linking on musl (not available/needed).
+
+#### Build System
+- **Tesseract 5.5.2**: Bumped vendored Tesseract from 5.5.1 to 5.5.2 with `BUILD_TESSERACT_BINARY=OFF` to skip unnecessary binary compilation.
+- **Leptonica 1.87.0**: Bumped vendored Leptonica from 1.86.0 to 1.87.0.
+- **ONNX Runtime 1.24.1**: Bumped ONNX Runtime from 1.23.2 to 1.24.1.
+- **Dead code cleanup**: Removed unused EMSDK constants and `apply_patches()` function from `kreuzberg-tesseract` build script.
+
+### Removed
+
+#### Node.js Bindings
+- **Guten OCR references**: Removed all references to the unused Guten OCR backend. Renamed `KREUZBERG_DEBUG_GUTEN` env var to `KREUZBERG_DEBUG_OCR`.
+
+#### PHP Bindings
+- **Guten OCR backend option**: Removed `'guten'` from the documented backend choices in `OcrConfig`.
+
 ### Fixed
 
 #### ODT List and Section Extraction
@@ -44,7 +77,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### PDF Error Handling Regression
 - Reverted incorrect change from v4.2.14 that silently returned empty results for corrupted/malformed PDFs instead of propagating errors. Corrupted PDFs now correctly return `PdfError::InvalidPdf` and password-protected PDFs return `PdfError::PasswordRequired` as expected.
 
+#### PaddleOCR Model URLs
+- Fixed incorrect detection model filename in Docker and CI action (`en_PP-OCRv4_det_infer.onnx` → `ch_PP-OCRv4_det_infer.onnx`).
+
+#### Python Bindings
+- Fixed `OcrConfig` constructor silently ignoring `paddle_ocr_config` and `element_config` keyword arguments.
+
 ### Changed
+
+#### ONNX Runtime
+- Bumped ONNX Runtime from 1.23.2 to 1.24.1 across CI, Docker images, and documentation. Minimum supported ORT version is 1.23+.
 
 #### API Parity
 - Added `security_limits` field to all 9 language bindings (TypeScript, Go, Python, Ruby, PHP, Java, C#, WASM, Elixir) for API parity with Rust core `ExtractionConfig`.
@@ -171,6 +213,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Python Bindings
 - Fixed CLI binary missing from all platform wheels in the publish workflow. (#349)
+
+### Fixed
+
+#### OCR Heuristic
+
+- **Pass actual page count to OCR fallback evaluator**: `evaluate_native_text_for_ocr` was called with `None` for page count, defaulting to 1. This inflated per-page averages for multi-page documents, causing scanned PDFs to skip OCR.
+- **Per-page OCR evaluation for mixed-content PDFs**: Added `evaluate_per_page_ocr` which evaluates each page independently using page boundaries. If any single page triggers OCR fallback, the entire document is OCR'd. Previously, good pages masked scanned pages in the aggregate evaluation.
 
 ---
 

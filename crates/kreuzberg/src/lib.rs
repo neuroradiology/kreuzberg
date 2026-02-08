@@ -72,6 +72,12 @@ pub mod keywords;
 #[cfg(feature = "ocr")]
 pub mod ocr;
 
+#[cfg(any(feature = "paddle-ocr", feature = "embeddings"))]
+pub mod ort_discovery;
+
+#[cfg(feature = "paddle-ocr")]
+pub mod paddle_ocr;
+
 #[cfg(feature = "pdf")]
 pub mod pdf;
 
@@ -97,6 +103,9 @@ pub use core::server_config::ServerConfig;
 
 #[cfg(feature = "pdf")]
 pub use core::config::{HierarchyConfig, PdfConfig};
+
+#[cfg(feature = "paddle-ocr")]
+pub use paddle_ocr::{CacheStats, ModelManager, ModelPaths, PaddleLanguage, PaddleOcrBackend, PaddleOcrConfig};
 
 pub use core::mime::{
     DOCX_MIME_TYPE, EXCEL_MIME_TYPE, HTML_MIME_TYPE, JSON_MIME_TYPE, MARKDOWN_MIME_TYPE, PDF_MIME_TYPE,

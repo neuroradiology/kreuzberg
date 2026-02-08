@@ -144,6 +144,7 @@ async fn test_pipeline_empty_no_processors() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -191,6 +192,7 @@ async fn test_pipeline_single_processor_per_stage() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -238,6 +240,7 @@ async fn test_pipeline_multiple_processors_per_stage() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -276,6 +279,7 @@ async fn test_pipeline_all_stages_enabled() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -312,6 +316,7 @@ async fn test_pipeline_postprocessing_disabled() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -363,6 +368,7 @@ async fn test_pipeline_early_stage_runs_first() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -405,6 +411,7 @@ async fn test_pipeline_middle_stage_runs_second() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -443,6 +450,7 @@ async fn test_pipeline_late_stage_runs_last() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -481,6 +489,7 @@ async fn test_pipeline_within_stage_priority_order() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -551,6 +560,7 @@ async fn test_pipeline_cross_stage_data_flow() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -611,6 +621,7 @@ async fn test_pipeline_early_stage_error_recorded() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -655,6 +666,7 @@ async fn test_pipeline_middle_stage_error_propagation() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -729,6 +741,7 @@ async fn test_pipeline_late_stage_error_doesnt_affect_earlier_stages() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -819,6 +832,7 @@ async fn test_pipeline_processor_error_doesnt_stop_other_processors() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -899,6 +913,7 @@ async fn test_pipeline_multiple_processor_errors() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -943,6 +958,7 @@ async fn test_pipeline_error_context_preservation() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1021,6 +1037,7 @@ async fn test_pipeline_metadata_added_in_early_visible_in_middle() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1095,6 +1112,7 @@ async fn test_pipeline_content_modified_in_middle_visible_in_late() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1166,6 +1184,7 @@ async fn test_pipeline_multiple_processors_modifying_same_metadata() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1256,6 +1275,7 @@ async fn test_pipeline_processors_reading_previous_output() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1323,6 +1343,7 @@ async fn test_pipeline_large_content_modification() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1361,6 +1382,7 @@ async fn test_pipeline_enabled_processors_whitelist() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -1410,6 +1432,7 @@ async fn test_pipeline_disabled_processors_blacklist() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {
@@ -1459,6 +1482,7 @@ async fn test_pipeline_no_filtering_runs_all() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig::default();
 
@@ -1499,6 +1523,7 @@ async fn test_pipeline_empty_whitelist_runs_none() {
         pages: None,
         djot_content: None,
         elements: None,
+        ocr_elements: None,
     };
     let config = ExtractionConfig {
         postprocessor: Some(PostProcessorConfig {

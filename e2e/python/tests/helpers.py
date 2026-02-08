@@ -295,3 +295,39 @@ def assert_result_format(result: Any, expected: str) -> None:
     actual_value = actual.value if hasattr(actual, "value") else str(actual)
     if actual_value.lower() != expected.lower():
         pytest.fail(f"Expected result_format {expected!r}, got {actual_value!r}")
+
+
+def assert_ocr_elements(
+    result: Any,
+    has_elements: bool | None = None,
+    elements_have_geometry: bool | None = None,
+    elements_have_confidence: bool | None = None,
+    min_count: int | None = None,
+) -> None:
+    ocr_elements = getattr(result, "ocr_elements", None)
+    if has_elements:
+        if ocr_elements is None:
+            pytest.fail("Expected ocr_elements but got None")
+        if not isinstance(ocr_elements, (list, tuple)):
+            pytest.fail(f"Expected ocr_elements to be a list, got {type(ocr_elements)}")
+        if len(ocr_elements) == 0:
+            pytest.fail("Expected ocr_elements to be non-empty")
+    if isinstance(ocr_elements, (list, tuple)):
+        if min_count is not None and len(ocr_elements) < min_count:
+            pytest.fail(f"Expected at least {min_count} ocr_elements, found {len(ocr_elements)}")
+        if elements_have_geometry:
+            for i, el in enumerate(ocr_elements):
+                geometry = getattr(el, "geometry", None)
+                if geometry is None:
+                    pytest.fail(f"OCR element {i} has no geometry")
+                geom_type = getattr(geometry, "type", None)
+                if geom_type not in ("rectangle", "quadrilateral"):
+                    pytest.fail(f"OCR element {i} has invalid geometry type: {geom_type}")
+        if elements_have_confidence:
+            for i, el in enumerate(ocr_elements):
+                confidence = getattr(el, "confidence", None)
+                if confidence is None:
+                    pytest.fail(f"OCR element {i} has no confidence")
+                recognition = getattr(confidence, "recognition", None)
+                if not isinstance(recognition, (int, float)) or recognition <= 0:
+                    pytest.fail(f"OCR element {i} has invalid confidence recognition: {recognition}")

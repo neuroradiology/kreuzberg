@@ -77,7 +77,7 @@ composer require kreuzberg/kreuzberg
 ### System Requirements
 
 - **PHP 8.0+** required
-- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.23+ for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
@@ -536,6 +536,8 @@ Kreuzberg supports multiple OCR backends for extracting text from scanned docume
 
 
 - **Tesseract**
+
+- **Paddleocr**
 
 
 ### OCR Configuration Example

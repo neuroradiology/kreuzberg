@@ -115,6 +115,7 @@ impl DocumentExtractor for DjotExtractor {
             pages: None,
             djot_content: Some(djot_content),
             elements: None,
+            ocr_elements: None,
         })
     }
 

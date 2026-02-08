@@ -34,12 +34,12 @@ impl OcrBackendRegistry {
     /// Logs warnings if backend initialization fails (common in containerized environments
     /// with missing dependencies or permission issues).
     pub fn new() -> Self {
-        #[cfg(feature = "ocr")]
+        #[cfg(any(feature = "ocr", feature = "paddle-ocr"))]
         let mut registry = Self {
             backends: HashMap::new(),
         };
 
-        #[cfg(not(feature = "ocr"))]
+        #[cfg(not(any(feature = "ocr", feature = "paddle-ocr")))]
         let registry = Self {
             backends: HashMap::new(),
         };
@@ -65,6 +65,30 @@ impl OcrBackendRegistry {
                          Common causes: missing TESSDATA_PREFIX env var, \
                          tessdata files not found, or permission issues in containerized environments. \
                          See https://docs.kreuzberg.dev/guides/docker/ for Kubernetes troubleshooting.",
+                        e
+                    );
+                }
+            }
+        }
+
+        #[cfg(feature = "paddle-ocr")]
+        {
+            use crate::paddle_ocr::PaddleOcrBackend;
+            match PaddleOcrBackend::new() {
+                Ok(backend) => {
+                    if let Err(e) = registry.register(Arc::new(backend)) {
+                        tracing::error!(
+                            "Failed to register PaddleOCR backend: {}. \
+                             PaddleOCR functionality will be unavailable.",
+                            e
+                        );
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!(
+                        "PaddleOCR backend initialization failed: {}. \
+                         PaddleOCR functionality will be unavailable. \
+                         Common causes: ONNX Runtime not installed, model files missing.",
                         e
                     );
                 }
@@ -227,6 +251,7 @@ mod tests {
                 djot_content: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
             })
         }
 
@@ -354,6 +379,7 @@ mod tests {
                 djot_content: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
             })
         }
 

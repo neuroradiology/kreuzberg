@@ -309,6 +309,7 @@ impl DocumentExtractor for OrgModeExtractor {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         })
     }
 

@@ -183,6 +183,7 @@ mod tests {
                 attributes: Default::default(),
             }),
             elements: None,
+            ocr_elements: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");
@@ -202,6 +203,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let markup = extraction_result_to_djot(&result).expect("Should convert");

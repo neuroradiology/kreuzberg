@@ -71,6 +71,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -92,6 +93,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -115,6 +117,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -153,6 +156,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -203,6 +207,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let txt_result = ExtractionResult {
@@ -216,6 +221,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         assert!(validator.should_validate(&pdf_result, &config));
@@ -302,6 +308,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -336,6 +343,7 @@ mod tests {
             images: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -365,6 +373,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();
@@ -396,6 +405,7 @@ mod tests {
                 djot_content: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
             };
 
             assert!(validator.validate(&result, &config).await.is_ok());
@@ -417,6 +427,7 @@ mod tests {
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let config = ExtractionConfig::default();

@@ -537,6 +537,7 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                     .collect()
             }),
             djot_content: None,
+            ocr_elements: None,
         })
     }
 }

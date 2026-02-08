@@ -39,6 +39,7 @@
 //! ```
 mod backends;
 pub mod cache;
+pub mod conversion;
 pub mod error;
 pub mod hocr;
 pub mod language_registry;
@@ -50,6 +51,9 @@ pub mod utils;
 pub mod validation;
 
 pub use cache::{OcrCache, OcrCacheStats};
+#[cfg(feature = "paddle-ocr")]
+pub use conversion::text_block_to_element;
+pub use conversion::{TsvRow, element_to_hocr_word, elements_to_hocr_words, tsv_row_to_element};
 pub use error::OcrError;
 pub use hocr::convert_hocr_to_markdown;
 pub use language_registry::LanguageRegistry;

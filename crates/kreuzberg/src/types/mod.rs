@@ -5,6 +5,7 @@ pub mod djot;
 pub mod extraction;
 pub mod formats;
 pub mod metadata;
+pub mod ocr_elements;
 pub mod page;
 pub mod serde_helpers;
 pub mod tables;
@@ -14,6 +15,7 @@ pub use djot::*;
 pub use extraction::*;
 pub use formats::*;
 pub use metadata::*;
+pub use ocr_elements::*;
 pub use page::*;
 pub use tables::*;
 

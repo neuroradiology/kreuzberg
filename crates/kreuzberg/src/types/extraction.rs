@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 use super::djot::DjotContent;
 use super::metadata::Metadata;
+use super::ocr_elements::OcrElement;
 use super::page::PageContent;
 use super::tables::Table;
 
@@ -72,6 +73,23 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub djot_content: Option<DjotContent>,
+
+    /// OCR elements with full spatial and confidence metadata.
+    ///
+    /// When OCR is performed with element extraction enabled, this field contains
+    /// the structured representation of detected text including:
+    /// - Bounding geometry (rectangles or quadrilaterals)
+    /// - Confidence scores (detection and recognition)
+    /// - Rotation information
+    /// - Hierarchical relationships (Tesseract only)
+    ///
+    /// This field preserves all metadata that would otherwise be lost when
+    /// converting to plain text or markdown output formats.
+    ///
+    /// Only populated when `OcrElementConfig.include_elements` is true.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub ocr_elements: Option<Vec<OcrElement>>,
 }
 
 /// A text chunk with optional embedding and metadata.

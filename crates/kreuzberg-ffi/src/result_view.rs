@@ -456,6 +456,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         }
     }
 
@@ -722,6 +723,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let result_ptr = &result as *const ExtractionResult;

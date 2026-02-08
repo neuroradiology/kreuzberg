@@ -297,6 +297,7 @@ impl ExtractionConfig {
             kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+            kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
         }
     }
 
@@ -307,6 +308,7 @@ impl ExtractionConfig {
             "markdown" => kreuzberg::core::config::formats::OutputFormat::Markdown,
             "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
             "html" => kreuzberg::core::config::formats::OutputFormat::Html,
+            "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
             _ => kreuzberg::core::config::formats::OutputFormat::Plain, // Default on invalid
         };
     }
@@ -398,16 +400,45 @@ pub struct OcrConfig {
 #[pymethods]
 impl OcrConfig {
     #[new]
-    #[pyo3(signature = (backend=None, language=None, tesseract_config=None))]
-    fn new(backend: Option<String>, language: Option<String>, tesseract_config: Option<TesseractConfig>) -> Self {
-        Self {
+    #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None))]
+    fn new(
+        py: Python<'_>,
+        backend: Option<String>,
+        language: Option<String>,
+        tesseract_config: Option<TesseractConfig>,
+        paddle_ocr_config: Option<Bound<'_, pyo3::types::PyAny>>,
+        element_config: Option<Bound<'_, pyo3::types::PyAny>>,
+    ) -> PyResult<Self> {
+        let paddle_ocr_json = if let Some(obj) = paddle_ocr_config {
+            let json_mod = py.import("json")?;
+            let json_str: String = json_mod.call_method1("dumps", (&obj,))?.extract()?;
+            Some(
+                serde_json::from_str(&json_str)
+                    .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid paddle_ocr_config: {e}")))?,
+            )
+        } else {
+            None
+        };
+        let element_cfg = if let Some(obj) = element_config {
+            let json_mod = py.import("json")?;
+            let json_str: String = json_mod.call_method1("dumps", (&obj,))?.extract()?;
+            Some(
+                serde_json::from_str(&json_str)
+                    .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid element_config: {e}")))?,
+            )
+        } else {
+            None
+        };
+        Ok(Self {
             inner: kreuzberg::OcrConfig {
                 backend: backend.unwrap_or_else(|| "tesseract".to_string()),
                 language: language.unwrap_or_else(|| "eng".to_string()),
                 tesseract_config: tesseract_config.map(Into::into),
                 output_format: None,
+                paddle_ocr_config: paddle_ocr_json,
+                element_config: element_cfg,
             },
-        }
+        })
     }
 
     #[getter]
