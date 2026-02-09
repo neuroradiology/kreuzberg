@@ -41,6 +41,7 @@ def test_ocr_image_no_text() -> None:
     helpers.assert_max_content_length(result, 200)
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_confidence_filter() -> None:
     """PaddleOCR with minimum confidence threshold filtering."""
 
@@ -61,6 +62,7 @@ def test_ocr_paddle_confidence_filter() -> None:
     helpers.assert_min_content_length(result, 1)
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_image_chinese() -> None:
     """Chinese OCR with PaddleOCR - its core strength."""
 
@@ -76,6 +78,7 @@ def test_ocr_paddle_image_chinese() -> None:
     helpers.assert_min_content_length(result, 1)
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_image_english() -> None:
     """Simple English image OCR with PaddleOCR backend."""
 
@@ -92,6 +95,7 @@ def test_ocr_paddle_image_english() -> None:
     helpers.assert_content_contains_any(result, ["hello", "Hello", "world", "World"])
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_markdown() -> None:
     """PaddleOCR with markdown output format."""
 
@@ -113,6 +117,7 @@ def test_ocr_paddle_markdown() -> None:
     helpers.assert_content_contains_any(result, ["hello", "Hello", "world", "World"])
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_pdf_scanned() -> None:
     """Scanned PDF requires PaddleOCR to extract text."""
 
@@ -129,6 +134,7 @@ def test_ocr_paddle_pdf_scanned() -> None:
     helpers.assert_content_contains_any(result, ["Docling", "Markdown", "JSON"])
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_structured() -> None:
     """PaddleOCR with structured output preserving all metadata."""
 
@@ -150,6 +156,7 @@ def test_ocr_paddle_structured() -> None:
     helpers.assert_ocr_elements(result, has_elements=True, elements_have_geometry=True, elements_have_confidence=True)
 
 
+@pytest.mark.paddle_ocr
 def test_ocr_paddle_table_detection() -> None:
     """Table detection and extraction with PaddleOCR."""
 

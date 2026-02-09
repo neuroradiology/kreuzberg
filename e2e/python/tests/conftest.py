@@ -23,6 +23,10 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "windows_slow: marks tests as too slow on Windows CI (deselect with '-m \"not windows_slow\"')",
     )
+    config.addinivalue_line(
+        "markers",
+        "paddle_ocr: marks tests that require PaddleOCR (deselect with '-m \"not paddle_ocr\"')",
+    )
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:

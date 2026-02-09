@@ -37,7 +37,7 @@ def build_config(config: dict[str, Any] | None) -> ExtractionConfig:
 
     kwargs: dict[str, Any] = {}
 
-    for key in ("use_cache", "enable_quality_processing", "force_ocr"):
+    for key in ("use_cache", "enable_quality_processing", "force_ocr", "include_document_structure"):
         if key in config:
             kwargs[key] = config[key]
 
