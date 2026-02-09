@@ -115,11 +115,12 @@ readonly class DocumentNode
         /** @var string $id */
         $id = $data['id'] ?? '';
 
-        /** @var string $nodeType */
-        $nodeType = $data['node_type'] ?? '';
-
         /** @var mixed $content */
         $content = $data['content'] ?? [];
+
+        /** @var string $nodeType */
+        $contentArray = is_array($content) ? $content : [];
+        $nodeType = $contentArray['node_type'] ?? '';
 
         /** @var string|null $contentLayer */
         $contentLayer = $data['content_layer'] ?? null;

@@ -399,8 +399,13 @@ module Kreuzberg
   }
 
   type document_annotation_hash = {
-    key: String,
-    value: String
+    start: Integer,
+    end: Integer,
+    kind: {
+      annotation_type: String,
+      url: String?,
+      title: String?
+    }
   }
 
   type document_node_hash = {
@@ -791,11 +796,18 @@ module Kreuzberg
 
     # Annotation for a document node
     class DocumentAnnotation
-      attr_reader key: String
-      attr_reader value: String
+      attr_reader start: Integer
+      attr_reader end_offset: Integer
+      attr_reader annotation_type: String
+      attr_reader url: String?
+      attr_reader title: String?
 
       def initialize: (Hash[String | Symbol, untyped] hash) -> void
       def to_h: () -> Hash[Symbol, untyped]
+
+      private
+
+      def parse_kind: (Hash[String | Symbol, untyped]? kind_hash) -> void
     end
 
     attr_reader content: String

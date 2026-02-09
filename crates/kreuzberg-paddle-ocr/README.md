@@ -17,6 +17,25 @@ Based on the original [paddle-ocr-rs](https://github.com/mg-chao/paddle-ocr-rs) 
 - Support for multiple languages via PaddleOCR models
 - ONNX Runtime for efficient CPU inference
 
+## ONNX Runtime Requirement
+
+This crate requires **ONNX Runtime 1.23.x** at runtime. The bundled PaddleOCR ONNX
+models are exported for the ONNX Runtime 1.23 opset and are **not compatible** with
+ONNX Runtime 1.24+.
+
+Install the correct version:
+
+- **macOS (Homebrew)**: `brew install onnxruntime@1.23`
+- **Linux**: Download from [ONNX Runtime 1.23.2 releases](https://github.com/microsoft/onnxruntime/releases/tag/v1.23.2)
+- **From source**: Build ONNX Runtime 1.23.2
+
+If you have a newer ONNX Runtime installed system-wide, point `ORT_DYLIB_PATH` to
+the 1.23.x library:
+
+```bash
+export ORT_DYLIB_PATH=/path/to/libonnxruntime.1.23.2.dylib
+```
+
 ## Usage
 
 This crate is used internally by Kreuzberg when the `paddle-ocr` feature is enabled:

@@ -407,10 +407,12 @@ defmodule Kreuzberg.DocumentNode do
         _ -> []
       end
 
+    content_map = data["content"] || %{}
+
     %__MODULE__{
       id: data["id"] || "",
-      node_type: data["node_type"] || "",
-      content: data["content"] || %{},
+      node_type: (is_map(content_map) && content_map["node_type"]) || "",
+      content: content_map,
       content_layer: data["content_layer"],
       parent: data["parent"],
       children: children,

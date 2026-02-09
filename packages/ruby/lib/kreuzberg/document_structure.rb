@@ -157,14 +157,16 @@ module Kreuzberg
 
     # Annotation for a document node.
     #
-    # Provides additional metadata about document node content.
+    # Represents inline text annotations (formatting, links) with byte-range
+    # references into the node's text content.
     #
     class DocumentAnnotation
-      attr_reader :key, :value
+      attr_reader :start, :end_offset, :annotation_type, :url, :title
 
       def initialize(hash)
-        @key = hash['key'] || hash[:key] || ''
-        @value = hash['value'] || hash[:value] || ''
+        @start = (hash['start'] || hash[:start] || 0).to_i
+        @end_offset = (hash['end'] || hash[:end] || 0).to_i
+        parse_kind(hash['kind'] || hash[:kind] || {})
       end
 
       # Convert to hash
@@ -172,10 +174,30 @@ module Kreuzberg
       # @return [Hash] Hash representation
       #
       def to_h
+        kind_hash = { annotation_type: @annotation_type }
+        url = @url
+        kind_hash[:url] = url if url
+        title = @title
+        kind_hash[:title] = title if title
+
         {
-          key: @key,
-          value: @value
+          start: @start,
+          end: @end_offset,
+          kind: kind_hash
         }
+      end
+
+      private
+
+      def parse_kind(kind_hash)
+        return if kind_hash.nil? || kind_hash.empty?
+
+        @annotation_type =
+          kind_hash['annotation_type'] ||
+          kind_hash[:annotation_type] ||
+          'bold'
+        @url = kind_hash['url'] || kind_hash[:url]
+        @title = kind_hash['title'] || kind_hash[:title]
       end
     end
   end

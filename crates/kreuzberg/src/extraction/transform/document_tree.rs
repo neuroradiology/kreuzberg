@@ -187,6 +187,7 @@ fn push_heading_group(
 }
 
 /// Push a content node as a child of the current section (or root if no section).
+/// PageBreak nodes are always added as root-level nodes (no parent).
 fn push_content_node(
     doc: &mut DocumentStructure,
     section_stack: &[(u8, NodeIndex)],
@@ -196,6 +197,7 @@ fn push_content_node(
 ) -> NodeIndex {
     let node_type = content.node_type_str();
     let text_for_id = content.text().unwrap_or("");
+    let is_page_break = matches!(content, NodeContent::PageBreak);
 
     let index = doc.len() as u32;
     let node = DocumentNode {
@@ -212,8 +214,10 @@ fn push_content_node(
 
     let node_idx = doc.push_node(node);
 
-    // Wire parent → child using add_child
-    if let Some((_, parent_idx)) = section_stack.last() {
+    // Wire parent → child using add_child, EXCEPT for PageBreak nodes which are always root-level
+    if !is_page_break
+        && let Some((_, parent_idx)) = section_stack.last()
+    {
         doc.add_child(*parent_idx, node_idx);
     }
 
@@ -257,7 +261,9 @@ fn process_text_content(
 
         // Group consecutive same-type list items
         if list_groups.last().is_some_and(|(t, _)| *t == item.list_type) {
-            list_groups.last_mut().unwrap().1.push((item.byte_start, item.byte_end));
+            if let Some(group) = list_groups.last_mut() {
+                group.1.push((item.byte_start, item.byte_end));
+            }
         } else {
             list_groups.push((item.list_type, vec![(item.byte_start, item.byte_end)]));
         }
@@ -275,7 +281,7 @@ fn process_text_content(
         let list_node = DocumentNode {
             id: NodeId::generate("list", &format!("{:?}_{}", list_type, items.len()), page, list_index),
             content: list_content,
-            parent: section_stack.last().map(|(_, idx)| *idx),
+            parent: None,
             children: vec![],
             content_layer: ContentLayer::Body,
             page,
@@ -285,9 +291,9 @@ fn process_text_content(
         };
         let list_idx = doc.push_node(list_node);
 
-        // Wire parent → list
+        // Wire parent → list using add_child()
         if let Some((_, parent_idx)) = section_stack.last() {
-            doc.nodes[parent_idx.0 as usize].children.push(list_idx);
+            doc.add_child(*parent_idx, list_idx);
         }
 
         // Add list items as children

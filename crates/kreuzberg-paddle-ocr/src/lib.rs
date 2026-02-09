@@ -5,6 +5,12 @@
 //! This crate is vendored from [paddle-ocr-rs](https://github.com/mg-chao/paddle-ocr-rs)
 //! by mg-chao, with modifications for Kreuzberg integration.
 //!
+//! ## ONNX Runtime Requirement
+//!
+//! Requires **ONNX Runtime 1.23.x** at runtime. The bundled PaddleOCR ONNX models
+//! are exported for the 1.23 opset and are **not compatible** with ONNX Runtime 1.24+.
+//! Set `ORT_DYLIB_PATH` to point to the correct library if needed.
+//!
 //! ## Original License
 //!
 //! The original paddle-ocr-rs is licensed under Apache-2.0.

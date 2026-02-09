@@ -386,9 +386,9 @@ export interface GridCell {
 	content: string;
 	row: number;
 	col: number;
-	rowSpan: number;
-	colSpan: number;
-	isHeader: boolean;
+	row_span: number;
+	col_span: number;
+	is_header: boolean;
 	bbox?: BoundingBox | null;
 }
 
@@ -405,41 +405,41 @@ export interface TextAnnotation {
  * Types of inline text annotations.
  */
 export type AnnotationKind =
-	| { annotationType: "bold" }
-	| { annotationType: "italic" }
-	| { annotationType: "underline" }
-	| { annotationType: "strikethrough" }
-	| { annotationType: "code" }
-	| { annotationType: "subscript" }
-	| { annotationType: "superscript" }
-	| { annotationType: "link"; url: string; title?: string | null };
+	| { annotation_type: "bold" }
+	| { annotation_type: "italic" }
+	| { annotation_type: "underline" }
+	| { annotation_type: "strikethrough" }
+	| { annotation_type: "code" }
+	| { annotation_type: "subscript" }
+	| { annotation_type: "superscript" }
+	| { annotation_type: "link"; url: string; title?: string | null };
 
 /**
  * Tagged union for node content. Each variant carries only type-specific data.
  */
 export type NodeContent =
-	| { nodeType: "title"; text: string }
-	| { nodeType: "heading"; level: number; text: string }
-	| { nodeType: "paragraph"; text: string }
-	| { nodeType: "list"; ordered: boolean }
-	| { nodeType: "list_item"; text: string }
-	| { nodeType: "table"; grid: TableGrid }
+	| { node_type: "title"; text: string }
+	| { node_type: "heading"; level: number; text: string }
+	| { node_type: "paragraph"; text: string }
+	| { node_type: "list"; ordered: boolean }
+	| { node_type: "list_item"; text: string }
+	| { node_type: "table"; grid: TableGrid }
 	| {
-			nodeType: "image";
+			node_type: "image";
 			description?: string | null;
-			imageIndex?: number | null;
+			image_index?: number | null;
 	  }
-	| { nodeType: "code"; text: string; language?: string | null }
-	| { nodeType: "quote" }
-	| { nodeType: "formula"; text: string }
-	| { nodeType: "footnote"; text: string }
+	| { node_type: "code"; text: string; language?: string | null }
+	| { node_type: "quote" }
+	| { node_type: "formula"; text: string }
+	| { node_type: "footnote"; text: string }
 	| {
-			nodeType: "group";
+			node_type: "group";
 			label?: string | null;
-			headingLevel?: number | null;
-			headingText?: string | null;
+			heading_level?: number | null;
+			heading_text?: string | null;
 	  }
-	| { nodeType: "page_break" };
+	| { node_type: "page_break" };
 
 /**
  * A single node in the document tree.
@@ -457,11 +457,11 @@ export interface DocumentNode {
 	/** Child node indices in reading order */
 	children?: number[] | null;
 	/** Content layer classification */
-	contentLayer?: ContentLayer | null;
+	content_layer?: ContentLayer | null;
 	/** Page number where this node starts (1-indexed) */
 	page?: number | null;
 	/** Page number where this node ends (for multi-page tables/sections) */
-	pageEnd?: number | null;
+	page_end?: number | null;
 	/** Bounding box in document coordinates */
 	bbox?: BoundingBox | null;
 	/** Inline annotations (formatting, links) on this node's text content */
