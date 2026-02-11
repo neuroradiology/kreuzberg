@@ -62,6 +62,8 @@ pub struct ExtractionResult {
     pub result_format: Option<String>,
 
     djot_content: Option<Py<PyAny>>,
+
+    ocr_elements: Option<Py<PyList>>,
 }
 
 #[pymethods]
@@ -110,6 +112,11 @@ impl ExtractionResult {
     #[getter]
     fn djot_content<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyAny>> {
         self.djot_content.as_ref().map(|d| d.bind(py).clone())
+    }
+
+    #[getter]
+    fn ocr_elements<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyList>> {
+        self.ocr_elements.as_ref().map(|e| e.bind(py).clone())
     }
 
     fn __repr__(&self) -> String {
@@ -529,6 +536,19 @@ impl ExtractionResult {
             None
         };
 
+        let ocr_elements = if let Some(elems) = result.ocr_elements {
+            let elem_list = PyList::empty(py);
+            for elem in elems {
+                let elem_json = serde_json::to_value(&elem).map_err(|e| {
+                    PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(format!("Failed to serialize ocr_element: {}", e))
+                })?;
+                elem_list.append(json_value_to_py(py, &elem_json)?)?;
+            }
+            Some(elem_list.unbind())
+        } else {
+            None
+        };
+
         Ok(Self {
             content: result.content,
             mime_type: result.mime_type.to_string(),
@@ -543,6 +563,7 @@ impl ExtractionResult {
             output_format,
             result_format,
             djot_content,
+            ocr_elements,
         })
     }
 }

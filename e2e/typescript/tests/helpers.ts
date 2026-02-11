@@ -83,6 +83,14 @@ function mapOcrConfig(raw: PlainRecord): OcrConfig | undefined {
 		config.tesseractConfig = mapTesseractConfig(raw.tesseract_config as PlainRecord);
 	}
 
+	if (isPlainRecord(raw.paddle_ocr_config)) {
+		(config as PlainRecord).paddleOcrConfig = raw.paddle_ocr_config;
+	}
+
+	if (isPlainRecord(raw.element_config)) {
+		(config as PlainRecord).elementConfig = raw.element_config;
+	}
+
 	return config;
 }
 
