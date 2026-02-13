@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.3.2] - 2026-02-13
+
+### Fixed
+
+#### PHP 8.4 Requirement Update
+- **Updated PHP requirement to 8.4+**: All PHP composer.json files, CI workflows, and documentation now require PHP 8.4+ to support PHPUnit 13.0. This fixes CI validation and PHP workflow failures caused by PHPUnit 13.0 requiring PHP 8.4.1+.
+
+#### Elixir Publishing Workflow
+- **Fixed macOS ARM64 build timeout**: Increased timeout from 180 to 300 minutes (5 hours) for macOS ARM64 Elixir native library builds. The previous timeout caused incomplete builds and prevented Elixir v4.3.1 from being published to Hex.pm.
+
+---
+
 ## [4.3.1] - 2026-02-12
 
 ### Fixed

@@ -152,7 +152,7 @@ For PIE to build the extension from source, users need:
 
 ### Runtime Requirements
 
-- PHP 8.2 or higher
+- PHP 8.4 or higher
 - Operating system: Linux, macOS, or Windows
 
 ### Optional Dependencies

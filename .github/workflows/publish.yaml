@@ -1805,7 +1805,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, xml
           coverage: none
 
@@ -2189,7 +2189,7 @@ jobs:
     needs: [prepare]
     if: ${{ needs.prepare.outputs.release_elixir == 'true' }}
     runs-on: ${{ matrix.settings.os }}
-    timeout-minutes: 180
+    timeout-minutes: ${{ matrix.settings.timeout || 180 }}
     permissions:
       contents: read
     strategy:
@@ -2199,15 +2199,19 @@ jobs:
           - os: ubuntu-24.04-arm
             label: linux-aarch64
             target: aarch64-unknown-linux-gnu
+            timeout: 180
           - os: ubuntu-latest
             label: linux-x86_64
             target: x86_64-unknown-linux-gnu
+            timeout: 180
           - os: macos-latest
             label: macos-arm64
             target: aarch64-apple-darwin
+            timeout: 300
           - os: windows-latest
             label: windows-x86_64
             target: x86_64-pc-windows-gnu
+            timeout: 180
     steps:
       - name: Checkout
         uses: actions/checkout@v4

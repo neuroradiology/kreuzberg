@@ -29,7 +29,7 @@ PIE is the modern package manager for PHP extensions. It automatically downloads
 
 #### Prerequisites
 
-- PHP 8.2 or higher
+- PHP 8.4 or higher
 - Composer
 - Build tools (PIE will prompt if missing):
   - **Linux**: `build-essential`, `php-dev`
@@ -137,7 +137,7 @@ composer require kreuzberg/kreuzberg
 
 #### Prerequisites
 
-- PHP 8.2+ with development headers
+- PHP 8.4+ with development headers
 - Rust 1.91 or higher
 - Cargo (Rust package manager)
 - C compiler (GCC, Clang, or MSVC)
@@ -247,7 +247,7 @@ brew install php
 
 **Wrong PHP version:**
 ```bash
-php --version  # Must be 8.2+
+php --version  # Must be 8.4+
 ```
 
 ### PIE Issues
