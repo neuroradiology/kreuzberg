@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### DOCX Full Extraction Pipeline (#387)
+- **DocumentStructure generation**: Builds hierarchical document tree with heading-based sections, paragraphs, lists, tables, images, headers/footers, and footnotes/endnotes when `include_document_structure = true`.
+- **Pages field population**: Splits extracted text into per-page `PageContent` entries using detected page break boundaries, with tables and images assigned to correct pages.
+- **OCR on embedded images**: Runs secondary OCR on extracted DOCX images when OCR is configured, following the PPTX pattern.
+- **Image extraction with page assignment**: Drawing image placeholders in markdown output enable byte-position-based page number assignment for extracted images.
+- **Typed metadata fields**: `title`, `subject`, `authors`, `created_by`, `modified_by`, `created_at`, `modified_at`, `language`, and `keywords` are now populated as first-class `Metadata` fields instead of only appearing in the `additional` map.
+- **FormatMetadata::Docx**: Structured format metadata with `core_properties`, `app_properties`, and `custom_properties` available via `metadata.format`.
+- **Style-based heading detection**: Uses `StyleCatalog` with `outline_level` and inheritance chain walking for accurate heading level resolution, with string-matching fallback.
+- **Headers, footers, and footnote references**: Headers/footers included in markdown with `---` separators; `[^N]` inline footnote/endnote references rendered in text.
+- **Markdown formatting**: Bold (`**`), italic (`*`), underline (`<u>`), strikethrough (`~~`), and hyperlinks rendered as markdown.
+- **Table formatting metadata**: Vertical merge (`v_merge`) handled correctly, `grid_span` for horizontal merging, `is_header` row detection.
+- **Drawing image placeholders**: `![alt](image_N)` placeholders in markdown output for embedded images.
+
+### Changed
+
+#### DOCX Extractor Performance & Code Quality
+- **Eliminated 3x code duplication**: Extracted `parse_docx_core()` helper to deduplicate parsing logic across tokio/non-tokio cfg branches.
+- **Removed unnecessary clones**: Metadata structs (core/app/custom properties) borrowed then moved instead of cloned; drawings and image relationships only cloned when image extraction is enabled.
+- **Optimized Run::to_markdown()**: Single-pass string builder with pre-calculated capacity replaces clone + repeated `format!` calls on the hot path.
+- **In-place output trimming**: `to_markdown()` trims in-place instead of allocating a new String via `trim().to_string()`.
+- **Removed `into_owned()` on XML text decode**: Uses `Cow` directly from `e.decode()` instead of forcing heap allocation.
+- **`write!`/`writeln!` for string building**: Footnote definitions and image placeholders use `write!` to avoid intermediate String allocations.
+- **Safe element indexing**: `to_markdown()` uses `.get()` with `else { continue }` instead of direct indexing to prevent potential panics.
+- **Deduplicated document structure code**: Header/footer loops and footnote/endnote loops consolidated using iterators.
+
+### Removed
+- **Dead code cleanup**: Removed unused `Document.lists` field, `ListItem` struct, `process_lists()` method, and `HeaderFooter::extract_text()` method.
+
 ---
 
 ## [4.3.2] - 2026-02-13
