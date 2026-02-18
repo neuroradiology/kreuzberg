@@ -15,6 +15,28 @@ RSpec.describe 'Kreuzberg package' do
     end
   end
 
+  describe 'sorbet-runtime dependency' do
+    it 'loads sorbet-runtime as a runtime dependency' do
+      expect { require 'sorbet-runtime' }.not_to raise_error
+      expect(defined?(T)).to eq('constant')
+    end
+
+    it 'loads Kreuzberg types backed by T::Struct without error' do
+      expect { Kreuzberg::BoundingBox }.not_to raise_error
+      expect { Kreuzberg::Element }.not_to raise_error
+      expect { Kreuzberg::ElementMetadata }.not_to raise_error
+      expect { Kreuzberg::HtmlMetadata }.not_to raise_error
+      expect { Kreuzberg::DocumentNode }.not_to raise_error
+    end
+
+    it 'instantiates T::Struct types correctly' do
+      bbox = Kreuzberg::BoundingBox.new(x0: 0.0, y0: 0.0, x1: 100.0, y1: 50.0)
+      expect(bbox).to be_a(T::Struct)
+      expect(bbox.x0).to eq(0.0)
+      expect(bbox.x1).to eq(100.0)
+    end
+  end
+
   describe 'public API exports' do
     describe 'configuration classes' do
       it 'exports Config::Extraction' do

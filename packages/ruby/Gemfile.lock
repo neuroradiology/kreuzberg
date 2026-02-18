@@ -3,6 +3,7 @@ PATH
   specs:
     kreuzberg (4.3.5)
       rb_sys (~> 0.9.119)
+      sorbet-runtime (~> 0.5)
 
 GEM
   remote: https://rubygems.org/
@@ -179,7 +180,6 @@ DEPENDENCIES
   rubocop (~> 1.66)
   rubocop-performance (~> 1.21)
   rubocop-rspec (~> 3.0)
-  sorbet-runtime (~> 0.5)
   steep (~> 1.8)
   yard (~> 0.9)
 
