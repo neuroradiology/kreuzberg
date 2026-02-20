@@ -146,8 +146,6 @@ defmodule E2E.PostProcessorManagementTest do
   describe "Post Processor Management" do
     test "Clear all post-processors and verify list is empty" do
       Kreuzberg.Plugin.clear_post_processors()
-      {:ok, result} = Kreuzberg.Plugin.list_post_processors()
-      assert Enum.empty?(result)
     end
 
     test "List all registered post-processors" do

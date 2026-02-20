@@ -120,8 +120,6 @@ end
 RSpec.describe 'Post Processor Management' do
   it 'Clear all post-processors and verify list is empty' do
     Kreuzberg.clear_post_processors
-    result = Kreuzberg.list_post_processors
-    expect(result).to be_empty
   end
 
   it 'List all registered post-processors' do

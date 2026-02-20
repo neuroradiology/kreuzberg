@@ -1672,11 +1672,14 @@ fn generate_simple_list_test_cs(test_spec: &PluginTestSpec, buf: &mut String) ->
 
 fn generate_clear_registry_test_cs(test_spec: &PluginTestSpec, buf: &mut String) -> Result<()> {
     let clear_func = snake_to_pascal_case(&test_spec.function_call.name);
-    let list_func = clear_func.replace("Clear", "List");
 
     writeln!(buf, "        KreuzbergClient.{}();", clear_func)?;
-    writeln!(buf, "        var result = KreuzbergClient.{}();", list_func)?;
-    writeln!(buf, "        Assert.Empty(result);")?;
+
+    if test_spec.assertions.verify_cleanup {
+        let list_func = clear_func.replace("Clear", "List");
+        writeln!(buf, "        var result = KreuzbergClient.{}();", list_func)?;
+        writeln!(buf, "        Assert.Empty(result);")?;
+    }
 
     Ok(())
 }

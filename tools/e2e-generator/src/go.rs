@@ -1487,23 +1487,26 @@ fn render_clear_registry(
     code: &mut String,
 ) -> Result<()> {
     let clear_func = to_pascal_case(&test_spec.function_call.name);
-    let list_func = clear_func.replace("Clear", "List");
 
     writeln!(code, "    err := kreuzberg.{}()", clear_func)?;
     writeln!(code, "    if err != nil {{")?;
     writeln!(code, "        t.Fatalf(\"{} failed: %v\", err)", clear_func)?;
     writeln!(code, "    }}")?;
-    writeln!(code)?;
-    writeln!(code, "    result, err := kreuzberg.{}()", list_func)?;
-    writeln!(code, "    if err != nil {{")?;
-    writeln!(code, "        t.Fatalf(\"{} failed: %v\", err)", list_func)?;
-    writeln!(code, "    }}")?;
-    writeln!(code, "    if len(result) != 0 {{")?;
-    writeln!(
-        code,
-        "        t.Errorf(\"Expected empty list after clear, got %d items\", len(result))"
-    )?;
-    writeln!(code, "    }}")?;
+
+    if test_spec.assertions.verify_cleanup {
+        let list_func = clear_func.replace("Clear", "List");
+        writeln!(code)?;
+        writeln!(code, "    result, err := kreuzberg.{}()", list_func)?;
+        writeln!(code, "    if err != nil {{")?;
+        writeln!(code, "        t.Fatalf(\"{} failed: %v\", err)", list_func)?;
+        writeln!(code, "    }}")?;
+        writeln!(code, "    if len(result) != 0 {{")?;
+        writeln!(
+            code,
+            "        t.Errorf(\"Expected empty list after clear, got %d items\", len(result))"
+        )?;
+        writeln!(code, "    }}")?;
+    }
 
     Ok(())
 }

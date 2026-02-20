@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     fn test_validate_output_format_invalid() {
-        let result = validate_output_format("json");
+        let result = validate_output_format("xml");
         assert!(result.is_err());
         let msg = result.unwrap_err().to_string();
         assert!(msg.contains("Invalid output format"));

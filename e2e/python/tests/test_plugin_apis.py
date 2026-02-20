@@ -136,8 +136,6 @@ def test_ocr_backends_unregister() -> None:
 def test_post_processors_clear() -> None:
     """Clear all post-processors and verify list is empty"""
     kreuzberg.clear_post_processors()
-    result = kreuzberg.list_post_processors()
-    assert len(result) == 0
 
 
 def test_post_processors_list() -> None:

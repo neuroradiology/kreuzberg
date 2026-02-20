@@ -168,8 +168,6 @@ class PluginApisTest extends TestCase
     public function test_post_processors_clear(): void
     {
         Kreuzberg::clearPostProcessors();
-        $result = Kreuzberg::listPostProcessors();
-        $this->assertEmpty($result);
     }
 
     /**

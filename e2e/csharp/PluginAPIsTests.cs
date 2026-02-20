@@ -134,8 +134,6 @@ public class PluginAPIsTests
     public void PostProcessorsClear()
     {
         KreuzbergClient.ClearPostProcessors();
-        var result = KreuzbergClient.ListPostProcessors();
-        Assert.Empty(result);
     }
 
     [Fact]

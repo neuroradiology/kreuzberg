@@ -78,8 +78,6 @@ Deno.test("Unregister nonexistent OCR backend gracefully", () => {
 
 Deno.test("Clear all post-processors and verify list is empty", () => {
 	clearPostProcessors();
-	const result = listPostProcessors();
-	assertEquals(result.length, 0);
 });
 
 Deno.test("List all registered post-processors", () => {

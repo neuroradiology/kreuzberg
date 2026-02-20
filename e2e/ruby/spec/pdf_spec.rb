@@ -15,7 +15,7 @@ RSpec.describe 'pdf fixtures' do
       'pdf/test_article.pdf',
       { pdf_options: { extract_annotations: true } },
       requirements: [],
-      notes: nil,
+      notes: 'PDFium ARM Linux binary does not support annotation extraction',
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(

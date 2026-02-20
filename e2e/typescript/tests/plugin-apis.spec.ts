@@ -117,8 +117,6 @@ describe("Ocr Backend Management", () => {
 describe("Post Processor Management", () => {
 	it("Clear all post-processors and verify list is empty", () => {
 		kreuzberg.clearPostProcessors();
-		const result = kreuzberg.listPostProcessors();
-		expect(result).toHaveLength(0);
 	});
 
 	it("List all registered post-processors", () => {

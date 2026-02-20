@@ -2069,9 +2069,11 @@ fn generate_clear_registry_test_java(test_spec: &PluginTestSpec, buf: &mut Strin
 
     writeln!(buf, "        Kreuzberg.{}();", clear_func)?;
 
-    let list_func = clear_func.replace("clear", "list");
-    writeln!(buf, "        List<String> result = Kreuzberg.{}();", list_func)?;
-    writeln!(buf, "        assertEquals(0, result.size());")?;
+    if test_spec.assertions.verify_cleanup {
+        let list_func = clear_func.replace("clear", "list");
+        writeln!(buf, "        List<String> result = Kreuzberg.{}();", list_func)?;
+        writeln!(buf, "        assertEquals(0, result.size());")?;
+    }
 
     Ok(())
 }

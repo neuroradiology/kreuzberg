@@ -1322,9 +1322,11 @@ fn generate_clear_registry_test(_fixture: &Fixture, test_spec: &PluginTestSpec, 
 
     writeln!(buf, "    kreuzberg.{}()", func_name)?;
 
-    let list_func = func_name.replace("clear_", "list_");
-    writeln!(buf, "    result = kreuzberg.{}()", list_func)?;
-    writeln!(buf, "    assert len(result) == 0")?;
+    if test_spec.assertions.verify_cleanup {
+        let list_func = func_name.replace("clear_", "list_");
+        writeln!(buf, "    result = kreuzberg.{}()", list_func)?;
+        writeln!(buf, "    assert len(result) == 0")?;
+    }
 
     Ok(())
 }

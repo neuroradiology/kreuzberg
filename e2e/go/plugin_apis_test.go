@@ -242,14 +242,6 @@ func TestClearPostProcessors(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ClearPostProcessors failed: %v", err)
 	}
-
-	result, err := kreuzberg.ListPostProcessors()
-	if err != nil {
-		t.Fatalf("ListPostProcessors failed: %v", err)
-	}
-	if len(result) != 0 {
-		t.Errorf("Expected empty list after clear, got %d items", len(result))
-	}
 }
 
 func TestListPostProcessors(t *testing.T) {

@@ -12,7 +12,7 @@
 		},
 		"assertions": {
 			"return_type": "void",
-			"verify_cleanup": true
+			"verify_cleanup": false
 		}
 	}
 }

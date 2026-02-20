@@ -21,7 +21,14 @@ describe("pdf", () => {
 		try {
 			result = await extractBytes(documentBytes, "application/pdf", config);
 		} catch (error) {
-			if (shouldSkipFixture(error, "pdf_annotations", [], undefined)) {
+			if (
+				shouldSkipFixture(
+					error,
+					"pdf_annotations",
+					[],
+					"PDFium ARM Linux binary does not support annotation extraction",
+				)
+			) {
 				return;
 			}
 			throw error;

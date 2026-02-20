@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **PDF markdown extraction quality at parity with docling** (91.0% avg F1 vs docling's 91.4% across 16 test PDFs, while being 10-50x faster): Replaced `PdfiumParagraph::from_objects()` with per-character text extraction using pdfium's `PdfPageText::chars()` API, which correctly handles font matrices, CMap lookups, and text positioning. Adaptive line-break detection uses measured Y-position changes rather than font-size-relative thresholds, fixing PDFs where pdfium reports incorrect unscaled font sizes.
+- **PDF markdown extraction no longer drops all content on PDFs with broken font metrics**: Added font-size filter fallback — when the `MIN_FONT_SIZE` filter (4pt) removes all text segments (e.g. PDFs where pdfium reports `font_size=1` due to font matrix scaling), the filter is skipped and unfiltered segments are used instead.
+- **PDF margin filter no longer drops all content on edge-case PDFs**: Added margin filter fallback — when margin filtering removes all text segments (e.g. PDFs where pdfium reports baseline_y values outside expected margin bands), the filter is skipped for that page.
+- **PDF ligature repair integrated into per-character extraction**: Ligature corruption (`fi`→`!`, `fl`→`#`, `ff`→`"`) is now repaired inline during character iteration rather than as a separate post-processing pass, improving both accuracy and performance.
+- **PDF multi-column text extraction** improved: Federal Register-style multi-column PDFs went from 69.9% to 90.7% F1 by using pdfium's text API which naturally handles reading order.
 - PDF table detection now requires ≥3 aligned columns, eliminating false positives from two-column text layouts (academic papers, newsletters)
 - PDF table post-processing rejects tables with ≤2 columns, >50% long cells, or average cell length >50 chars
 - PDF markdown rendering no longer drops content when pdfium returns zero-value baseline coordinates (fixes missing titles/authors in some LaTeX-generated PDFs)

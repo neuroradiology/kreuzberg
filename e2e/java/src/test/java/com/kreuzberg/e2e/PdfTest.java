@@ -27,7 +27,7 @@ public class PdfTest {
         "pdf/test_article.pdf",
         config,
         Collections.emptyList(),
-        null,
+        "PDFium ARM Linux binary does not support annotation extraction",
         true,
         result -> {
           E2EHelpers.Assertions.assertExpectedMime(result, Arrays.asList("application/pdf"));

@@ -15,7 +15,7 @@ defmodule E2E.PdfTest do
              "pdf/test_article.pdf",
              %{pdf_options: %{extract_annotations: true}},
              requirements: [],
-             notes: nil,
+             notes: "PDFium ARM Linux binary does not support annotation extraction",
              skip_if_missing: true
            ) do
         {:ok, result} ->

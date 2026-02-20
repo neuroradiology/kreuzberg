@@ -154,7 +154,7 @@ pub(super) fn objects_to_page_data(
 ) -> (Vec<SegmentData>, Vec<ImagePosition>) {
     let objects: Vec<PdfPageObject> = page.objects().iter().collect();
 
-    // Image scan BEFORE column partitioning (partition consumes the vec).
+    // Image scan BEFORE text extraction.
     let mut images = Vec::new();
     for obj in &objects {
         if obj.as_image_object().is_some() {
@@ -166,8 +166,16 @@ pub(super) fn objects_to_page_data(
         }
     }
 
-    // Extract text via page objects API with column detection.
-    // Partition objects into column groups by moving (not cloning) them.
+    // Primary path: per-character extraction using pdfium's text API.
+    // This produces more accurate text and positions than from_objects()
+    // because it uses the same text extraction engine as plain text mode.
+    // Ligature repair is integrated inline.
+    if let Some(segments) = chars_to_segments(page) {
+        return (segments, images);
+    }
+
+    // Fallback: page objects API with column detection.
+    // Used when page.text() fails (rare edge case).
     let mut segments = Vec::new();
     let column_groups = super::columns::split_objects_into_columns(&objects);
     let column_vecs = partition_objects_by_columns(objects, &column_groups);
@@ -176,7 +184,7 @@ pub(super) fn objects_to_page_data(
         extract_paragraphs_to_segments(paragraphs, &mut segments);
     }
 
-    // Apply ligature repair using per-char font error detection.
+    // Apply ligature repair for fallback path.
     if let Some(repair_map) = build_ligature_repair_map(page) {
         for seg in &mut segments {
             seg.text = apply_ligature_repairs(&seg.text, &repair_map);
@@ -309,6 +317,197 @@ fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) -> String {
         }
     }
     result
+}
+
+/// Extract text segments from a PDF page using pdfium's text API.
+///
+/// Uses `page.text().all()` for correct text content (pdfium handles font matrices,
+/// CMap lookups, word boundaries) and per-character origins for line-level positioning.
+/// This produces better recall than `PdfiumParagraph::from_objects()` which can miss
+/// content when font metrics are broken.
+///
+/// Strategy:
+/// 1. Get full page text from pdfium (already correctly assembled with spaces)
+/// 2. Walk characters to find line breaks (Y position changes)
+/// 3. Emit one SegmentData per line with proper baseline_y and x position
+/// 4. Apply ligature repair inline
+fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
+    let text_obj = page.text().ok()?;
+    let chars = text_obj.chars();
+    let char_count = chars.len();
+    if char_count == 0 {
+        return None;
+    }
+
+    // Build ligature repair map for this page (if needed).
+    let repair_map = build_ligature_repair_map(page);
+
+    // Collect per-character data: (char, x, y, font_size, is_bold, is_italic, is_monospace)
+    struct CharInfo {
+        ch: char,
+        x: f32,
+        y: f32,
+        font_size: f32,
+        is_bold: bool,
+        is_italic: bool,
+        is_monospace: bool,
+        has_map_error: bool,
+        is_symbolic: bool,
+    }
+
+    let mut char_infos: Vec<CharInfo> = Vec::with_capacity(char_count);
+    for i in 0..char_count {
+        let ch = match chars.get(i) {
+            Ok(c) => c,
+            Err(_) => continue,
+        };
+
+        // Generated chars = word boundaries. Emit as spaces.
+        if ch.is_generated().unwrap_or(false) {
+            // Use the origin of the previous char if available
+            let (x, y) = if let Some(last) = char_infos.last() {
+                (last.x + last.font_size * 0.5, last.y)
+            } else {
+                (0.0, 0.0)
+            };
+            char_infos.push(CharInfo {
+                ch: ' ',
+                x,
+                y,
+                font_size: char_infos.last().map_or(12.0, |c| c.font_size),
+                is_bold: false,
+                is_italic: false,
+                is_monospace: false,
+                has_map_error: false,
+                is_symbolic: false,
+            });
+            continue;
+        }
+
+        let unicode_val = ch.unicode_value();
+        if unicode_val == 0xFFFE || unicode_val == 0xFFFF || unicode_val == 0 {
+            continue;
+        }
+        let uc = match char::from_u32(unicode_val) {
+            Some(c) => c,
+            None => continue,
+        };
+        if uc.is_control() && uc != '\n' && uc != '\r' && uc != '\t' {
+            continue;
+        }
+        // Skip soft hyphens (invisible break hints)
+        if uc == '\u{00AD}' {
+            continue;
+        }
+
+        let origin = match ch.origin() {
+            Ok(o) => o,
+            Err(_) => continue,
+        };
+        let fs = ch.scaled_font_size().value;
+        let font_info = ch.font_info();
+
+        char_infos.push(CharInfo {
+            ch: uc,
+            x: origin.0.value,
+            y: origin.1.value,
+            font_size: if fs > 0.0 { fs } else { 12.0 },
+            is_bold: font_info.1,
+            is_italic: font_info.2,
+            is_monospace: ch.font_is_fixed_pitch(),
+            has_map_error: ch.has_unicode_map_error().unwrap_or(false),
+            is_symbolic: ch.font_is_symbolic(),
+        });
+    }
+
+    if char_infos.is_empty() {
+        return None;
+    }
+
+    // Compute median line height from Y-position changes to detect line breaks.
+    // This is font-metric-independent and works even when scaled_font_size is wrong.
+    let mut y_jumps: Vec<f32> = Vec::new();
+    for i in 1..char_infos.len() {
+        if char_infos[i].ch == ' ' || char_infos[i - 1].ch == ' ' {
+            continue;
+        }
+        let dy = (char_infos[i].y - char_infos[i - 1].y).abs();
+        if dy > 1.0 && dy < 200.0 {
+            y_jumps.push(dy);
+        }
+    }
+    // Typical line spacing: use the smallest common Y-jump as line height.
+    // Lines on the same baseline have dy ≈ 0; different lines have dy ≈ line_height.
+    let line_height_threshold = if y_jumps.len() >= 3 {
+        y_jumps.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        // Use 60% of the most common (smallest) line jump as the threshold
+        y_jumps[0] * 0.6
+    } else {
+        // Fallback: use font size if available
+        let avg_fs = char_infos.iter().map(|c| c.font_size).sum::<f32>() / char_infos.len() as f32;
+        avg_fs * 0.5
+    };
+    let line_break_threshold = line_height_threshold.max(2.0);
+
+    // Split into line-level segments based on Y-position changes.
+    let mut segments = Vec::new();
+    let mut line_start = 0;
+
+    for i in 1..=char_infos.len() {
+        let is_line_break = if i == char_infos.len() {
+            true // End of page
+        } else {
+            let dy = (char_infos[i].y - char_infos[line_start].y).abs();
+            dy > line_break_threshold && char_infos[i].ch != ' '
+        };
+
+        if is_line_break {
+            // Collect text for this line, applying ligature repair.
+            let mut line_text = String::new();
+            for ci in &char_infos[line_start..i] {
+                if ci.has_map_error
+                    && !ci.is_symbolic
+                    && let Some(ref map) = repair_map
+                    && let Some((_, replacement)) = map.iter().find(|(c, _)| *c == ci.ch)
+                {
+                    line_text.push_str(replacement);
+                    continue;
+                }
+                line_text.push(ci.ch);
+            }
+
+            let trimmed = line_text.trim();
+            if !trimmed.is_empty() {
+                let first = &char_infos[line_start];
+                // Find last non-space char for width calculation
+                let last_idx = (line_start..i)
+                    .rev()
+                    .find(|&j| char_infos[j].ch != ' ')
+                    .unwrap_or(line_start);
+                let last = &char_infos[last_idx];
+                let width = (last.x - first.x).max(first.font_size);
+
+                segments.push(SegmentData {
+                    text: trimmed.to_string(),
+                    x: first.x,
+                    y: first.y,
+                    width,
+                    height: first.font_size,
+                    font_size: first.font_size,
+                    is_bold: first.is_bold,
+                    is_italic: first.is_italic,
+                    is_monospace: first.is_monospace,
+                    baseline_y: first.y,
+                });
+            }
+
+            if i < char_infos.len() {
+                line_start = i;
+            }
+        }
+    }
+
+    if segments.is_empty() { None } else { Some(segments) }
 }
 
 /// Convert pdfium paragraphs into SegmentData, preserving per-line positions.
