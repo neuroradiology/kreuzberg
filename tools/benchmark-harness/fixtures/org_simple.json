@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/org/readme.org",
 	"file_type": "org",
 	"file_size": 889,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Simple Org-mode README with basic structure and headings",
 		"category": "documentation"

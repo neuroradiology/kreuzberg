@@ -2,7 +2,19 @@
 	"document": "../../../test_documents/pdf/non_ascii_text.pdf",
 	"file_type": "pdf",
 	"file_size": 1799461,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
 		"description": "Non-ASCII Unicode text document - 1.7MB PDF with extensive non-ASCII characters and multiple scripts to test unicode and encoding handling",
 		"category": "pdf-unicode",

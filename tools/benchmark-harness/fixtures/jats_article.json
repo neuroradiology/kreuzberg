@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/jats/sample_article.jats",
 	"file_type": "jats",
 	"file_size": 7772,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "docling"],
 	"metadata": {
 		"description": "JATS XML article on caffeine health effects with metadata and tables",
 		"category": "markup",

@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/tables.asciidoc",
 	"file_type": "asciidoc",
 	"file_size": 1537,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "docling"],
 	"metadata": {
 		"description": "AsciiDoc document with multiple table examples",
 		"category": "markup",

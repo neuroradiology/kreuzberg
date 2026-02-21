@@ -10,7 +10,7 @@ mod pages;
 use bytes::Bytes;
 
 use crate::Result;
-use crate::core::config::ExtractionConfig;
+use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::{ExtractionResult, Metadata};
 use async_trait::async_trait;
@@ -388,8 +388,10 @@ impl DocumentExtractor for PdfExtractor {
         let effective_mime_type = mime_type.to_string();
 
         // Signal pre-formatted markdown so the pipeline doesn't double-convert.
+        // Only skip conversion for Markdown; Djot and HTML get the quality markdown
+        // content but still need apply_output_format() for format-specific conversion.
         #[cfg(feature = "pdf")]
-        let pre_formatted_output = if used_pdf_markdown {
+        let pre_formatted_output = if used_pdf_markdown && config.output_format == OutputFormat::Markdown {
             Some("markdown".to_string())
         } else {
             None

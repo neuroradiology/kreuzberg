@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Comprehensive test suite for Kreuzberg Python bindings v4.3.7.
+"""Comprehensive test suite for Kreuzberg Python bindings v4.3.8.
 
 Tests ALL exported functions and types/classes.
 Validates:

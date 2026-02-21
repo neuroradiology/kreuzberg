@@ -2,7 +2,19 @@
 	"document": "../../../test_documents/pdf/an_introduction_to_statistical_learning_with_applications_in_r_islr_sixth_printing.pdf",
 	"file_type": "pdf",
 	"file_size": 9433354,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "unstructured"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
 		"description": "Very large textbook - 9MB comprehensive statistical learning book",
 		"category": "pdf-book",

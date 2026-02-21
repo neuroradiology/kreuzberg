@@ -2,7 +2,19 @@
 	"document": "../../../test_documents/pdf/copy_protected.pdf",
 	"file_type": "pdf",
 	"file_size": 270117,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
 		"description": "Copy-protected PDF document - 263KB document with copy protection flags to test extraction from restricted documents",
 		"category": "pdf-protected",

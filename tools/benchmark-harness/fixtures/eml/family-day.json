@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/unstructured/eml/family-day.eml",
 	"file_type": "eml",
 	"file_size": 1291,
-	"expected_frameworks": ["unstructured"],
+	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from unstructured test suite",
 		"source": "unstructured",

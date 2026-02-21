@@ -2,7 +2,19 @@
 	"document": "../../../../test_documents/vendored/pdfplumber/pdf/issue-912.pdf",
 	"file_type": "pdf",
 	"file_size": 1202189,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "unstructured", "pdfplumber", "pymupdf4llm"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
 		"description": "Document from pdfplumber test suite",
 		"source": "pdfplumber",

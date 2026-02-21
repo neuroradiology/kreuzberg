@@ -32,13 +32,14 @@ fn get_supported_formats(framework_name: &str) -> Vec<String> {
         "pandoc" => vec![
             // Office documents
             "docx", "odt", "pptx", "xlsx", // Markup languages
-            "md", "markdown", "rst", "org", "typst",
-            // Web formats (htm, xml, json are NOT valid pandoc input formats)
-            "html", // Data formats
+            "md", "markdown", "rst", "org", "typst", // Web formats
+            "html", "htm", // Data formats
             "csv", "tsv", // Scientific/technical
-            "tex", "latex", "bib", "ipynb", // E-books
+            "tex", "latex", "bib", "ipynb", // Bibliography
+            "ris",   // E-books
             "epub",  // Other documents
-            "rtf", "txt",
+            "rtf", "txt", // XML-based document formats (auto-detected by extension)
+            "dbk",
         ]
         .into_iter()
         .map(|s| s.to_string())
@@ -70,13 +71,15 @@ fn get_supported_formats(framework_name: &str) -> Vec<String> {
         .map(|s| s.to_string())
         .collect(),
 
-        // Docling: 15 format types, 38+ extensions
+        // Docling: 15+ format types, 38+ extensions
         // See: https://docling-project.github.io/docling/usage/supported_formats/
         "docling" => vec![
             // Office documents
             "pdf", "docx", "pptx", "xlsx", // Web/markup
-            "html", "htm", "md",  // Data formats
-            "csv", // Images (converted to PDF internally for layout analysis)
+            "html", "htm", "md", "markdown", "asciidoc", // Data formats
+            "csv",      // Scientific/publishing
+            "jats",     // Subtitles
+            "vtt",      // Images (converted to PDF internally for layout analysis)
             "png", "jpg", "jpeg", "tiff", "tif", "bmp", "webp",
         ]
         .into_iter()

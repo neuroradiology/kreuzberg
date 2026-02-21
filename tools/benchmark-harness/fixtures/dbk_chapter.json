@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/docbook/docbook-chapter.dbk",
 	"file_type": "dbk",
 	"file_size": 1088,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "pandoc"],
 	"metadata": {
 		"description": "DocBook XML chapter with recursive sections (DBK extension)",
 		"category": "markup",

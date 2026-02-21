@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/markitdown/xml/test_rss.xml",
 	"file_type": "xml",
 	"file_size": 280582,
-	"expected_frameworks": ["unstructured"],
+	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from markitdown test suite",
 		"source": "markitdown",

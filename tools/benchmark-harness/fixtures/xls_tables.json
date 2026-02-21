@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xls/test_excel.xls",
 	"file_type": "xls",
 	"file_size": 49664,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "XLS with tables - Excel spreadsheet test document with tabular data",
 		"category": "structured"

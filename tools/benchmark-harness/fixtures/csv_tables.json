@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/csv/data_table.csv",
 	"file_type": "csv",
 	"file_size": 476,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "CSV data table with multiple columns",
 		"category": "tables"

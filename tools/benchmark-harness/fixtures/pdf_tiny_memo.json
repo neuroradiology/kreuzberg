@@ -2,7 +2,19 @@
 	"document": "../../../test_documents/pdf/fake_memo.pdf",
 	"file_type": "pdf",
 	"file_size": 13374,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "unstructured"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
 		"description": "Tiny PDF memo - 13KB searchable text document",
 		"category": "pdf-tiny",

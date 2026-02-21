@@ -59,7 +59,13 @@ pub(crate) fn extract_all_from_document(
 
     // If markdown output is requested, render it while we have the document loaded.
     // Skip when force_ocr is set since OCR results produce their own markdown via hOCR.
-    let pre_rendered_markdown = if config.output_format == OutputFormat::Markdown && !config.force_ocr {
+    // Pre-render structured markdown for all output formats that benefit from it.
+    // Markdown, Djot, and HTML all gain headings, tables, bold/italic, dehyphenation.
+    let needs_structured = matches!(
+        config.output_format,
+        OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
+    );
+    let pre_rendered_markdown = if needs_structured && !config.force_ocr {
         let k = config
             .pdf_options
             .as_ref()

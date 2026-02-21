@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/markitdown/html/test_serp.html",
 	"file_type": "html",
 	"file_size": 439704,
-	"expected_frameworks": ["kreuzberg", "markitdown", "unstructured"],
+	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from markitdown test suite",
 		"source": "markitdown",
