@@ -5,7 +5,10 @@ use crate::pdf::hierarchy::{BoundingBox, SegmentData, TextBlock, assign_heading_
 use pdfium_render::prelude::*;
 
 use super::assembly::assemble_markdown_with_tables;
-use super::bridge::{ImagePosition, extracted_blocks_to_paragraphs, objects_to_page_data};
+use super::bridge::{
+    ImagePosition, apply_ligature_repairs, build_ligature_repair_map, extracted_blocks_to_paragraphs,
+    objects_to_page_data, repair_contextual_ligatures, text_has_ligature_corruption,
+};
 use super::classify::{classify_paragraphs, refine_heading_hierarchy};
 use super::constants::{
     MIN_FONT_SIZE, MIN_HEADING_FONT_GAP, MIN_HEADING_FONT_RATIO, PAGE_BOTTOM_MARGIN_FRACTION, PAGE_TOP_MARGIN_FRACTION,
@@ -37,7 +40,43 @@ pub fn render_document_as_markdown_with_tables(
 
         match extract_page_content(&page) {
             Ok(extraction) if extraction.method == ExtractionMethod::StructureTree && !extraction.blocks.is_empty() => {
-                let paragraphs = extracted_blocks_to_paragraphs(&extraction.blocks);
+                let mut paragraphs = extracted_blocks_to_paragraphs(&extraction.blocks);
+                // Apply ligature repair to structure tree text (the structure tree
+                // path bypasses chars_to_segments where repair normally happens).
+                // First try error-flag-based repair, then fall back to contextual
+                // heuristic for fonts where pdfium doesn't flag the encoding errors.
+                // Try error-flag-based repair first (most accurate).
+                if let Some(repair_map) = build_ligature_repair_map(&page) {
+                    for para in &mut paragraphs {
+                        for line in &mut para.lines {
+                            for seg in &mut line.segments {
+                                seg.text = apply_ligature_repairs(&seg.text, &repair_map);
+                            }
+                        }
+                    }
+                }
+                // Then apply contextual ligature repair for fonts where
+                // pdfium doesn't flag encoding errors. Check the actual
+                // paragraph text (not page.text()) since structure tree
+                // text may differ from the page text layer.
+                {
+                    let all_text: String = paragraphs
+                        .iter()
+                        .flat_map(|p| p.lines.iter())
+                        .flat_map(|l| l.segments.iter())
+                        .map(|s| s.text.as_str())
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    if text_has_ligature_corruption(&all_text) {
+                        for para in &mut paragraphs {
+                            for line in &mut para.lines {
+                                for seg in &mut line.segments {
+                                    seg.text = repair_contextual_ligatures(&seg.text);
+                                }
+                            }
+                        }
+                    }
+                }
                 if paragraphs.is_empty() {
                     struct_tree_results.push(None);
                     heuristic_pages.push(i as usize);
@@ -167,6 +206,27 @@ pub fn render_document_as_markdown_with_tables(
             let mut paragraphs = lines_to_paragraphs(lines);
             classify_paragraphs(&mut paragraphs, &heading_map);
             merge_continuation_paragraphs(&mut paragraphs);
+            // Apply contextual ligature repair to heuristic pages where
+            // chars_to_segments didn't catch encoding issues (pdfium
+            // doesn't always flag broken ToUnicode CMaps).
+            {
+                let all_text: String = paragraphs
+                    .iter()
+                    .flat_map(|p| p.lines.iter())
+                    .flat_map(|l| l.segments.iter())
+                    .map(|s| s.text.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if text_has_ligature_corruption(&all_text) {
+                    for para in &mut paragraphs {
+                        for line in &mut para.lines {
+                            for seg in &mut line.segments {
+                                seg.text = repair_contextual_ligatures(&seg.text);
+                            }
+                        }
+                    }
+                }
+            }
             all_page_paragraphs.push(paragraphs);
         }
     }

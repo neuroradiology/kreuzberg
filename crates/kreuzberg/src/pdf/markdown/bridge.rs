@@ -232,7 +232,7 @@ fn partition_objects_by_columns<'a>(
 /// unicode value and font-specific encoding patterns.
 ///
 /// Returns `None` if the page has no encoding errors (most pages).
-fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'static str)>> {
+pub(super) fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'static str)>> {
     let text = match page.text() {
         Ok(t) => t,
         Err(_) => return None,
@@ -292,11 +292,14 @@ fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'static str)>
             0x03 => "ff",
             0x04 => "ffi",
             0x05 => "ffl",
-            // When broken CMap maps ligature codes to ASCII positions,
-            // we need context from the specific font. Since we can't
-            // determine the exact original glyph code, we use the most
-            // common mapping for each ASCII character.
-            // These are determined by the font encoding, not universal.
+            // ASCII positions: broken CMap maps ligature glyph codes to these
+            // ASCII characters. Safe because we only reach here when
+            // has_unicode_map_error() is true (i.e. pdfium detected encoding issues).
+            0x21 => "fi",  // '!' → fi (most common ligature corruption)
+            0x22 => "ff",  // '"' → ff
+            0x23 => "fl",  // '#' → fl
+            0x24 => "ffi", // '$' → ffi
+            0x25 => "ffl", // '%' → ffl
             _ => continue,
         };
 
@@ -307,7 +310,7 @@ fn build_ligature_repair_map(page: &PdfPage) -> Option<Vec<(char, &'static str)>
 }
 
 /// Apply ligature repairs to a text string using a page-specific repair map.
-fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) -> String {
+pub(super) fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) -> String {
     let mut result = String::with_capacity(text.len() + 16);
     for ch in text.chars() {
         if let Some((_, replacement)) = repair_map.iter().find(|(c, _)| *c == ch) {
@@ -317,6 +320,109 @@ fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) -> String {
         }
     }
     result
+}
+
+/// Repair ligature corruption using contextual heuristics.
+///
+/// Some PDF fonts (particularly Computer Modern from TeX/LaTeX) have broken
+/// ToUnicode CMaps that map ligature glyphs to ASCII characters:
+/// - `fi` → `!` (0x21)
+/// - `ff` → `"` (0x22)
+/// - `fl` → `#` (0x23)
+///
+/// Unlike `build_ligature_repair_map()` which relies on `has_unicode_map_error()`,
+/// this function detects corruption contextually: `!`, `"`, or `#` appearing
+/// between alphabetic characters (e.g., `e!cient`, `o"ces`, `#nancial`) is
+/// a near-certain indicator of ligature corruption, as these patterns virtually
+/// never occur in real text.
+///
+/// This is safe to apply broadly because:
+/// - Normal `!` appears at word/sentence boundaries, not between letters
+/// - Normal `"` appears at word boundaries (quotation marks), not mid-word
+/// - Normal `#` appears at word start (hashtags) or after non-letters, not mid-word
+pub(super) fn repair_contextual_ligatures(text: &str) -> String {
+    let chars: Vec<char> = text.chars().collect();
+    let len = chars.len();
+    if len < 2 {
+        return text.to_string();
+    }
+
+    let mut result = String::with_capacity(text.len() + 16);
+    let mut i = 0;
+
+    while i < len {
+        let ch = chars[i];
+        let prev_is_alpha = i > 0 && chars[i - 1].is_alphabetic();
+        let prev_is_space_or_start = i == 0 || chars[i - 1].is_whitespace();
+        let next_is_alpha = i + 1 < len && chars[i + 1].is_alphabetic();
+        let next_is_lower = i + 1 < len && chars[i + 1].is_lowercase();
+        let next_is_vowel =
+            i + 1 < len && matches!(chars[i + 1], 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U');
+
+        // Repair ligature corruption from broken CM/Type1 fonts:
+        // - Both fi and ff ligature glyphs can map to '!' (0x21)
+        // - The ffi ligature maps to '"' (0x22)
+        // - The fi ligature also maps to '#' (0x23) in some encodings
+        //
+        // Handles both mid-word (e.g. "di!erent" → "different") and
+        // word-start (e.g. "#nancial" → "financial") cases.
+        //
+        // Disambiguation for '!': if followed by a vowel → ff (different,
+        // effort), if followed by consonant/end → fi (scientific, specific).
+        match ch {
+            '!' if prev_is_alpha && next_is_vowel => result.push_str("ff"),
+            '!' if prev_is_alpha && next_is_alpha => result.push_str("fi"),
+            '!' if prev_is_alpha && i + 1 == len => result.push_str("fi"),
+            '"' if prev_is_alpha && next_is_alpha => result.push_str("ffi"),
+            '#' if prev_is_alpha && next_is_alpha => result.push_str("fi"),
+            // Word-start ligatures: '#' or '!' after whitespace/start + lowercase
+            '#' if prev_is_space_or_start && next_is_lower => result.push_str("fi"),
+            '!' if prev_is_space_or_start && next_is_lower => result.push_str("fi"),
+            _ => result.push(ch),
+        }
+        i += 1;
+    }
+
+    result
+}
+
+/// Check if text contains ligature corruption patterns.
+///
+/// Returns true if the text shows signs of broken ligature encoding:
+/// - Mid-word: `!`, `"`, or `#` between alphabetic characters
+/// - Word-start: `#` or `!` after whitespace/start followed by lowercase letter
+///
+/// Requires 2+ matches to avoid false positives from normal punctuation.
+pub(super) fn text_has_ligature_corruption(text: &str) -> bool {
+    let chars: Vec<char> = text.chars().collect();
+    let len = chars.len();
+    if len < 3 {
+        return false;
+    }
+
+    let mut count = 0u32;
+
+    for i in 0..len {
+        let ch = chars[i];
+        if !matches!(ch, '!' | '"' | '#') {
+            continue;
+        }
+        let prev_alpha = i > 0 && chars[i - 1].is_alphabetic();
+        let next_alpha = i + 1 < len && chars[i + 1].is_alphabetic();
+        let prev_space_or_start = i == 0 || chars[i - 1].is_whitespace();
+        let next_lower = i + 1 < len && chars[i + 1].is_lowercase();
+
+        // Mid-word pattern: alpha + special + alpha
+        if prev_alpha && next_alpha {
+            count += 1;
+        }
+        // Word-start pattern: (space|start) + # or ! + lowercase
+        if matches!(ch, '#' | '!') && prev_space_or_start && next_lower {
+            count += 1;
+        }
+    }
+
+    count >= 1
 }
 
 /// Per-character data extracted from pdfium's text API.
