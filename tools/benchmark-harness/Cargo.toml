@@ -36,7 +36,7 @@ sysinfo = "0.38"
 ahash = { workspace = true }
 num_cpus = { workspace = true }
 which = "8"
-chrono = "0.4"
+chrono = { workspace = true }
 shellexpand = "3"
 
 pprof = { version = "0.15", features = ["flamegraph", "criterion"], optional = true }

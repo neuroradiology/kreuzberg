@@ -22,13 +22,12 @@ doctest = false
 
 [dependencies]
 bitflags = "2"
-bytes = { workspace = true }
 bytemuck = "1"
-chrono = "0.4"
+chrono = { workspace = true }
 image_025 = { package = "image", version = "0.25", optional = true, default-features = false, features = [
     "jpeg",
 ] }
-itertools = "0.14"
+itertools = { workspace = true }
 log = { workspace = true }
 maybe-owned = "0.3"
 once_cell = { workspace = true }
@@ -61,3 +60,6 @@ image_025 = ["dep:image_025"]
 [lints.rust.unexpected_cfgs]
 level = "allow"
 check-cfg = ['cfg(pdfium_use_static)']
+
+[package.metadata.cargo-machete]
+ignored = ["bindgen"]

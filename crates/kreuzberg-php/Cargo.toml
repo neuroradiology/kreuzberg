@@ -17,15 +17,15 @@ crate-type = ["cdylib"]
 test = false
 
 [dependencies]
-async-trait = { workspace = true }
-ctor = "0.6"
+ctor = { workspace = true }
 ext-php-rs = "0.15"
 kreuzberg = { path = "../kreuzberg", features = ["full", "bundled-pdfium"] }
-once_cell = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-tokio = { workspace = true, features = ["rt", "sync"] }
-ahash = "0.8"
+ahash = { workspace = true }
 
 [features]
 default = []
+
+[package.metadata.cargo-machete]
+ignored = ["serde"]

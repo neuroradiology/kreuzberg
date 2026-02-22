@@ -96,7 +96,12 @@ def replace_workspace_deps_in_toml(toml_path: Path, workspace_deps: dict[str, ob
         def replace_with_fields(match: re.Match[str]) -> str:
             other_fields_str = match.group(1).strip()
             base_spec = format_dependency(name, dep_spec)
-            spec_part = base_spec.split(" = { ", 1)[1].rstrip("}")
+            if " = { " not in base_spec:
+                # Simple string dep like `ctor = "0.6"` - wrap it
+                version_val = base_spec.split(" = ", 1)[1].strip('"')
+                spec_part = f'version = "{version_val}"'
+            else:
+                spec_part = base_spec.split(" = { ", 1)[1].rstrip("}")
 
             existing_keys: set[str] = set()
             for part in spec_part.split(","):

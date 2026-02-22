@@ -28,11 +28,11 @@ serde_json = { workspace = true }
 serde = { workspace = true }
 async-trait = { workspace = true }
 tokio = { workspace = true }
-html-to-markdown-rs = { version = "2.25.1", default-features = false }
-rayon = { version = "1.11", optional = true }
+html-to-markdown-rs = { workspace = true }
+rayon = { workspace = true, optional = true }
 log = { workspace = true }
-ahash = "0.8"
-ctor = "0.6"
+ahash = { workspace = true }
+ctor = { workspace = true }
 
 [target.'cfg(all(windows, target_env = "gnu"))'.dependencies]
 kreuzberg = { path = "../kreuzberg", features = [
@@ -68,3 +68,6 @@ criterion = { version = "0.8", features = ["html_reports"] }
 [[bench]]
 name = "result_view_benchmark"
 harness = false
+
+[package.metadata.cargo-machete]
+ignored = ["cbindgen"]

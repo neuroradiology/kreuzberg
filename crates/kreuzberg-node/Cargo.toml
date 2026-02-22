@@ -26,13 +26,11 @@ serde_json = { workspace = true }
 async-trait = { workspace = true }
 base64 = { workspace = true }
 once_cell = { workspace = true }
-html-to-markdown-rs = { version = "2.25.1", default-features = false }
-lazy_static = "1.5"
-num_cpus = "1.17"
-crossbeam-channel = "0.5"
-futures = "0.3"
-ahash = "0.8"
-ctor = "0.6"
+html-to-markdown-rs = { workspace = true }
+lazy_static = { workspace = true }
+num_cpus = { workspace = true }
+ahash = { workspace = true }
+ctor = { workspace = true }
 
 [build-dependencies]
 napi-build = "2.3"
