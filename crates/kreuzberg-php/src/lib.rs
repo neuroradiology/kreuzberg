@@ -15,14 +15,35 @@
 use ext_php_rs::builders::FunctionBuilder;
 use ext_php_rs::prelude::*;
 use ext_php_rs::types::Zval;
+use once_cell::sync::Lazy;
 
+pub mod async_extraction;
 pub mod config;
+pub mod deferred;
 pub mod embeddings;
 pub mod error;
 pub mod extraction;
 pub mod plugins;
 pub mod types;
 pub mod validation;
+
+/// Global Tokio runtime for async worker threads.
+///
+/// Initializes once per PHP process (persists across requests in PHP-FPM).
+/// Thread count is configurable via `KREUZBERG_PHP_WORKER_THREADS` env var.
+pub(crate) static WORKER_RUNTIME: Lazy<tokio::runtime::Runtime> = Lazy::new(|| {
+    let worker_threads = std::env::var("KREUZBERG_PHP_WORKER_THREADS")
+        .ok()
+        .and_then(|v| v.parse::<usize>().ok())
+        .unwrap_or_else(|| std::cmp::max(2, num_cpus::get() / 2));
+
+    tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(worker_threads)
+        .enable_all()
+        .thread_name("kreuzberg-php-worker")
+        .build()
+        .expect("Failed to create Tokio runtime for PHP async workers")
+});
 
 #[ctor::ctor]
 fn setup_onnx_runtime_path() {
@@ -76,6 +97,9 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
     for builder in validation::get_function_builders() {
         module = module.function(builder);
     }
+    for builder in async_extraction::get_function_builders() {
+        module = module.function(builder);
+    }
 
     // Register all PHP classes (order matters for dependencies)
     // Types module - base result types
@@ -90,6 +114,9 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .class::<types::PdfAnnotationType>()  // Must be registered before PdfAnnotation
         .class::<types::PdfAnnotation>()      // Must be registered before ExtractionResult
         .class::<types::ExtractionResult>();
+
+    // Async module - DeferredResult for async operations
+    module = module.class::<deferred::DeferredResult>();
 
     // Note: Config classes are pure PHP (packages/php/src/Config/*.php)
     // No Rust config classes are exposed - configs are passed as JSON

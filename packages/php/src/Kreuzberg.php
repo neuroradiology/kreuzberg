@@ -6,6 +6,7 @@ namespace Kreuzberg;
 
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
+use Kreuzberg\Types\DeferredResult;
 use Kreuzberg\Types\ExtractionResult;
 
 /**
@@ -117,6 +118,82 @@ final readonly class Kreuzberg
     }
 
     /**
+     * Extract content from a file asynchronously.
+     *
+     * Returns a DeferredResult immediately. The extraction runs on a background thread.
+     *
+     * @param string $filePath Path to the file to extract
+     * @param string|null $mimeType Optional MIME type hint (auto-detected if null)
+     * @param ExtractionConfig|null $config Extraction configuration (uses constructor config if null)
+     * @return DeferredResult Deferred result that can be polled or waited on
+     * @throws KreuzbergException If config parsing fails
+     */
+    public function extractFileAsync(
+        string $filePath,
+        ?string $mimeType = null,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= $this->defaultConfig ?? new ExtractionConfig();
+
+        return extract_file_async($filePath, $mimeType, $config);
+    }
+
+    /**
+     * Extract content from bytes asynchronously.
+     *
+     * @param string $data File content as bytes
+     * @param string $mimeType MIME type of the data
+     * @param ExtractionConfig|null $config Extraction configuration (uses constructor config if null)
+     * @return DeferredResult Deferred result that can be polled or waited on
+     * @throws KreuzbergException If config parsing fails
+     */
+    public function extractBytesAsync(
+        string $data,
+        string $mimeType,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= $this->defaultConfig ?? new ExtractionConfig();
+
+        return extract_bytes_async($data, $mimeType, $config);
+    }
+
+    /**
+     * Extract content from multiple files asynchronously.
+     *
+     * @param array<string> $paths List of file paths
+     * @param ExtractionConfig|null $config Extraction configuration (uses constructor config if null)
+     * @return DeferredResult Deferred result (use getResults() for batch)
+     * @throws KreuzbergException If config parsing fails
+     */
+    public function batchExtractFilesAsync(
+        array $paths,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= $this->defaultConfig ?? new ExtractionConfig();
+
+        return batch_extract_files_async($paths, $config);
+    }
+
+    /**
+     * Extract content from multiple byte arrays asynchronously.
+     *
+     * @param array<string> $dataList List of file contents as bytes
+     * @param array<string> $mimeTypes List of MIME types (one per data item)
+     * @param ExtractionConfig|null $config Extraction configuration (uses constructor config if null)
+     * @return DeferredResult Deferred result (use getResults() for batch)
+     * @throws KreuzbergException If config parsing fails
+     */
+    public function batchExtractBytesAsync(
+        array $dataList,
+        array $mimeTypes,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= $this->defaultConfig ?? new ExtractionConfig();
+
+        return batch_extract_bytes_async($dataList, $mimeTypes, $config);
+    }
+
+    /**
      * Extract content from a file (static synchronous method).
      *
      * @param string $filePath Path to the file to extract
@@ -188,6 +265,80 @@ final readonly class Kreuzberg
         $config ??= new ExtractionConfig();
 
         return batch_extract_bytes($dataList, $mimeTypes, $config);
+    }
+
+    /**
+     * Extract content from a file asynchronously (static method).
+     *
+     * @param string $filePath Path to the file to extract
+     * @param string|null $mimeType Optional MIME type hint (auto-detected if null)
+     * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+     * @return DeferredResult Deferred result that can be polled or waited on
+     * @throws KreuzbergException If config parsing fails
+     */
+    public static function extractFileAsyncStatic(
+        string $filePath,
+        ?string $mimeType = null,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= new ExtractionConfig();
+
+        return extract_file_async($filePath, $mimeType, $config);
+    }
+
+    /**
+     * Extract content from bytes asynchronously (static method).
+     *
+     * @param string $data File content as bytes
+     * @param string $mimeType MIME type of the data
+     * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+     * @return DeferredResult Deferred result that can be polled or waited on
+     * @throws KreuzbergException If config parsing fails
+     */
+    public static function extractBytesAsyncStatic(
+        string $data,
+        string $mimeType,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= new ExtractionConfig();
+
+        return extract_bytes_async($data, $mimeType, $config);
+    }
+
+    /**
+     * Extract content from multiple files asynchronously (static method).
+     *
+     * @param array<string> $paths List of file paths
+     * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+     * @return DeferredResult Deferred result (use getResults() for batch)
+     * @throws KreuzbergException If config parsing fails
+     */
+    public static function batchExtractFilesAsyncStatic(
+        array $paths,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= new ExtractionConfig();
+
+        return batch_extract_files_async($paths, $config);
+    }
+
+    /**
+     * Extract content from multiple byte arrays asynchronously (static method).
+     *
+     * @param array<string> $dataList List of file contents as bytes
+     * @param array<string> $mimeTypes List of MIME types (one per data item)
+     * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+     * @return DeferredResult Deferred result (use getResults() for batch)
+     * @throws KreuzbergException If config parsing fails
+     */
+    public static function batchExtractBytesAsyncStatic(
+        array $dataList,
+        array $mimeTypes,
+        ?ExtractionConfig $config = null,
+    ): DeferredResult {
+        $config ??= new ExtractionConfig();
+
+        return batch_extract_bytes_async($dataList, $mimeTypes, $config);
     }
 
     /**

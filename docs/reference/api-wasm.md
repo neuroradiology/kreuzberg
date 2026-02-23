@@ -528,9 +528,12 @@ function batchExtractBytesSync(
 
 ### enableOcr()
 
-Enable OCR functionality with the tesseract-wasm backend.
+Enable OCR functionality with automatic backend selection.
 
-Convenience function that automatically initializes and registers the Tesseract WASM backend for browser environments.
+Automatically selects the best available OCR backend based on build configuration and runtime:
+
+1. **Native WASM OCR** (preferred): If built with the `ocr-wasm` feature, uses `kreuzberg-tesseract` compiled directly into the WASM binary. Works in all environments (Browser, Node.js, Deno, Bun).
+2. **Browser fallback**: Uses `TesseractWasmBackend` with the `tesseract-wasm` npm package (requires `createImageBitmap` browser API).
 
 **Signature:**
 
@@ -540,36 +543,47 @@ async function enableOcr(): Promise<void>
 
 **Throws:**
 
-- `Error`: If WASM module is not initialized or not in browser environment
+- `Error`: If WASM module is not initialized or no OCR backend is available
 
 **Requirements:**
 
-- Browser environment with Web Workers support
-- Network access to jsDelivr CDN for training data (on first use)
-- `createImageBitmap` API support
+- Network access to jsDelivr CDN for training data (downloaded on first use per language)
+- For native WASM OCR: WASM module built with `ocr-wasm` feature
+- For browser fallback: `createImageBitmap` API support
 
-**Example - Basic OCR:**
+**Example - Basic OCR (works in all environments):**
 
 ```typescript title="ocr_config.ts"
 import { initWasm, enableOcr, extractBytes } from '@kreuzberg/wasm';
 
 async function main() {
-  // Initialize WASM module
   await initWasm();
-
-  // Enable OCR with tesseract-wasm
   await enableOcr();
 
-  // Now you can use OCR in extraction
   const imageBytes = new Uint8Array(buffer);
   const result = await extractBytes(imageBytes, 'image/png', {
-    ocr: { backend: 'tesseract-wasm', language: 'eng' }
+    ocr: { backend: 'kreuzberg-tesseract', language: 'eng' }
   });
 
-  console.log(result.content); // Extracted text
+  console.log(result.content);
 }
 
 main().catch(console.error);
+```
+
+**Example - Node.js OCR:**
+
+```typescript title="ocr_nodejs.ts"
+import { initWasm, enableOcr, extractFile } from '@kreuzberg/wasm';
+
+await initWasm();
+await enableOcr(); // Uses native kreuzberg-tesseract backend
+
+const result = await extractFile('./scanned_document.png', 'image/png', {
+  ocr: { backend: 'kreuzberg-tesseract', language: 'eng' }
+});
+
+console.log(result.content);
 ```
 
 **Example - Multi-language OCR:**
@@ -582,14 +596,18 @@ await enableOcr();
 
 // Extract English text
 const englishResult = await extractBytes(engImageBytes, 'image/png', {
-  ocr: { backend: 'tesseract-wasm', language: 'eng' }
+  ocr: { backend: 'kreuzberg-tesseract', language: 'eng' }
 });
 
-// Extract German text - model is cached after first use
+// Extract German text - training data is cached after first use
 const germanResult = await extractBytes(deImageBytes, 'image/png', {
-  ocr: { backend: 'tesseract-wasm', language: 'deu' }
+  ocr: { backend: 'kreuzberg-tesseract', language: 'deu' }
 });
 ```
+
+**Supported Languages (43):**
+
+eng, deu, fra, spa, ita, por, nld, rus, jpn, kor, chi_sim, chi_tra, pol, tur, swe, dan, fin, nor, ces, slk, ron, hun, hrv, srp, bul, ukr, ell, ara, heb, hin, tha, vie, mkd, ben, tam, tel, kan, mal, mya, khm, lao, sin
 
 ---
 
@@ -1629,7 +1647,7 @@ async function extractWithOcrFallback(bytes: Uint8Array, mimeType: string) {
   let config = {};
   try {
     await enableOcr();
-    config = { ocr: { backend: 'tesseract-wasm', language: 'eng' } };
+    config = { ocr: { backend: 'kreuzberg-tesseract', language: 'eng' } };
   } catch (error) {
     console.warn('OCR unavailable, continuing with text extraction', error);
   }
@@ -1773,11 +1791,13 @@ Common MIME types supported by Kreuzberg WASM:
 | `extractBytes()` | Yes | Yes | Yes | Yes | Yes |
 | `extractFile()` | No | Yes | Yes | Yes | No |
 | `extractFromFile()` | Yes | No | No | No | No |
-| `enableOcr()` | Yes | No | No | No | No |
+| `enableOcr()` | Yes | Yes* | Yes* | Yes* | Yes* |
 | `initThreadPool()` | Yes | No | No | No | No |
 | `batchExtractFiles()` | Yes | No | No | No | No |
 
-**Note:** OCR is only available in browser environments with Web Worker support due to dependency on tesseract-wasm and browser APIs like `createImageBitmap`.
+\* **OCR in non-browser environments** requires the WASM module to be built with the `ocr-wasm` feature flag, which statically links `kreuzberg-tesseract` into the WASM binary. When available, native WASM OCR works in all environments without any browser-specific APIs. The browser-only `TesseractWasmBackend` fallback (using `createImageBitmap`) is used only when native WASM OCR is not available.
+
+**PDF support in Node.js/Deno**: PDFium is automatically loaded from the filesystem when running in Node.js or Deno. Set the `KREUZBERG_PDFIUM_PATH` environment variable to customize the PDFium module location.
 
 ---
 
@@ -1879,30 +1899,28 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
 
 ### OCR Not Available or Not Working
 
-**Symptoms:** "OCR is only available in browser" error or OCR produces no output
+**Symptoms:** "No OCR backend available" error or OCR produces no output
 
 **Causes:**
-- Attempting to use `enableOcr()` outside of browser environment (Node.js/Deno/Workers)
-- Web Workers not supported or blocked
+- WASM module not built with `ocr-wasm` feature (for native OCR)
+- Not in browser environment and native OCR unavailable (for browser fallback)
 - Training data not loading from jsDelivr CDN
 - Language model not available for selected language
 
 **Solutions:**
-1. Check runtime with `isBrowser()` before enabling OCR:
-   ```typescript title="check_browser.ts"
-   import { isBrowser, enableOcr } from '@kreuzberg/wasm';
+1. Enable native WASM OCR by building with the `ocr-wasm` feature flag. This embeds `kreuzberg-tesseract` into the WASM binary and works in all environments.
 
-   if (isBrowser()) {
+2. Check if OCR is available after enabling:
+   ```typescript title="check_ocr.ts"
+   import { enableOcr, listOcrBackends } from '@kreuzberg/wasm';
+
+   try {
      await enableOcr();
-   }
-   ```
-
-2. Verify Web Worker support:
-   ```typescript title="check_workers.ts"
-   import { hasWorkers } from '@kreuzberg/wasm';
-
-   if (hasWorkers()) {
-     console.log('Web Workers available');
+     const backends = listOcrBackends();
+     console.log('Available OCR backends:', backends);
+     // Expected: ['kreuzberg-tesseract'] (native) or ['tesseract-wasm'] (browser fallback)
+   } catch (error) {
+     console.warn('OCR not available:', error);
    }
    ```
 
@@ -1910,16 +1928,15 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
    ```typescript title="check_ocr_languages.ts"
    import { getOcrBackend } from '@kreuzberg/wasm';
 
-   const backend = getOcrBackend('tesseract-wasm');
+   const backend = getOcrBackend('kreuzberg-tesseract');
    if (backend) {
      const langs = backend.supportedLanguages();
      console.log('Supported languages:', langs);
-     // Verify your language is in the list
    }
    ```
 
 4. Ensure network access to jsDelivr CDN:
-   - First OCR call downloads training data (~50MB for English)
+   - First OCR call per language downloads training data from CDN
    - Subsequent calls use cached data
    - May fail without internet connection
 
@@ -1936,7 +1953,7 @@ const result = await extractBytes(pdfBytes, 'application/pdf', {
    }
 
    const config = ocrEnabled
-     ? { ocr: { backend: 'tesseract-wasm', language: 'eng' } }
+     ? { ocr: { backend: 'kreuzberg-tesseract', language: 'eng' } }
      : {};
 
    const result = await extractBytes(bytes, 'application/pdf', config);

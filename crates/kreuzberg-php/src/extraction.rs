@@ -13,7 +13,7 @@ use crate::types::ExtractionResult;
 
 /// Extract the extract_tables flag from config JSON.
 /// Defaults to true if not specified.
-fn should_extract_tables(config_json: &Option<String>) -> PhpResult<bool> {
+pub(crate) fn should_extract_tables(config_json: &Option<String>) -> PhpResult<bool> {
     if let Some(json) = config_json {
         match serde_json::from_str::<serde_json::Value>(json) {
             Ok(value) => {

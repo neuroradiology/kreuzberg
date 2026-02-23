@@ -964,31 +964,60 @@ fn render_test(fixture: &Fixture) -> Result<String> {
     writeln!(code, "        $kreuzberg = new Kreuzberg($config);")?;
 
     // Generate extraction call based on method and input_type
-    // Note: PHP SDK does not have async methods - all operations are synchronous.
-    // Async/BatchAsync methods map to their sync equivalents.
     match (method, input_type) {
-        (ExtractionMethod::Sync, InputType::File) | (ExtractionMethod::Async, InputType::File) => {
+        (ExtractionMethod::Sync, InputType::File) => {
             writeln!(code, "        $result = $kreuzberg->extractFile($documentPath);")?;
         }
-        (ExtractionMethod::Sync, InputType::Bytes) | (ExtractionMethod::Async, InputType::Bytes) => {
+        (ExtractionMethod::Async, InputType::File) => {
+            writeln!(code, "        $deferred = $kreuzberg->extractFileAsync($documentPath);")?;
+            writeln!(code, "        $result = $deferred->getResult();")?;
+        }
+        (ExtractionMethod::Sync, InputType::Bytes) => {
             writeln!(code, "        $bytes = file_get_contents($documentPath);")?;
             writeln!(code, "        $mimeType = Kreuzberg::detectMimeType($bytes);")?;
             writeln!(code, "        $result = $kreuzberg->extractBytes($bytes, $mimeType);")?;
         }
-        (ExtractionMethod::BatchSync, InputType::File) | (ExtractionMethod::BatchAsync, InputType::File) => {
+        (ExtractionMethod::Async, InputType::Bytes) => {
+            writeln!(code, "        $bytes = file_get_contents($documentPath);")?;
+            writeln!(code, "        $mimeType = Kreuzberg::detectMimeType($bytes);")?;
+            writeln!(
+                code,
+                "        $deferred = $kreuzberg->extractBytesAsync($bytes, $mimeType);"
+            )?;
+            writeln!(code, "        $result = $deferred->getResult();")?;
+        }
+        (ExtractionMethod::BatchSync, InputType::File) => {
             writeln!(
                 code,
                 "        $results = $kreuzberg->batchExtractFiles([$documentPath]);"
             )?;
             writeln!(code, "        $result = $results[0];")?;
         }
-        (ExtractionMethod::BatchSync, InputType::Bytes) | (ExtractionMethod::BatchAsync, InputType::Bytes) => {
+        (ExtractionMethod::BatchAsync, InputType::File) => {
+            writeln!(
+                code,
+                "        $deferred = $kreuzberg->batchExtractFilesAsync([$documentPath]);"
+            )?;
+            writeln!(code, "        $results = $deferred->getResults();")?;
+            writeln!(code, "        $result = $results[0];")?;
+        }
+        (ExtractionMethod::BatchSync, InputType::Bytes) => {
             writeln!(code, "        $bytes = file_get_contents($documentPath);")?;
             writeln!(code, "        $mimeType = Kreuzberg::detectMimeType($bytes);")?;
             writeln!(
                 code,
                 "        $results = $kreuzberg->batchExtractBytes([$bytes], [$mimeType]);"
             )?;
+            writeln!(code, "        $result = $results[0];")?;
+        }
+        (ExtractionMethod::BatchAsync, InputType::Bytes) => {
+            writeln!(code, "        $bytes = file_get_contents($documentPath);")?;
+            writeln!(code, "        $mimeType = Kreuzberg::detectMimeType($bytes);")?;
+            writeln!(
+                code,
+                "        $deferred = $kreuzberg->batchExtractBytesAsync([$bytes], [$mimeType]);"
+            )?;
+            writeln!(code, "        $results = $deferred->getResults();")?;
             writeln!(code, "        $result = $results[0];")?;
         }
     }

@@ -102,6 +102,7 @@ pub mod embeddings;
 pub mod errors;
 pub mod extraction;
 pub mod mime;
+pub mod ocr;
 pub mod plugins;
 pub mod types;
 

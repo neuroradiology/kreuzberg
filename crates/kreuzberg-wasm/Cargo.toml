@@ -34,6 +34,10 @@ toml = { workspace = true }
 base64 = { workspace = true }
 async-trait = "0.1"
 console_error_panic_hook = { workspace = true, optional = true }
+kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.3", default-features = false, features = [
+    "build-tesseract-wasm",
+], optional = true }
+image = { workspace = true, features = ["png", "jpeg", "gif", "bmp", "tiff"], optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
@@ -41,7 +45,7 @@ wasm-bindgen-test = "0.3"
 [features]
 default = []
 embeddings = ["kreuzberg/embeddings"]
-ocr-wasm = []
+ocr-wasm = ["dep:kreuzberg-tesseract", "dep:image"]
 threads = ["dep:wasm-bindgen-rayon"]
 console_error_panic_hook = ["dep:console_error_panic_hook"]
 

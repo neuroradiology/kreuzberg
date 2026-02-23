@@ -527,9 +527,9 @@ mod tests {
         let document2 = pdfium.load_pdf_from_file(&test_fixture_path("test-toc.pdf"), None)?;
         let all_bookmarks2: Vec<_> = document2.bookmarks().iter().collect();
         assert_eq!(all_bookmarks.len(), all_bookmarks2.len());
-        for i in 0..all_bookmarks.len() {
-            for j in 0..all_bookmarks.len() {
-                assert!(all_bookmarks[i] != all_bookmarks2[j]);
+        for bookmark in &all_bookmarks {
+            for bookmark2 in &all_bookmarks2 {
+                assert!(bookmark != bookmark2);
             }
         }
 

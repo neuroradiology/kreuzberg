@@ -50,6 +50,10 @@ for (const file of files) {
 		// Handles multi-line: import(\n  /* comment */\n  "../pkg/kreuzberg_wasm.js"\n)
 		content = content.replace(/"\.\.\/pkg\/kreuzberg_wasm\.js"/g, '"./pkg/kreuzberg_wasm.js"');
 
+		// Fix pdfium.js import path: ../pdfium.js -> ./pdfium.js (since bundled code is in dist/)
+		content = content.replace(/import\("\.\.\/pdfium\.js"\)/g, 'import("./pdfium.js")');
+		content = content.replace(/"\.\.\/pdfium\.js"/g, '"./pdfium.js"');
+
 		if (content !== original) {
 			fs.writeFileSync(file, content);
 			console.log(`Fixed import paths in ${path.basename(file)}`);

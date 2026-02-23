@@ -5,8 +5,8 @@
  * using the WASM module's native capabilities.
  */
 
-import { getWasmModule, isInitialized } from "../extraction/internal.js";
 import { wrapWasmError } from "../adapters/wasm-adapter.js";
+import { getWasmModule, isInitialized } from "../extraction/internal.js";
 
 /**
  * Detect MIME type from raw bytes

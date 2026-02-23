@@ -49,9 +49,6 @@ pub mod ppt;
 #[cfg(feature = "office")]
 pub mod pptx;
 
-#[cfg(feature = "excel")]
-pub mod table;
-
 #[cfg(feature = "xml")]
 pub mod xml;
 
@@ -98,9 +95,6 @@ pub use office_metadata::{
 
 #[cfg(feature = "office")]
 pub use pptx::{extract_pptx_from_bytes, extract_pptx_from_path};
-
-#[cfg(feature = "excel")]
-pub use table::table_from_arrow_to_markdown;
 
 #[cfg(feature = "xml")]
 pub use xml::parse_xml;

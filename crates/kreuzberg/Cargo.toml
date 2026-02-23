@@ -31,7 +31,7 @@ pdf = ["dep:pdfium-render", "dep:lopdf", "dep:image"]
 static-pdfium = ["pdf"]
 bundled-pdfium = ["pdf"]
 system-pdfium = ["pdf"]
-excel = ["dep:calamine", "dep:polars", "tokio-runtime"]
+excel = ["dep:calamine", "tokio-runtime"]
 office = [
     "dep:cfb",
     "dep:roxmltree",
@@ -170,7 +170,7 @@ tracing = { workspace = true }
 pdfium-render = { workspace = true, features = ["thread_safe", "image_latest"], optional = true }
 lopdf = { version = "0.39.0", optional = true }
 calamine = { version = "0.33.0", features = ["dates"], optional = true }
-polars = { version = "0.53.0", default-features = false, features = ["ipc"], optional = true }
+
 roxmltree = { version = "0.21.1", optional = true }
 zip = { version = "8.1.0", optional = true, default-features = false, features = [
     "deflate-flate2",

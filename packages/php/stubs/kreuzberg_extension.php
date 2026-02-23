@@ -241,3 +241,54 @@ function kreuzberg_list_validators(): array
 function kreuzberg_clear_validators(): void
 {
 }
+
+/**
+ * Extract content from a file asynchronously (native extension function).
+ *
+ * @param string $filePath Path to the file
+ * @param string|null $mimeType Optional MIME type hint
+ * @param string|null $config JSON-encoded extraction configuration
+ * @return \Kreuzberg\Types\DeferredResult Deferred result
+ * @throws \Exception If config parsing fails
+ */
+function kreuzberg_extract_file_async(string $filePath, ?string $mimeType = null, ?string $config = null): \Kreuzberg\Types\DeferredResult
+{
+}
+
+/**
+ * Extract content from bytes asynchronously (native extension function).
+ *
+ * @param string $data File content as bytes
+ * @param string $mimeType MIME type of the data
+ * @param string|null $config JSON-encoded extraction configuration
+ * @return \Kreuzberg\Types\DeferredResult Deferred result
+ * @throws \Exception If config parsing fails
+ */
+function kreuzberg_extract_bytes_async(string $data, string $mimeType, ?string $config = null): \Kreuzberg\Types\DeferredResult
+{
+}
+
+/**
+ * Extract content from multiple files asynchronously (native extension function).
+ *
+ * @param array<string> $paths List of file paths
+ * @param string|null $config JSON-encoded extraction configuration
+ * @return \Kreuzberg\Types\DeferredResult Deferred result (use getResults() for batch)
+ * @throws \Exception If config parsing fails
+ */
+function kreuzberg_batch_extract_files_async(array $paths, ?string $config = null): \Kreuzberg\Types\DeferredResult
+{
+}
+
+/**
+ * Extract content from multiple byte arrays asynchronously (native extension function).
+ *
+ * @param array<string> $dataList List of file contents as bytes
+ * @param array<string> $mimeTypes List of MIME types
+ * @param string|null $config JSON-encoded extraction configuration
+ * @return \Kreuzberg\Types\DeferredResult Deferred result (use getResults() for batch)
+ * @throws \Exception If config parsing fails
+ */
+function kreuzberg_batch_extract_bytes_async(array $dataList, array $mimeTypes, ?string $config = null): \Kreuzberg\Types\DeferredResult
+{
+}

@@ -1397,6 +1397,300 @@ try {
 
 ---
 
+## Async Extraction
+
+Kreuzberg PHP provides async extraction via a `DeferredResult` pattern. Async operations spawn work on a background Tokio thread pool and return immediately with a pollable `DeferredResult` object.
+
+### DeferredResult
+
+Result object returned by all async extraction functions. Supports non-blocking polling, blocking wait, and timeout-based waiting.
+
+**Signature:**
+
+```php title="PHP"
+final class DeferredResult
+{
+    public function isReady(): bool;
+    public function tryGetResult(): ?ExtractionResult;
+    public function getResult(): ExtractionResult;
+    public function wait(int $timeoutMs): ?ExtractionResult;
+    public function getResults(): array;
+    public function waitBatch(int $timeoutMs): ?array;
+}
+```
+
+**Methods:**
+
+- `isReady()`: Non-blocking check if the result is available
+- `tryGetResult()`: Returns the result if ready, null if still pending (single extraction)
+- `getResult()`: Blocks until the result is ready (single extraction)
+- `wait($timeoutMs)`: Blocks with a timeout in milliseconds, returns null on timeout (single extraction)
+- `getResults()`: Blocks until batch results are ready (batch extraction)
+- `waitBatch($timeoutMs)`: Blocks with a timeout for batch results, returns null on timeout
+
+---
+
+### Kreuzberg::extractFileAsync()
+
+Extract content from a file asynchronously.
+
+**Signature:**
+
+```php title="PHP"
+public function extractFileAsync(
+    string $filePath,
+    ?string $mimeType = null,
+    ?ExtractionConfig $config = null
+): DeferredResult
+```
+
+**Parameters:**
+
+- `$filePath` (string): Path to the file to extract
+- `$mimeType` (string|null): Optional MIME type hint
+- `$config` (ExtractionConfig|null): Extraction configuration
+
+**Returns:**
+
+- `DeferredResult`: A deferred result that can be polled or awaited
+
+**Examples:**
+
+```php title="async_extraction.php"
+<?php
+
+use Kreuzberg\Kreuzberg;
+
+$kreuzberg = new Kreuzberg();
+
+// Start async extraction
+$deferred = $kreuzberg->extractFileAsync('large_document.pdf');
+
+// Do other work while extraction runs in background...
+processOtherTasks();
+
+// Check if ready (non-blocking)
+if ($deferred->isReady()) {
+    $result = $deferred->getResult();
+    echo $result->content;
+}
+
+// Or block until ready
+$result = $deferred->getResult();
+echo $result->content;
+```
+
+---
+
+### Kreuzberg::extractBytesAsync()
+
+Extract content from bytes asynchronously.
+
+**Signature:**
+
+```php title="PHP"
+public function extractBytesAsync(
+    string $data,
+    string $mimeType,
+    ?ExtractionConfig $config = null
+): DeferredResult
+```
+
+**Parameters:**
+
+Same as [`Kreuzberg::extractBytes()`](#kreuzbergextractbytes).
+
+**Returns:**
+
+- `DeferredResult`: A deferred result that can be polled or awaited
+
+---
+
+### Kreuzberg::batchExtractFilesAsync()
+
+Extract content from multiple files asynchronously.
+
+**Signature:**
+
+```php title="PHP"
+public function batchExtractFilesAsync(
+    array $paths,
+    ?ExtractionConfig $config = null
+): DeferredResult
+```
+
+**Parameters:**
+
+Same as [`Kreuzberg::batchExtractFiles()`](#kreuzbergbatchextractfiles).
+
+**Returns:**
+
+- `DeferredResult`: A deferred result. Use `getResults()` or `waitBatch()` to retrieve.
+
+**Examples:**
+
+```php title="async_batch.php"
+<?php
+
+use Kreuzberg\Kreuzberg;
+
+$kreuzberg = new Kreuzberg();
+
+$files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
+$deferred = $kreuzberg->batchExtractFilesAsync($files);
+
+// Wait with timeout (5 seconds)
+$results = $deferred->waitBatch(5000);
+
+if ($results !== null) {
+    foreach ($results as $i => $result) {
+        echo "{$files[$i]}: {$result->content}\n";
+    }
+} else {
+    echo "Extraction timed out\n";
+}
+```
+
+---
+
+### Kreuzberg::batchExtractBytesAsync()
+
+Extract content from multiple byte arrays asynchronously.
+
+**Signature:**
+
+```php title="PHP"
+public function batchExtractBytesAsync(
+    array $dataList,
+    array $mimeTypes,
+    ?ExtractionConfig $config = null
+): DeferredResult
+```
+
+**Parameters:**
+
+Same as [`Kreuzberg::batchExtractBytes()`](#kreuzbergbatchextractbytes).
+
+**Returns:**
+
+- `DeferredResult`: A deferred result. Use `getResults()` or `waitBatch()` to retrieve.
+
+---
+
+### Async Procedural Functions
+
+All async methods are also available as procedural functions:
+
+```php title="PHP"
+function extract_file_async(
+    string $filePath,
+    ?string $mimeType = null,
+    ?ExtractionConfig $config = null
+): DeferredResult
+
+function extract_bytes_async(
+    string $data,
+    string $mimeType,
+    ?ExtractionConfig $config = null
+): DeferredResult
+
+function batch_extract_files_async(
+    array $paths,
+    ?ExtractionConfig $config = null
+): DeferredResult
+
+function batch_extract_bytes_async(
+    array $dataList,
+    array $mimeTypes,
+    ?ExtractionConfig $config = null
+): DeferredResult
+```
+
+**Examples:**
+
+```php title="async_procedural.php"
+<?php
+
+use function Kreuzberg\extract_file_async;
+
+$deferred = extract_file_async('document.pdf');
+
+// Poll until ready
+while (!$deferred->isReady()) {
+    usleep(1000); // 1ms
+}
+
+$result = $deferred->getResult();
+echo $result->content;
+```
+
+---
+
+### Async Static Methods
+
+Static convenience methods mirror the instance methods:
+
+```php title="PHP"
+Kreuzberg::extractFileAsyncStatic($filePath, $mimeType, $config): DeferredResult
+Kreuzberg::extractBytesAsyncStatic($data, $mimeType, $config): DeferredResult
+Kreuzberg::batchExtractFilesAsyncStatic($paths, $config): DeferredResult
+Kreuzberg::batchExtractBytesAsyncStatic($dataList, $mimeTypes, $config): DeferredResult
+```
+
+---
+
+### Framework Integration
+
+#### Amp Integration
+
+For projects using [Amp](https://amphp.org/) v3+, use `AmpBridge` to convert `DeferredResult` to Amp Futures:
+
+```php title="amp_integration.php"
+<?php
+
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\Async\AmpBridge;
+
+$kreuzberg = new Kreuzberg();
+$deferred = $kreuzberg->extractFileAsync('document.pdf');
+
+// Convert to Amp Future
+$future = AmpBridge::toFuture($deferred);
+$result = $future->await();
+echo $result->content;
+
+// For batch operations
+$batchDeferred = $kreuzberg->batchExtractFilesAsync(['doc1.pdf', 'doc2.pdf']);
+$batchFuture = AmpBridge::toBatchFuture($batchDeferred);
+$results = $batchFuture->await();
+```
+
+**Requires:** `amphp/amp ^3.0`
+
+#### ReactPHP Integration
+
+For projects using [ReactPHP](https://reactphp.org/), use `ReactBridge` to convert `DeferredResult` to ReactPHP Promises:
+
+```php title="reactphp_integration.php"
+<?php
+
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\Async\ReactBridge;
+
+$kreuzberg = new Kreuzberg();
+$deferred = $kreuzberg->extractFileAsync('document.pdf');
+
+// Convert to ReactPHP Promise
+$promise = ReactBridge::toPromise($deferred);
+$promise->then(function ($result) {
+    echo $result->content;
+});
+```
+
+**Requires:** `react/promise ^3.0`, `react/event-loop ^1.0`
+
+---
+
 ## Advanced Topics
 
 ### Error Handling

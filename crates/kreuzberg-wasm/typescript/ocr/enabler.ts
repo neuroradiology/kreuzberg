@@ -2,90 +2,209 @@
  * OCR enabler module
  *
  * Provides convenient functions for enabling and setting up OCR backends.
+ * Automatically selects the appropriate backend based on build capabilities:
+ * - Native WASM OCR (kreuzberg-tesseract compiled to WASM, works everywhere)
+ * - Browser fallback: TesseractWasmBackend (using tesseract-wasm npm package + createImageBitmap)
  */
 
 import { isInitialized } from "../extraction/internal.js";
+import { getWasmModule } from "../initialization/state.js";
 import { registerOcrBackend } from "../ocr/registry.js";
 import { TesseractWasmBackend } from "../ocr/tesseract-wasm-backend.js";
 import { isBrowser } from "../runtime.js";
+import type { OcrBackendProtocol } from "../types.js";
+
+/** Default CDN URL for tessdata files */
+const TESSDATA_CDN_BASE = "https://cdn.jsdelivr.net/npm/tesseract-wasm@0.11.0/dist";
 
 /**
- * Enable OCR functionality with tesseract-wasm backend
+ * Native WASM OCR backend using kreuzberg-tesseract compiled into the WASM binary.
  *
- * Convenience function that automatically initializes and registers the Tesseract WASM backend.
- * This is the recommended approach for enabling OCR in WASM-based applications.
+ * This backend works in all environments (Browser, Node.js, Deno, etc.)
+ * because Tesseract is statically linked into the WASM module.
+ * Tessdata is downloaded from CDN and passed to Tesseract via memory (no filesystem needed).
+ */
+class NativeWasmOcrBackend implements OcrBackendProtocol {
+	private tessdataCache: Map<string, Uint8Array> = new Map();
+	private tessdataCdnBase: string = TESSDATA_CDN_BASE;
+	private progressCallback: ((progress: number) => void) | null = null;
+
+	name(): string {
+		return "kreuzberg-tesseract";
+	}
+
+	supportedLanguages(): string[] {
+		return [
+			"eng",
+			"deu",
+			"fra",
+			"spa",
+			"ita",
+			"por",
+			"nld",
+			"rus",
+			"jpn",
+			"kor",
+			"chi_sim",
+			"chi_tra",
+			"pol",
+			"tur",
+			"swe",
+			"dan",
+			"fin",
+			"nor",
+			"ces",
+			"slk",
+			"ron",
+			"hun",
+			"hrv",
+			"srp",
+			"bul",
+			"ukr",
+			"ell",
+			"ara",
+			"heb",
+			"hin",
+			"tha",
+			"vie",
+			"mkd",
+			"ben",
+			"tam",
+			"tel",
+			"kan",
+			"mal",
+			"mya",
+			"khm",
+			"lao",
+			"sin",
+		];
+	}
+
+	async initialize(): Promise<void> {
+		const wasm = getWasmModule();
+		if (!wasm?.ocrIsAvailable || !wasm.ocrIsAvailable()) {
+			throw new Error(
+				"Native WASM OCR is not available. Build with the 'ocr-wasm' feature to enable kreuzberg-tesseract.",
+			);
+		}
+	}
+
+	async shutdown(): Promise<void> {
+		this.tessdataCache.clear();
+		this.progressCallback = null;
+	}
+
+	setProgressCallback(callback: (progress: number) => void): void {
+		this.progressCallback = callback;
+	}
+
+	async processImage(
+		imageBytes: Uint8Array | string,
+		language: string,
+	): Promise<{
+		content: string;
+		mime_type: string;
+		metadata: Record<string, unknown>;
+		tables: unknown[];
+	}> {
+		const wasm = getWasmModule();
+		if (!wasm?.ocrRecognize) {
+			throw new Error("Native WASM OCR function not available");
+		}
+
+		const normalizedLang = language.toLowerCase();
+
+		this.reportProgress(10);
+
+		// Download tessdata if not cached
+		const tessdata = await this.getTessdata(normalizedLang);
+
+		this.reportProgress(40);
+
+		// Convert base64 string to Uint8Array if needed
+		let imageData: Uint8Array;
+		if (typeof imageBytes === "string") {
+			const binaryString = atob(imageBytes);
+			imageData = new Uint8Array(binaryString.length);
+			for (let i = 0; i < binaryString.length; i++) {
+				imageData[i] = binaryString.charCodeAt(i);
+			}
+		} else {
+			imageData = imageBytes;
+		}
+
+		this.reportProgress(50);
+
+		// Call native WASM OCR (image decoding + tesseract, all in Rust)
+		const text = wasm.ocrRecognize(imageData, tessdata, normalizedLang);
+
+		this.reportProgress(90);
+
+		return {
+			content: text,
+			mime_type: "text/plain",
+			metadata: { language: normalizedLang },
+			tables: [],
+		};
+	}
+
+	private async getTessdata(language: string): Promise<Uint8Array> {
+		const cached = this.tessdataCache.get(language);
+		if (cached) {
+			return cached;
+		}
+
+		const url = `${this.tessdataCdnBase}/${language}.traineddata`;
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Failed to download tessdata for "${language}" from ${url}: ${response.status}`);
+		}
+
+		const data = new Uint8Array(await response.arrayBuffer());
+		this.tessdataCache.set(language, data);
+		return data;
+	}
+
+	private reportProgress(progress: number): void {
+		if (this.progressCallback) {
+			try {
+				this.progressCallback(Math.min(100, Math.max(0, progress)));
+			} catch {
+				// Ignore callback errors
+			}
+		}
+	}
+}
+
+/**
+ * Enable OCR functionality with the appropriate backend for the current runtime
  *
- * ## Browser Requirement
- *
- * This function requires a browser environment with support for:
- * - WebWorkers (for Tesseract processing)
- * - createImageBitmap (for image conversion)
- * - Blob API
+ * Automatically selects the best available OCR backend:
+ * 1. **Native WASM OCR** (preferred): If built with `ocr-wasm` feature, uses kreuzberg-tesseract
+ *    compiled directly into the WASM binary. Works in all environments (Browser, Node.js, Deno).
+ * 2. **Browser fallback**: Uses `TesseractWasmBackend` with the `tesseract-wasm` npm package
+ *    (requires `createImageBitmap` browser API).
  *
  * ## Network Requirement
  *
  * Training data will be loaded from jsDelivr CDN on first use of each language.
  * Ensure network access to cdn.jsdelivr.net is available.
  *
- * @throws {Error} If not in browser environment or tesseract-wasm is not available
+ * @throws {Error} If WASM is not initialized or no OCR backend is available
  *
- * @example Basic Usage
- * ```typescript
- * import { enableOcr, extractBytes, initWasm } from '@kreuzberg/wasm';
- *
- * async function main() {
- *   // Initialize WASM module
- *   await initWasm();
- *
- *   // Enable OCR with tesseract-wasm
- *   await enableOcr();
- *
- *   // Now you can use OCR in extraction
- *   const imageBytes = new Uint8Array(buffer);
- *   const result = await extractBytes(imageBytes, 'image/png', {
- *     ocr: { backend: 'tesseract-wasm', language: 'eng' }
- *   });
- *
- *   console.log(result.content); // Extracted text
- * }
- *
- * main().catch(console.error);
- * ```
- *
- * @example With Progress Tracking
- * ```typescript
- * import { enableOcr, TesseractWasmBackend } from '@kreuzberg/wasm';
- *
- * async function setupOcrWithProgress() {
- *   const backend = new TesseractWasmBackend();
- *   backend.setProgressCallback((progress) => {
- *     console.log(`OCR Progress: ${progress}%`);
- *     updateProgressBar(progress);
- *   });
- *
- *   await backend.initialize();
- *   registerOcrBackend(backend);
- * }
- *
- * setupOcrWithProgress().catch(console.error);
- * ```
- *
- * @example Multiple Languages
+ * @example Basic Usage (works in all environments)
  * ```typescript
  * import { enableOcr, extractBytes, initWasm } from '@kreuzberg/wasm';
  *
  * await initWasm();
  * await enableOcr();
  *
- * // Extract English text
- * const englishResult = await extractBytes(engImageBytes, 'image/png', {
- *   ocr: { backend: 'tesseract-wasm', language: 'eng' }
+ * const imageBytes = new Uint8Array(buffer);
+ * const result = await extractBytes(imageBytes, 'image/png', {
+ *   ocr: { backend: 'kreuzberg-tesseract', language: 'eng' }
  * });
  *
- * // Extract German text - model is cached after first use
- * const germanResult = await extractBytes(deImageBytes, 'image/png', {
- *   ocr: { backend: 'tesseract-wasm', language: 'deu' }
- * });
+ * console.log(result.content);
  * ```
  */
 export async function enableOcr(): Promise<void> {
@@ -93,17 +212,29 @@ export async function enableOcr(): Promise<void> {
 		throw new Error("WASM module not initialized. Call initWasm() first.");
 	}
 
-	if (!isBrowser()) {
-		throw new Error(
-			"OCR is only available in browser environments. TesseractWasmBackend requires Web Workers and createImageBitmap.",
-		);
-	}
-
 	try {
-		const backend = new TesseractWasmBackend();
-		await backend.initialize();
+		// Try native WASM OCR first (works in all environments)
+		const wasm = getWasmModule();
+		if (wasm?.ocrIsAvailable?.()) {
+			const backend = new NativeWasmOcrBackend();
+			await backend.initialize();
+			registerOcrBackend(backend);
+			return;
+		}
 
-		registerOcrBackend(backend);
+		// Fallback: browser-only tesseract-wasm npm backend
+		if (isBrowser()) {
+			const backend = new TesseractWasmBackend();
+			await backend.initialize();
+			registerOcrBackend(backend);
+			return;
+		}
+
+		throw new Error(
+			"No OCR backend available. " +
+				"Build with the 'ocr-wasm' feature to enable native Tesseract OCR in all environments, " +
+				"or use a browser environment with the tesseract-wasm npm package.",
+		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		throw new Error(`Failed to enable OCR: ${message}`);

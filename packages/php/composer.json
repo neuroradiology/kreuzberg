@@ -41,6 +41,10 @@
 	"replace": {
 		"ext-kreuzberg": "*"
 	},
+	"suggest": {
+		"amphp/amp": "For Fiber-based async integration with Amp framework (^3.0)",
+		"react/promise": "For Promise-based async integration with ReactPHP (^3.0)"
+	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^3.94",
 		"phpstan/phpstan": "^2.0",

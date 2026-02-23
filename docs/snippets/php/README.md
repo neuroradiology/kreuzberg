@@ -10,6 +10,7 @@ php/
 ├── quickstart/           # Basic usage examples
 ├── configuration/        # Configuration classes and options
 ├── extraction/           # Document extraction examples
+├── async/               # Async extraction with DeferredResult
 ├── ocr/                 # OCR and image preprocessing
 ├── chunking/            # Text chunking for RAG
 ├── embeddings/          # Vector embeddings and semantic search
@@ -175,9 +176,24 @@ $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
 $results = batch_extract_files($files);
 ```
 
+## Async Extraction (4 snippets)
+
+### async_extract_file.php
+Async file extraction with DeferredResult polling and blocking patterns.
+
+### async_batch.php
+Async batch extraction with timeout-based waiting.
+
+### async_amp_bridge.php
+Integration with Amp v3+ framework using AmpBridge::toFuture().
+
+### async_react_bridge.php
+Integration with ReactPHP framework using ReactBridge::toPromise().
+
 ## Key Features Demonstrated
 
 - **75+ File Formats**: PDF, DOCX, XLSX, PPTX, images, HTML, and more
+- **Async Extraction**: Non-blocking extraction with DeferredResult pattern
 - **OCR Support**: Tesseract integration with preprocessing
 - **Table Extraction**: Extract structured tables with multiple export formats
 - **Metadata**: Rich metadata extraction for all formats

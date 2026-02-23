@@ -406,8 +406,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document_0.handle())
-                    .is_some()
+                    .contains_key(&document_0.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -510,8 +509,7 @@ mod tests {
                 assert!(
                     PdfPageIndexCache::lock()
                         .documents_by_maximum_index
-                        .get(&document_1.handle())
-                        .is_some()
+                        .contains_key(&document_1.handle())
                 );
                 assert_eq!(
                     PdfPageIndexCache::lock()
@@ -599,8 +597,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -634,8 +631,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -684,8 +680,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -775,8 +770,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -808,8 +802,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -849,8 +842,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -923,8 +915,7 @@ mod tests {
             assert!(
                 PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_some()
+                    .contains_key(&document.handle())
             );
             assert_eq!(
                 PdfPageIndexCache::lock()
@@ -956,8 +947,7 @@ mod tests {
                 assert!(
                     PdfPageIndexCache::lock()
                         .documents_by_maximum_index
-                        .get(&document.handle())
-                        .is_some()
+                        .contains_key(&document.handle())
                 );
                 assert_eq!(
                     PdfPageIndexCache::lock()
@@ -974,8 +964,7 @@ mod tests {
                     assert!(
                         PdfPageIndexCache::lock()
                             .documents_by_maximum_index
-                            .get(&document.handle())
-                            .is_some()
+                            .contains_key(&document.handle())
                     );
                     assert_eq!(
                         PdfPageIndexCache::lock()
@@ -992,10 +981,9 @@ mod tests {
 
             assert!(PdfPageIndexCache::lock().pages_by_index.is_empty());
             assert!(
-                PdfPageIndexCache::lock()
+                !PdfPageIndexCache::lock()
                     .documents_by_maximum_index
-                    .get(&document.handle())
-                    .is_none()
+                    .contains_key(&document.handle())
             );
         }
 

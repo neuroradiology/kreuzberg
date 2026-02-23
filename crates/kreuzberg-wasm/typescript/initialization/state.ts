@@ -52,6 +52,19 @@ export type WasmModule = {
 	read_block_from_callback_wasm: (param: number, position: number, pBuf: number, size: number) => number;
 	write_block_from_callback_wasm: (param: number, buf: number, size: number) => number;
 
+	ocrIsAvailable?: () => boolean;
+	ocrRecognize?: (imageBytes: Uint8Array, tessdata: Uint8Array, language: string) => string;
+	ocrRecognizeRaw?: (
+		imageData: Uint8Array,
+		width: number,
+		height: number,
+		bytesPerPixel: number,
+		bytesPerLine: number,
+		tessdata: Uint8Array,
+		language: string,
+	) => string;
+	ocrTesseractVersion?: () => string;
+
 	default?: (moduleOrPath?: BufferSource | WebAssembly.Module | string | URL | Response | Request) => Promise<void>;
 };
 

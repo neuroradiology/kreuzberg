@@ -6,6 +6,7 @@ namespace Kreuzberg;
 
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
+use Kreuzberg\Types\DeferredResult;
 use Kreuzberg\Types\ExtractionResult;
 
 /**
@@ -270,6 +271,140 @@ function detect_mime_type_from_path(string $path): string
         $result = \kreuzberg_detect_mime_type_from_path($path);
 
         return $result;
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
+}
+
+/**
+ * Extract content from a file asynchronously (procedural API).
+ *
+ * Returns a DeferredResult immediately. The extraction runs on a background
+ * Tokio worker thread. Use isReady(), getResult(), or wait() to retrieve results.
+ *
+ * @param string $filePath Path to the file to extract
+ * @param string|null $mimeType Optional MIME type hint (auto-detected if null)
+ * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+ * @return DeferredResult Deferred result that can be polled or waited on
+ * @throws KreuzbergException If config parsing fails
+ *
+ * @example
+ * ```php
+ * use function Kreuzberg\extract_file_async;
+ *
+ * $deferred = extract_file_async('document.pdf');
+ * $result = $deferred->getResult(); // blocks until ready
+ * echo $result->content;
+ * ```
+ */
+function extract_file_async(
+    string $filePath,
+    ?string $mimeType = null,
+    ?ExtractionConfig $config = null,
+): DeferredResult {
+    try {
+        return \kreuzberg_extract_file_async($filePath, $mimeType, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
+}
+
+/**
+ * Extract content from bytes asynchronously (procedural API).
+ *
+ * @param string $data File content as bytes
+ * @param string $mimeType MIME type of the data
+ * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+ * @return DeferredResult Deferred result that can be polled or waited on
+ * @throws KreuzbergException If config parsing fails
+ *
+ * @example
+ * ```php
+ * use function Kreuzberg\extract_bytes_async;
+ *
+ * $data = file_get_contents('document.pdf');
+ * $deferred = extract_bytes_async($data, 'application/pdf');
+ * $result = $deferred->getResult();
+ * ```
+ */
+function extract_bytes_async(
+    string $data,
+    string $mimeType,
+    ?ExtractionConfig $config = null,
+): DeferredResult {
+    try {
+        return \kreuzberg_extract_bytes_async($data, $mimeType, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
+}
+
+/**
+ * Extract content from multiple files asynchronously (procedural API).
+ *
+ * @param array<string> $paths List of file paths
+ * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+ * @return DeferredResult Deferred result (use getResults() for batch)
+ * @throws KreuzbergException If config parsing fails
+ *
+ * @example
+ * ```php
+ * use function Kreuzberg\batch_extract_files_async;
+ *
+ * $deferred = batch_extract_files_async(['doc1.pdf', 'doc2.docx']);
+ * $results = $deferred->getResults();
+ * ```
+ */
+function batch_extract_files_async(
+    array $paths,
+    ?ExtractionConfig $config = null,
+): DeferredResult {
+    try {
+        return \kreuzberg_batch_extract_files_async($paths, $config?->toJson());
+    } catch (\Exception $e) {
+        if ($e instanceof KreuzbergException) {
+            throw $e;
+        }
+        throw convertToKreuzbergException($e);
+    }
+}
+
+/**
+ * Extract content from multiple byte arrays asynchronously (procedural API).
+ *
+ * @param array<string> $dataList List of file contents as bytes
+ * @param array<string> $mimeTypes List of MIME types (one per data item)
+ * @param ExtractionConfig|null $config Extraction configuration (uses defaults if null)
+ * @return DeferredResult Deferred result (use getResults() for batch)
+ * @throws KreuzbergException If config parsing fails
+ *
+ * @example
+ * ```php
+ * use function Kreuzberg\batch_extract_bytes_async;
+ *
+ * $deferred = batch_extract_bytes_async(
+ *     [$data1, $data2],
+ *     ['application/pdf', 'application/pdf'],
+ * );
+ * $results = $deferred->getResults();
+ * ```
+ */
+function batch_extract_bytes_async(
+    array $dataList,
+    array $mimeTypes,
+    ?ExtractionConfig $config = null,
+): DeferredResult {
+    try {
+        return \kreuzberg_batch_extract_bytes_async($dataList, $mimeTypes, $config?->toJson());
     } catch (\Exception $e) {
         if ($e instanceof KreuzbergException) {
             throw $e;

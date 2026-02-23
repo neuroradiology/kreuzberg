@@ -33,5 +33,9 @@ export default defineConfig({
 		/@kreuzberg\/wasm-.*/,
 		"./index.js",
 		"../index.js",
+		// PDFium module - keep external for runtime resolution
+		// In Node.js, loaded from filesystem; in browser, loaded via dynamic import
+		"../pdfium.js",
+		"./pdfium.js",
 	],
 });
