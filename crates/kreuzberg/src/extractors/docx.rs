@@ -392,7 +392,8 @@ fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Tab
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for DocxExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),

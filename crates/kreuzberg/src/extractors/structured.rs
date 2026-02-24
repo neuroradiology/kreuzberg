@@ -43,7 +43,8 @@ impl Plugin for StructuredExtractor {
     }
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for StructuredExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, _config),

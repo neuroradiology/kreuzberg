@@ -89,7 +89,8 @@ use crate::KreuzbergError;
 ///     }
 /// }
 /// ```
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 pub trait DocumentExtractor: Plugin {
     /// Extract content from a byte array.
     ///

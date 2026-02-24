@@ -446,7 +446,8 @@ fn parse_odt_table(table_node: roxmltree::Node, table_index: usize) -> Option<Ta
     })
 }
 
-#[async_trait]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl DocumentExtractor for OdtExtractor {
     #[cfg_attr(
         feature = "otel",
