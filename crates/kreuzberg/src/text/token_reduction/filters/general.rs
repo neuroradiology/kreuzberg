@@ -2,6 +2,7 @@ use crate::text::utf8_validation;
 use ahash::AHashSet;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use std::borrow::Cow;
 
 /// Regular expression for matching excessive newlines (3 or more consecutive newlines).
 static EXCESSIVE_NEWLINES_REGEX: Lazy<Regex> =
@@ -18,11 +19,11 @@ static MULTIPLE_SPACES_REGEX: Lazy<Regex> =
 ///
 /// # Returns
 /// A new `String` with multiple spaces collapsed to single spaces
-pub fn normalize_spaces(text: &str) -> String {
+pub fn normalize_spaces(text: &str) -> Cow<'_, str> {
     if MULTIPLE_SPACES_REGEX.is_match(text) {
-        MULTIPLE_SPACES_REGEX.replace_all(text, " ").into_owned()
+        Cow::Owned(MULTIPLE_SPACES_REGEX.replace_all(text, " ").into_owned())
     } else {
-        text.to_string()
+        Cow::Borrowed(text)
     }
 }
 
@@ -33,11 +34,11 @@ pub fn normalize_spaces(text: &str) -> String {
 ///
 /// # Returns
 /// A new `String` with excessive newlines normalized to at most 2 consecutive newlines
-pub fn normalize_newlines(text: &str) -> String {
+pub fn normalize_newlines(text: &str) -> Cow<'_, str> {
     if EXCESSIVE_NEWLINES_REGEX.is_match(text) {
-        EXCESSIVE_NEWLINES_REGEX.replace_all(text, "\n\n").into_owned()
+        Cow::Owned(EXCESSIVE_NEWLINES_REGEX.replace_all(text, "\n\n").into_owned())
     } else {
-        text.to_string()
+        Cow::Borrowed(text)
     }
 }
 

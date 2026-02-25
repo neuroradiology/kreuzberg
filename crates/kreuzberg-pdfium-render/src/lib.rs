@@ -155,7 +155,7 @@ mod tests {
 
             for (index, page) in document.pages().iter().enumerate() {
                 page.render_with_config(&render_config)?
-                    .as_image()
+                    .as_image()?
                     .into_rgb8()
                     .save_with_format(format!("test-page-{}.jpg", index), ImageFormat::Jpeg)
                     .map_err(|_| PdfiumError::ImageError)?;
@@ -184,7 +184,7 @@ mod tests {
         for (index, page) in document.pages().iter().enumerate() {
             let result = page
                 .render_with_config(&render_config)?
-                .as_image()
+                .as_image()?
                 .into_rgb8()
                 .save_with_format(format!("form-test-page-{}.jpg", index), ImageFormat::Jpeg);
 

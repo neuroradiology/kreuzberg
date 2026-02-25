@@ -107,8 +107,10 @@ impl FilterPipeline {
         result = Cow::Owned(remove_html_comments(&result));
 
         // Normalize whitespace
-        result = Cow::Owned(normalize_spaces(&result));
-        result = Cow::Owned(normalize_newlines(&result));
+        let normalized = normalize_spaces(&result);
+        result = Cow::Owned(normalized.into_owned());
+        let normalized = normalize_newlines(&result);
+        result = Cow::Owned(normalized.into_owned());
 
         // Preserve markdown structure if configured
         if self.config.preserve_markdown {

@@ -154,13 +154,13 @@ impl<'a> PdfForm<'a> {
                 bindings,
             };
 
-            if form.form_type() != PdfFormType::None {
-                // The form is valid.
-
-                Some(form)
+            if let Ok(form_type) = form.form_type() {
+                if form_type != PdfFormType::None {
+                    Some(form)
+                } else {
+                    None
+                }
             } else {
-                // The form is valid, but empty. No point returning it.
-
                 None
             }
         } else {
@@ -184,8 +184,8 @@ impl<'a> PdfForm<'a> {
 
     /// Returns the [PdfFormType] of this [PdfForm].
     #[inline]
-    pub fn form_type(&self) -> PdfFormType {
-        PdfFormType::from_pdfium(self.bindings.FPDF_GetFormType(self.document_handle) as u32).unwrap()
+    pub fn form_type(&self) -> Result<PdfFormType, PdfiumError> {
+        PdfFormType::from_pdfium(self.bindings.FPDF_GetFormType(self.document_handle) as u32)
     }
 
     /// Captures a string representation of the value of every form field on every page of
@@ -207,24 +207,30 @@ impl<'a> PdfForm<'a> {
 
                     let field_value = match field_type {
                         PdfFormFieldType::Checkbox => {
-                            if field.as_checkbox_field().unwrap().is_checked().unwrap_or(false) {
-                                field_value_true.clone()
+                            if let Some(checkbox_field) = field.as_checkbox_field() {
+                                if checkbox_field.is_checked().unwrap_or(false) {
+                                    field_value_true.clone()
+                                } else {
+                                    field_value_false.clone()
+                                }
                             } else {
-                                field_value_false.clone()
+                                None
                             }
                         }
-                        PdfFormFieldType::ComboBox => field.as_combo_box_field().unwrap().value(),
-                        PdfFormFieldType::ListBox => field.as_list_box_field().unwrap().value(),
+                        PdfFormFieldType::ComboBox => field.as_combo_box_field().and_then(|f| f.value()).or(None),
+                        PdfFormFieldType::ListBox => field.as_list_box_field().and_then(|f| f.value()).or(None),
                         PdfFormFieldType::RadioButton => {
-                            let field = field.as_radio_button_field().unwrap();
-
-                            if field.is_checked().unwrap_or(false) {
-                                field.group_value()
+                            if let Some(radio_field) = field.as_radio_button_field() {
+                                if radio_field.is_checked().unwrap_or(false) {
+                                    radio_field.group_value()
+                                } else {
+                                    field_value_false.clone()
+                                }
                             } else {
-                                field_value_false.clone()
+                                None
                             }
                         }
-                        PdfFormFieldType::Text => field.as_text_field().unwrap().value(),
+                        PdfFormFieldType::Text => field.as_text_field().and_then(|f| f.value()).or(None),
                         PdfFormFieldType::PushButton | PdfFormFieldType::Signature | PdfFormFieldType::Unknown => None,
                     };
 

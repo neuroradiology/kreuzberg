@@ -988,7 +988,7 @@ mod tests {
             .pages()
             .get(0)?
             .render_with_config(&PdfRenderConfig::new().set_target_width(1000))?
-            .as_image();
+            .as_image()?;
 
         let mut document = pdfium.create_new_pdf()?;
 

@@ -7,6 +7,8 @@
 //! The page objects path includes post-processing ligature repair for pages
 //! with broken font encodings (detected via `PdfPageTextChar::has_unicode_map_error()`).
 
+use std::borrow::Cow;
+
 use crate::pdf::hierarchy::SegmentData;
 use pdfium_render::prelude::*;
 
@@ -15,6 +17,8 @@ use super::types::{PdfLine, PdfParagraph};
 
 // Alias to distinguish from our local PdfParagraph type.
 use pdfium_render::prelude::PdfParagraph as PdfiumParagraph;
+
+use memchr::memchr3;
 
 /// Position and metadata of an image detected during object-based extraction.
 #[derive(Debug, Clone)]
@@ -32,9 +36,9 @@ pub(super) struct ImagePosition {
 /// - Block has bounds in the leftmost or rightmost margin (< 8% or > 92% of page width)
 /// - Block text is very short (≤ 3 characters trimmed)
 /// - At least 3 such blocks exist (to avoid false positives on legitimate margin content)
-pub(super) fn filter_sidebar_blocks(blocks: &[ExtractedBlock], page_width: f32) -> Vec<ExtractedBlock> {
+pub(super) fn filter_sidebar_blocks(blocks: &[ExtractedBlock], page_width: f32) -> Cow<'_, [ExtractedBlock]> {
     if page_width <= 0.0 {
-        return blocks.to_vec();
+        return Cow::Borrowed(blocks);
     }
 
     let left_cutoff = page_width * 0.08;
@@ -44,11 +48,11 @@ pub(super) fn filter_sidebar_blocks(blocks: &[ExtractedBlock], page_width: f32) 
     let sidebar_count = count_sidebar_blocks(blocks, left_cutoff, right_cutoff);
 
     if sidebar_count < 3 {
-        return blocks.to_vec();
+        return Cow::Borrowed(blocks);
     }
 
     // Filter them out
-    filter_blocks_recursive(blocks, left_cutoff, right_cutoff)
+    Cow::Owned(filter_blocks_recursive(blocks, left_cutoff, right_cutoff))
 }
 
 fn count_sidebar_blocks(blocks: &[ExtractedBlock], left_cutoff: f32, right_cutoff: f32) -> usize {
@@ -416,46 +420,68 @@ pub(super) fn apply_ligature_repairs(text: &str, repair_map: &[(char, &str)]) ->
 /// - Normal `"` appears at word boundaries (quotation marks), not mid-word
 /// - Normal `#` appears at word start (hashtags) or after non-letters, not mid-word
 pub(super) fn repair_contextual_ligatures(text: &str) -> String {
-    let chars: Vec<char> = text.chars().collect();
-    let len = chars.len();
-    if len < 2 {
+    if text.len() < 2 {
         return text.to_string();
     }
 
     let mut result = String::with_capacity(text.len() + 16);
-    let mut i = 0;
+    let bytes = text.as_bytes();
+    let chars = text.chars().peekable();
+    let mut byte_idx = 0;
+    let mut prev_is_alpha = false;
+    let mut prev_is_space_or_start = true;
 
-    while i < len {
-        let ch = chars[i];
-        let prev_is_alpha = i > 0 && chars[i - 1].is_alphabetic();
-        let prev_is_space_or_start = i == 0 || chars[i - 1].is_whitespace();
-        let next_is_alpha = i + 1 < len && chars[i + 1].is_alphabetic();
-        let next_is_lower = i + 1 < len && chars[i + 1].is_lowercase();
-        let next_is_vowel =
-            i + 1 < len && matches!(chars[i + 1], 'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U');
+    for ch in chars {
+        let char_len = ch.len_utf8();
+        let next_byte_idx = byte_idx + char_len;
 
-        // Repair ligature corruption from broken CM/Type1 fonts:
-        // - Both fi and ff ligature glyphs can map to '!' (0x21)
-        // - The ffi ligature maps to '"' (0x22)
-        // - The fi ligature also maps to '#' (0x23) in some encodings
-        //
-        // Handles both mid-word (e.g. "di!erent" → "different") and
-        // word-start (e.g. "#nancial" → "financial") cases.
-        //
-        // Disambiguation for '!': if followed by a vowel → ff (different,
-        // effort), if followed by consonant/end → fi (scientific, specific).
+        let next_is_alpha = if next_byte_idx < bytes.len() {
+            if let Some(&next_byte) = bytes.get(next_byte_idx) {
+                (next_byte as char).is_alphabetic()
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        let next_is_lower = if next_byte_idx < bytes.len() {
+            if let Some(&next_byte) = bytes.get(next_byte_idx) {
+                (next_byte as char).is_lowercase()
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        let next_is_vowel = if next_byte_idx < bytes.len() {
+            if let Some(&next_byte) = bytes.get(next_byte_idx) {
+                matches!(
+                    next_byte as char,
+                    'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U'
+                )
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
         match ch {
             '!' if prev_is_alpha && next_is_vowel => result.push_str("ff"),
             '!' if prev_is_alpha && next_is_alpha => result.push_str("fi"),
-            '!' if prev_is_alpha && i + 1 == len => result.push_str("fi"),
+            '!' if prev_is_alpha && next_byte_idx >= bytes.len() => result.push_str("fi"),
             '"' if prev_is_alpha && next_is_alpha => result.push_str("ffi"),
             '#' if prev_is_alpha && next_is_alpha => result.push_str("fi"),
-            // Word-start ligatures: '#' or '!' after whitespace/start + lowercase
             '#' if prev_is_space_or_start && next_is_lower => result.push_str("fi"),
             '!' if prev_is_space_or_start && next_is_lower => result.push_str("fi"),
             _ => result.push(ch),
         }
-        i += 1;
+
+        prev_is_alpha = ch.is_alphabetic();
+        prev_is_space_or_start = ch.is_whitespace();
+        byte_idx = next_byte_idx;
     }
 
     result
@@ -469,31 +495,52 @@ pub(super) fn repair_contextual_ligatures(text: &str) -> String {
 ///
 /// Requires 2+ matches to avoid false positives from normal punctuation.
 pub(super) fn text_has_ligature_corruption(text: &str) -> bool {
-    let chars: Vec<char> = text.chars().collect();
-    let len = chars.len();
-    if len < 3 {
+    if text.len() < 3 {
         return false;
     }
 
+    let bytes = text.as_bytes();
     let mut count = 0u32;
+    let mut pos = 0;
 
-    for i in 0..len {
-        let ch = chars[i];
-        if !matches!(ch, '!' | '"' | '#') {
-            continue;
-        }
-        let prev_alpha = i > 0 && chars[i - 1].is_alphabetic();
-        let next_alpha = i + 1 < len && chars[i + 1].is_alphabetic();
-        let prev_space_or_start = i == 0 || chars[i - 1].is_whitespace();
-        let next_lower = i + 1 < len && chars[i + 1].is_lowercase();
+    while let Some(idx) = memchr3(b'!', b'"', b'#', &bytes[pos..]) {
+        let i = pos + idx;
+        let ch = bytes[i];
 
-        // Mid-word pattern: alpha + special + alpha
+        let prev_alpha = if i > 0 {
+            let prev_byte = bytes[i - 1];
+            (prev_byte as char).is_alphabetic()
+        } else {
+            false
+        };
+
+        let next_alpha = if i + 1 < bytes.len() {
+            let next_byte = bytes[i + 1];
+            (next_byte as char).is_alphabetic()
+        } else {
+            false
+        };
+
+        let prev_space_or_start = i == 0 || (bytes[i - 1] as char).is_whitespace();
+
+        let next_lower = if i + 1 < bytes.len() {
+            let next_byte = bytes[i + 1];
+            (next_byte as char).is_lowercase()
+        } else {
+            false
+        };
+
         if prev_alpha && next_alpha {
             count += 1;
         }
-        // Word-start pattern: (space|start) + # or ! + lowercase
-        if matches!(ch, '#' | '!') && prev_space_or_start && next_lower {
+
+        if matches!(ch, b'#' | b'!') && prev_space_or_start && next_lower {
             count += 1;
+        }
+
+        pos = i + 1;
+        if count >= 1 {
+            break;
         }
     }
 
@@ -1029,5 +1076,96 @@ mod tests {
             apply_ligature_repairs("e\x0Ecient and classi\x0Ccation", &map),
             "efficient and classification"
         );
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_empty() {
+        assert_eq!(repair_contextual_ligatures(""), "");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_single_char() {
+        assert_eq!(repair_contextual_ligatures("a"), "a");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_no_corruption() {
+        assert_eq!(repair_contextual_ligatures("hello world"), "hello world");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_mid_word_fi() {
+        assert_eq!(repair_contextual_ligatures("di!erent"), "different");
+        assert_eq!(repair_contextual_ligatures("speci!c"), "specific");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_mid_word_ff() {
+        assert_eq!(repair_contextual_ligatures("di!erent effort"), "different effort");
+        assert_eq!(repair_contextual_ligatures("e!ective"), "effective");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_mid_word_ffi() {
+        assert_eq!(repair_contextual_ligatures("e\u{22}cient"), "efficient");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_word_start() {
+        assert_eq!(repair_contextual_ligatures("#nancial"), "financial");
+        assert_eq!(repair_contextual_ligatures("!nally"), "finally");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_normal_punctuation() {
+        assert_eq!(repair_contextual_ligatures("say \"hello\""), "say \"hello\"");
+        assert_eq!(repair_contextual_ligatures("hello # world"), "hello # world");
+    }
+
+    #[test]
+    fn test_repair_contextual_ligatures_multiple() {
+        assert_eq!(
+            repair_contextual_ligatures("ef!cient and #nancial"),
+            "efficient and financial"
+        );
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_empty() {
+        assert!(!text_has_ligature_corruption(""));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_too_short() {
+        assert!(!text_has_ligature_corruption("ab"));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_no_corruption() {
+        assert!(!text_has_ligature_corruption("hello world"));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_mid_word() {
+        assert!(text_has_ligature_corruption("di!erent"));
+        assert!(text_has_ligature_corruption("e#cient"));
+        assert!(text_has_ligature_corruption("o\u{22}ces"));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_word_start() {
+        assert!(text_has_ligature_corruption("#nancial"));
+        assert!(text_has_ligature_corruption("!nally"));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_normal_punctuation() {
+        assert!(!text_has_ligature_corruption("hello!"));
+        assert!(!text_has_ligature_corruption("say \"hello\""));
+    }
+
+    #[test]
+    fn test_text_has_ligature_corruption_multiple() {
+        assert!(text_has_ligature_corruption("e!cient and #nancial"));
     }
 }

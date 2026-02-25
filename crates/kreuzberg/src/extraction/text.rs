@@ -22,6 +22,7 @@
 //! # Ok(())
 //! # }
 //! ```
+use memchr::memchr;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
@@ -67,7 +68,7 @@ pub fn parse_text(text_bytes: &[u8], is_markdown: bool) -> Result<TextExtraction
             continue;
         }
 
-        if CODE_BLOCK_DELIMITER.is_match(line) {
+        if memchr(b'`', line.as_bytes()).is_some() && CODE_BLOCK_DELIMITER.is_match(line) {
             if in_code_block {
                 code_blocks.push((
                     if current_code_lang.is_empty() {
@@ -95,15 +96,18 @@ pub fn parse_text(text_bytes: &[u8], is_markdown: bool) -> Result<TextExtraction
             continue;
         }
 
-        if let Some(caps) = MARKDOWN_HEADER.captures(line)
+        if line.as_bytes().first() == Some(&b'#')
+            && let Some(caps) = MARKDOWN_HEADER.captures(line)
             && let Some(header) = caps.get(1)
         {
             headers.push(header.as_str().to_string());
         }
 
-        for caps in MARKDOWN_LINK.captures_iter(line) {
-            if let (Some(text_match), Some(url)) = (caps.get(1), caps.get(2)) {
-                links.push((text_match.as_str().to_string(), url.as_str().to_string()));
+        if memchr(b'[', line.as_bytes()).is_some() {
+            for caps in MARKDOWN_LINK.captures_iter(line) {
+                if let (Some(text_match), Some(url)) = (caps.get(1), caps.get(2)) {
+                    links.push((text_match.as_str().to_string(), url.as_str().to_string()));
+                }
             }
         }
     }

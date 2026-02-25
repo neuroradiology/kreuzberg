@@ -272,7 +272,7 @@ impl<'a> PdfBitmap<'a> {
     ///
     /// This function is only available when this crate's `image` feature is enabled.
     #[cfg(feature = "image_025")]
-    pub fn as_image(&self) -> DynamicImage {
+    pub fn as_image(&self) -> Result<DynamicImage, PdfiumError> {
         let bytes = self.as_rgba_bytes();
 
         let width = self.width() as u32;
@@ -281,20 +281,15 @@ impl<'a> PdfBitmap<'a> {
 
         match self.format().unwrap_or_default() {
             #[allow(deprecated)]
-            PdfBitmapFormat::BGRA
-            | PdfBitmapFormat::BRGx
-            | PdfBitmapFormat::BGRx
-            | PdfBitmapFormat::BGR => {
-                RgbaImage::from_raw(width, height, bytes).map(DynamicImage::ImageRgba8)
+            PdfBitmapFormat::BGRA | PdfBitmapFormat::BRGx | PdfBitmapFormat::BGRx | PdfBitmapFormat::BGR => {
+                RgbaImage::from_raw(width, height, bytes)
+                    .map(DynamicImage::ImageRgba8)
+                    .ok_or(PdfiumError::ImageError)
             }
-            PdfBitmapFormat::Gray => {
-                GrayImage::from_raw(width, height, bytes).map(DynamicImage::ImageLuma8)
-            }
+            PdfBitmapFormat::Gray => GrayImage::from_raw(width, height, bytes)
+                .map(DynamicImage::ImageLuma8)
+                .ok_or(PdfiumError::ImageError),
         }
-        // TODO: AJRC - 3/11/23 - change function signature to return Result<DynamicImage, PdfiumError>
-        // in 0.9.0 so we can account for any image conversion failure here. Tracked
-        // as part of https://github.com/ajrcarey/pdfium-render/issues/36
-        .unwrap()
     }
 
     // TODO: AJRC - 29/7/22 - remove deprecated PdfBitmap::render() function in 0.9.0

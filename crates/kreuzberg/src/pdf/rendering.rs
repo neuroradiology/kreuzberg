@@ -66,6 +66,15 @@ impl PdfRenderer<'_> {
             }
         })?;
 
+        self.render_page_from_document(&document, page_index, options)
+    }
+
+    fn render_page_from_document(
+        &self,
+        document: &PdfDocument,
+        page_index: usize,
+        options: &PageRenderOptions,
+    ) -> Result<DynamicImage> {
         let page = document
             .pages()
             .get(page_index as i32)
@@ -98,7 +107,10 @@ impl PdfRenderer<'_> {
             .render_with_config(&config)
             .map_err(|e| PdfError::RenderingFailed(format!("Failed to render page: {}", e)))?;
 
-        let image = bitmap.as_image().into_rgb8();
+        let image = bitmap
+            .as_image()
+            .map_err(|e| PdfError::RenderingFailed(format!("Failed to convert bitmap to image: {}", e)))?
+            .into_rgb8();
 
         Ok(DynamicImage::ImageRgb8(image))
     }
@@ -128,7 +140,7 @@ impl PdfRenderer<'_> {
         let mut images = Vec::with_capacity(page_count);
 
         for page_index in 0..page_count {
-            let image = self.render_page_to_image_with_password(pdf_bytes, page_index, options, password)?;
+            let image = self.render_page_from_document(&document, page_index, options)?;
             images.push(image);
         }
 

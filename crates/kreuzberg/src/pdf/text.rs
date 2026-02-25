@@ -7,6 +7,7 @@ use super::error::{PdfError, Result};
 use crate::core::config::PageConfig;
 use crate::pdf::metadata::PdfExtractionMetadata;
 use crate::types::{PageBoundary, PageContent};
+use memchr::memmem;
 use pdfium_render::prelude::*;
 use std::borrow::Cow;
 
@@ -76,12 +77,6 @@ impl PdfTextExtractor<'_> {
         })?;
 
         Ok(document.pages().len() as usize)
-    }
-}
-
-impl Default for PdfTextExtractor<'static> {
-    fn default() -> Self {
-        Self::new().expect("Failed to create PDF text extractor")
     }
 }
 
@@ -176,13 +171,11 @@ pub fn extract_text_from_pdf_document(
     page_config: Option<&PageConfig>,
     extraction_config: Option<&crate::core::config::ExtractionConfig>,
 ) -> Result<PdfTextExtractionResult> {
-    if page_config.is_none() {
-        return extract_text_lazy_fast_path(document);
+    if let Some(config) = page_config {
+        extract_text_lazy_with_tracking(document, config, extraction_config)
+    } else {
+        extract_text_lazy_fast_path(document)
     }
-
-    let config = page_config.unwrap();
-
-    extract_text_lazy_with_tracking(document, config, extraction_config)
 }
 
 /// Strip `/Rotate` entries from PDF bytes to work around a pdfium bug where
@@ -250,15 +243,12 @@ pub(crate) fn strip_page_rotation(pdf_bytes: &[u8]) -> Cow<'_, [u8]> {
 
 /// Check if the raw PDF bytes contain any `/Rotate` marker.
 fn has_rotate_marker(bytes: &[u8]) -> bool {
-    bytes.windows(7).any(|w| w == b"/Rotate")
+    memmem::find(bytes, b"/Rotate").is_some()
 }
 
 /// Find the next `/Rotate` offset starting from `start`.
 fn find_rotate_offset(bytes: &[u8], start: usize) -> Option<usize> {
-    bytes[start..]
-        .windows(7)
-        .position(|w| w == b"/Rotate")
-        .map(|p| start + p)
+    memmem::find(&bytes[start..], b"/Rotate").map(|p| start + p)
 }
 
 /// Fast path for text extraction without page tracking.

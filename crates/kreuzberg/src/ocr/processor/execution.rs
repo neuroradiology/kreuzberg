@@ -389,7 +389,7 @@ pub(super) fn perform_ocr(
         }
     }
 
-    let content = strip_control_characters(&raw_content);
+    let content = strip_control_characters(&raw_content).into_owned();
 
     Ok(OcrExtractionResult {
         content,

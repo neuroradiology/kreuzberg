@@ -1,4 +1,5 @@
 use super::error::{PdfError, Result};
+use bytes::Bytes;
 use lopdf::Document;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +12,7 @@ pub struct PdfImage {
     pub color_space: Option<String>,
     pub bits_per_component: Option<i64>,
     pub filters: Vec<String>,
-    pub data: Vec<u8>,
+    pub data: Bytes,
 }
 
 #[derive(Debug)]
@@ -60,7 +61,7 @@ impl PdfImageExtractor {
                     color_space: img.color_space.clone(),
                     bits_per_component: img.bits_per_component,
                     filters,
-                    data: img.content.to_vec(),
+                    data: Bytes::from(img.content.to_vec()),
                 });
             }
         }
@@ -91,7 +92,7 @@ impl PdfImageExtractor {
                 color_space: img.color_space.clone(),
                 bits_per_component: img.bits_per_component,
                 filters,
-                data: img.content.to_vec(),
+                data: Bytes::from(img.content.to_vec()),
             });
         }
 

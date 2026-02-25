@@ -5,6 +5,7 @@ use super::types::PdfParagraph;
 
 /// Classify paragraphs as headings or body using the global heading map and bold heuristic.
 pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: &[(f32, Option<u8>)]) {
+    let gap_info = precompute_gap_info(heading_map);
     for para in paragraphs.iter_mut() {
         let word_count: usize = para
             .lines
@@ -14,7 +15,7 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
             .sum();
 
         // Pass 1: font-size-based heading classification
-        let heading_level = find_heading_level(para.dominant_font_size, heading_map);
+        let heading_level = find_heading_level(para.dominant_font_size, heading_map, &gap_info);
 
         if let Some(level) = heading_level
             && word_count <= MAX_HEADING_WORD_COUNT
@@ -36,7 +37,7 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
 }
 
 /// Find the heading level for a given font size by matching against the cluster centroids.
-pub(super) fn find_heading_level(font_size: f32, heading_map: &[(f32, Option<u8>)]) -> Option<u8> {
+pub(super) fn find_heading_level(font_size: f32, heading_map: &[(f32, Option<u8>)], gap_info: &GapInfo) -> Option<u8> {
     if heading_map.is_empty() {
         return None;
     }
@@ -54,7 +55,22 @@ pub(super) fn find_heading_level(font_size: f32, heading_map: &[(f32, Option<u8>
         }
     }
 
-    // Compute average inter-cluster gap
+    if best_distance > MAX_HEADING_DISTANCE_MULTIPLIER * gap_info.avg_gap {
+        return None;
+    }
+
+    best_level
+}
+
+pub(super) struct GapInfo {
+    avg_gap: f32,
+}
+
+fn precompute_gap_info(heading_map: &[(f32, Option<u8>)]) -> GapInfo {
+    if heading_map.len() <= 1 {
+        return GapInfo { avg_gap: f32::INFINITY };
+    }
+
     let mut centroids: Vec<f32> = heading_map.iter().map(|(c, _)| *c).collect();
     centroids.sort_by(|a, b| a.total_cmp(b));
     let gaps: Vec<f32> = centroids.windows(2).map(|w| (w[1] - w[0]).abs()).collect();
@@ -64,11 +80,7 @@ pub(super) fn find_heading_level(font_size: f32, heading_map: &[(f32, Option<u8>
         gaps.iter().sum::<f32>() / gaps.len() as f32
     };
 
-    if best_distance > MAX_HEADING_DISTANCE_MULTIPLIER * avg_gap {
-        return None;
-    }
-
-    best_level
+    GapInfo { avg_gap }
 }
 
 /// Refine heading levels across the entire document.
@@ -228,25 +240,30 @@ mod tests {
 
     #[test]
     fn test_find_heading_level_empty_map() {
-        assert_eq!(find_heading_level(12.0, &[]), None);
+        let gap_info = precompute_gap_info(&[]);
+        assert_eq!(find_heading_level(12.0, &[], &gap_info), None);
     }
 
     #[test]
     fn test_find_heading_level_single_entry() {
-        assert_eq!(find_heading_level(12.0, &[(12.0, Some(1))]), Some(1));
+        let heading_map = vec![(12.0, Some(1))];
+        let gap_info = precompute_gap_info(&heading_map);
+        assert_eq!(find_heading_level(12.0, &heading_map, &gap_info), Some(1));
     }
 
     #[test]
     fn test_find_heading_level_outlier_rejected() {
         let heading_map = vec![(12.0, None), (16.0, Some(2)), (20.0, Some(1))];
+        let gap_info = precompute_gap_info(&heading_map);
         // Font size 50.0 is way too far from any centroid
-        assert_eq!(find_heading_level(50.0, &heading_map), None);
+        assert_eq!(find_heading_level(50.0, &heading_map, &gap_info), None);
     }
 
     #[test]
     fn test_find_heading_level_close_match() {
         let heading_map = vec![(12.0, None), (16.0, Some(2)), (20.0, Some(1))];
-        assert_eq!(find_heading_level(15.5, &heading_map), Some(2));
+        let gap_info = precompute_gap_info(&heading_map);
+        assert_eq!(find_heading_level(15.5, &heading_map, &gap_info), Some(2));
     }
 
     #[test]

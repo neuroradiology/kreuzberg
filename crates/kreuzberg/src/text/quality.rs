@@ -4,6 +4,7 @@ use regex::Regex;
 use std::borrow::Cow;
 
 use crate::utils::quality::{collapse_scattered_ascii, normalize_whitespace_ascii};
+use memchr::memmem;
 
 // ============================================================================
 // ============================================================================
@@ -164,7 +165,7 @@ fn calculate_ocr_penalty(text: &str, total_chars: f64) -> f64 {
         return 0.0;
     }
 
-    if !text.contains("  ") && !text.contains("...") {
+    if memmem::find(text.as_bytes(), b"  ").is_none() && memmem::find(text.as_bytes(), b"...").is_none() {
         return 0.0;
     }
 
@@ -202,7 +203,10 @@ fn calculate_script_penalty(text: &str, total_chars: f64) -> f64 {
         return 0.0;
     }
 
-    if !text.contains("function") && !text.contains("<script") && !text.contains("<style") {
+    if memmem::find(text.as_bytes(), b"function").is_none()
+        && memmem::find(text.as_bytes(), b"<script").is_none()
+        && memmem::find(text.as_bytes(), b"<style").is_none()
+    {
         return 0.0;
     }
 
@@ -234,7 +238,7 @@ fn calculate_structure_bonus(text: &str) -> f64 {
     }
 
     let sentence_count = SENTENCE_DETECT.find_iter(text).count() as f64;
-    let paragraph_count = text.matches("\n\n").count() as f64 + 1.0;
+    let paragraph_count = memmem::find_iter(text.as_bytes(), b"\n\n").count() as f64 + 1.0;
     let words = text.split_whitespace().count() as f64;
 
     if words == 0.0 {

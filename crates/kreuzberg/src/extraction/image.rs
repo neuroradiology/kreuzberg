@@ -160,51 +160,45 @@ fn parse_jp2_boxes(bytes: &[u8]) -> Result<ImageMetadata> {
 /// Parse J2K raw codestream SIZ marker for image dimensions.
 fn parse_j2k_siz(bytes: &[u8]) -> Result<ImageMetadata> {
     // Find SIZ marker (0xFF51) - usually right after SOC (0xFF4F)
-    let mut offset = 0;
-    let len = bytes.len();
+    if let Some(offset) = memchr::memmem::find(bytes, &[0xFF, 0x51]) {
+        // SIZ marker found. Format: marker(2) + Lsiz(2) + Rsiz(2) + Xsiz(4) + Ysiz(4) + XOsiz(4) + YOsiz(4)
+        let data_start = offset + 4; // skip marker + length
+        if data_start + 18 <= bytes.len() {
+            let xsiz = u32::from_be_bytes([
+                bytes[data_start + 2],
+                bytes[data_start + 3],
+                bytes[data_start + 4],
+                bytes[data_start + 5],
+            ]);
+            let ysiz = u32::from_be_bytes([
+                bytes[data_start + 6],
+                bytes[data_start + 7],
+                bytes[data_start + 8],
+                bytes[data_start + 9],
+            ]);
+            let xosiz = u32::from_be_bytes([
+                bytes[data_start + 10],
+                bytes[data_start + 11],
+                bytes[data_start + 12],
+                bytes[data_start + 13],
+            ]);
+            let yosiz = u32::from_be_bytes([
+                bytes[data_start + 14],
+                bytes[data_start + 15],
+                bytes[data_start + 16],
+                bytes[data_start + 17],
+            ]);
 
-    while offset + 2 <= len {
-        if bytes[offset] == 0xFF && bytes[offset + 1] == 0x51 {
-            // SIZ marker found. Format: marker(2) + Lsiz(2) + Rsiz(2) + Xsiz(4) + Ysiz(4) + XOsiz(4) + YOsiz(4)
-            let data_start = offset + 4; // skip marker + length
-            if data_start + 18 <= len {
-                let xsiz = u32::from_be_bytes([
-                    bytes[data_start + 2],
-                    bytes[data_start + 3],
-                    bytes[data_start + 4],
-                    bytes[data_start + 5],
-                ]);
-                let ysiz = u32::from_be_bytes([
-                    bytes[data_start + 6],
-                    bytes[data_start + 7],
-                    bytes[data_start + 8],
-                    bytes[data_start + 9],
-                ]);
-                let xosiz = u32::from_be_bytes([
-                    bytes[data_start + 10],
-                    bytes[data_start + 11],
-                    bytes[data_start + 12],
-                    bytes[data_start + 13],
-                ]);
-                let yosiz = u32::from_be_bytes([
-                    bytes[data_start + 14],
-                    bytes[data_start + 15],
-                    bytes[data_start + 16],
-                    bytes[data_start + 17],
-                ]);
+            let width = xsiz.saturating_sub(xosiz);
+            let height = ysiz.saturating_sub(yosiz);
 
-                let width = xsiz.saturating_sub(xosiz);
-                let height = ysiz.saturating_sub(yosiz);
-
-                return Ok(ImageMetadata {
-                    width,
-                    height,
-                    format: "JPEG2000".to_string(),
-                    exif_data: extract_exif_data(bytes),
-                });
-            }
+            return Ok(ImageMetadata {
+                width,
+                height,
+                format: "JPEG2000".to_string(),
+                exif_data: extract_exif_data(bytes),
+            });
         }
-        offset += 1;
     }
 
     Err(KreuzbergError::parsing("J2K codestream missing SIZ marker".to_string()))

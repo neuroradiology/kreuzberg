@@ -10,6 +10,7 @@ use super::bridge::{
     filter_sidebar_blocks, objects_to_page_data, repair_contextual_ligatures, text_has_ligature_corruption,
 };
 use super::classify::{classify_paragraphs, refine_heading_hierarchy};
+use super::columns::split_segments_into_columns;
 use super::constants::{
     FULL_LINE_FRACTION, MIN_DEHYPHENATION_FRAGMENT_LEN, MIN_FONT_SIZE, MIN_HEADING_FONT_GAP, MIN_HEADING_FONT_RATIO,
     PAGE_BOTTOM_MARGIN_FRACTION, PAGE_TOP_MARGIN_FRACTION,
@@ -20,6 +21,8 @@ use super::render::inject_image_placeholders;
 use super::types::PdfParagraph;
 
 /// Render a PDF document as markdown, with tables interleaved at their positions.
+///
+/// Returns (markdown, has_font_encoding_issues).
 pub fn render_document_as_markdown_with_tables(
     document: &PdfDocument,
     k_clusters: usize,
@@ -27,10 +30,12 @@ pub fn render_document_as_markdown_with_tables(
     top_margin: Option<f32>,
     bottom_margin: Option<f32>,
     page_marker_format: Option<&str>,
-) -> Result<String> {
+) -> Result<(String, bool)> {
     let pages = document.pages();
     let page_count = pages.len();
     tracing::debug!(page_count, "PDF markdown pipeline: starting render");
+
+    let mut has_font_encoding_issues = false;
 
     // Stage 0: Try structure tree extraction for each page.
     let mut struct_tree_results: Vec<Option<Vec<PdfParagraph>>> = Vec::with_capacity(page_count as usize);
@@ -71,6 +76,7 @@ pub fn render_document_as_markdown_with_tables(
                 // heuristic for fonts where pdfium doesn't flag the encoding errors.
                 // Try error-flag-based repair first (most accurate).
                 if let Some(repair_map) = build_ligature_repair_map(&page) {
+                    has_font_encoding_issues = true;
                     for para in &mut paragraphs {
                         for line in &mut para.lines {
                             for seg in &mut line.segments {
@@ -157,6 +163,10 @@ pub fn render_document_as_markdown_with_tables(
         })?;
 
         let (segments, image_positions) = objects_to_page_data(&page, i + 1, &mut image_offset);
+
+        if build_ligature_repair_map(&page).is_some() {
+            has_font_encoding_issues = true;
+        }
 
         // Filter out segments in page margins (headers/footers/page numbers)
         let page_height = page.height().value;
@@ -292,8 +302,20 @@ pub fn render_document_as_markdown_with_tables(
             }
             all_page_paragraphs.push(paragraphs);
         } else {
-            let lines = segments_to_lines(std::mem::take(&mut all_page_segments[i]));
-            let mut paragraphs = lines_to_paragraphs(lines);
+            let page_segments = std::mem::take(&mut all_page_segments[i]);
+            let column_groups = split_segments_into_columns(&page_segments);
+            let mut paragraphs: Vec<PdfParagraph> = if column_groups.len() <= 1 {
+                let lines = segments_to_lines(page_segments);
+                lines_to_paragraphs(lines)
+            } else {
+                let mut all_paragraphs = Vec::new();
+                for group in column_groups {
+                    let col_segments: Vec<_> = group.into_iter().map(|idx| page_segments[idx].clone()).collect();
+                    let lines = segments_to_lines(col_segments);
+                    all_paragraphs.extend(lines_to_paragraphs(lines));
+                }
+                all_paragraphs
+            };
             classify_paragraphs(&mut paragraphs, &heading_map);
             merge_continuation_paragraphs(&mut paragraphs);
             // Apply contextual ligature repair to heuristic pages where
@@ -345,8 +367,8 @@ pub fn render_document_as_markdown_with_tables(
     );
 
     // Stage 5: Inject image placeholders from positions collected during object extraction
-    if all_image_positions.is_empty() {
-        Ok(markdown)
+    let final_markdown = if all_image_positions.is_empty() {
+        markdown
     } else {
         let image_metadata: Vec<crate::types::ExtractedImage> = all_image_positions
             .iter()
@@ -365,8 +387,10 @@ pub fn render_document_as_markdown_with_tables(
                 bounding_box: None,
             })
             .collect();
-        Ok(inject_image_placeholders(&markdown, &image_metadata))
-    }
+        inject_image_placeholders(&markdown, &image_metadata)
+    };
+
+    Ok((final_markdown, has_font_encoding_issues))
 }
 
 /// Remove standalone page numbers from segments.
@@ -459,22 +483,22 @@ fn dehyphenate_paragraph_lines(para: &mut PdfParagraph) {
         }
 
         // Get trailing word from last segment of current line.
-        let trailing_seg_text = match para.lines[i].segments.last() {
-            Some(seg) if !seg.text.is_empty() => seg.text.clone(),
+        let trailing_seg_text: &str = match para.lines[i].segments.last() {
+            Some(seg) if !seg.text.is_empty() => &seg.text,
             _ => continue,
         };
         let trailing_word = match trailing_seg_text.split_whitespace().next_back() {
-            Some(w) => w.to_string(),
+            Some(w) => w,
             None => continue,
         };
 
         // Get leading word from first segment of next line.
-        let leading_seg_text = match para.lines[i + 1].segments.first() {
-            Some(seg) if !seg.text.is_empty() => seg.text.clone(),
+        let leading_seg_text: &str = match para.lines[i + 1].segments.first() {
+            Some(seg) if !seg.text.is_empty() => &seg.text,
             _ => continue,
         };
         let leading_word = match leading_seg_text.split_whitespace().next() {
-            Some(w) => w.to_string(),
+            Some(w) => w,
             None => continue,
         };
 
@@ -484,13 +508,15 @@ fn dehyphenate_paragraph_lines(para: &mut PdfParagraph) {
         }
 
         // Case 1: trailing hyphen
-        if trailing_word.ends_with('-') {
-            let stem = &trailing_word[..trailing_word.len() - 1];
-            if !stem.is_empty() && leading_word.starts_with(|c: char| c.is_lowercase()) {
-                let joined = format!("{}{}", stem, &leading_word);
-                apply_dehyphenation_join(para, i, &trailing_word, &leading_word, &joined);
-                continue;
-            }
+        if let Some(stem) = trailing_word.strip_suffix('-')
+            && !stem.is_empty()
+            && leading_word.starts_with(|c: char| c.is_lowercase())
+        {
+            let joined = format!("{}{}", stem, leading_word);
+            let tw = trailing_word.to_string();
+            let lw = leading_word.to_string();
+            apply_dehyphenation_join(para, i, &tw, &lw, &joined);
+            continue;
         }
 
         // Case 2: no hyphen — full line, alphabetic fragments, lowercase continuation
@@ -514,8 +540,10 @@ fn dehyphenate_paragraph_lines(para: &mut PdfParagraph) {
             && effective_leading_alpha.chars().all(|c| c.is_alphabetic())
             && leading_word.starts_with(|c: char| c.is_lowercase())
         {
-            let joined = format!("{}{}", &trailing_word, &leading_word);
-            apply_dehyphenation_join(para, i, &trailing_word, &leading_word, &joined);
+            let joined = format!("{}{}", trailing_word, leading_word);
+            let tw = trailing_word.to_string();
+            let lw = leading_word.to_string();
+            apply_dehyphenation_join(para, i, &tw, &lw, &joined);
         }
     }
 }
@@ -526,12 +554,12 @@ fn dehyphenate_paragraph_lines(para: &mut PdfParagraph) {
 fn dehyphenate_hyphen_only(para: &mut PdfParagraph) {
     let line_count = para.lines.len();
     for i in (0..line_count - 1).rev() {
-        let trailing_seg_text = match para.lines[i].segments.last() {
-            Some(seg) if !seg.text.is_empty() => seg.text.clone(),
+        let trailing_seg_text: &str = match para.lines[i].segments.last() {
+            Some(seg) if !seg.text.is_empty() => &seg.text,
             _ => continue,
         };
         let trailing_word = match trailing_seg_text.split_whitespace().next_back() {
-            Some(w) => w.to_string(),
+            Some(w) => w,
             None => continue,
         };
 
@@ -539,12 +567,12 @@ fn dehyphenate_hyphen_only(para: &mut PdfParagraph) {
             continue;
         }
 
-        let leading_seg_text = match para.lines[i + 1].segments.first() {
-            Some(seg) if !seg.text.is_empty() => seg.text.clone(),
+        let leading_seg_text: &str = match para.lines[i + 1].segments.first() {
+            Some(seg) if !seg.text.is_empty() => &seg.text,
             _ => continue,
         };
         let leading_word = match leading_seg_text.split_whitespace().next() {
-            Some(w) => w.to_string(),
+            Some(w) => w,
             None => continue,
         };
 
@@ -554,8 +582,10 @@ fn dehyphenate_hyphen_only(para: &mut PdfParagraph) {
 
         let stem = &trailing_word[..trailing_word.len() - 1];
         if !stem.is_empty() && leading_word.starts_with(|c: char| c.is_lowercase()) {
-            let joined = format!("{}{}", stem, &leading_word);
-            apply_dehyphenation_join(para, i, &trailing_word, &leading_word, &joined);
+            let joined = format!("{}{}", stem, leading_word);
+            let tw = trailing_word.to_string();
+            let lw = leading_word.to_string();
+            apply_dehyphenation_join(para, i, &tw, &lw, &joined);
         }
     }
 }

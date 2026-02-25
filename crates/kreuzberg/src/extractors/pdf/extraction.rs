@@ -57,6 +57,8 @@ pub(crate) fn extract_all_from_document(
 
     let tables = extract_tables_from_document(document, &pdf_metadata)?;
 
+    let mut has_font_encoding_issues = false;
+
     // If markdown output is requested, render it while we have the document loaded.
     // Skip when force_ocr is set since OCR results produce their own markdown via hOCR.
     // Pre-render structured markdown for all output formats that benefit from it.
@@ -103,17 +105,19 @@ pub(crate) fn extract_all_from_document(
             bottom_margin,
             page_marker_format,
         ) {
-            Ok(md) if !md.trim().is_empty() => {
+            Ok((md, has_encoding_issues)) if !md.trim().is_empty() => {
                 tracing::debug!(
                     md_len = md.len(),
                     has_headings = md.contains("# "),
                     has_bold = md.contains("**"),
                     "PDF markdown path: render succeeded with content"
                 );
+                has_font_encoding_issues = has_encoding_issues;
                 Some(md)
             }
-            Ok(_) => {
+            Ok((_, has_encoding_issues)) => {
                 tracing::warn!("Markdown rendering produced empty output, will fall back to plain text");
+                has_font_encoding_issues = has_encoding_issues;
                 None
             }
             Err(e) => {
@@ -124,8 +128,6 @@ pub(crate) fn extract_all_from_document(
     } else {
         None
     };
-
-    let has_font_encoding_issues = sample_unicode_map_errors(document);
 
     // Extract annotations when configured.
     let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
@@ -145,58 +147,6 @@ pub(crate) fn extract_all_from_document(
         has_font_encoding_issues,
         annotations,
     ))
-}
-
-/// Sample characters from each page to detect broken unicode mappings.
-///
-/// Returns `true` if any page has >30% of sampled characters with unicode map errors,
-/// indicating the font's ToUnicode CMap is broken and OCR should be used instead.
-///
-/// Samples up to 50 non-generated characters per page for efficiency.
-#[cfg(feature = "pdf")]
-fn sample_unicode_map_errors(document: &PdfDocument) -> bool {
-    const MAX_SAMPLES_PER_PAGE: usize = 50;
-    const ERROR_RATIO_THRESHOLD: f32 = 0.3;
-
-    for page in document.pages().iter() {
-        let text = match page.text() {
-            Ok(t) => t,
-            Err(_) => continue,
-        };
-
-        let char_count = text.chars().len();
-        if char_count == 0 {
-            continue;
-        }
-
-        let mut sampled = 0usize;
-        let mut errors = 0usize;
-        let chars = text.chars();
-
-        // Sample characters evenly across the page
-        let step = (char_count / MAX_SAMPLES_PER_PAGE).max(1);
-        for i in (0..char_count).step_by(step) {
-            if let Ok(ch) = chars.get(i) {
-                // Skip generated characters (spacing/justification inserted by pdfium)
-                if ch.is_generated().unwrap_or(false) {
-                    continue;
-                }
-                sampled += 1;
-                if ch.has_unicode_map_error().unwrap_or(false) {
-                    errors += 1;
-                }
-            }
-            if sampled >= MAX_SAMPLES_PER_PAGE {
-                break;
-            }
-        }
-
-        if sampled >= 5 && (errors as f32 / sampled as f32) > ERROR_RATIO_THRESHOLD {
-            return true;
-        }
-    }
-
-    false
 }
 
 /// Check whether words on a page exhibit column alignment consistent with a table.

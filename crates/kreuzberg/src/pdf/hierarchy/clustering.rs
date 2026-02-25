@@ -114,16 +114,19 @@ pub fn cluster_font_sizes(blocks: &[TextBlock], k: usize) -> Result<Vec<FontSize
         // Keep sorted descending
     }
 
+    // Extract font sizes once for iteration loop
+    let font_sizes: Vec<f32> = blocks.iter().map(|b| b.font_size).collect();
+
     // Run k-means clustering for a fixed number of iterations
     for _ in 0..KMEANS_MAX_ITERATIONS {
-        // Assign blocks to nearest centroid
-        let clusters = assign_blocks_to_centroids(blocks, &centroids);
+        // Assign font sizes to nearest centroid
+        let size_clusters = assign_sizes_to_centroids(&font_sizes, &centroids);
 
         // Update centroids
         let mut new_centroids = Vec::with_capacity(actual_k);
-        for (i, cluster) in clusters.iter().enumerate() {
+        for (i, cluster) in size_clusters.iter().enumerate() {
             if !cluster.is_empty() {
-                new_centroids.push(cluster.iter().map(|b| b.font_size).sum::<f32>() / cluster.len() as f32);
+                new_centroids.push(cluster.iter().sum::<f32>() / cluster.len() as f32);
             } else {
                 new_centroids.push(centroids[i]);
             }
@@ -243,10 +246,44 @@ pub fn assign_heading_levels_smart(
     result
 }
 
+/// Helper function to assign font sizes to their nearest centroid (for iteration loop).
+///
+/// Assigns font sizes to clusters without cloning full TextBlock objects.
+/// Used during k-means iterations to compute new centroids efficiently.
+///
+/// # Arguments
+///
+/// * `font_sizes` - Slice of font size values to assign
+/// * `centroids` - Slice of centroid values (one per cluster)
+///
+/// # Returns
+///
+/// A vector of clusters, where each cluster contains the font sizes assigned to that centroid
+fn assign_sizes_to_centroids(font_sizes: &[f32], centroids: &[f32]) -> Vec<Vec<f32>> {
+    let mut clusters: Vec<Vec<f32>> = vec![Vec::new(); centroids.len()];
+
+    for &size in font_sizes {
+        let mut min_distance = f32::INFINITY;
+        let mut best_cluster = 0;
+
+        for (i, &centroid) in centroids.iter().enumerate() {
+            let distance = (size - centroid).abs();
+            if distance < min_distance {
+                min_distance = distance;
+                best_cluster = i;
+            }
+        }
+
+        clusters[best_cluster].push(size);
+    }
+
+    clusters
+}
+
 /// Helper function to assign blocks to their nearest centroid.
 ///
 /// Iterates through blocks and finds the closest centroid for each block,
-/// grouping them into clusters. Used in k-means clustering iterations.
+/// grouping them into clusters. Used in the final assignment step after convergence.
 ///
 /// # Arguments
 ///

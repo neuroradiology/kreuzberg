@@ -4,6 +4,7 @@
 //! structure analysis and line-level checks.
 
 use super::patterns::*;
+use memchr::memmem;
 
 // ============================================================================
 // Structure Thresholds
@@ -26,7 +27,7 @@ pub(crate) fn calculate_structure_bonus(text: &str) -> f64 {
     }
 
     let sentence_count = SENTENCE_DETECT.find_iter(text).count() as f64;
-    let paragraph_count = text.matches("\n\n").count() as f64 + 1.0;
+    let paragraph_count = memmem::find_iter(text.as_bytes(), b"\n\n").count() as f64 + 1.0;
     let words = text.split_whitespace().count() as f64;
 
     if words == 0.0 {

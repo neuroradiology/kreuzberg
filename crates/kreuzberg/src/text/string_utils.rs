@@ -148,8 +148,8 @@ fn calculate_text_confidence_internal(text: &str) -> f64 {
     (readability_score - final_penalty).clamp(0.0, 1.0)
 }
 
-pub fn fix_mojibake(text: &str) -> String {
-    fix_mojibake_internal(text).into_owned()
+pub fn fix_mojibake(text: &str) -> Cow<'_, str> {
+    fix_mojibake_internal(text)
 }
 
 fn fix_mojibake_internal(text: &str) -> Cow<'_, str> {

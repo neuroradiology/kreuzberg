@@ -680,7 +680,7 @@ fn detect_office_format_from_zip(content: &[u8]) -> Option<&'static str> {
 /// Check if `haystack` contains `needle` as a subsequence.
 #[inline]
 fn contains_subsequence(haystack: &[u8], needle: &[u8]) -> bool {
-    haystack.windows(needle.len()).any(|window| window == needle)
+    memchr::memmem::find(haystack, needle).is_some()
 }
 
 /// Get file extensions for a given MIME type.

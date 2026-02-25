@@ -7,8 +7,6 @@ mod extraction;
 mod ocr;
 mod pages;
 
-use bytes::Bytes;
-
 use crate::Result;
 use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::plugins::{DocumentExtractor, Plugin};
@@ -312,7 +310,7 @@ impl DocumentExtractor for PdfExtractor {
                                 .map(std::borrow::Cow::Owned)
                                 .unwrap_or(std::borrow::Cow::Borrowed("unknown"));
                             crate::types::ExtractedImage {
-                                data: Bytes::from(img.data),
+                                data: img.data,
                                 format,
                                 image_index: idx,
                                 page_number: Some(img.page_number),

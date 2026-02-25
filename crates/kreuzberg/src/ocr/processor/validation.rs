@@ -5,6 +5,7 @@
 
 use crate::ocr::error::OcrError;
 use crate::ocr::validation::TESSERACT_SUPPORTED_LANGUAGE_CODES;
+use std::borrow::Cow;
 use std::env;
 use std::path::Path;
 
@@ -160,16 +161,18 @@ pub(super) fn resolve_all_installed_languages(tessdata_path: &str) -> Result<Str
 /// # Returns
 ///
 /// Cleaned text with control characters removed
-pub(super) fn strip_control_characters(text: &str) -> String {
+pub(super) fn strip_control_characters(text: &str) -> Cow<'_, str> {
     if text
         .chars()
         .any(|c| matches!(c, '\u{0000}'..='\u{001F}' | '\u{007F}') && c != '\n' && c != '\r' && c != '\t')
     {
-        text.chars()
-            .filter(|c| !matches!(c, '\u{0000}'..='\u{001F}' | '\u{007F}') || matches!(c, '\n' | '\r' | '\t'))
-            .collect()
+        Cow::Owned(
+            text.chars()
+                .filter(|c| !matches!(c, '\u{0000}'..='\u{001F}' | '\u{007F}') || matches!(c, '\n' | '\r' | '\t'))
+                .collect(),
+        )
     } else {
-        text.to_string()
+        Cow::Borrowed(text)
     }
 }
 

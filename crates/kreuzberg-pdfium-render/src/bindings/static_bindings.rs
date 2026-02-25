@@ -16,6 +16,19 @@ use crate::bindings::PdfiumLibraryBindings;
 use std::ffi::CString;
 use std::os::raw::{c_char, c_double, c_float, c_int, c_long, c_uchar, c_uint, c_ulong, c_ushort, c_void};
 
+#[inline]
+fn safe_cstring(s: impl Into<Vec<u8>>) -> CString {
+    let bytes: Vec<u8> = s.into();
+    match CString::new(bytes) {
+        Ok(c) => c,
+        Err(e) => {
+            let mut bytes = e.into_vec();
+            bytes.retain(|&b| b != 0);
+            CString::new(bytes).expect("bytes with null removed cannot contain null")
+        }
+    }
+}
+
 pub(crate) struct StaticPdfiumBindings;
 
 impl StaticPdfiumBindings {
@@ -80,8 +93,8 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_LoadDocument(&self, file_path: &str, password: Option<&str>) -> FPDF_DOCUMENT {
-        let c_file_path = CString::new(file_path).unwrap();
-        let c_password = CString::new(password.unwrap_or("")).unwrap();
+        let c_file_path = safe_cstring(file_path);
+        let c_password = safe_cstring(password.unwrap_or(""));
 
         unsafe { crate::bindgen::FPDF_LoadDocument(c_file_path.as_ptr(), c_password.as_ptr()) }
     }
@@ -89,7 +102,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_LoadMemDocument64(&self, data_buf: &[u8], password: Option<&str>) -> FPDF_DOCUMENT {
-        let c_password = CString::new(password.unwrap_or("")).unwrap();
+        let c_password = safe_cstring(password.unwrap_or(""));
 
         unsafe {
             crate::bindgen::FPDF_LoadMemDocument64(
@@ -103,7 +116,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_LoadCustomDocument(&self, pFileAccess: *mut FPDF_FILEACCESS, password: Option<&str>) -> FPDF_DOCUMENT {
-        let c_password = CString::new(password.unwrap_or("")).unwrap();
+        let c_password = safe_cstring(password.unwrap_or(""));
 
         unsafe { crate::bindgen::FPDF_LoadCustomDocument(pFileAccess, c_password.as_ptr()) }
     }
@@ -152,7 +165,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAvail_GetDocument(&self, avail: FPDF_AVAIL, password: Option<&str>) -> FPDF_DOCUMENT {
-        let c_password = CString::new(password.unwrap_or("")).unwrap();
+        let c_password = safe_cstring(password.unwrap_or(""));
 
         unsafe { crate::bindgen::FPDFAvail_GetDocument(avail, c_password.as_ptr()) }
     }
@@ -375,7 +388,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         pagerange: &str,
         index: c_int,
     ) -> FPDF_BOOL {
-        let c_pagerange = CString::new(pagerange).unwrap();
+        let c_pagerange = safe_cstring(pagerange);
 
         unsafe { crate::bindgen::FPDF_ImportPages(dest_doc, src_doc, c_pagerange.as_ptr(), index) }
     }
@@ -596,7 +609,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buffer: *mut c_void,
         buflen: c_ulong,
     ) -> c_ulong {
-        let c_attr_name = CString::new(attr_name).unwrap();
+        let c_attr_name = safe_cstring(attr_name);
 
         unsafe {
             crate::bindgen::FPDF_StructElement_GetStringAttribute(struct_element, c_attr_name.as_ptr(), buffer, buflen)
@@ -712,7 +725,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         struct_attribute: FPDF_STRUCTELEMENT_ATTR,
         name: &str,
     ) -> FPDF_STRUCTELEMENT_ATTR_VALUE {
-        let c_name = CString::new(name).unwrap();
+        let c_name = safe_cstring(name);
 
         unsafe { crate::bindgen::FPDF_StructElement_Attr_GetValue(struct_attribute, c_name.as_ptr()) }
     }
@@ -1404,7 +1417,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_HasKey(&self, annot: FPDF_ANNOTATION, key: &str) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_HasKey(annot, c_key.as_ptr()) }
     }
@@ -1412,7 +1425,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_GetValueType(&self, annot: FPDF_ANNOTATION, key: &str) -> FPDF_OBJECT_TYPE {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_GetValueType(annot, c_key.as_ptr()) }
     }
@@ -1420,7 +1433,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_SetStringValue(&self, annot: FPDF_ANNOTATION, key: &str, value: FPDF_WIDESTRING) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_SetStringValue(annot, c_key.as_ptr(), value) }
     }
@@ -1434,7 +1447,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buffer: *mut FPDF_WCHAR,
         buflen: c_ulong,
     ) -> c_ulong {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_GetStringValue(annot, c_key.as_ptr(), buffer, buflen) }
     }
@@ -1442,7 +1455,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_GetNumberValue(&self, annot: FPDF_ANNOTATION, key: &str, value: *mut f32) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_GetNumberValue(annot, c_key.as_ptr(), value) }
     }
@@ -1473,7 +1486,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_GetLinkedAnnot(&self, annot: FPDF_ANNOTATION, key: &str) -> FPDF_ANNOTATION {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAnnot_GetLinkedAnnot(annot, c_key.as_ptr()) }
     }
@@ -1667,7 +1680,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAnnot_SetURI(&self, annot: FPDF_ANNOTATION, uri: &str) -> FPDF_BOOL {
-        let c_uri = CString::new(uri).unwrap();
+        let c_uri = safe_cstring(uri);
 
         unsafe { crate::bindgen::FPDFAnnot_SetURI(annot, c_uri.as_ptr()) }
     }
@@ -2112,7 +2125,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_AddInstalledFont(&self, mapper: *mut c_void, face: &str, charset: c_int) {
-        let c_face = CString::new(face).unwrap();
+        let c_face = safe_cstring(face);
 
         unsafe { crate::bindgen::FPDF_AddInstalledFont(mapper, c_face.as_ptr(), charset) }
     }
@@ -2314,7 +2327,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_GetMetaText(&self, document: FPDF_DOCUMENT, tag: &str, buffer: *mut c_void, buflen: c_ulong) -> c_ulong {
-        let c_tag = CString::new(tag).unwrap();
+        let c_tag = safe_cstring(tag);
 
         unsafe { crate::bindgen::FPDF_GetMetaText(document, c_tag.as_ptr(), buffer, buflen) }
     }
@@ -2792,7 +2805,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFPageObj_NewTextObj(&self, document: FPDF_DOCUMENT, font: &str, font_size: c_float) -> FPDF_PAGEOBJECT {
-        let c_font = CString::new(font).unwrap();
+        let c_font = safe_cstring(font);
 
         unsafe { crate::bindgen::FPDFPageObj_NewTextObj(document, c_font.as_ptr(), font_size) }
     }
@@ -2830,7 +2843,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFText_LoadStandardFont(&self, document: FPDF_DOCUMENT, font: &str) -> FPDF_FONT {
-        let c_font = CString::new(font).unwrap();
+        let c_font = safe_cstring(font);
 
         unsafe { crate::bindgen::FPDFText_LoadStandardFont(document, c_font.as_ptr()) }
     }
@@ -2846,7 +2859,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         cid_to_gid_map_data: *const u8,
         cid_to_gid_map_data_size: u32,
     ) -> FPDF_FONT {
-        let c_to_unicode_cmap = CString::new(to_unicode_cmap).unwrap();
+        let c_to_unicode_cmap = safe_cstring(to_unicode_cmap);
 
         unsafe {
             crate::bindgen::FPDFText_LoadCidType2Font(
@@ -2980,7 +2993,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFPageObj_AddMark(&self, page_object: FPDF_PAGEOBJECT, name: &str) -> FPDF_PAGEOBJECTMARK {
-        let c_name = CString::new(name).unwrap();
+        let c_name = safe_cstring(name);
 
         unsafe { crate::bindgen::FPDFPageObj_AddMark(page_object, c_name.as_ptr()) }
     }
@@ -3025,7 +3038,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFPageObjMark_GetParamValueType(&self, mark: FPDF_PAGEOBJECTMARK, key: &str) -> FPDF_OBJECT_TYPE {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_GetParamValueType(mark, c_key.as_ptr()) }
     }
@@ -3038,7 +3051,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         out_value: *mut c_int,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_GetParamIntValue(mark, c_key.as_ptr(), out_value) }
     }
@@ -3051,7 +3064,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         out_value: *mut c_float,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_GetParamFloatValue(mark, c_key.as_ptr(), out_value) }
     }
@@ -3066,7 +3079,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buflen: c_ulong,
         out_buflen: *mut c_ulong,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_GetParamStringValue(mark, c_key.as_ptr(), buffer, buflen, out_buflen) }
     }
@@ -3081,7 +3094,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buflen: c_ulong,
         out_buflen: *mut c_ulong,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_GetParamBlobValue(mark, c_key.as_ptr(), buffer, buflen, out_buflen) }
     }
@@ -3096,7 +3109,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: c_int,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_SetIntParam(document, page_object, mark, c_key.as_ptr(), value) }
     }
@@ -3111,7 +3124,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: f32,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_SetFloatParam(document, page_object, mark, c_key.as_ptr(), value) }
     }
@@ -3126,9 +3139,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: &str,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
-        let c_value = CString::new(value).unwrap();
+        let c_value = safe_cstring(value);
 
         unsafe {
             crate::bindgen::FPDFPageObjMark_SetStringParam(
@@ -3152,7 +3165,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         value: *const c_uchar,
         value_len: c_ulong,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe {
             crate::bindgen::FPDFPageObjMark_SetBlobParam(document, page_object, mark, c_key.as_ptr(), value, value_len)
@@ -3167,7 +3180,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         mark: FPDF_PAGEOBJECTMARK,
         key: &str,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFPageObjMark_RemoveParam(page_object, mark, c_key.as_ptr()) }
     }
@@ -3353,7 +3366,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFPageObj_SetBlendMode(&self, page_object: FPDF_PAGEOBJECT, blend_mode: &str) {
-        let c_blend_mode = CString::new(blend_mode).unwrap();
+        let c_blend_mode = safe_cstring(blend_mode);
 
         unsafe { crate::bindgen::FPDFPageObj_SetBlendMode(page_object, c_blend_mode.as_ptr()) }
     }
@@ -3658,7 +3671,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buffer: *mut c_char,
         length: c_ulong,
     ) -> c_ulong {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDF_VIEWERREF_GetName(document, c_key.as_ptr(), buffer, length) }
     }
@@ -3672,7 +3685,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDF_GetNamedDestByName(&self, document: FPDF_DOCUMENT, name: &str) -> FPDF_DEST {
-        let c_name = CString::new(name).unwrap();
+        let c_name = safe_cstring(name);
 
         unsafe { crate::bindgen::FPDF_GetNamedDestByName(document, c_name.as_ptr()) }
     }
@@ -3722,7 +3735,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAttachment_HasKey(&self, attachment: FPDF_ATTACHMENT, key: &str) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAttachment_HasKey(attachment, c_key.as_ptr()) }
     }
@@ -3730,7 +3743,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFAttachment_GetValueType(&self, attachment: FPDF_ATTACHMENT, key: &str) -> FPDF_OBJECT_TYPE {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAttachment_GetValueType(attachment, c_key.as_ptr()) }
     }
@@ -3743,7 +3756,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: FPDF_WIDESTRING,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAttachment_SetStringValue(attachment, c_key.as_ptr(), value) }
     }
@@ -3757,7 +3770,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         buffer: *mut FPDF_WCHAR,
         buflen: c_ulong,
     ) -> c_ulong {
-        let c_key = CString::new(key).unwrap();
+        let c_key = safe_cstring(key);
 
         unsafe { crate::bindgen::FPDFAttachment_GetStringValue(attachment, c_key.as_ptr(), buffer, buflen) }
     }
@@ -3806,7 +3819,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     fn FPDFCatalog_SetLanguage(&self, document: FPDF_DOCUMENT, language: &str) -> FPDF_BOOL {
-        let c_language = CString::new(language).unwrap();
+        let c_language = safe_cstring(language);
 
         unsafe { crate::bindgen::FPDFCatalog_SetLanguage(document, c_language.as_ptr()) }
     }
