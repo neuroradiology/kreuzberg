@@ -9,12 +9,13 @@
 //! - Go: single, batch
 //! - Java: single, batch
 //! - C#: single, batch
+//! - C: single, batch
 //! - WASM: single, batch
 
 use crate::Result;
 use crate::adapters::subprocess::SubprocessAdapter;
 use std::env;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Get supported formats for Kreuzberg bindings
 /// Kreuzberg supports 50+ document, text, data, and image formats
@@ -990,6 +991,135 @@ pub fn create_elixir_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapte
     Ok(SubprocessAdapter::with_batch_support(
         "kreuzberg-elixir-batch",
         command,
+        args,
+        env,
+        supported_formats,
+    ))
+}
+
+/// Find a C compiler (cc, gcc, or clang)
+fn find_c_compiler() -> Result<PathBuf> {
+    for name in &["cc", "gcc", "clang"] {
+        if let Ok(path) = which::which(name) {
+            return Ok(path);
+        }
+    }
+    Err(crate::Error::Config(
+        "C compiler not found (tried cc, gcc, clang)".to_string(),
+    ))
+}
+
+/// Compile the C extraction binary from source.
+///
+/// The binary is placed alongside the native library in target/release or target/debug.
+/// Compilation is skipped if the binary is newer than the source file.
+fn compile_c_extraction_binary(source: &Path) -> Result<PathBuf> {
+    let lib_dir = native_library_dir()?;
+    let binary_path = lib_dir.join("kreuzberg_extract_c");
+
+    // Skip compilation if binary exists and is newer than source
+    if binary_path.exists()
+        && let (Ok(src_meta), Ok(bin_meta)) = (std::fs::metadata(source), std::fs::metadata(&binary_path))
+        && let (Ok(src_time), Ok(bin_time)) = (src_meta.modified(), bin_meta.modified())
+        && bin_time >= src_time
+    {
+        eprintln!(
+            "[adapter] kreuzberg-c: using cached binary at {}",
+            binary_path.display()
+        );
+        return Ok(binary_path);
+    }
+
+    let compiler = find_c_compiler()?;
+    let header_dir = workspace_root()?.join("crates/kreuzberg-ffi");
+    let lib_dir_str = lib_dir.to_string_lossy().to_string();
+
+    eprintln!(
+        "[adapter] kreuzberg-c: compiling {} -> {}",
+        source.display(),
+        binary_path.display()
+    );
+
+    let mut cmd = std::process::Command::new(&compiler);
+    cmd.arg("-O2")
+        .arg("-o")
+        .arg(&binary_path)
+        .arg(source)
+        .arg(format!("-I{}", header_dir.display()))
+        .arg(format!("-L{}", lib_dir_str))
+        .arg("-lkreuzberg_ffi")
+        .arg("-lpthread")
+        .arg("-lm");
+
+    // Platform-specific linker flags
+    if cfg!(target_os = "macos") {
+        cmd.arg("-framework").arg("CoreFoundation");
+        cmd.arg("-framework").arg("Security");
+        cmd.arg("-framework").arg("SystemConfiguration");
+    } else if cfg!(target_os = "linux") {
+        cmd.arg("-ldl");
+    }
+
+    // Set library path so the compiler can find the shared library
+    if cfg!(target_os = "macos") {
+        cmd.env("DYLD_LIBRARY_PATH", prepend_env("DYLD_LIBRARY_PATH", &lib_dir_str, ":"));
+    } else {
+        cmd.env("LD_LIBRARY_PATH", prepend_env("LD_LIBRARY_PATH", &lib_dir_str, ":"));
+    }
+
+    let output = cmd
+        .output()
+        .map_err(|e| crate::Error::Config(format!("Failed to run C compiler: {}", e)))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(crate::Error::Config(format!(
+            "C compilation failed ({}): {}",
+            output.status, stderr
+        )));
+    }
+
+    Ok(binary_path)
+}
+
+/// Create C adapter (persistent server mode)
+pub fn create_c_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
+    let source_path = get_script_path("kreuzberg_extract_c.c")?;
+    let binary_path = compile_c_extraction_binary(&source_path)?;
+
+    let args = vec![ocr_flag(ocr_enabled), "server".to_string()];
+
+    let mut env = build_library_env()?;
+    if env::var("KREUZBERG_BENCHMARK_DEBUG").is_ok() {
+        env.push(("KREUZBERG_BENCHMARK_DEBUG".to_string(), "true".to_string()));
+    }
+
+    let supported_formats = get_kreuzberg_supported_formats();
+    Ok(SubprocessAdapter::with_persistent_mode(
+        "kreuzberg-c",
+        binary_path,
+        args,
+        env,
+        supported_formats,
+    ))
+}
+
+/// Create C batch adapter
+pub fn create_c_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
+    let source_path = get_script_path("kreuzberg_extract_c.c")?;
+    let binary_path = compile_c_extraction_binary(&source_path)?;
+
+    let args = vec![ocr_flag(ocr_enabled), "batch".to_string()];
+
+    let mut env = build_library_env()?;
+    if env::var("KREUZBERG_BENCHMARK_DEBUG").is_ok() {
+        env.push(("KREUZBERG_BENCHMARK_DEBUG".to_string(), "true".to_string()));
+    }
+
+    let supported_formats = get_kreuzberg_supported_formats();
+    Ok(SubprocessAdapter::with_batch_support(
+        "kreuzberg-c-batch",
+        binary_path,
         args,
         env,
         supported_formats,

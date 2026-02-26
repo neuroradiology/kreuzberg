@@ -102,10 +102,10 @@ repos:
     hooks:
       - id: clang-format
         args: [ --style=file ]
-        files: ^crates/kreuzberg-ffi/tests/c/
+        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
       - id: cppcheck
         args: [ "--std=c11", "--enable=warning,style,performance", "--suppress=missingIncludeSystem" ]
-        files: ^crates/kreuzberg-ffi/tests/c/
+        files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
 
   - repo: https://github.com/checkmake/checkmake
     rev: v0.3.2
