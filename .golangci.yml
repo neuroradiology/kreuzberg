@@ -114,6 +114,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - tools/benchmark-harness/scripts
 
 issues:
   max-issues-per-linter: 0

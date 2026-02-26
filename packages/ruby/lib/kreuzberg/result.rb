@@ -24,7 +24,7 @@ module Kreuzberg
     #   @return [Integer] Page number where table was found
     # @!attribute [r] bounding_box
     #   @return [BoundingBox, nil] Bounding box of the table on the page
-    Table = Struct.new(:cells, :markdown, :page_number, :bounding_box, keyword_init: true) do
+    Table = Struct.new(:cells, :markdown, :page_number, :bounding_box) do
       def to_h
         { cells: cells, markdown: markdown, page_number: page_number, bounding_box: bounding_box&.to_h }
       end
@@ -51,8 +51,7 @@ module Kreuzberg
       :total_chunks,
       :first_page,
       :last_page,
-      :embedding,
-      keyword_init: true
+      :embedding
     ) do
       def to_h
         {
@@ -81,8 +80,7 @@ module Kreuzberg
       :is_mask,
       :description,
       :bounding_box,
-      :ocr_result,
-      keyword_init: true
+      :ocr_result
     ) do
       def to_h
         {
@@ -118,7 +116,7 @@ module Kreuzberg
     #   @return [String] The hierarchy level (h1-h6 or body)
     # @!attribute [r] bbox
     #   @return [Array<Float>, nil] Bounding box (left, top, right, bottom)
-    HierarchicalBlock = Struct.new(:text, :font_size, :level, :bbox, keyword_init: true) do
+    HierarchicalBlock = Struct.new(:text, :font_size, :level, :bbox) do
       def to_h
         { text: text, font_size: font_size, level: level, bbox: bbox }
       end
@@ -128,7 +126,7 @@ module Kreuzberg
     #   @return [Integer] Number of hierarchy blocks
     # @!attribute [r] blocks
     #   @return [Array<HierarchicalBlock>] Hierarchical blocks
-    PageHierarchy = Struct.new(:block_count, :blocks, keyword_init: true) do
+    PageHierarchy = Struct.new(:block_count, :blocks) do
       def to_h
         { block_count: block_count, blocks: blocks.map(&:to_h) }
       end
@@ -144,7 +142,7 @@ module Kreuzberg
     #   @return [Array<Image>] Images on this page
     # @!attribute [r] hierarchy
     #   @return [PageHierarchy, nil] Hierarchy information for the page
-    PageContent = Struct.new(:page_number, :content, :tables, :images, :hierarchy, :is_blank, keyword_init: true) do
+    PageContent = Struct.new(:page_number, :content, :tables, :images, :hierarchy, :is_blank) do
       def to_h
         {
           page_number: page_number,
@@ -165,7 +163,7 @@ module Kreuzberg
     #   @return [Float] Right x-coordinate
     # @!attribute [r] y1
     #   @return [Float] Top y-coordinate
-    ElementBoundingBox = Struct.new(:x0, :y0, :x1, :y1, keyword_init: true) do
+    ElementBoundingBox = Struct.new(:x0, :y0, :x1, :y1) do
       def to_h
         { x0: x0, y0: y0, x1: x1, y1: y1 }
       end
@@ -186,8 +184,7 @@ module Kreuzberg
       :filename,
       :coordinates,
       :element_index,
-      :additional,
-      keyword_init: true
+      :additional
     ) do
       def to_h
         {
@@ -208,7 +205,7 @@ module Kreuzberg
     #   @return [String] Text content of the element
     # @!attribute [r] metadata
     #   @return [ElementMetadataStruct] Metadata about the element
-    ElementStruct = Struct.new(:element_id, :element_type, :text, :metadata, keyword_init: true) do
+    ElementStruct = Struct.new(:element_id, :element_type, :text, :metadata) do
       def to_h
         {
           element_id: element_id,

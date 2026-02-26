@@ -1,4 +1,4 @@
-# Go API Reference
+# Go API Reference <span class="version-badge">v4.0.0</span>
 
 Complete reference for the Kreuzberg Go bindings using cgo to access the Rust-powered extraction pipeline.
 

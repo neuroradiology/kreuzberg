@@ -28,14 +28,14 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 | Binding / Interface | Package | Use Case | Docs |
 |-------|---------|---------|------|
 | Python             | `pip install kreuzberg` | Server-side, data processing | [Python API Reference](reference/api-python.md) |
-| **TypeScript/Node.js (Native)** | `npm install @kreuzberg/node` | **Node.js servers, command-line tools, native performance** | **[TypeScript API Reference](reference/api-typescript.md)** |
-| **WebAssembly (WASM)** | `npm install @kreuzberg/wasm` | **Browsers, Cloudflare Workers, Deno, serverless** | **[WASM API Reference](reference/api-wasm.md)** |
-| Java               | `dev.kreuzberg:kreuzberg` (Maven) | Server-side Java, FFM API | [Java API Reference](reference/api-java.md) |
-| C#                 | `dotnet add package Kreuzberg` | .NET applications, Windows servers | [C# API Reference](reference/api-csharp.md) |
-| PHP                | `kreuzberg/kreuzberg` (Composer) | PHP applications, ext-ffi | [PHP API Reference](reference/api-php.md) |
-| Ruby               | `gem install kreuzberg` | Server-side, Rails applications | [Ruby API Reference](reference/api-ruby.md) |
-| Go                 | `go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest` | Server-side, systems tools | [Go API Reference](reference/api-go.md) |
-| Elixir             | `{:kreuzberg, "~> 4.0"}` | BEAM applications, Phoenix apps | [Elixir API Reference](reference/api-elixir.md) |
+| **TypeScript/Node.js (Native)** <span class="version-badge">v4.0.0</span> | `npm install @kreuzberg/node` | **Node.js servers, command-line tools, native performance** | **[TypeScript API Reference](reference/api-typescript.md)** |
+| **WebAssembly (WASM)** <span class="version-badge">v4.0.0</span> | `npm install @kreuzberg/wasm` | **Browsers, Cloudflare Workers, Deno, serverless** | **[WASM API Reference](reference/api-wasm.md)** |
+| Java <span class="version-badge">v4.0.0</span> | `dev.kreuzberg:kreuzberg` (Maven) | Server-side Java, FFM API | [Java API Reference](reference/api-java.md) |
+| C# <span class="version-badge unreleased">Unreleased</span> | `dotnet add package Kreuzberg` | .NET applications, Windows servers | [C# API Reference](reference/api-csharp.md) |
+| PHP <span class="version-badge unreleased">Unreleased</span> | `kreuzberg/kreuzberg` (Composer) | PHP applications, ext-ffi | [PHP API Reference](reference/api-php.md) |
+| Ruby <span class="version-badge">v4.0.0</span> | `gem install kreuzberg` | Server-side, Rails applications | [Ruby API Reference](reference/api-ruby.md) |
+| Go <span class="version-badge">v4.0.0</span> | `go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest` | Server-side, systems tools | [Go API Reference](reference/api-go.md) |
+| Elixir <span class="version-badge">v4.0.0</span> | `{:kreuzberg, "~> 4.0"}` | BEAM applications, Phoenix apps | [Elixir API Reference](reference/api-elixir.md) |
 | Rust               | `cargo add kreuzberg` | System libraries, performance-critical | [Rust API Reference](reference/api-rust.md) |
 | CLI                | `brew install kreuzberg-dev/tap/kreuzberg` or `cargo install kreuzberg-cli` | Terminal automation, scripting | [CLI Usage](cli/usage.md) |
 | API Server / MCP   | Docker image `ghcr.io/kreuzberg-dev/kreuzberg:core` | Containerized services, MCP integration | [API Server Guide](guides/api-server.md) |

@@ -1,4 +1,4 @@
-# Configuration Reference
+# Configuration Reference <span class="version-badge">v4.0.0</span>
 
 This page provides complete documentation for all Kreuzberg configuration types and fields. For quick-start examples and common use cases, see the [Configuration Guide](../guides/configuration.md).
 

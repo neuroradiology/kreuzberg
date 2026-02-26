@@ -44,6 +44,8 @@ includes:
     internal: true
   benchmark:
     taskfile: .task/workflows/benchmark.yml
+  snippets:
+    taskfile: .task/workflows/snippets.yml
 
   version:
     taskfile: .task/tools/version-sync.yml

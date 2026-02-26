@@ -1,4 +1,4 @@
-# API Server
+# API Server <span class="version-badge">v4.0.0</span>
 
 Kreuzberg provides two server modes for programmatic access: an HTTP REST API server for general integration and a Model Context Protocol (MCP) server for AI agent integration.
 

@@ -421,7 +421,7 @@ pub struct ExtractionConfig {
 - `pages` (Option<PageConfig>): Page extraction and tracking. Default: None
 - `keywords` (Option<KeywordConfig>): Keyword extraction (requires `keywords-yake` or `keywords-rake`). Default: None
 - `postprocessor` (Option<PostProcessorConfig>): Post-processing configuration. Default: None
-- `html_options` (Option<ConversionOptions>): HTML conversion options (when feature `html`). Default: None
+- `html_options` (Option<[ConversionOptions](https://docs.html-to-markdown.kreuzberg.dev/reference/configuration/)>): HTML conversion options from [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev) (when feature `html`). Default: None
 - `max_concurrent_extractions` (Option<usize>): Max concurrent extractions in batch; None = (num_cpus × 1.5).ceil(). Default: None
 - `result_format` (types::OutputFormat): Result structure: Unified or ElementBased. Default: Unified
 - `output_format` (OutputFormat): Content format: Plain, Markdown, Djot, Html, or Structured. Default: Plain

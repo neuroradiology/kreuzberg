@@ -148,10 +148,6 @@ extra:
     - icon: fontawesome/brands/rust
       link: https://crates.io/crates/kreuzberg
       name: View on crates.io
-  version:
-    provider: mike
-    default: latest
-    alias: true
   status:
     new: Recently added
     deprecated: Deprecated

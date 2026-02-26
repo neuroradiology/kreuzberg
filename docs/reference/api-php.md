@@ -1,4 +1,4 @@
-# PHP API Reference
+# PHP API Reference <span class="version-badge unreleased">Unreleased</span>
 
 Complete reference for the Kreuzberg PHP API.
 
@@ -2410,7 +2410,7 @@ $result3 = $kreuzberg->extractFile('doc3.pdf');
 
 // Bad: Creating new config for each file
 foreach ($files as $file) {
-    $config = new ExtractionConfig(...);  // Wasteful
+    $config = new ExtractionConfig();  // Wasteful — recreating each iteration
     $result = (new Kreuzberg($config))->extractFile($file);
 }
 ```

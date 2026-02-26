@@ -503,7 +503,7 @@ Override configuration via environment variables:
 - `KREUZBERG_OCR_BACKEND`: OCR backend selection
 - `KREUZBERG_OCR_LANGUAGE`: OCR language
 
-## Plugin System
+## Plugin System <span class="version-badge">v4.0.0</span>
 
 ### Plugin Types
 
@@ -553,7 +553,7 @@ Automatic plugin discovery from:
 - Configuration files
 - Environment variables
 
-## Server Modes
+## Server Modes <span class="version-badge">v4.0.0</span>
 
 ### HTTP REST API Server
 
@@ -611,7 +611,7 @@ kreuzberg mcp
 }
 ```
 
-## AI Coding Assistants
+## AI Coding Assistants <span class="version-badge new">v4.2.15</span>
 
 Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants how to use the library correctly. Install it into any project with the [Vercel Skills CLI](https://github.com/vercel-labs/skills):
 
@@ -909,7 +909,7 @@ choco install tesseract
 - Ruby 4.0+ is fully supported with no code changes required
 - Native extension support
 
-## Docker Images
+## Docker Images <span class="version-badge">v4.0.0</span>
 
 Pre-built Docker images available on Docker Hub:
 

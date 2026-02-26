@@ -1,4 +1,4 @@
-# Java API Reference
+# Java API Reference <span class="version-badge">v4.0.0</span>
 
 Complete reference for the Kreuzberg Java bindings using Java 25+ Foreign Function & Memory API (FFM/Panama).
 

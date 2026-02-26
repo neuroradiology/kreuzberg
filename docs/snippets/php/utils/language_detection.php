@@ -56,12 +56,12 @@ if (!empty($detectedLanguages)) {
     $primaryLanguage = $detectedLanguages[0];
 
     match ($primaryLanguage) {
-        'en', 'eng' => echo "Processing as English document...\n",
-        'es', 'spa' => echo "Processing as Spanish document...\n",
-        'fr', 'fra' => echo "Processing as French document...\n",
-        'de', 'deu' => echo "Processing as German document...\n",
-        'zh', 'zho' => echo "Processing as Chinese document...\n",
-        default => echo "Processing as $primaryLanguage document...\n",
+        'en', 'eng' => print("Processing as English document...\n"),
+        'es', 'spa' => print("Processing as Spanish document...\n"),
+        'fr', 'fra' => print("Processing as French document...\n"),
+        'de', 'deu' => print("Processing as German document...\n"),
+        'zh', 'zho' => print("Processing as Chinese document...\n"),
+        default => print("Processing as $primaryLanguage document...\n"),
     };
 }
 

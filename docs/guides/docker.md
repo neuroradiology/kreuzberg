@@ -1,4 +1,4 @@
-# Docker Deployment
+# Docker Deployment <span class="version-badge">v4.0.0</span>
 
 Kreuzberg provides official Docker images built on a high-performance Rust core with Debian 13 (Trixie). Each image supports three execution modes through a flexible entrypoint pattern, enabling deployment as an API server, CLI tool, or MCP server.
 

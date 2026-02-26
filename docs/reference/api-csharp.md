@@ -1,4 +1,4 @@
-# C# API Reference
+# C# API Reference <span class="version-badge unreleased">Unreleased</span>
 
 Complete reference for the Kreuzberg .NET bindings using .NET 10.0 with P/Invoke interop.
 

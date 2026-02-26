@@ -814,7 +814,7 @@ def register_validator(validator: Any) -> None:
         RuntimeError: If registration with the Rust registry fails
 
     Example:
-        >>> from kreuzberg import register_validator
+        >>> from kreuzberg import register_validator, ExtractionResult
         >>> from kreuzberg.exceptions import ValidationError
         >>> class MinLengthValidator:
         ...     def name(self) -> str:

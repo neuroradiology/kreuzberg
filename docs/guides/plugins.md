@@ -1,4 +1,4 @@
-# Creating Plugins
+# Creating Plugins <span class="version-badge">v4.0.0</span>
 
 Kreuzberg's plugin system allows you to extend functionality by creating custom extractors, post-processors, OCR backends, and validators. Plugins can be written in Rust or Python.
 

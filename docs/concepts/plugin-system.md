@@ -1,4 +1,4 @@
-# Plugin System
+# Plugin System <span class="version-badge">v4.0.0</span>
 
 Kreuzberg's plugin system provides a flexible, type-safe way to extend functionality across language boundaries. The architecture supports four distinct plugin types, each with specific responsibilities in the extraction pipeline.
 

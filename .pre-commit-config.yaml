@@ -66,6 +66,7 @@ repos:
             "--allow-dirty",
             "--allow-staged",
             "--workspace",
+            "--exclude=kreuzberg-php",
             "--all-features",
             "--all-targets",
             "--",

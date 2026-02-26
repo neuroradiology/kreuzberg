@@ -309,8 +309,13 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 					throw new Error("Invalid image structure");
 				}
 				const img = image as Record<string, unknown>;
-				if (!(img.data instanceof Uint8Array)) {
-					throw new Error("Invalid image: data must be Uint8Array");
+				let imageData: Uint8Array;
+				if (img.data instanceof Uint8Array) {
+					imageData = img.data;
+				} else if (Array.isArray(img.data)) {
+					imageData = new Uint8Array(img.data as number[]);
+				} else {
+					throw new Error("Invalid image: data must be Uint8Array or array");
 				}
 				if (typeof img.format !== "string") {
 					throw new Error("Invalid image: missing format");
@@ -351,7 +356,7 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 				}
 
 				return {
-					data: img.data,
+					data: imageData,
 					format: img.format,
 					imageIndex: imageIndex,
 					pageNumber: pageNumber ?? null,

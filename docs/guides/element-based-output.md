@@ -1,4 +1,4 @@
-# Element-Based Output
+# Element-Based Output <span class="version-badge">v4.1.0</span>
 
 ## Overview
 

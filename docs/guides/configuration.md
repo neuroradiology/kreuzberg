@@ -1,4 +1,4 @@
-# Configuration Guide
+# Configuration Guide <span class="version-badge">v4.0.0</span>
 
 For complete configuration field documentation, see [Configuration Reference](../reference/configuration.md).
 

@@ -1381,3 +1381,52 @@ body:has(.full-width-iframe) article {
 	max-width: none !important;
 	margin: 0 !important;
 }
+
+/* Version badges */
+.version-badge {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	font-family: Inter, sans-serif;
+	line-height: 1;
+	padding: 0.2em 0.6em;
+	border-radius: 999px;
+	vertical-align: middle;
+	background-color: #e0e0e0;
+	color: #323040;
+}
+
+[data-md-color-scheme="slate"] .version-badge {
+	background-color: #3c3a4a;
+	color: #ffffff;
+}
+
+.version-badge.unreleased {
+	background-color: #fff3cd;
+	color: #856404;
+}
+
+[data-md-color-scheme="slate"] .version-badge.unreleased {
+	background-color: #5c4a1e;
+	color: #ffc107;
+}
+
+.version-badge.deprecated {
+	background-color: #f8d7da;
+	color: #842029;
+}
+
+[data-md-color-scheme="slate"] .version-badge.deprecated {
+	background-color: #4a1e22;
+	color: #f87171;
+}
+
+.version-badge.new {
+	background-color: #d1e7dd;
+	color: #0f5132;
+}
+
+[data-md-color-scheme="slate"] .version-badge.new {
+	background-color: #1e4a2e;
+	color: #50fa7b;
+}

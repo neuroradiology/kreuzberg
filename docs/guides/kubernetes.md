@@ -1,4 +1,4 @@
-# Kubernetes Deployment
+# Kubernetes Deployment <span class="version-badge new">v4.2.2</span>
 
 Deploy Kreuzberg to Kubernetes with proper OCR configuration, permissions, and observability.
 

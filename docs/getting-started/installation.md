@@ -78,7 +78,7 @@ PyPI wheels include precompiled binaries for Linux (x86_64, aarch64), macOS (App
 
 Next steps: [Python Quick Start](quickstart.md) • [Python API Reference](../reference/api-python.md)
 
-## TypeScript (Node.js / Bun) - Native
+## TypeScript (Node.js / Bun) - Native <span class="version-badge">v4.0.0</span>
 
 Use `@kreuzberg/node` for server-side TypeScript/Node.js applications requiring maximum performance.
 
@@ -110,7 +110,7 @@ This ensures the platform-specific optional dependencies are installed correctly
 
 Next steps: [TypeScript Quick Start](../guides/extraction.md#typescript-nodejs) • [TypeScript API Reference](../reference/api-typescript.md)
 
-## TypeScript/JavaScript (Browser / Edge) - WASM
+## TypeScript/JavaScript (Browser / Edge) - WASM <span class="version-badge">v4.0.0</span>
 
 Use `@kreuzberg/wasm` for client-side JavaScript applications, serverless environments, and runtimes where native binaries are unavailable or undesirable.
 
@@ -232,7 +232,7 @@ WASM bindings work in:
 
 Next steps: [WASM Quick Start](quickstart.md#basic-extraction) • [WASM API Reference](../reference/api-wasm.md)
 
-## Ruby
+## Ruby <span class="version-badge">v4.0.0</span>
 
 ```bash title="Terminal"
 gem install kreuzberg
@@ -248,7 +248,7 @@ Native extension builds require Ruby 3.2.0 or higher (including Ruby 4.x) plus M
 
 Next steps: [Ruby Quick Start](../guides/extraction.md#ruby) • [Ruby API Reference](../reference/api-ruby.md)
 
-## R
+## R <span class="version-badge unreleased">Unreleased</span>
 
 Install from r-universe:
 
@@ -289,7 +289,7 @@ cargo add kreuzberg --features "excel stopwords ocr"
 
 Next steps: [Rust API Reference](../reference/api-rust.md)
 
-## C / C++
+## C / C++ <span class="version-badge unreleased">Unreleased</span>
 
 Build the FFI library from source:
 
@@ -316,7 +316,7 @@ On macOS, add `-framework CoreFoundation -framework Security` to `LDFLAGS`. On W
 
 Next steps: [C API Reference](../reference/api-c.md)
 
-## Elixir
+## Elixir <span class="version-badge">v4.0.0</span>
 
 Add Kreuzberg to your `mix.exs`:
 
@@ -342,7 +342,7 @@ Precompiled NIF binaries for Linux (x86_64, aarch64), macOS (Apple Silicon), and
 
 Next steps: [Elixir Quick Start](quickstart.md) • [Elixir API Reference](../reference/api-elixir.md)
 
-## Java
+## Java <span class="version-badge">v4.0.0</span>
 
 Add to Maven `pom.xml`:
 
@@ -368,7 +368,7 @@ View on [Maven Central](https://central.sonatype.com/artifact/dev.kreuzberg/kreu
 
 Next steps: [Java Quick Start](quickstart.md) • [Java API Reference](../reference/api-java.md)
 
-## Go
+## Go <span class="version-badge">v4.0.0</span>
 
 ```bash title="Terminal"
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
@@ -382,7 +382,7 @@ For external projects, download pre-built static libraries from [GitHub Releases
 
 Next steps: [Go Quick Start](quickstart.md) • [Go API Reference](../reference/api-go.md)
 
-## PHP
+## PHP <span class="version-badge unreleased">Unreleased</span>
 
 ```bash title="Terminal"
 composer require kreuzberg/kreuzberg
@@ -394,7 +394,7 @@ The package includes prebuilt native extensions for Linux (x86_64, aarch64), mac
 
 Next steps: [PHP Quick Start](quickstart.md) • [PHP API Reference](../reference/api-php.md)
 
-## C# / .NET
+## C# / .NET <span class="version-badge unreleased">Unreleased</span>
 
 ```bash title="Terminal"
 dotnet add package Kreuzberg

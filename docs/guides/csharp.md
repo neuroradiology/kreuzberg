@@ -1,4 +1,4 @@
-# C# Bindings for Kreuzberg
+# C# Bindings for Kreuzberg <span class="version-badge unreleased">Unreleased</span>
 
 High-performance document intelligence for .NET applications. Extract text, metadata, and structured information from PDFs, Office documents, images, and 75+ formats.
 

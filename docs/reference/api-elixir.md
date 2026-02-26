@@ -1,4 +1,4 @@
-# Elixir API Reference
+# Elixir API Reference <span class="version-badge">v4.0.0</span>
 
 Complete reference for the Kreuzberg Elixir API.
 
