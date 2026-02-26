@@ -1118,8 +1118,11 @@ Installation instructions:
         // Help the linker find leptonica during try_compile checks
         config.define("CMAKE_EXE_LINKER_FLAGS", format!("-L{}", leptonica_lib_dir.display()));
 
+        // TESSERACT_WASM_NOOP_MUTEX: Replace std::mutex with no-op stubs in WASM builds.
+        // The wasm32-wasi-threads libc++ provides std::mutex that uses memory.atomic.wait32,
+        // which deadlocks in single-threaded WASM environments (no SharedArrayBuffer).
         let mut cxx_flags = String::from(
-            "-DTESSERACT_IMAGEDATA_AS_PIX -fno-exceptions -pthread -D_WASI_EMULATED_PROCESS_CLOCKS -D_WASI_EMULATED_SIGNAL ",
+            "-DTESSERACT_IMAGEDATA_AS_PIX -DTESSERACT_WASM_NOOP_MUTEX -fno-exceptions -pthread -D_WASI_EMULATED_PROCESS_CLOCKS -D_WASI_EMULATED_SIGNAL ",
         );
         if enable_simd {
             cxx_flags.push_str("-msimd128 ");

@@ -252,10 +252,7 @@ export async function enableOcr(): Promise<void> {
  * - name() returns "tesseract" (matching the default OcrConfig.backend value)
  * - processImage() returns a JSON string (not an object)
  */
-function registerBackendInRustRegistry(
-	wasm: ReturnType<typeof getWasmModule>,
-	backend: OcrBackendProtocol,
-): void {
+function registerBackendInRustRegistry(wasm: ReturnType<typeof getWasmModule>, backend: OcrBackendProtocol): void {
 	const registerFn = wasm?.register_ocr_backend;
 	if (!registerFn) {
 		return;

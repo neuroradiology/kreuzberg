@@ -1277,6 +1277,8 @@ impl TesseractAPI {
         // 4. All strings in config_ptrs outlive the FFI call
         // 5. config_ptrs.len() is the correct count
         // 6. oem is a user-provided integer
+        // 7. null pointers for vars_vec/vars_values with size 0 is valid (no variable overrides)
+        // 8. set_only_non_debug_params=0 (FALSE) means apply all params
         let result = unsafe {
             TessBaseAPIInit4(
                 *handle,
@@ -1285,6 +1287,10 @@ impl TesseractAPI {
                 oem,
                 config_ptr_ptrs.as_ptr(),
                 config_ptrs.len() as c_int,
+                std::ptr::null(),
+                std::ptr::null(),
+                0,
+                0,
             )
         };
         if result != 0 {
@@ -1323,6 +1329,8 @@ impl TesseractAPI {
         // 5. All pointers (data, language, configs) outlive the FFI call
         // 6. data_size and oem are user-provided integers
         // 7. The caller is responsible for ensuring data_size matches the actual data length
+        // 8. null pointers for vars_vec/vars_values with size 0 is valid (no variable overrides)
+        // 9. set_only_non_debug_params=0 (FALSE) means apply all params
         let result = unsafe {
             TessBaseAPIInit5(
                 *handle,
@@ -1332,6 +1340,10 @@ impl TesseractAPI {
                 oem,
                 config_ptr_ptrs.as_ptr(),
                 config_ptrs.len() as c_int,
+                std::ptr::null(),
+                std::ptr::null(),
+                0,
+                0,
             )
         };
         if result != 0 {
@@ -1769,6 +1781,10 @@ unsafe extern "C" {
         oem: c_int,
         configs: *const *const c_char,
         configs_size: c_int,
+        vars_vec: *const *const c_char,
+        vars_values: *const *const c_char,
+        vars_vec_size: usize,
+        set_only_non_debug_params: c_int,
     ) -> c_int;
     fn TessBaseAPIInit5(
         handle: *mut c_void,
@@ -1778,6 +1794,10 @@ unsafe extern "C" {
         oem: c_int,
         configs: *const *const c_char,
         configs_size: c_int,
+        vars_vec: *const *const c_char,
+        vars_values: *const *const c_char,
+        vars_vec_size: usize,
+        set_only_non_debug_params: c_int,
     ) -> c_int;
     fn TessBaseAPISetImage(
         handle: *mut c_void,
