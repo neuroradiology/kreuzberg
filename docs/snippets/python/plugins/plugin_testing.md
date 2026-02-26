@@ -9,6 +9,6 @@ def test_custom_extractor() -> None:
     result: ExtractionResult = extractor.extract_bytes(
         json_data, "application/json", config
     )
-    assert "Hello, world!" in result["content"]
-    assert result["mime_type"] == "application/json"
+    assert "Hello, world!" in result.content
+    assert result.mime_type == "application/json"
 ```

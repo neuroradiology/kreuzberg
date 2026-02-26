@@ -12,12 +12,12 @@ class WordCountProcessor:
         return "early"
 
     def process(self, result: ExtractionResult) -> ExtractionResult:
-        word_count: int = len(result["content"].split())
-        result["metadata"]["word_count"] = word_count
+        word_count: int = len(result.content.split())
+        result.metadata["word_count"] = word_count
         return result
 
     def should_process(self, result: ExtractionResult) -> bool:
-        return bool(result["content"])
+        return bool(result.content)
 
     def initialize(self) -> None:
         pass

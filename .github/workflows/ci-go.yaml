@@ -599,6 +599,12 @@ jobs:
           PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
           GO_TEST_FLAGS: ${{ runner.os == 'Windows' && '-ldflags=-linkmode=external -extldflags=-Wl,--verbose' || '' }}
 
+      - name: Install golangci-lint
+        shell: bash
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" v2.9.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
       - name: Generate Go E2E tests
         shell: bash
         run: |

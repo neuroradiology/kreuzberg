@@ -778,9 +778,9 @@ def register_post_processor(processor: Any) -> None:
         ...     def processing_stage(self) -> str:
         ...         return "early"
         ...
-        ...     def process(self, result: dict) -> dict:
+        ...     def process(self, result: ExtractionResult) -> ExtractionResult:
         ...         entities = {"PERSON": ["John Doe"], "ORG": ["Microsoft"]}
-        ...         result["metadata"]["entities"] = entities
+        ...         result.metadata["entities"] = entities
         ...         return result
         >>> register_post_processor(EntityExtractor())
     """
@@ -823,8 +823,8 @@ def register_validator(validator: Any) -> None:
         ...     def priority(self) -> int:
         ...         return 100
         ...
-        ...     def validate(self, result: dict) -> None:
-        ...         if len(result["content"]) < 100:
+        ...     def validate(self, result: ExtractionResult) -> None:
+        ...         if len(result.content) < 100:
         ...             raise ValidationError(f"Content too short")
         >>> register_validator(MinLengthValidator())
     """

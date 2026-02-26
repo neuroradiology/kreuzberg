@@ -5,7 +5,6 @@
 
 use async_trait::async_trait;
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 use std::sync::Arc;
 
 use kreuzberg::core::config::ExtractionConfig;
@@ -14,7 +13,9 @@ use kreuzberg::plugins::{Plugin, Validator};
 use kreuzberg::types::ExtractionResult;
 use kreuzberg::{KreuzbergError, Result};
 
-use super::common::{json_value_to_py, validate_plugin_object};
+use crate::types::ExtractionResult as PyExtractionResult;
+
+use super::common::validate_plugin_object;
 
 /// Wrapper that makes a Python Validator usable from Rust.
 ///
@@ -127,13 +128,21 @@ impl Validator for PythonValidator {
             Python::attach(|py| {
                 let obj = self.python_obj.bind(py);
 
-                let result_dict = extraction_result_to_dict(py, result).map_err(|e| KreuzbergError::Plugin {
-                    message: format!("Failed to convert ExtractionResult to Python dict: {}", e),
+                // Convert Rust ExtractionResult to Python ExtractionResult class instance
+                let py_extraction_result =
+                    PyExtractionResult::from_rust(result.clone(), py, None, None).map_err(|e| {
+                        KreuzbergError::Plugin {
+                            message: format!("Failed to convert ExtractionResult to Python: {}", e),
+                            plugin_name: validator_name.clone(),
+                        }
+                    })?;
+
+                let py_result_obj = Py::new(py, py_extraction_result).map_err(|e| KreuzbergError::Plugin {
+                    message: format!("Failed to create Python ExtractionResult: {}", e),
                     plugin_name: validator_name.clone(),
                 })?;
 
-                let py_result = result_dict.bind(py);
-                obj.call_method1("validate", (py_result,)).map_err(|e| {
+                obj.call_method1("validate", (py_result_obj,)).map_err(|e| {
                     let is_validation_error = e.is_instance_of::<pyo3::exceptions::PyValueError>(py)
                         || e.get_type(py)
                             .name()
@@ -180,9 +189,10 @@ impl Validator for PythonValidator {
                 .unwrap_or(false);
 
             if has_should_validate {
-                let result_dict = extraction_result_to_dict(py, result).ok()?;
-                let py_result = result_dict.bind(py);
-                obj.call_method1("should_validate", (py_result,))
+                let py_extraction_result =
+                    PyExtractionResult::from_rust(result.clone(), py, None, None).ok()?;
+                let py_result_obj = Py::new(py, py_extraction_result).ok()?;
+                obj.call_method1("should_validate", (py_result_obj,))
                     .and_then(|v| v.extract::<bool>())
                     .ok()
             } else {
@@ -195,69 +205,6 @@ impl Validator for PythonValidator {
     fn priority(&self) -> i32 {
         self.priority
     }
-}
-
-/// Convert Rust ExtractionResult to Python dict.
-///
-/// This creates a Python dict that can be passed to Python validators:
-/// ```python
-/// {
-///     "content": "extracted text",
-///     "mime_type": "application/pdf",
-///     "metadata": {"key": "value"},
-///     "tables": [...]
-/// }
-/// ```
-fn extraction_result_to_dict(py: Python<'_>, result: &ExtractionResult) -> PyResult<Py<PyDict>> {
-    let dict = PyDict::new(py);
-
-    dict.set_item("content", &result.content)?;
-
-    dict.set_item("mime_type", &result.mime_type)?;
-
-    let metadata_dict = PyDict::new(py);
-
-    if let Some(title) = &result.metadata.title {
-        metadata_dict.set_item("title", title)?;
-    }
-    if let Some(subject) = &result.metadata.subject {
-        metadata_dict.set_item("subject", subject)?;
-    }
-    if let Some(authors) = &result.metadata.authors {
-        metadata_dict.set_item("authors", authors)?;
-    }
-    if let Some(keywords) = &result.metadata.keywords {
-        metadata_dict.set_item("keywords", keywords)?;
-    }
-    if let Some(language) = &result.metadata.language {
-        metadata_dict.set_item("language", language)?;
-    }
-    if let Some(created_at) = &result.metadata.created_at {
-        metadata_dict.set_item("created_at", created_at)?;
-    }
-    if let Some(modified_at) = &result.metadata.modified_at {
-        metadata_dict.set_item("modified_at", modified_at)?;
-    }
-    if let Some(created_by) = &result.metadata.created_by {
-        metadata_dict.set_item("created_by", created_by)?;
-    }
-    if let Some(modified_by) = &result.metadata.modified_by {
-        metadata_dict.set_item("modified_by", modified_by)?;
-    }
-    if let Some(created_at) = &result.metadata.created_at {
-        metadata_dict.set_item("created_at", created_at)?;
-    }
-
-    for (key, value) in &result.metadata.additional {
-        let py_value = json_value_to_py(py, value)?;
-        metadata_dict.set_item(key, py_value)?;
-    }
-
-    dict.set_item("metadata", metadata_dict)?;
-
-    dict.set_item("tables", pyo3::types::PyList::empty(py))?;
-
-    Ok(dict.unbind())
 }
 
 /// Register a Python Validator with the Rust core.
@@ -275,11 +222,11 @@ fn extraction_result_to_dict(py: Python<'_>, result: &ExtractionResult) -> PyRes
 ///
 /// The Python validator must implement:
 /// - `name() -> str` - Return validator name
-/// - `validate(result: dict) -> None` - Validate the extraction result (raise error to fail)
+/// - `validate(result: ExtractionResult) -> None` - Validate the extraction result (raise error to fail)
 ///
 /// # Optional Methods
 ///
-/// - `should_validate(result: dict) -> bool` - Check if validator should run (defaults to True)
+/// - `should_validate(result: ExtractionResult) -> bool` - Check if validator should run (defaults to True)
 /// - `priority() -> int` - Return priority (defaults to 50, higher runs first)
 /// - `initialize()` - Called when validator is registered
 /// - `shutdown()` - Called when validator is unregistered
@@ -288,7 +235,7 @@ fn extraction_result_to_dict(py: Python<'_>, result: &ExtractionResult) -> PyRes
 /// # Example
 ///
 /// ```python
-/// from kreuzberg import register_validator
+/// from kreuzberg import register_validator, ExtractionResult
 /// from kreuzberg.exceptions import ValidationError
 ///
 /// class MinLengthValidator:
@@ -298,10 +245,10 @@ fn extraction_result_to_dict(py: Python<'_>, result: &ExtractionResult) -> PyRes
 ///     def priority(self) -> int:
 ///         return 100  # Run early
 ///
-///     def validate(self, result: dict) -> None:
-///         if len(result["content"]) < 100:
+///     def validate(self, result: ExtractionResult) -> None:
+///         if len(result.content) < 100:
 ///             raise ValidationError(
-///                 f"Content too short: {len(result['content'])} < 100 characters"
+///                 f"Content too short: {len(result.content)} < 100 characters"
 ///             )
 ///
 /// register_validator(MinLengthValidator())
@@ -358,7 +305,7 @@ pub fn register_validator(py: Python<'_>, validator: Py<PyAny>) -> PyResult<()> 
 ///     def name(self) -> str:
 ///         return "my_validator"
 ///
-///     def validate(self, result: dict) -> None:
+///     def validate(self, result: ExtractionResult) -> None:
 ///         pass
 ///
 /// register_validator(MyValidator())
@@ -433,7 +380,7 @@ pub fn clear_validators(py: Python<'_>) -> PyResult<()> {
 ///     def name(self) -> str:
 ///         return "my_validator"
 ///
-///     def validate(self, result: dict) -> None:
+///     def validate(self, result: ExtractionResult) -> None:
 ///         pass
 ///
 /// # Register validator

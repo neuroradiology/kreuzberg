@@ -1,5 +1,6 @@
 ```python title="Python"
 import threading
+from kreuzberg import ExtractionResult
 
 class StatefulPlugin:
     def __init__(self):
@@ -13,10 +14,10 @@ class StatefulPlugin:
     def version(self) -> str:
         return "1.0.0"
 
-    def process(self, result: dict) -> dict:
+    def process(self, result: ExtractionResult) -> ExtractionResult:
         with self.lock:
             self.call_count += 1
-            self.cache["last_mime"] = result["mime_type"]
+            self.cache["last_mime"] = result.mime_type
         return result
 
     def initialize(self) -> None:

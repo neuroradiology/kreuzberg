@@ -12,7 +12,7 @@ class PdfOnlyProcessor:
         return result
 
     def should_process(self, result: ExtractionResult) -> bool:
-        return result["mime_type"] == "application/pdf"
+        return result.mime_type == "application/pdf"
 
 processor: PdfOnlyProcessor = PdfOnlyProcessor()
 register_post_processor(processor)

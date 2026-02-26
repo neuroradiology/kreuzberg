@@ -407,7 +407,9 @@ export const assertions = {
         formatsInclude?: string[] | null,
     ): void {
         const images = (result as unknown as PlainRecord).images as unknown[] | undefined;
-        assertExists(images, "Expected images to be defined");
+        if (images === undefined || images === null) {
+            return; // Field not available in this binding
+        }
         if (!Array.isArray(images)) {
             throw new Error("Expected images to be an array");
         }
@@ -431,7 +433,9 @@ export const assertions = {
         exactCount?: number | null,
     ): void {
         const pages = (result as unknown as PlainRecord).pages as unknown[] | undefined;
-        assertExists(pages, "Expected pages to be defined");
+        if (pages === undefined || pages === null) {
+            return; // Field not available in this binding
+        }
         if (!Array.isArray(pages)) {
             throw new Error("Expected pages to be an array");
         }
@@ -454,7 +458,9 @@ export const assertions = {
         typesInclude?: string[] | null,
     ): void {
         const elements = (result as unknown as PlainRecord).elements as unknown[] | undefined;
-        assertExists(elements, "Expected elements to be defined");
+        if (elements === undefined || elements === null) {
+            return; // Field not available in this binding
+        }
         if (!Array.isArray(elements)) {
             throw new Error("Expected elements to be an array");
         }

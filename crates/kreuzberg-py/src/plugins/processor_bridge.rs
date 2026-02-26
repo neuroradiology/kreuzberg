@@ -14,7 +14,9 @@ use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
 use kreuzberg::types::ExtractionResult;
 use kreuzberg::{KreuzbergError, Result};
 
-use super::common::{json_value_to_py, python_to_json, validate_plugin_object};
+use crate::types::ExtractionResult as PyExtractionResult;
+
+use super::common::{python_to_json, validate_plugin_object};
 
 /// Wrapper that makes a Python PostProcessor usable from Rust.
 ///
@@ -133,26 +135,29 @@ impl PostProcessor for PythonPostProcessor {
             Python::attach(|py| {
                 let obj = self.python_obj.bind(py);
 
-                let result_dict = extraction_result_to_dict(py, result).map_err(|e| KreuzbergError::Plugin {
-                    message: format!("Failed to convert ExtractionResult to Python dict: {}", e),
+                // Convert Rust ExtractionResult to Python ExtractionResult class instance
+                let py_extraction_result =
+                    PyExtractionResult::from_rust(result.clone(), py, None, None).map_err(|e| {
+                        KreuzbergError::Plugin {
+                            message: format!("Failed to convert ExtractionResult to Python: {}", e),
+                            plugin_name: processor_name.clone(),
+                        }
+                    })?;
+
+                let py_result_obj = Py::new(py, py_extraction_result).map_err(|e| KreuzbergError::Plugin {
+                    message: format!("Failed to create Python ExtractionResult: {}", e),
                     plugin_name: processor_name.clone(),
                 })?;
 
-                let py_result = result_dict.bind(py);
                 let processed = obj
-                    .call_method1("process", (py_result,))
+                    .call_method1("process", (py_result_obj,))
                     .map_err(|e| KreuzbergError::Plugin {
                         message: format!("Python PostProcessor '{}' failed during process: {}", processor_name, e),
                         plugin_name: processor_name.clone(),
                     })?;
 
-                let processed_dict = processed.cast_into::<PyDict>().map_err(|e| KreuzbergError::Plugin {
-                    message: format!("PostProcessor did not return a dict: {}", e),
-                    plugin_name: processor_name.clone(),
-                })?;
-
                 let mut updated_result = result.clone();
-                merge_dict_to_extraction_result(py, &processed_dict, &mut updated_result)?;
+                merge_processed_result(py, &processed, &mut updated_result)?;
 
                 Ok::<ExtractionResult, KreuzbergError>(updated_result)
             })
@@ -167,67 +172,45 @@ impl PostProcessor for PythonPostProcessor {
     }
 }
 
-/// Convert Rust ExtractionResult to Python dict.
+/// Merge a processed Python result back into a Rust ExtractionResult.
 ///
-/// This creates a Python dict that can be passed to Python processors:
-/// ```python
-/// {
-///     "content": "extracted text",
-///     "mime_type": "application/pdf",
-///     "metadata": {"key": "value"},
-///     "tables": [...]
-/// }
-/// ```
-fn extraction_result_to_dict(py: Python<'_>, result: &ExtractionResult) -> PyResult<Py<PyDict>> {
-    let dict = PyDict::new(py);
-
-    dict.set_item("content", &result.content)?;
-
-    dict.set_item("mime_type", &result.mime_type)?;
-
-    let metadata_dict = PyDict::new(py);
-
-    if let Some(title) = &result.metadata.title {
-        metadata_dict.set_item("title", title)?;
-    }
-    if let Some(subject) = &result.metadata.subject {
-        metadata_dict.set_item("subject", subject)?;
-    }
-    if let Some(authors) = &result.metadata.authors {
-        metadata_dict.set_item("authors", authors)?;
-    }
-    if let Some(keywords) = &result.metadata.keywords {
-        metadata_dict.set_item("keywords", keywords)?;
-    }
-    if let Some(language) = &result.metadata.language {
-        metadata_dict.set_item("language", language)?;
-    }
-    if let Some(created_at) = &result.metadata.created_at {
-        metadata_dict.set_item("created_at", created_at)?;
-    }
-    if let Some(modified_at) = &result.metadata.modified_at {
-        metadata_dict.set_item("modified_at", modified_at)?;
-    }
-    if let Some(created_by) = &result.metadata.created_by {
-        metadata_dict.set_item("created_by", created_by)?;
-    }
-    if let Some(modified_by) = &result.metadata.modified_by {
-        metadata_dict.set_item("modified_by", modified_by)?;
-    }
-    if let Some(created_at) = &result.metadata.created_at {
-        metadata_dict.set_item("created_at", created_at)?;
+/// Supports both ExtractionResult class instances (attribute access) and
+/// plain dicts (dict-style access) for backward compatibility.
+fn merge_processed_result(py: Python<'_>, processed: &Bound<'_, PyAny>, result: &mut ExtractionResult) -> Result<()> {
+    // If processor returned a dict, use dict-style access for backward compatibility
+    if let Ok(dict) = processed.cast::<PyDict>() {
+        return merge_dict_to_extraction_result(py, dict, result);
     }
 
-    for (key, value) in &result.metadata.additional {
-        let py_value = json_value_to_py(py, value)?;
-        metadata_dict.set_item(key, py_value)?;
+    // Use attribute access (ExtractionResult or duck-typed object)
+    if let Ok(content) = processed.getattr("content")
+        && !content.is_none()
+    {
+        result.content = content.extract().map_err(|e| KreuzbergError::Plugin {
+            message: format!("PostProcessor returned invalid 'content': {}", e),
+            plugin_name: "python".to_string(),
+        })?;
     }
 
-    dict.set_item("metadata", metadata_dict)?;
+    if let Ok(metadata) = processed.getattr("metadata")
+        && !metadata.is_none()
+        && let Ok(meta_dict) = metadata.cast::<PyDict>()
+    {
+        for (key, value) in meta_dict.iter() {
+            let key_str: String = key.extract().map_err(|_| KreuzbergError::Plugin {
+                message: "Metadata keys must be strings".to_string(),
+                plugin_name: "python".to_string(),
+            })?;
 
-    dict.set_item("tables", pyo3::types::PyList::empty(py))?;
+            let json_value = python_to_json(&value)?;
+            result
+                .metadata
+                .additional
+                .insert(std::borrow::Cow::Owned(key_str), json_value);
+        }
+    }
 
-    Ok(dict.unbind())
+    Ok(())
 }
 
 /// Merge Python dict back into ExtractionResult.
@@ -288,7 +271,7 @@ fn merge_dict_to_extraction_result(
 ///
 /// The Python processor must implement:
 /// - `name() -> str` - Return processor name
-/// - `process(result: dict) -> dict` - Process and enrich the extraction result
+/// - `process(result: ExtractionResult) -> ExtractionResult` - Process and enrich the extraction result
 ///
 /// # Optional Methods
 ///
@@ -300,7 +283,7 @@ fn merge_dict_to_extraction_result(
 /// # Example
 ///
 /// ```python
-/// from kreuzberg import register_post_processor
+/// from kreuzberg import register_post_processor, ExtractionResult
 ///
 /// class EntityExtractor:
 ///     def name(self) -> str:
@@ -309,10 +292,10 @@ fn merge_dict_to_extraction_result(
 ///     def processing_stage(self) -> str:
 ///         return "early"
 ///
-///     def process(self, result: dict) -> dict:
-///         # Extract entities from result["content"]
+///     def process(self, result: ExtractionResult) -> ExtractionResult:
+///         # Extract entities from result.content
 ///         entities = {"PERSON": ["John Doe"], "ORG": ["Microsoft"]}
-///         result["metadata"]["entities"] = entities
+///         result.metadata["entities"] = entities
 ///         return result
 ///
 /// register_post_processor(EntityExtractor())
@@ -369,7 +352,7 @@ pub fn register_post_processor(py: Python<'_>, processor: Py<PyAny>) -> PyResult
 ///     def name(self) -> str:
 ///         return "my_processor"
 ///
-///     def process(self, result: dict) -> dict:
+///     def process(self, result: ExtractionResult) -> ExtractionResult:
 ///         return result
 ///
 /// register_post_processor(MyProcessor())
@@ -444,7 +427,7 @@ pub fn clear_post_processors(py: Python<'_>) -> PyResult<()> {
 ///     def name(self) -> str:
 ///         return "my_processor"
 ///
-///     def process(self, result: dict) -> dict:
+///     def process(self, result: ExtractionResult) -> ExtractionResult:
 ///         return result
 ///
 /// # Register processor

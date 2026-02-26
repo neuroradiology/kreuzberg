@@ -21,11 +21,11 @@ class PdfMetadataExtractor:
         return "early"
 
     def should_process(self, result: ExtractionResult) -> bool:
-        return result["mime_type"] == "application/pdf"
+        return result.mime_type == "application/pdf"
 
     def process(self, result: ExtractionResult) -> ExtractionResult:
         self.processed_count += 1
-        result["metadata"]["pdf_processed"] = True
+        result.metadata["pdf_processed"] = True
         return result
 
     def initialize(self) -> None:

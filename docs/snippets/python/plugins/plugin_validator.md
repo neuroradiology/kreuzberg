@@ -14,8 +14,8 @@ class MinLengthValidator:
         return "1.0.0"
 
     def validate(self, result: ExtractionResult) -> None:
-        if len(result["content"]) < 50:
-            raise ValidationError(f"Content too short: {len(result['content'])}")
+        if len(result.content) < 50:
+            raise ValidationError(f"Content too short: {len(result.content)}")
 
     def should_validate(self, result: ExtractionResult) -> bool:
         return True
