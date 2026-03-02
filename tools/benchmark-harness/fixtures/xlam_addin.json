@@ -7,5 +7,9 @@
 		"description": "Excel macro-enabled add-in file with spreadsheet data (XLAM extension)",
 		"category": "spreadsheet",
 		"size_class": "small"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/xlam/data-with-macros.txt",
+		"source": "kreuzberg"
 	}
 }

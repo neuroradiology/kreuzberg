@@ -7,5 +7,9 @@
 		"description": "Excel add-in file with spreadsheet data (XLA extension)",
 		"category": "spreadsheet",
 		"size_class": "small"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/xla/data-with-macros.txt",
+		"source": "kreuzberg"
 	}
 }
