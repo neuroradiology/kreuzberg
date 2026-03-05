@@ -679,43 +679,43 @@ Result object returned by all extraction functions.
 
 ```typescript title="TypeScript"
 interface ExtractionResult {
-  content: string;
-  mimeType: string;
-  metadata: Metadata;
-  tables: Table[];
-  detectedLanguages: string[] | null;
-  chunks?: Chunk[];
-  images?: ExtractedImage[];
-  pages?: PageContent[];
-  elements?: Element[];
-  ocrElements?: OcrElement[];
-  document?: DocumentStructure | null;
-  djotContent?: DjotContent | null;
-  extractedKeywords?: ExtractedKeyword[];
-  qualityScore?: number;
-  processingWarnings: ProcessingWarning[];
   annotations?: PdfAnnotation[];
+  chunks?: Chunk[];
+  content: string;
+  detectedLanguages: string[] | null;
+  djotContent?: DjotContent | null;
+  document?: DocumentStructure | null;
+  elements?: Element[];
+  extractedKeywords?: ExtractedKeyword[];
+  images?: ExtractedImage[];
+  metadata: Metadata;
+  mimeType: string;
+  ocrElements?: OcrElement[];
+  pages?: PageContent[];
+  processingWarnings: ProcessingWarning[];
+  qualityScore?: number;
+  tables: Table[];
 }
 ```
 
 **Fields:**
 
-- `content` (string): Extracted text content
-- `mimeType` (string): MIME type of the processed document
-- `metadata` (Metadata): Document metadata (format-specific fields, uses `snake_case` keys)
-- `tables` (Table[]): Array of extracted tables
-- `detectedLanguages` (string[] | null): Array of detected language codes (ISO 639-1) if language detection is enabled
-- `chunks` (Chunk[] | undefined): Text chunks if chunking is enabled
-- `images` (ExtractedImage[] | undefined): Extracted images if enabled
-- `pages` (PageContent[] | undefined): Per-page extracted content when page extraction is enabled via `PageConfig.extractPages = true`
-- `elements` (Element[] | undefined): Semantic elements (headings, paragraphs, etc.)
-- `ocrElements` (OcrElement[] | undefined): Granular OCR text blocks with bounding boxes
-- `document` (DocumentStructure | null): Hierarchical document structure
-- `djotContent` (DjotContent | null): Rich structural markup
-- `extractedKeywords` (ExtractedKeyword[] | undefined): Extracted keywords (RAKE/YAKE)
-- `qualityScore` (number | undefined): Document quality estimation score
-- `processingWarnings` (ProcessingWarning[]): Non-fatal warnings encountered during extraction
 - `annotations` (PdfAnnotation[] | undefined): Extracted PDF annotations and highlights
+- `chunks` (Chunk[] | undefined): Text chunks if chunking is enabled
+- `content` (string): Extracted text content
+- `detectedLanguages` (string[] | null): Array of detected language codes (ISO 639-1) if language detection is enabled
+- `djotContent` (DjotContent | null): Rich structural markup
+- `document` (DocumentStructure | null): Hierarchical document structure
+- `elements` (Element[] | undefined): Semantic elements (headings, paragraphs, etc.)
+- `extractedKeywords` (ExtractedKeyword[] | undefined): Extracted keywords (RAKE/YAKE)
+- `images` (ExtractedImage[] | undefined): Extracted images if enabled
+- `metadata` (Metadata): Document metadata (format-specific fields)
+- `mimeType` (string): MIME type of the processed document
+- `ocrElements` (OcrElement[] | undefined): Granular OCR text blocks with bounding boxes
+- `pages` (PageContent[] | undefined): Per-page extracted content when page extraction is enabled via `PageConfig.extractPages = true`
+- `processingWarnings` (ProcessingWarning[]): Non-fatal warnings encountered during extraction
+- `qualityScore` (number | undefined): Document quality estimation score
+- `tables` (Table[]): Array of extracted tables
 
 **Example:**
 
@@ -812,38 +812,39 @@ Document metadata with format-specific fields.
 
 ```typescript title="TypeScript"
 interface Metadata {
-  // Common fields (snake_case from Rust JSON serialization)
+  // Common fields (camelCase alignment for TS)
   language?: string;
-  date?: string;
+  createdAt?: string;
+  modifiedAt?: string;
   subject?: string;
-  format_type?: string;
+  formatType?: string;
   category?: string;
   tags?: string[];
-  document_version?: string;
-  abstract_text?: string;
-  output_format?: string;
+  documentVersion?: string;
+  abstractText?: string;
+  outputFormat?: string;
 
   // PDF-specific fields
   title?: string;
-  author?: string;
-  page_count?: number;
-  creation_date?: string;
-  modification_date?: string;
+  authors?: string[];
+  pageCount?: number;
+  creationDate?: string;
+  modificationDate?: string;
   creator?: string;
   producer?: string;
-  keywords?: string;
+  keywords?: string[];
 
   // Excel-specific fields
-  sheet_count?: number;
-  sheet_names?: string[];
+  sheetCount?: number;
+  sheetNames?: string[];
 
   // Email-specific fields
-  from_email?: string;
-  from_name?: string;
-  to_emails?: string[];
-  cc_emails?: string[];
-  bcc_emails?: string[];
-  message_id?: string;
+  fromEmail?: string;
+  fromName?: string;
+  toEmails?: string[];
+  ccEmails?: string[];
+  bccEmails?: string[];
+  messageId?: string;
   attachments?: string[];
 
   // Additional fields...
