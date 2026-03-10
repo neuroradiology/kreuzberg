@@ -63,10 +63,15 @@ def format_dependency(name: str, dep_spec: object) -> str:
         default_features: bool | None = dep_spec.get("default-features")
         optional: bool | None = dep_spec.get("optional")
 
+        path: str | None = dep_spec.get("path")
+
         parts: list[str] = []
 
         if package:
             parts.append(f'package = "{package}"')
+
+        if path:
+            parts.append(f'path = "{path}"')
 
         if version:
             parts.append(f'version = "{version}"')
@@ -324,10 +329,10 @@ def main() -> None:
 
             if "kreuzberg" in copied_crates:
                 # Replace kreuzberg workspace references with path dependency
-                # Handle cases with and without version
+                # Handle cases with path, version, or neither
                 content = re.sub(
-                    r'kreuzberg = \{ (?:version = "[^"]*", )?',
-                    'kreuzberg = { path = "../kreuzberg", ',
+                    r'(kreuzberg = \{) (?:(?:path|version) = "[^"]*", )?',
+                    r'\1 path = "../kreuzberg", ',
                     content
                 )
 

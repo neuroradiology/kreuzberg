@@ -64,10 +64,15 @@ def format_dependency(name: str, dep_spec: object) -> str:
 
         optional: bool | None = dep_spec.get("optional")
 
+        path: str | None = dep_spec.get("path")
+
         parts: list[str] = []
 
         if package:
             parts.append(f'package = "{package}"')
+
+        if path:
+            parts.append(f'path = "{path}"')
 
         if version:
             parts.append(f'version = "{version}"')
@@ -315,6 +320,24 @@ def main() -> None:
 
             replace_workspace_deps_in_toml(crate_toml, workspace_deps)
             print(f"Updated {crate_dir}/Cargo.toml")
+
+    # Update path dependencies in kreuzberg-ffi crate
+    if "kreuzberg-ffi" in copied_crates and "kreuzberg" in copied_crates:
+        ffi_toml = vendor_base / "kreuzberg-ffi" / "Cargo.toml"
+        if ffi_toml.exists():
+            with open(ffi_toml, "r") as f:
+                content = f.read()
+
+            # Replace kreuzberg workspace references with path dependency
+            # Handle cases with path, version, or neither
+            content = re.sub(
+                r'(kreuzberg = \{) (?:(?:path|version) = "[^"]*", )?',
+                r'\1 path = "../kreuzberg", ',
+                content
+            )
+
+            with open(ffi_toml, "w") as f:
+                f.write(content)
 
     # Update path dependencies in kreuzberg crate if tesseract was copied
     if "kreuzberg" in copied_crates:
