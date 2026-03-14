@@ -204,6 +204,8 @@ struct CharInfo {
     x: f32,
     y: f32,
     font_size: f32,
+    /// Right edge of the character from `tight_bounds()`, falling back to `x + font_size * 0.6`.
+    right_x: f32,
     is_bold: bool,
     is_italic: bool,
     is_monospace: bool,
@@ -327,7 +329,7 @@ fn build_line_text(chars: &[CharInfo], repair_map: Option<&[(char, &str)]>) -> S
         // median advance width, making this language-agnostic.
         if idx > 0 && ci.ch != ' ' && chars[idx - 1].ch != ' ' {
             let prev = &chars[idx - 1];
-            let gap = ci.x - prev.x;
+            let gap = ci.x - prev.right_x;
             // Use average font size of the pair as a proxy for character height.
             // Threshold = avg_height * 1.0: gaps within one character height are
             // intra-word; gaps exceeding it are word boundaries.
@@ -382,10 +384,7 @@ fn detect_char_column_splits(char_infos: &[CharInfo]) -> Vec<f32> {
 
         // Compute content extent
         let x_min = non_space.iter().map(|c| c.x).fold(f32::MAX, f32::min);
-        let x_max = non_space
-            .iter()
-            .map(|c| c.x + c.font_size * 0.6)
-            .fold(f32::MIN, f32::max);
+        let x_max = non_space.iter().map(|c| c.right_x).fold(f32::MIN, f32::max);
         let x_span = x_max - x_min;
         if x_span < 1.0 {
             return Vec::new();
@@ -399,7 +398,7 @@ fn detect_char_column_splits(char_infos: &[CharInfo]) -> Vec<f32> {
         }
 
         // Build sorted edge list: (left_x, right_x)
-        let mut edges: Vec<(f32, f32)> = non_space.iter().map(|c| (c.x, c.x + c.font_size * 0.6)).collect();
+        let mut edges: Vec<(f32, f32)> = non_space.iter().map(|c| (c.x, c.right_x)).collect();
         edges.sort_by(|a, b| a.0.total_cmp(&b.0));
 
         // Sweep to find largest gap
@@ -612,11 +611,13 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
             } else {
                 (0.0, 0.0)
             };
+            let space_fs = char_infos.last().map_or(12.0, |c| c.font_size);
             char_infos.push(CharInfo {
                 ch: ' ',
                 x,
                 y,
-                font_size: char_infos.last().map_or(12.0, |c| c.font_size),
+                font_size: space_fs,
+                right_x: x + space_fs * 0.6,
                 is_bold: false,
                 is_italic: false,
                 is_monospace: false,
@@ -648,12 +649,18 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
         };
         let fs = ch.scaled_font_size().value;
         let font_info = ch.font_info();
+        let effective_fs = if fs > 0.0 { fs } else { 12.0 };
+        let right_x = ch
+            .tight_bounds()
+            .map(|b| b.right().value)
+            .unwrap_or(origin.0.value + effective_fs * 0.6);
 
         char_infos.push(CharInfo {
             ch: uc,
             x: origin.0.value,
             y: origin.1.value,
-            font_size: if fs > 0.0 { fs } else { 12.0 },
+            font_size: effective_fs,
+            right_x,
             is_bold: font_info.1,
             is_italic: font_info.2,
             is_monospace: ch.font_is_fixed_pitch(),
@@ -862,6 +869,7 @@ mod tests {
             x,
             y,
             font_size,
+            right_x: x + font_size * 0.6, // test default
             is_bold: false,
             is_italic: false,
             is_monospace: false,

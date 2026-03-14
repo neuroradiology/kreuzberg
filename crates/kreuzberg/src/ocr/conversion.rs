@@ -48,8 +48,15 @@ use super::table::HocrWord;
 /// Returns an error if:
 /// - `box_points` has fewer than 4 points (malformed detection)
 /// - `angle_index` is outside the valid range (0-3)
+///
+/// Returns `Ok(None)` if the detection is filtered out due to low `box_score`.
 #[cfg(feature = "paddle-ocr")]
-pub fn text_block_to_element(block: &TextBlock, page_number: usize) -> Result<OcrElement> {
+pub fn text_block_to_element(block: &TextBlock, page_number: usize) -> Result<Option<OcrElement>> {
+    // Filter ghost detections: box_score below 0.3 indicates unreliable detection
+    if block.box_score < 0.3 {
+        return Ok(None);
+    }
+
     // Validate box_points - PaddleOCR must provide exactly 4 points
     if block.box_points.len() < 4 {
         return Err(KreuzbergError::ocr(format!(
@@ -81,11 +88,13 @@ pub fn text_block_to_element(block: &TextBlock, page_number: usize) -> Result<Oc
         None
     };
 
-    Ok(OcrElement::new(block.text.clone(), geometry, confidence)
-        .with_level(OcrElementLevel::Line) // PaddleOCR detects lines
-        .with_page_number(page_number)
-        .with_rotation_opt(rotation)
-        .with_metadata("backend", serde_json::json!("paddle-ocr")))
+    Ok(Some(
+        OcrElement::new(block.text.clone(), geometry, confidence)
+            .with_level(OcrElementLevel::Line) // PaddleOCR detects lines
+            .with_page_number(page_number)
+            .with_rotation_opt(rotation)
+            .with_metadata("backend", serde_json::json!("paddle-ocr")),
+    ))
 }
 
 /// Tesseract TSV row data for conversion.
@@ -383,7 +392,9 @@ mod tests {
             text_score: 0.88,
         };
 
-        let element = text_block_to_element(&block, 1).expect("Valid TextBlock");
+        let element = text_block_to_element(&block, 1)
+            .expect("Valid TextBlock")
+            .expect("box_score is high enough");
 
         assert_eq!(element.text, "Test text");
         assert_eq!(element.level, OcrElementLevel::Line);
