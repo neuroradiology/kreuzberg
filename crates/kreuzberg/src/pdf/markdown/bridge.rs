@@ -337,24 +337,46 @@ fn build_line_text(chars: &[CharInfo], repair_map: Option<&[(char, &str)]>) -> S
             continue;
         }
 
-        // Insert space at text object boundaries and large positional gaps.
+        // Geometric veto for generated spaces (broken CMap fix).
         //
-        // Characters within the same PDF text object (same Tj/TJ operator)
-        // are part of a single text run — never insert spaces between them.
-        // At object boundaries, use positional gap detection to decide
-        // whether a space is needed.
-        if idx > 0 && ci.ch != ' ' && chars[idx - 1].ch != ' ' {
+        // pdfium inserts generated chars as word boundaries, but for fonts with
+        // broken CMaps these appear mid-word (e.g., "co mputer"). We keep generated
+        // spaces from pdfium but veto them when the geometric gap between the
+        // surrounding real characters is small enough to indicate same-word.
+        //
+        // For non-space → non-space transitions (no generated space), insert a
+        // space when the gap exceeds the threshold (positioned text detection).
+        if idx > 0 && ci.ch != ' ' {
             let prev = &chars[idx - 1];
-            let same_object = ci.text_object_id != 0
-                && prev.text_object_id != 0
-                && ci.text_object_id == prev.text_object_id;
-
-            if !same_object {
-                // Different text objects — use position-based gap detection.
+            if prev.ch == ' ' {
+                // Previous char is a generated space. Check if we should keep it
+                // by looking at the gap between the last real char and current char.
+                // Find the last non-space char before the space.
+                let last_real = chars[..idx - 1].iter().rev().find(|c| c.ch != ' ');
+                if let Some(real_prev) = last_real {
+                    let gap = ci.x - real_prev.right_x;
+                    let real_prev_width = (real_prev.right_x - real_prev.x).max(0.0);
+                    let curr_width = (ci.right_x - ci.x).max(0.0);
+                    let avg_char_width = if real_prev_width > 0.0 && curr_width > 0.0 {
+                        (real_prev_width + curr_width) * 0.5
+                    } else {
+                        (ci.font_size + real_prev.font_size) * 0.3
+                    };
+                    // Veto the space if gap < 50% of character width.
+                    // This threshold is calibrated from docling-parse's 0.33 on
+                    // advance widths, adjusted up because tight_bounds are narrower.
+                    if gap < avg_char_width * 0.5 {
+                        // Skip the space — chars are too close for a word boundary
+                    } else {
+                        line_text.push(' ');
+                    }
+                } else {
+                    line_text.push(' ');
+                }
+            } else {
+                // Non-space to non-space: insert space on large gaps (positioned text).
                 let gap = ci.x - prev.right_x;
                 let avg_height = (ci.font_size + prev.font_size) * 0.5;
-                // Threshold: gaps exceeding one character height are word
-                // boundaries.
                 if gap > avg_height {
                     line_text.push(' ');
                 }
@@ -602,9 +624,9 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
     let repair_map = build_ligature_repair_map(page);
 
     // Collect per-character data.
-    // Skip generated chars entirely — word boundaries are determined by
-    // text object identity (chars in the same PDF text object never have
-    // word breaks) and position-based gap detection at object boundaries.
+    // Generated chars (pdfium's synthetic word boundaries) are kept as space
+    // markers, but in build_line_text() they're vetoed when the geometric gap
+    // between adjacent real characters is too small (broken CMap fix).
     let mut char_infos: Vec<CharInfo> = Vec::with_capacity(char_count);
     for i in 0..char_count {
         let ch = match chars.get(i) {
@@ -612,10 +634,29 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
             Err(_) => continue,
         };
 
-        // Skip generated chars — pdfium inserts these as synthetic word
-        // boundaries but they're unreliable for fonts with broken CMaps.
-        // We use text object boundaries + position gaps instead.
+        // Keep generated chars as space candidates.
+        // They'll be validated geometrically in build_line_text().
         if ch.is_generated().unwrap_or(false) {
+            let (x, y) = if let Some(last) = char_infos.last() {
+                (last.x + last.font_size * 0.5, last.y)
+            } else {
+                (0.0, 0.0)
+            };
+            let space_fs = char_infos.last().map_or(12.0, |c| c.font_size);
+            char_infos.push(CharInfo {
+                ch: ' ',
+                x,
+                y,
+                font_size: space_fs,
+                right_x: x + space_fs * 0.6,
+                is_bold: false,
+                is_italic: false,
+                is_monospace: false,
+                has_map_error: false,
+                is_symbolic: false,
+                is_hyphen: false,
+                text_object_id: 0,
+            });
             continue;
         }
 
