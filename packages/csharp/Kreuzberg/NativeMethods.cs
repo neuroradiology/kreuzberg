@@ -35,44 +35,47 @@ internal static partial class NativeMethods
     [StructLayout(LayoutKind.Sequential)]
     internal struct CExtractionResult
     {
-        /// <summary>Extracted text content pointer.</summary>
-        public IntPtr Content;
-        /// <summary>MIME type pointer.</summary>
-        public IntPtr MimeType;
-        /// <summary>Detected language pointer.</summary>
-        public IntPtr Language;
-        /// <summary>Document date pointer.</summary>
-        public IntPtr Date;
-        /// <summary>Document subject pointer.</summary>
-        public IntPtr Subject;
-        /// <summary>JSON array of extracted tables pointer.</summary>
-        public IntPtr TablesJson;
-        /// <summary>JSON array of detected languages pointer.</summary>
-        public IntPtr DetectedLanguagesJson;
-        /// <summary>JSON object of metadata pointer.</summary>
-        public IntPtr MetadataJson;
+        // Field order MUST match Rust #[repr(C)] struct (alphabetical by field name)
+        /// <summary>JSON array of PDF annotations pointer.</summary>
+        public IntPtr AnnotationsJson;
         /// <summary>JSON array of text chunks pointer.</summary>
         public IntPtr ChunksJson;
+        /// <summary>Extracted text content pointer.</summary>
+        public IntPtr Content;
+        /// <summary>Document date pointer.</summary>
+        public IntPtr Date;
+        /// <summary>JSON array of detected languages pointer.</summary>
+        public IntPtr DetectedLanguagesJson;
+        /// <summary>JSON serialized Djot content pointer.</summary>
+        public IntPtr DjotContentJson;
+        /// <summary>JSON object of document structure pointer.</summary>
+        public IntPtr DocumentJson;
+        /// <summary>JSON array of semantic elements pointer.</summary>
+        public IntPtr ElementsJson;
+        /// <summary>JSON array of extracted keywords pointer.</summary>
+        public IntPtr ExtractedKeywordsJson;
         /// <summary>JSON array of extracted images pointer.</summary>
         public IntPtr ImagesJson;
+        /// <summary>Detected language pointer.</summary>
+        public IntPtr Language;
+        /// <summary>JSON object of metadata pointer.</summary>
+        public IntPtr MetadataJson;
+        /// <summary>MIME type pointer.</summary>
+        public IntPtr MimeType;
+        /// <summary>JSON array of OCR elements pointer.</summary>
+        public IntPtr OcrElementsJson;
         /// <summary>JSON object of page structure pointer.</summary>
         public IntPtr PageStructureJson;
         /// <summary>JSON array of per-page content pointer.</summary>
         public IntPtr PagesJson;
-        /// <summary>JSON array of semantic elements pointer.</summary>
-        public IntPtr ElementsJson;
-        /// <summary>JSON array of OCR elements pointer.</summary>
-        public IntPtr OcrElementsJson;
-        /// <summary>JSON object of document structure pointer.</summary>
-        public IntPtr DocumentJson;
-        /// <summary>JSON array of extracted keywords pointer.</summary>
-        public IntPtr ExtractedKeywordsJson;
-        /// <summary>JSON quality score pointer.</summary>
-        public IntPtr QualityScoreJson;
         /// <summary>JSON array of processing warnings pointer.</summary>
         public IntPtr ProcessingWarningsJson;
-        /// <summary>JSON array of PDF annotations pointer.</summary>
-        public IntPtr AnnotationsJson;
+        /// <summary>JSON quality score pointer.</summary>
+        public IntPtr QualityScoreJson;
+        /// <summary>Document subject pointer.</summary>
+        public IntPtr Subject;
+        /// <summary>JSON array of extracted tables pointer.</summary>
+        public IntPtr TablesJson;
 
         /// <summary>Whether extraction succeeded.</summary>
         [MarshalAs(UnmanagedType.I1)]
