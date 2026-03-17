@@ -43,7 +43,23 @@ pub(in crate::pdf::markdown) fn apply_region_class(
 
             if is_near_margin {
                 for para in paragraphs.iter_mut() {
-                    apply_hint_to_paragraph(para, hint, None);
+                    // Only mark as furniture if the text is short. Long text near
+                    // page margins is likely a title or first paragraph, not a
+                    // running header/footer. The 40-char threshold covers typical
+                    // headers ("Section 3.2 — Results") but not body paragraphs.
+                    let alnum_len: usize = para
+                        .lines
+                        .iter()
+                        .flat_map(|l| l.segments.iter())
+                        .flat_map(|s| s.text.chars())
+                        .filter(|c| c.is_alphanumeric())
+                        .count();
+                    if alnum_len <= 40 {
+                        apply_hint_to_paragraph(para, hint, None);
+                    } else {
+                        // Long text — treat as body text, not furniture
+                        para.layout_class = Some(LayoutHintClass::Text);
+                    }
                 }
             } else {
                 // Region is in the body of the page — treat as Text, not furniture.

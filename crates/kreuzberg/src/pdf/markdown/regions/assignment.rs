@@ -125,7 +125,16 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
         }
 
         match best_hint_idx {
-            Some(hi) => regions[hi].segment_indices.push(seg_idx),
+            Some(hi) => {
+                // Table regions require majority overlap (>=50%) to claim a segment.
+                // This matches baseline's suppression threshold and prevents Table
+                // regions from absorbing adjacent body text at low overlap.
+                if regions[hi].hint.class == LayoutHintClass::Table && best_ios < 0.5 {
+                    unassigned.push(seg_idx);
+                } else {
+                    regions[hi].segment_indices.push(seg_idx);
+                }
+            }
             None => unassigned.push(seg_idx),
         }
     }
@@ -309,7 +318,7 @@ fn compute_refined_hints(
 
 /// Minimum alphanumeric character count for text inside a Picture region
 /// to be considered substantive (and thus preserved rather than suppressed).
-const PICTURE_SUBSTANTIVE_MIN_ALNUM: usize = 10;
+const PICTURE_SUBSTANTIVE_MIN_ALNUM: usize = 4;
 
 /// Minimum alphanumeric ratio for text inside a Picture region to be
 /// considered substantive.

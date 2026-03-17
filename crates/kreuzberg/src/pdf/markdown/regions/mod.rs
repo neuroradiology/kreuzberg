@@ -144,11 +144,15 @@ pub(super) fn assemble_region_paragraphs(
         }
 
         // Text quality gate: skip regions with garbled/non-text content.
-        // Only applied to regions NOT classified as Text, SectionHeader, or Title,
-        // since those are inherently text regions.
+        // Exempt text-bearing classes and Code/Formula (which legitimately
+        // contain many special characters).
         if !matches!(
             region.hint.class,
-            LayoutHintClass::Text | LayoutHintClass::SectionHeader | LayoutHintClass::Title
+            LayoutHintClass::Text
+                | LayoutHintClass::SectionHeader
+                | LayoutHintClass::Title
+                | LayoutHintClass::Code
+                | LayoutHintClass::Formula
         ) {
             let region_text: String = paragraphs
                 .iter()
@@ -162,7 +166,7 @@ pub(super) fn assemble_region_paragraphs(
                 .chars()
                 .filter(|c| c.is_alphanumeric() || c.is_whitespace())
                 .count();
-            if total >= 10 && (alnum as f32 / total as f32) < 0.3 {
+            if total >= 10 && (alnum as f32 / total as f32) < 0.15 {
                 tracing::trace!(
                     class = ?region.hint.class,
                     total_chars = total,
@@ -685,14 +689,25 @@ mod tests {
     }
 
     #[test]
-    fn test_picture_regions_excluded_and_segments_suppressed() {
-        // Picture regions are excluded from region assignment and segments
-        // inside them are suppressed (IoS >= 0.5) to avoid OCR artifacts.
-        let segments = vec![make_segment("text", 10.0, 700.0, 40.0, 12.0)];
+    fn test_picture_regions_exclude_short_artifacts() {
+        // Picture regions are excluded from region assignment. Short non-substantive
+        // text (<4 alnum chars) inside them is suppressed as OCR artifacts.
+        let segments = vec![make_segment("ab", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Picture, 0.9, 0.0, 690.0, 200.0, 720.0)];
         let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
         assert!(regions.is_empty());
-        assert_eq!(unassigned.len(), 0); // suppressed, not fallback
+        assert_eq!(unassigned.len(), 0); // suppressed (too short)
+    }
+
+    #[test]
+    fn test_picture_regions_preserve_substantive_text() {
+        // Substantive text (>=4 alnum chars) inside Picture regions is preserved
+        // as unassigned so it appears in the output (e.g., "Fig. 3" captions).
+        let segments = vec![make_segment("Fig. 3", 10.0, 700.0, 40.0, 12.0)];
+        let hints = vec![make_hint(LayoutHintClass::Picture, 0.9, 0.0, 690.0, 200.0, 720.0)];
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        assert!(regions.is_empty());
+        assert_eq!(unassigned.len(), 1); // preserved as unassigned
     }
 
     #[test]
