@@ -447,9 +447,19 @@ pub(crate) async fn extract_with_ocr(
             crate::pdf::markdown::reorder_elements_reading_order(&mut page_content.elements);
 
             // Convert to paragraphs via the unified pipeline.
-            let paragraphs = crate::pdf::markdown::content_to_paragraphs(&page_content);
+            let mut paragraphs = crate::pdf::markdown::content_to_paragraphs(&page_content);
 
-            // Filter page furniture (headers/footers).
+            // Apply layout classification overrides (Title, SectionHeader, PageHeader, etc.)
+            // from the RT-DETR layout detection model. This is the same classification step
+            // that the native PDF path uses (pipeline.rs:397,474) — without it, OCR output
+            // has no heading detection or furniture filtering from layout.
+            if let Some(det) = detection {
+                let hints = detection_to_layout_hints(det, height as f32);
+                crate::pdf::markdown::layout_classify::apply_layout_overrides(&mut paragraphs, &hints, 0.5, 0.2, None);
+            }
+
+            // Filter page furniture (headers/footers) — must come AFTER layout overrides
+            // since overrides may reclassify paragraphs as PageHeader/PageFooter.
             let paragraphs: Vec<_> = paragraphs.into_iter().filter(|p| !p.is_page_furniture).collect();
 
             // Interleave paragraphs and TATR tables by vertical position.
@@ -698,6 +708,62 @@ fn ensure_elements_enabled(config: &crate::core::config::ocr::OcrConfig) -> crat
         }
     }
     config
+}
+
+/// Convert pixel-space layout detections to `LayoutHint`s in the pseudo-PDF
+/// coordinate space used by the OCR markdown pipeline.
+///
+/// The OCR path uses `from_ocr_elements(elements, page_height)` which flips
+/// image y-coordinates to PDF convention (y=0 at bottom, y increases upward)
+/// by computing `pdf_y = page_height - pixel_y`. Layout hints must use the
+/// same coordinate space so `apply_layout_overrides` can spatially match
+/// paragraphs to layout regions.
+///
+/// This bridges the gap between the raw layout detection output (pixel space,
+/// y=0 at top) and the markdown pipeline's expectation (PDF space, y=0 at bottom).
+/// The same LayoutClass→LayoutHintClass mapping used by the native PDF path
+/// (`extractors/pdf/extraction.rs:convert_results_to_hints`) is replicated here
+/// because that function operates on `PageLayoutResult` (already in PDF coords),
+/// while we have raw `DetectionResult` (pixel coords).
+#[cfg(all(feature = "ocr", feature = "layout-detection"))]
+fn detection_to_layout_hints(
+    detection: &crate::layout::DetectionResult,
+    page_height: f32,
+) -> Vec<crate::pdf::markdown::types::LayoutHint> {
+    use crate::layout::LayoutClass;
+    use crate::pdf::markdown::types::{LayoutHint, LayoutHintClass};
+
+    detection
+        .detections
+        .iter()
+        .map(|det| {
+            let class = match det.class {
+                LayoutClass::Title => LayoutHintClass::Title,
+                LayoutClass::SectionHeader => LayoutHintClass::SectionHeader,
+                LayoutClass::Code => LayoutHintClass::Code,
+                LayoutClass::Formula => LayoutHintClass::Formula,
+                LayoutClass::ListItem => LayoutHintClass::ListItem,
+                LayoutClass::Caption => LayoutHintClass::Caption,
+                LayoutClass::Footnote => LayoutHintClass::Footnote,
+                LayoutClass::PageHeader => LayoutHintClass::PageHeader,
+                LayoutClass::PageFooter => LayoutHintClass::PageFooter,
+                LayoutClass::Table => LayoutHintClass::Table,
+                LayoutClass::Picture => LayoutHintClass::Picture,
+                LayoutClass::Text => LayoutHintClass::Text,
+                _ => LayoutHintClass::Other,
+            };
+            // Flip y: pixel y1 (top of bbox, small value) → PDF top (large value)
+            // pixel y2 (bottom of bbox, large value) → PDF bottom (small value)
+            LayoutHint {
+                class,
+                confidence: det.confidence,
+                left: det.bbox.x1,
+                right: det.bbox.x2,
+                top: page_height - det.bbox.y1,
+                bottom: page_height - det.bbox.y2,
+            }
+        })
+        .collect()
 }
 
 #[cfg(test)]

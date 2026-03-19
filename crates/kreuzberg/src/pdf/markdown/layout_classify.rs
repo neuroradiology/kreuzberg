@@ -18,7 +18,7 @@ use super::types::{LayoutHint, LayoutHintClass, PdfParagraph};
 ///
 /// Structure-tree headings are preserved: only paragraphs without existing
 /// heading classification receive heading overrides from layout detection.
-pub(super) fn apply_layout_overrides(
+pub(crate) fn apply_layout_overrides(
     paragraphs: &mut [PdfParagraph],
     hints: &[LayoutHint],
     min_confidence: f32,
