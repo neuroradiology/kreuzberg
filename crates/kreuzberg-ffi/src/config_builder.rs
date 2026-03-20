@@ -9,9 +9,11 @@
 use crate::ffi_panic_guard;
 use crate::ffi_panic_guard_i32;
 use crate::helpers::{clear_last_error, set_last_error};
+#[cfg(feature = "layout-detection")]
+use kreuzberg::core::config::LayoutDetectionConfig;
 use kreuzberg::core::config::{
-    AccelerationConfig, ChunkingConfig, ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig,
-    LayoutDetectionConfig, OcrConfig, PdfConfig, PostProcessorConfig,
+    AccelerationConfig, ChunkingConfig, ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, OcrConfig,
+    PdfConfig, PostProcessorConfig,
 };
 use std::ffi::{CStr, c_char};
 use std::ptr;
@@ -81,6 +83,7 @@ impl ConfigBuilder {
         Ok(())
     }
 
+    #[cfg(feature = "layout-detection")]
     fn set_layout_from_json(&mut self, layout_json: &str) -> Result<(), String> {
         let layout_config: LayoutDetectionConfig =
             serde_json::from_str(layout_json).map_err(|e| format!("Failed to parse layout config JSON: {}", e))?;
@@ -520,6 +523,7 @@ pub unsafe extern "C" fn kreuzberg_config_builder_set_language_detection(
 /// - The pointer must be properly aligned and point to a valid ConfigBuilder instance
 /// - `layout_json` must be a valid, non-null pointer to a null-terminated UTF-8 string
 /// - The string pointer must remain valid for the duration of the function call
+#[cfg(feature = "layout-detection")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn kreuzberg_config_builder_set_layout(
     builder: *mut ConfigBuilder,
