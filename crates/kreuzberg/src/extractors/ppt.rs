@@ -217,6 +217,7 @@ impl DocumentExtractor for PptExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 

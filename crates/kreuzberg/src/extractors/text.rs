@@ -115,6 +115,7 @@ impl DocumentExtractor for PlainTextExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 
@@ -230,6 +231,7 @@ impl DocumentExtractor for MarkdownExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 

@@ -206,6 +206,7 @@ impl SyncExtractor for EmailExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 }

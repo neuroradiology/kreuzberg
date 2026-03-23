@@ -187,6 +187,11 @@ pub struct ExtractionConfig {
     /// semaphore. See [`crate::core::config::ConcurrencyConfig`] for details.
     #[serde(default)]
     pub concurrency: Option<super::super::concurrency::ConcurrencyConfig>,
+
+    /// Maximum recursion depth for archive extraction (default: 3).
+    /// Set to 0 to disable recursive extraction (legacy behavior).
+    #[serde(default = "default_archive_depth")]
+    pub max_archive_depth: usize,
 }
 
 impl Default for ExtractionConfig {
@@ -221,6 +226,7 @@ impl Default for ExtractionConfig {
             cache_ttl_secs: None,
             email: None,
             concurrency: None,
+            max_archive_depth: default_archive_depth(),
         }
     }
 }
@@ -357,4 +363,8 @@ impl ExtractionConfig {
 
 fn default_true() -> bool {
     true
+}
+
+fn default_archive_depth() -> usize {
+    3
 }

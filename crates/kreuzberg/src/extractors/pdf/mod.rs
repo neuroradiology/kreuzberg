@@ -750,6 +750,7 @@ impl PdfExtractor {
             annotations: pdf_annotations,
             #[cfg(not(feature = "pdf"))]
             annotations: None,
+            children: None,
         })
     }
 }

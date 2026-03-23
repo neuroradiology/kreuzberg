@@ -100,6 +100,7 @@ impl DocumentExtractor for HwpExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 

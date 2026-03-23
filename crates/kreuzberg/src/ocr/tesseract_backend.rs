@@ -285,6 +285,7 @@ impl OcrBackend for TesseractBackend {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 
@@ -384,6 +385,7 @@ impl OcrBackend for TesseractBackend {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 

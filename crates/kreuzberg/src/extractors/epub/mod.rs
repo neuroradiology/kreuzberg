@@ -258,6 +258,7 @@ impl DocumentExtractor for EpubExtractor {
             quality_score: None,
             processing_warnings,
             annotations: None,
+            children: None,
         })
     }
 

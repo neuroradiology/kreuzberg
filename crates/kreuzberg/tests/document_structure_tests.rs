@@ -3809,3 +3809,104 @@ async fn test_epub_dublin_core() {
         meta
     );
 }
+
+// ============================================================================
+// Archive Recursive Extraction Tests
+// ============================================================================
+
+#[cfg(feature = "archives")]
+mod archive_recursive {
+    use kreuzberg::core::config::ExtractionConfig;
+    use kreuzberg::core::extractor::extract_bytes_sync;
+    use std::io::Write;
+
+    fn create_test_zip(files: &[(&str, &[u8])]) -> Vec<u8> {
+        let mut zip_buf = Vec::new();
+        {
+            let mut writer = zip::ZipWriter::new(std::io::Cursor::new(&mut zip_buf));
+            for (name, content) in files {
+                writer
+                    .start_file(*name, zip::write::FileOptions::<'_, ()>::default())
+                    .unwrap();
+                writer.write_all(content).unwrap();
+            }
+            writer.finish().unwrap();
+        }
+        zip_buf
+    }
+
+    #[test]
+    fn test_zip_recursive_extraction() {
+        let zip_bytes = create_test_zip(&[
+            ("hello.txt", b"Hello World"),
+            ("data.csv", b"name,age\nAlice,30\nBob,25"),
+        ]);
+
+        let config = ExtractionConfig::default();
+        let result = extract_bytes_sync(&zip_bytes, "application/zip", &config).expect("ZIP extraction should succeed");
+
+        let children = result.children.expect("children should be populated");
+        assert_eq!(children.len(), 2, "should have 2 child entries");
+
+        // Verify paths and MIME types
+        let txt_child = children.iter().find(|c| c.path == "hello.txt");
+        assert!(txt_child.is_some(), "should have hello.txt child");
+        let txt_child = txt_child.unwrap();
+        assert_eq!(txt_child.mime_type, "text/plain");
+        assert!(
+            txt_child.result.content.contains("Hello World"),
+            "txt child should contain 'Hello World', got: {}",
+            txt_child.result.content
+        );
+
+        let csv_child = children.iter().find(|c| c.path == "data.csv");
+        assert!(csv_child.is_some(), "should have data.csv child");
+        let csv_child = csv_child.unwrap();
+        assert!(
+            !csv_child.result.content.is_empty(),
+            "csv child should have non-empty content"
+        );
+    }
+
+    #[test]
+    fn test_archive_depth_zero_disables_recursion() {
+        let zip_bytes = create_test_zip(&[("hello.txt", b"Hello World")]);
+
+        let config = ExtractionConfig {
+            max_archive_depth: 0,
+            ..Default::default()
+        };
+
+        let result = extract_bytes_sync(&zip_bytes, "application/zip", &config).expect("ZIP extraction should succeed");
+
+        assert!(
+            result.children.is_none(),
+            "children should be None when max_archive_depth is 0"
+        );
+    }
+
+    #[test]
+    fn test_archive_children_have_content() {
+        let html_content = b"<html><body><h1>Title</h1><p>Paragraph text.</p></body></html>";
+        let zip_bytes = create_test_zip(&[("page.html", html_content)]);
+
+        let config = ExtractionConfig::default();
+        let result = extract_bytes_sync(&zip_bytes, "application/zip", &config).expect("ZIP extraction should succeed");
+
+        let children = result.children.expect("children should be populated");
+        assert_eq!(children.len(), 1, "should have 1 child entry");
+
+        let html_child = &children[0];
+        assert_eq!(html_child.path, "page.html");
+        assert!(
+            !html_child.result.content.is_empty(),
+            "HTML child should have non-empty content"
+        );
+        // HTML should contain extracted text (not raw HTML tags)
+        assert!(
+            html_child.result.content.contains("Title") || html_child.result.content.contains("Paragraph"),
+            "HTML child content should contain extracted text, got: {}",
+            html_child.result.content
+        );
+    }
+}

@@ -155,6 +155,7 @@ impl DocumentExtractor for CsvExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 
@@ -280,7 +281,7 @@ fn decode_csv_bytes(content: &[u8]) -> String {
     // Non-UTF-8 content: use encoding detection.
     #[cfg(feature = "quality")]
     {
-        crate::text::safe_decode(content, None)
+        crate::utils::safe_decode(content, None)
     }
 
     #[cfg(not(feature = "quality"))]

@@ -147,6 +147,7 @@ impl DocumentExtractor for NumbersExtractor {
             quality_score: None,
             processing_warnings: Vec::new(),
             annotations: None,
+            children: None,
         })
     }
 
