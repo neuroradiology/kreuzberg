@@ -198,12 +198,22 @@ pub fn apply_output_format(result: &mut ExtractionResult, output_format: OutputF
 }
 
 /// Escape HTML special characters in a string.
+///
+/// Single-pass implementation to avoid 4 intermediate String allocations from
+/// chained `.replace()` calls. Reserves extra capacity upfront for escape sequences.
 fn html_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&#39;")
+    let mut result = String::with_capacity(s.len() + s.len() / 8);
+    for c in s.chars() {
+        match c {
+            '&' => result.push_str("&amp;"),
+            '<' => result.push_str("&lt;"),
+            '>' => result.push_str("&gt;"),
+            '"' => result.push_str("&quot;"),
+            '\'' => result.push_str("&#39;"),
+            _ => result.push(c),
+        }
+    }
+    result
 }
 
 #[cfg(test)]

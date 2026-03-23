@@ -3246,7 +3246,6 @@ dependencies = [
  "kreuzberg-paddle-ocr",
  "kreuzberg-pdfium-render",
  "kreuzberg-tesseract",
- "lazy_static",
  "libc",
  "lopdf",
  "mail-parser",

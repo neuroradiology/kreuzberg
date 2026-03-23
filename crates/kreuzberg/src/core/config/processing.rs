@@ -3,8 +3,8 @@
 //! Defines configuration for post-processing pipelines, text chunking,
 //! and embedding generation.
 
+use ahash::AHashSet;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 use std::path::PathBuf;
 
 /// Type of text chunker to use.
@@ -63,13 +63,13 @@ pub struct PostProcessorConfig {
     #[serde(default)]
     pub disabled_processors: Option<Vec<String>>,
 
-    /// Pre-computed HashSet for O(1) enabled processor lookup
+    /// Pre-computed AHashSet for O(1) enabled processor lookup
     #[serde(skip)]
-    pub enabled_set: Option<HashSet<String>>,
+    pub enabled_set: Option<AHashSet<String>>,
 
-    /// Pre-computed HashSet for O(1) disabled processor lookup
+    /// Pre-computed AHashSet for O(1) disabled processor lookup
     #[serde(skip)]
-    pub disabled_set: Option<HashSet<String>>,
+    pub disabled_set: Option<AHashSet<String>>,
 }
 
 impl PostProcessorConfig {

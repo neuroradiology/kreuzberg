@@ -9,8 +9,8 @@
 //! The error propagates to callers via `Result` returns (never `.unwrap()` on locks).
 
 use crate::error::{KreuzbergError, Result};
+use ahash::AHashSet;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -48,9 +48,9 @@ pub struct GenericCache {
     max_age_days: f64,
     max_cache_size_mb: f64,
     min_free_space_mb: f64,
-    processing_locks: Arc<Mutex<HashSet<String>>>,
+    processing_locks: Arc<Mutex<AHashSet<String>>>,
     /// Tracks cache keys being deleted to prevent read-during-delete race conditions
-    deleting_files: Arc<Mutex<HashSet<PathBuf>>>,
+    deleting_files: Arc<Mutex<AHashSet<PathBuf>>>,
 }
 
 impl GenericCache {
@@ -78,20 +78,20 @@ impl GenericCache {
             max_age_days,
             max_cache_size_mb,
             min_free_space_mb,
-            processing_locks: Arc::new(Mutex::new(HashSet::new())),
-            deleting_files: Arc::new(Mutex::new(HashSet::new())),
+            processing_locks: Arc::new(Mutex::new(AHashSet::new())),
+            deleting_files: Arc::new(Mutex::new(AHashSet::new())),
         })
     }
 
     /// Acquire the `processing_locks` mutex, converting a poison error into [`KreuzbergError::LockPoisoned`].
-    fn acquire_processing_locks(&self) -> Result<std::sync::MutexGuard<'_, HashSet<String>>> {
+    fn acquire_processing_locks(&self) -> Result<std::sync::MutexGuard<'_, AHashSet<String>>> {
         self.processing_locks
             .lock()
             .map_err(|e| KreuzbergError::LockPoisoned(format!("processing locks mutex poisoned: {}", e)))
     }
 
     /// Acquire the `deleting_files` mutex, converting a poison error into [`KreuzbergError::LockPoisoned`].
-    fn acquire_deleting_files(&self) -> Result<std::sync::MutexGuard<'_, HashSet<PathBuf>>> {
+    fn acquire_deleting_files(&self) -> Result<std::sync::MutexGuard<'_, AHashSet<PathBuf>>> {
         self.deleting_files
             .lock()
             .map_err(|e| KreuzbergError::LockPoisoned(format!("deleting files mutex poisoned: {}", e)))

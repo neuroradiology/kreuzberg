@@ -9,6 +9,7 @@
 //! - Removed file-path based APIs (we only need bytes/reader)
 //! - Added markdown rendering and formatting support (fixes #376)
 
+use ahash::AHashMap;
 use std::collections::HashMap;
 use std::io::{Cursor, Read, Seek};
 
@@ -45,7 +46,7 @@ pub struct Document {
     /// Drawing objects parsed from `w:drawing` elements.
     pub drawings: Vec<super::drawing::Drawing>,
     /// Image relationships (rId → target path) for image extraction.
-    pub image_relationships: HashMap<String, String>,
+    pub image_relationships: AHashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -1394,8 +1395,8 @@ impl<R: Read + Seek> DocxParser<R> {
 
     fn parse_numbering(&self, xml: &str) -> Result<HashMap<(i64, i64), ListType>, DocxParseError> {
         let mut numbering_defs: HashMap<(i64, i64), ListType> = HashMap::new();
-        let mut abstract_num_formats: HashMap<i64, HashMap<i64, ListType>> = HashMap::new();
-        let mut num_to_abstract: HashMap<i64, i64> = HashMap::new();
+        let mut abstract_num_formats: AHashMap<i64, AHashMap<i64, ListType>> = AHashMap::new();
+        let mut num_to_abstract: AHashMap<i64, i64> = AHashMap::new();
 
         let mut reader = Reader::from_str(xml);
         reader.config_mut().trim_text(false);

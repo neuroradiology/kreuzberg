@@ -27,8 +27,42 @@ use crate::types::document_structure::DocumentStructure;
 use crate::types::{ExtractionResult, Metadata, Table};
 use async_trait::async_trait;
 
+use std::sync::LazyLock;
+
 use parser::LatexParser;
 use utilities::{collect_environment, extract_env_name, extract_heading_title};
+
+/// Heading command → level map for documents that contain `\chapter` commands.
+/// Chapter occupies level 1; section is demoted to level 2, etc.
+static HEADING_LEVELS_WITH_CHAPTERS: LazyLock<ahash::AHashMap<&'static str, u8>> = LazyLock::new(|| {
+    let mut m = ahash::AHashMap::with_capacity(10);
+    m.insert("chapter", 1);
+    m.insert("chapter*", 1);
+    m.insert("section", 2);
+    m.insert("section*", 2);
+    m.insert("subsection", 3);
+    m.insert("subsection*", 3);
+    m.insert("subsubsection", 4);
+    m.insert("subsubsection*", 4);
+    m.insert("paragraph", 5);
+    m.insert("paragraph*", 5);
+    m
+});
+
+/// Heading command → level map for documents without `\chapter` commands.
+/// Section starts at level 1.
+static HEADING_LEVELS_NO_CHAPTERS: LazyLock<ahash::AHashMap<&'static str, u8>> = LazyLock::new(|| {
+    let mut m = ahash::AHashMap::with_capacity(8);
+    m.insert("section", 1);
+    m.insert("section*", 1);
+    m.insert("subsection", 2);
+    m.insert("subsection*", 2);
+    m.insert("subsubsection", 3);
+    m.insert("subsubsection*", 3);
+    m.insert("paragraph", 4);
+    m.insert("paragraph*", 4);
+    m
+});
 
 /// LaTeX document extractor
 pub struct LatexExtractor;
@@ -56,31 +90,12 @@ impl LatexExtractor {
         }
         // When the document contains \chapter, use absolute LaTeX hierarchy
         // (chapter=1, section=2, ...). Otherwise, section starts at level 1.
+        // Use a static AHashMap for O(1) lookup instead of a linear scan.
         let has_chapters = source.contains("\\chapter{") || source.contains("\\chapter*{");
-        let heading_commands: &[(&str, u8)] = if has_chapters {
-            &[
-                ("chapter*", 1),
-                ("chapter", 1),
-                ("section*", 2),
-                ("section", 2),
-                ("subsection*", 3),
-                ("subsection", 3),
-                ("subsubsection*", 4),
-                ("subsubsection", 4),
-                ("paragraph*", 5),
-                ("paragraph", 5),
-            ]
+        let heading_map = if has_chapters {
+            &*HEADING_LEVELS_WITH_CHAPTERS
         } else {
-            &[
-                ("section*", 1),
-                ("section", 1),
-                ("subsection*", 2),
-                ("subsection", 2),
-                ("subsubsection*", 3),
-                ("subsubsection", 3),
-                ("paragraph*", 4),
-                ("paragraph", 4),
-            ]
+            &*HEADING_LEVELS_NO_CHAPTERS
         };
 
         let mut i = 0;
@@ -177,19 +192,24 @@ impl LatexExtractor {
                 }
             }
 
-            // Handle heading commands
-
+            // Handle heading commands — O(1) map lookup instead of a linear scan.
+            // Strip the leading backslash from `trimmed` (e.g. "\section{Intro}" → "section{Intro}"),
+            // then extract the bare command name up to the first `{` or `[` to look it up.
             let mut handled = false;
-            for &(cmd, level) in heading_commands {
-                let cmd_prefix = format!("\\{}", cmd);
-                if trimmed.starts_with(&cmd_prefix) {
-                    let rest = &trimmed[cmd_prefix.len()..];
+            if let Some(after_backslash) = trimmed.strip_prefix('\\') {
+                // Find where the command name ends (first `{`, `[`, or whitespace)
+                let cmd_end = after_backslash
+                    .find(|c: char| c == '{' || c == '[' || c.is_whitespace())
+                    .unwrap_or(after_backslash.len());
+                let cmd_name = &after_backslash[..cmd_end];
+                if let Some(&level) = heading_map.get(cmd_name) {
+                    let rest = &after_backslash[cmd_end..];
+                    let rest = rest.trim_start();
                     if rest.starts_with('{') || rest.starts_with('[') {
-                        if let Some(title) = extract_heading_title(trimmed, cmd) {
+                        if let Some(title) = extract_heading_title(trimmed, cmd_name) {
                             builder.push_heading(level, &title, None, None);
                         }
                         handled = true;
-                        break;
                     }
                 }
             }

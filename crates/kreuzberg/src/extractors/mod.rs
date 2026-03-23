@@ -68,6 +68,9 @@ pub mod text;
 pub mod djot_format;
 pub mod frontmatter_utils;
 
+#[cfg(any(feature = "office", feature = "mdx"))]
+pub(crate) mod markdown_utils;
+
 #[cfg(feature = "archives")]
 pub mod security;
 

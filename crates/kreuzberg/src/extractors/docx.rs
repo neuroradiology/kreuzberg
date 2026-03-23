@@ -238,7 +238,7 @@ type DocxParseResult = (
     Vec<Table>,
     Option<Vec<PageBoundary>>,
     Vec<crate::extraction::docx::drawing::Drawing>,
-    HashMap<String, String>,
+    AHashMap<String, String>,
     Option<crate::types::DocumentStructure>,
 );
 

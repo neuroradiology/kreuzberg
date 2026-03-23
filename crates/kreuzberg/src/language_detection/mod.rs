@@ -83,7 +83,7 @@ fn detect_multiple_languages(text: &str, config: &LanguageDetectionConfig) -> Re
         return Ok(None);
     }
 
-    let mut lang_counts = std::collections::HashMap::new();
+    let mut lang_counts = ahash::AHashMap::new();
     let threshold = config.min_confidence.min(0.35);
 
     for chunk in &chunk_strings {
