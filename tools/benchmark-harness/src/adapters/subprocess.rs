@@ -635,7 +635,8 @@ impl FrameworkAdapter for SubprocessAdapter {
                 Err(e) => {
                     let samples = monitor.stop().await;
                     let snapshots = monitor.get_snapshots().await;
-                    let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+                    let baseline = monitor.baseline_memory().await;
+                    let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
                     let actual_duration = start_time.elapsed();
 
                     let throughput = if actual_duration.as_secs_f64() > 0.0 {
@@ -691,7 +692,8 @@ impl FrameworkAdapter for SubprocessAdapter {
                 Err(e) => {
                     let samples = monitor.stop().await;
                     let snapshots = monitor.get_snapshots().await;
-                    let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+                    let baseline = monitor.baseline_memory().await;
+                    let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
                     let actual_duration = start_time.elapsed();
 
                     let throughput = if actual_duration.as_secs_f64() > 0.0 {
@@ -752,7 +754,8 @@ impl FrameworkAdapter for SubprocessAdapter {
             samples.push(post_sample);
         }
         let snapshots = monitor.get_snapshots().await;
-        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+        let baseline = monitor.baseline_memory().await;
+        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
 
         let parsed = match self.parse_output(&stdout) {
             Ok(value) => value,
@@ -958,7 +961,8 @@ impl FrameworkAdapter for SubprocessAdapter {
             Err(e) => {
                 let samples = monitor.stop().await;
                 let snapshots = monitor.get_snapshots().await;
-                let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+                let baseline = monitor.baseline_memory().await;
+                let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
                 let actual_duration = start_time.elapsed();
 
                 // Create one failure result per file instead of a single aggregated failure
@@ -1033,7 +1037,8 @@ impl FrameworkAdapter for SubprocessAdapter {
             samples.push(post_sample);
         }
         let snapshots = monitor.get_snapshots().await;
-        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+        let baseline = monitor.baseline_memory().await;
+        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
 
         // Parse batch output to extract per-file OCR status and extraction times
         // Try to parse as JSON array; fall back to defaults if parsing fails

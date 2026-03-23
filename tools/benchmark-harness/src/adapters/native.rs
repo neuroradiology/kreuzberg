@@ -165,7 +165,8 @@ impl FrameworkAdapter for NativeAdapter {
             samples.push(post_sample);
         }
         let snapshots = monitor.get_snapshots().await;
-        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+        let baseline = monitor.baseline_memory().await;
+        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
 
         let throughput = if duration.as_secs_f64() > 0.0 {
             file_size as f64 / duration.as_secs_f64()
@@ -309,7 +310,8 @@ impl FrameworkAdapter for NativeAdapter {
 
         let samples = monitor.stop().await;
         let snapshots = monitor.get_snapshots().await;
-        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+        let baseline = monitor.baseline_memory().await;
+        let resource_stats = ResourceMonitor::calculate_stats(&samples, &snapshots, baseline);
 
         if let Err(e) = batch_result {
             // Create one failure result per file instead of a single aggregated failure

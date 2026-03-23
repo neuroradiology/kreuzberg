@@ -21,7 +21,7 @@ async fn test_cpu_measurement_normalization() {
 
     let samples = monitor.stop().await;
     let snapshots = monitor.get_snapshots().await;
-    let stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+    let stats = ResourceMonitor::calculate_stats(&samples, &snapshots, 0);
 
     assert!(
         stats.avg_cpu_percent >= 0.0,
@@ -134,7 +134,7 @@ async fn test_memory_tracking_functional() {
 
     let samples = monitor.stop().await;
     let snapshots = monitor.get_snapshots().await;
-    let stats = ResourceMonitor::calculate_stats(&samples, &snapshots);
+    let stats = ResourceMonitor::calculate_stats(&samples, &snapshots, 0);
 
     assert!(
         stats.peak_memory_bytes > 0,

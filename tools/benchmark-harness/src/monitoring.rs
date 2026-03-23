@@ -225,6 +225,9 @@ pub struct ResourceMonitor {
     snapshots: Arc<Mutex<Vec<MemorySnapshot>>>,
     running: Arc<AtomicBool>,
     pid: Pid,
+    /// Baseline RSS captured at start(), used to compute delta-based memory metrics.
+    /// This removes the effect of pre-loaded models/runtimes from per-extraction measurements.
+    baseline_memory_bytes: Arc<Mutex<u64>>,
 }
 
 impl ResourceMonitor {
@@ -239,6 +242,7 @@ impl ResourceMonitor {
             snapshots: Arc::new(Mutex::new(Vec::new())),
             running: Arc::new(AtomicBool::new(false)),
             pid,
+            baseline_memory_bytes: Arc::new(Mutex::new(0)),
         }
     }
 
@@ -253,6 +257,7 @@ impl ResourceMonitor {
             snapshots: Arc::new(Mutex::new(Vec::new())),
             running: Arc::new(AtomicBool::new(false)),
             pid: Pid::from_u32(pid),
+            baseline_memory_bytes: Arc::new(Mutex::new(0)),
         }
     }
 
@@ -287,6 +292,7 @@ impl ResourceMonitor {
         let samples = Arc::clone(&self.samples);
         let snapshots = Arc::clone(&self.snapshots);
         let running = Arc::clone(&self.running);
+        let baseline_memory = Arc::clone(&self.baseline_memory_bytes);
         let pid = self.pid;
 
         tokio::spawn(async move {
@@ -301,6 +307,14 @@ impl ResourceMonitor {
             // By doing a baseline refresh here, the first in-loop sample will have
             // a prior measurement to compare against and yield real CPU values.
             system.refresh_processes_specifics(ProcessesToUpdate::All, false, refresh_kind);
+
+            // Capture baseline RSS before extraction starts.
+            // This allows delta-based memory reporting: peak_during_extraction - baseline.
+            // Without this, pre-loaded models (e.g. PaddleOCR ~362MB) inflate every
+            // extraction's memory measurement, even for plain text files.
+            let baseline_rss = collect_process_tree_memory(pid, &system);
+            *baseline_memory.lock().await = baseline_rss;
+
             tokio::time::sleep(sample_interval).await;
 
             while running.load(Ordering::SeqCst) {
@@ -456,15 +470,23 @@ impl ResourceMonitor {
         values[index]
     }
 
+    /// Get the baseline memory captured at start().
+    pub async fn baseline_memory(&self) -> u64 {
+        *self.baseline_memory_bytes.lock().await
+    }
+
     /// Calculate resource statistics from samples and snapshots
     ///
-    /// Computes comprehensive resource metrics including percentiles,
-    /// growth rates, and memory leak detection.
-    pub fn calculate_stats(samples: &[ResourceSample], snapshots: &[MemorySnapshot]) -> ResourceStats {
+    /// Memory values are reported as deltas from `baseline_bytes`, which represents
+    /// the process tree RSS before extraction started. This removes the effect of
+    /// pre-loaded models and runtimes from per-extraction measurements.
+    ///
+    /// Pass `baseline_bytes = 0` to get absolute RSS (legacy behavior).
+    pub fn calculate_stats(samples: &[ResourceSample], snapshots: &[MemorySnapshot], baseline_bytes: u64) -> ResourceStats {
         if samples.is_empty() {
             // If no background samples but snapshots are available, use snapshot RSS as fallback
             if !snapshots.is_empty() {
-                let peak_rss = snapshots.iter().map(|s| s.rss_bytes).max().unwrap_or(0);
+                let peak_rss = snapshots.iter().map(|s| s.rss_bytes.saturating_sub(baseline_bytes)).max().unwrap_or(0);
                 let peak_vm = snapshots.iter().map(|s| s.vm_bytes).max().unwrap_or(0);
                 return ResourceStats {
                     peak_memory_bytes: peak_rss,
@@ -480,7 +502,11 @@ impl ResourceMonitor {
             return ResourceStats::default();
         }
 
-        let memory_values: Vec<u64> = samples.iter().map(|s| s.memory_bytes).collect();
+        // Subtract baseline from memory samples to get delta (incremental cost of this extraction).
+        let memory_values: Vec<u64> = samples
+            .iter()
+            .map(|s| s.memory_bytes.saturating_sub(baseline_bytes))
+            .collect();
         let cpu_values: Vec<f64> = samples.iter().map(|s| s.cpu_percent).collect();
         let vm_values: Vec<u64> = samples.iter().map(|s| s.vm_size_bytes).collect();
 
