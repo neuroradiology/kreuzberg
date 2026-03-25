@@ -329,7 +329,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     ocr_page_numbers: &[usize],
     content: &[u8],
     config: &ExtractionConfig,
-    path: Option<&std::path::Path>,
+    _path: Option<&std::path::Path>,
 ) -> crate::Result<String> {
     use std::collections::HashSet;
 
@@ -603,7 +603,11 @@ pub(crate) async fn extract_with_ocr(
                 let render_opts = crate::pdf::rendering::PageRenderOptions::default();
                 let mut batch_imgs = Vec::with_capacity(batch_end - batch_start);
                 for i in batch_start..batch_end {
-                    let image = renderer.render_page_to_image(content.unwrap(), i, &render_opts)
+                    let pdf_bytes = content.ok_or_else(|| crate::KreuzbergError::Parsing {
+                        message: "PDF content is required for OCR rendering but was not provided".to_string(),
+                        source: None,
+                    })?;
+                    let image = renderer.render_page_to_image(pdf_bytes, i, &render_opts)
                         .map_err(|e| crate::KreuzbergError::Parsing {
                             message: format!("Failed to render page {} for OCR: {:?}", i, e),
                             source: None,
@@ -666,6 +670,8 @@ pub(crate) async fn extract_with_ocr(
         // Sequential post-processing for this batch utilizing TATR.
         for offset in 0..batch_slice.len() {
             let page_idx = batch_start + offset;
+            // SAFETY: batch_ocr_results is pre-sized to batch_slice.len() and every slot
+            // is filled in the JoinSet loop above before this post-processing loop runs.
             let ocr_result = batch_ocr_results[offset].take().expect("OCR result missing for page");
             let (_, _, _width, _height) = encoded_batch[offset];
             

@@ -120,13 +120,13 @@ fn run_layout_detection_ocr_pass(
     };
 
     let mut all_results = Vec::new();
-    let batch_size = 10;
+    let batch_size = crate::pdf::layout_runner::DEFAULT_LAYOUT_BATCH_SIZE;
     
     let result = match crate::pdf::layout_runner::detect_layout_for_document_batched(
         content,
         &mut engine,
         batch_size,
-        |batch_res, _timings, batch_imgs| {
+        |batch_res, _timings, _batch_imgs| {
             // Reconstruct DetectionResult (pixel-space bbox) from PageLayoutResult (PDF-space bbox)
             // We know:
             // pixel_x * (page_width / img_width) = pdf_left

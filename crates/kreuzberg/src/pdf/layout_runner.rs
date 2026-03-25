@@ -11,6 +11,13 @@ use rayon::prelude::*;
 use crate::layout::{DetectionResult, LayoutClass, LayoutEngine};
 use crate::pdf::error::Result;
 
+/// Default number of pages per layout-detection batch.
+///
+/// A 640×640 RGB image is ~1.2 MB, so 10 pages ≈ 12 MB of raw pixel data per batch.
+/// Used by both `detect_layout_for_document` and the OCR layout pass in
+/// `run_layout_detection_ocr_pass` so that both paths share the same default.
+pub(crate) const DEFAULT_LAYOUT_BATCH_SIZE: usize = 10;
+
 /// Bounding box in PDF coordinate space (points, y=0 at bottom of page).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PdfLayoutBBox {
@@ -213,7 +220,6 @@ where
 {
     let total_start = Instant::now();
 
-    #[allow(clippy::type_complexity)]
     use super::bindings::bind_pdfium;
     use pdfium_render::prelude::*;
 
@@ -279,12 +285,8 @@ where
                     postprocess_ms: 0.0,
                     mapping_ms: 0.0,
                 });
-                
-                // We use a dummy 1x1 image for skipped pages to satisfy the signature if needed, 
-                // though in practice we might not want to return anything
-                empty_images.push(image::DynamicImage::ImageRgb8(image::RgbImage::new(1, 1)));
             }
-            
+
             callback(empty_results, empty_timings.clone(), empty_images)?;
             all_timings.extend(empty_timings);
             break;
@@ -424,9 +426,7 @@ pub fn detect_layout_for_document(
     let mut all_results = Vec::new();
     let mut all_images = Vec::new();
     
-    // Default to batch size of 10 pages at a time to keep memory down
-    // (a 640x640 RGB image is ~1.2MB, so 10 is ~12MB of raw pixel data, plus whatever the document holds)
-    let batch_size = 10;
+    let batch_size = DEFAULT_LAYOUT_BATCH_SIZE;
     
     let report = detect_layout_for_document_batched(
         pdf_bytes, 
@@ -450,6 +450,8 @@ pub fn detect_layout_for_document(
         avg_render_ms = report.avg_render_ms(),
         avg_preprocess_ms = report.avg_preprocess_ms(),
         avg_onnx_ms = report.avg_onnx_ms(),
+        avg_inference_ms = report.avg_inference_ms(),
+        avg_postprocess_ms = report.avg_postprocess_ms(),
         "Layout detection complete for document"
     );
 
