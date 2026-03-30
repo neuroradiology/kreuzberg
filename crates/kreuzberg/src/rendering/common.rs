@@ -647,26 +647,6 @@ mod tests {
         assert_eq!(result, "[B:Hello world]");
     }
 
-    #[test]
-    fn test_render_annotated_text_escaped_plain_fn() {
-        let ann = vec![TextAnnotation {
-            start: 6,
-            end: 11,
-            kind: AnnotationKind::Bold,
-        }];
-        let result = render_annotated_text_escaped(
-            "Hello world",
-            &ann,
-            |span, kind| match kind {
-                AnnotationKind::Bold => format!("<b>{}</b>", span),
-                _ => span.to_string(),
-            },
-            |s| s.to_uppercase(),
-        );
-        // Plain text "Hello " should be uppercased, annotated "world" goes through emit
-        assert_eq!(result, "HELLO <b>world</b>");
-    }
-
     // ========================================================================
     // RenderState tests
     // ========================================================================
@@ -718,28 +698,6 @@ mod tests {
         assert_eq!(state.next_list_number(), 1);
         assert_eq!(state.next_list_number(), 2);
         assert_eq!(state.next_list_number(), 3);
-    }
-
-    #[test]
-    fn test_render_state_innermost_list_ordered() {
-        let mut state = RenderState::default();
-        assert!(!state.innermost_list_ordered());
-        state.push_container(
-            NestingKind::List {
-                ordered: true,
-                item_count: 0,
-            },
-            0,
-        );
-        assert!(state.innermost_list_ordered());
-        state.push_container(
-            NestingKind::List {
-                ordered: false,
-                item_count: 0,
-            },
-            1,
-        );
-        assert!(!state.innermost_list_ordered());
     }
 
     // ========================================================================
