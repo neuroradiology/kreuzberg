@@ -9,12 +9,13 @@ fn fixtures_dir() -> PathBuf {
 }
 
 fn config_with_images() -> ExtractionConfig {
-    let mut config = ExtractionConfig::default();
-    config.images = Some(ImageExtractionConfig {
-        extract_images: true,
+    ExtractionConfig {
+        images: Some(ImageExtractionConfig {
+            extract_images: true,
+            ..Default::default()
+        }),
         ..Default::default()
-    });
-    config
+    }
 }
 
 #[tokio::test]

@@ -469,15 +469,15 @@ fn collect_slide_hyperlinks(slide: &elements::Slide, out: &mut Vec<(String, Opti
     // Helper: iterate all runs from all elements
     let mut visit_runs = |runs: &[Run]| {
         for run in runs {
-            if let Some(ref hlink_id) = run.hyperlink_id {
-                if let Some(href) = slide.hyperlinks.iter().find(|h| h.id == *hlink_id) {
-                    let label = if run.text.trim().is_empty() {
-                        None
-                    } else {
-                        Some(run.text.trim().to_string())
-                    };
-                    out.push((href.url.clone(), label));
-                }
+            if let Some(ref hlink_id) = run.hyperlink_id
+                && let Some(href) = slide.hyperlinks.iter().find(|h| h.id == *hlink_id)
+            {
+                let label = if run.text.trim().is_empty() {
+                    None
+                } else {
+                    Some(run.text.trim().to_string())
+                };
+                out.push((href.url.clone(), label));
             }
         }
     };

@@ -350,10 +350,10 @@ fn test_output_format_all_variants() {
         OutputFormat::Djot,
     ];
 
-    for fmt in formats {
-        let serialized = serde_json::to_value(fmt).expect("Failed to serialize");
+    for fmt in &formats {
+        let serialized = serde_json::to_value(fmt.clone()).expect("Failed to serialize");
         let deserialized: OutputFormat = serde_json::from_value(serialized).expect("Failed to deserialize");
-        assert_eq!(fmt, deserialized, "Format should survive roundtrip");
+        assert_eq!(*fmt, deserialized, "Format should survive roundtrip");
     }
 }
 

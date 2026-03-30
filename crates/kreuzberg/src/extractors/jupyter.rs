@@ -468,29 +468,29 @@ impl JupyterExtractor {
                     current_text.push_str(&text);
                 }
                 Event::End(TagEnd::Link) => {
-                    if let Some(url) = current_url.take() {
-                        if !url.is_empty() {
-                            let label_opt = if current_text.is_empty() {
-                                None
-                            } else {
-                                Some(current_text.clone())
-                            };
-                            uris.push(Uri::hyperlink(&url, label_opt));
-                        }
+                    if let Some(url) = current_url.take()
+                        && !url.is_empty()
+                    {
+                        let label_opt = if current_text.is_empty() {
+                            None
+                        } else {
+                            Some(current_text.clone())
+                        };
+                        uris.push(Uri::hyperlink(&url, label_opt));
                     }
                     in_link = false;
                     current_text.clear();
                 }
                 Event::End(TagEnd::Image) => {
-                    if let Some(url) = current_url.take() {
-                        if !url.is_empty() {
-                            let label_opt = if current_text.is_empty() {
-                                None
-                            } else {
-                                Some(current_text.clone())
-                            };
-                            uris.push(Uri::image(&url, label_opt));
-                        }
+                    if let Some(url) = current_url.take()
+                        && !url.is_empty()
+                    {
+                        let label_opt = if current_text.is_empty() {
+                            None
+                        } else {
+                            Some(current_text.clone())
+                        };
+                        uris.push(Uri::image(&url, label_opt));
                     }
                     in_image = false;
                     current_text.clear();

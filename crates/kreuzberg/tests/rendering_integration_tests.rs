@@ -201,7 +201,7 @@ async fn test_format_switching_consistency() {
 
     for format in &formats {
         let doc = build_rich_document();
-        let result = derive(doc, *format);
+        let result = derive(doc, format.clone());
         let text = effective_content(&result);
 
         for word in &expected_words {
@@ -330,7 +330,7 @@ async fn test_empty_document_handling() {
         let b = InternalDocumentBuilder::new("test");
         let doc = b.build();
         // Should not panic
-        let result = derive(doc, *format);
+        let result = derive(doc, format.clone());
 
         // Content can be empty or whitespace-only — the key is no panic
         let text = effective_content(&result);
@@ -384,7 +384,7 @@ async fn test_large_document_renders_without_timeout() {
         }
         let doc2 = b2.build();
 
-        let result = derive(doc2, *format);
+        let result = derive(doc2, format.clone());
         let text = effective_content(&result);
 
         assert!(

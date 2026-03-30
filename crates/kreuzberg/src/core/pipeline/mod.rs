@@ -80,19 +80,19 @@ pub async fn run_pipeline(doc: InternalDocument, config: &ExtractionConfig) -> R
 
     // 1.5. Process extracted images with OCR if configured
     #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-    if config.ocr.is_some()
-        && result.images.as_ref().is_some_and(|imgs| !imgs.is_empty())
-    {
+    if config.ocr.is_some() && result.images.as_ref().is_some_and(|imgs| !imgs.is_empty()) {
         let images_to_process = result.images.take().unwrap_or_default();
         match crate::extraction::image_ocr::process_images_with_ocr(images_to_process, config).await {
             Ok(processed) => {
                 result.images = if processed.is_empty() { None } else { Some(processed) };
             }
             Err(e) => {
-                result.processing_warnings.push(crate::types::extraction::ProcessingWarning {
-                    source: std::borrow::Cow::Borrowed("image_ocr"),
-                    message: std::borrow::Cow::Owned(format!("Image OCR failed: {e}")),
-                });
+                result
+                    .processing_warnings
+                    .push(crate::types::extraction::ProcessingWarning {
+                        source: std::borrow::Cow::Borrowed("image_ocr"),
+                        message: std::borrow::Cow::Owned(format!("Image OCR failed: {e}")),
+                    });
             }
         }
     }
