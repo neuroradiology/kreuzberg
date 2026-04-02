@@ -106,6 +106,7 @@ impl RenderState {
 /// `start < current_pos`) are skipped, matching the existing renderer behavior.
 ///
 /// Plain (unannotated) text segments are passed through without transformation.
+#[cfg(test)]
 pub(crate) fn render_annotated_text(
     text: &str,
     annotations: &[TextAnnotation],
@@ -114,7 +115,7 @@ pub(crate) fn render_annotated_text(
     render_annotated_text_with_plain(text, annotations, emit, |s| s.to_string())
 }
 
-fn render_annotated_text_with_plain(
+pub(crate) fn render_annotated_text_with_plain(
     text: &str,
     annotations: &[TextAnnotation],
     emit: impl Fn(&str, &AnnotationKind) -> String,
@@ -345,6 +346,34 @@ pub(crate) fn render_table_plain(cells: &[Vec<String>]) -> String {
 /// Render a table as djot pipe table (same syntax as GFM).
 pub(crate) fn render_table_djot(cells: &[Vec<String>]) -> String {
     render_table_markdown(cells)
+}
+
+// ============================================================================
+// Text Normalization
+// ============================================================================
+
+/// Normalize inline text for consistent output across renderers.
+///
+/// - Collapses multiple consecutive whitespace (spaces, tabs) into a single space
+/// - Replaces newlines with spaces (mid-paragraph line breaks from PDF extraction)
+/// - Strips control characters (< 0x20) except tab
+pub(crate) fn normalize_inline_text(text: &str) -> String {
+    let mut result = String::with_capacity(text.len());
+    let mut prev_space = false;
+    for ch in text.chars() {
+        if ch == '\n' || ch == ' ' {
+            if !prev_space {
+                result.push(' ');
+            }
+            prev_space = true;
+        } else if ch < '\u{20}' && ch != '\t' {
+            // Strip control characters (STX, etc.)
+        } else {
+            prev_space = false;
+            result.push(ch);
+        }
+    }
+    result
 }
 
 // ============================================================================
@@ -801,5 +830,44 @@ mod tests {
         let collector = FootnoteCollector::new(&doc);
         assert!(collector.definitions().is_empty());
         assert_eq!(collector.ref_number(0), None);
+    }
+
+    // ========================================================================
+    // normalize_inline_text tests
+    // ========================================================================
+
+    #[test]
+    fn test_normalize_inline_text_collapses_spaces() {
+        assert_eq!(normalize_inline_text("Hello   world"), "Hello world");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_newlines_to_spaces() {
+        assert_eq!(normalize_inline_text("Hello\nworld"), "Hello world");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_mixed_whitespace() {
+        assert_eq!(normalize_inline_text("Hello \n  world"), "Hello world");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_strips_control_chars() {
+        assert_eq!(normalize_inline_text("Hello\x02world"), "Helloworld");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_preserves_tabs() {
+        assert_eq!(normalize_inline_text("Hello\tworld"), "Hello\tworld");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_empty() {
+        assert_eq!(normalize_inline_text(""), "");
+    }
+
+    #[test]
+    fn test_normalize_inline_text_no_change() {
+        assert_eq!(normalize_inline_text("Hello world"), "Hello world");
     }
 }

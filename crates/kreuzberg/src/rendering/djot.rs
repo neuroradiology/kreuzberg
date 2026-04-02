@@ -5,8 +5,8 @@ use crate::types::internal::{ElementKind, InternalDocument};
 
 use super::common::{
     FootnoteCollector, NestingKind, RenderState, ensure_trailing_newline, finalize_output, get_admonition_kind,
-    get_admonition_title, get_language, handle_container_end, is_body_element, is_container_end,
-    parse_metadata_entries, push_with_bq, render_annotated_text, render_table_djot,
+    get_admonition_title, get_language, handle_container_end, is_body_element, is_container_end, normalize_inline_text,
+    parse_metadata_entries, push_with_bq, render_annotated_text_with_plain, render_table_djot,
 };
 
 /// Render an `InternalDocument` to Djot markup.
@@ -65,12 +65,7 @@ pub fn render_djot(doc: &InternalDocument) -> String {
             }
             ElementKind::Code => {
                 let lang = get_language(elem).unwrap_or("");
-                let lang_spec = if lang.is_empty() {
-                    String::new()
-                } else {
-                    format!(" {}", lang)
-                };
-                let mut block = format!("```{}\n{}", lang_spec, elem.text);
+                let mut block = format!("```{}\n{}", lang, elem.text);
                 if !elem.text.ends_with('\n') {
                     block.push('\n');
                 }
@@ -243,29 +238,40 @@ pub fn render_djot(doc: &InternalDocument) -> String {
     finalize_output(out)
 }
 
-/// Render text with djot inline annotations.
+/// Render text with djot inline annotations, normalizing inline text.
+///
+/// Plain text segments and annotated spans are normalized (whitespace collapsed,
+/// newlines replaced, control characters stripped) to match the markdown renderer.
+/// Code spans are left un-normalized to preserve literal content.
 fn render_djot_annotated(text: &str, annotations: &[crate::types::document_structure::TextAnnotation]) -> String {
-    render_annotated_text(text, annotations, |span, kind| match kind {
-        AnnotationKind::Bold => format!("*{}*", span),
-        AnnotationKind::Italic => format!("_{}_", span),
-        AnnotationKind::Code => format!("`{}`", span),
-        AnnotationKind::Strikethrough => format!("{{-{}-}}", span),
-        AnnotationKind::Underline => format!("[{}]{{.underline}}", span),
-        AnnotationKind::Subscript => format!("~{}~", span),
-        AnnotationKind::Superscript => format!("^{}^", span),
-        AnnotationKind::Highlight => format!("{{={}=}}", span),
-        AnnotationKind::Link { url, title } => {
-            if let Some(t) = title {
-                // Djot doesn't have a title syntax like markdown, just use link
-                format!("[{}]({} \"{}\")", span, url, t)
-            } else {
-                format!("[{}]({})", span, url)
+    render_annotated_text_with_plain(
+        text,
+        annotations,
+        |span, kind| {
+            let normalized = normalize_inline_text(span);
+            match kind {
+                AnnotationKind::Bold => format!("*{}*", normalized),
+                AnnotationKind::Italic => format!("_{}_", normalized),
+                AnnotationKind::Code => format!("`{}`", span), // Don't normalize code spans
+                AnnotationKind::Strikethrough => format!("{{-{}-}}", normalized),
+                AnnotationKind::Underline => format!("[{}]{{.underline}}", normalized),
+                AnnotationKind::Subscript => format!("~{}~", normalized),
+                AnnotationKind::Superscript => format!("^{}^", normalized),
+                AnnotationKind::Highlight => format!("{{={}=}}", normalized),
+                AnnotationKind::Link { url, title } => {
+                    if let Some(t) = title {
+                        format!("[{}]({} \"{}\")", normalized, url, t)
+                    } else {
+                        format!("[{}]({})", normalized, url)
+                    }
+                }
+                AnnotationKind::Color { .. } | AnnotationKind::FontSize { .. } | AnnotationKind::Custom { .. } => {
+                    normalized
+                }
             }
-        }
-        AnnotationKind::Color { .. } | AnnotationKind::FontSize { .. } | AnnotationKind::Custom { .. } => {
-            span.to_string()
-        }
-    })
+        },
+        normalize_inline_text,
+    )
 }
 
 #[cfg(test)]
@@ -360,8 +366,8 @@ mod tests {
         b.push_code("print('hi')", Some("python"), None, None);
         let doc = b.build();
         let out = render_djot(&doc);
-        // Djot uses ``` python (space before lang)
-        assert!(out.contains("``` python\n"), "got: {}", out);
+        // No space between fence and language specifier (parity with markdown)
+        assert!(out.contains("```python\n"), "got: {}", out);
         assert!(out.contains("print('hi')"), "got: {}", out);
     }
 
@@ -710,5 +716,210 @@ mod tests {
         let doc = b.build();
         let out = render_djot(&doc);
         assert!(out.contains("[^doe2023]: Doe 2023"), "got: {}", out);
+    }
+
+    // ========================================================================
+    // 5. Text normalization tests
+    // ========================================================================
+
+    #[test]
+    fn test_render_djot_normalizes_multiple_spaces() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Hello   world  foo", vec![], None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("Hello world foo"),
+            "multiple spaces should collapse, got: {}",
+            out
+        );
+    }
+
+    #[test]
+    fn test_render_djot_normalizes_newlines_to_spaces() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Hello\nworld\nfoo", vec![], None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("Hello world foo"),
+            "newlines should become spaces, got: {}",
+            out
+        );
+    }
+
+    #[test]
+    fn test_render_djot_strips_control_characters() {
+        let mut b = InternalDocumentBuilder::new("test");
+        // STX (0x02) is emitted by pdfium as soft-hyphen marker
+        b.push_paragraph("Hello\x02world", vec![], None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("Helloworld"),
+            "control chars should be stripped, got: {}",
+            out
+        );
+        assert!(!out.contains('\x02'), "STX should be removed, got: {}", out);
+    }
+
+    #[test]
+    fn test_render_djot_normalizes_heading_text() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_heading(2, "Hello   world", None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("## Hello world"),
+            "heading text should be normalized, got: {}",
+            out
+        );
+    }
+
+    #[test]
+    fn test_render_djot_normalizes_list_item_text() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_list_item("Hello   world", false, vec![], None, None);
+        b.end_list();
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("- Hello world"),
+            "list item text should be normalized, got: {}",
+            out
+        );
+    }
+
+    #[test]
+    fn test_render_djot_normalizes_annotated_text() {
+        let mut b = InternalDocumentBuilder::new("test");
+        let ann = vec![TextAnnotation {
+            start: 0,
+            end: 13,
+            kind: AnnotationKind::Bold,
+        }];
+        b.push_paragraph("Hello   world rest", ann, None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("*Hello world*"),
+            "annotated text should be normalized, got: {}",
+            out
+        );
+    }
+
+    #[test]
+    fn test_render_djot_code_block_no_language() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_code("x = 1", None, None, None);
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(
+            out.contains("```\n"),
+            "no-lang code block should have bare fence, got: {}",
+            out
+        );
+    }
+
+    // ========================================================================
+    // 6. Structural parity tests (djot vs markdown)
+    // ========================================================================
+
+    #[test]
+    fn test_djot_markdown_heading_parity() {
+        use crate::rendering::render_markdown;
+
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_heading(1, "Title", None, None);
+        b.push_heading(2, "Section", None, None);
+        b.push_heading(3, "Subsection", None, None);
+        let doc = b.build();
+
+        let djot_out = render_djot(&doc);
+        let md_out = render_markdown(&doc);
+
+        // Both should have the same heading markers
+        assert!(djot_out.contains("# Title"), "djot heading 1, got: {}", djot_out);
+        assert!(md_out.contains("# Title"), "md heading 1, got: {}", md_out);
+        assert!(djot_out.contains("## Section"), "djot heading 2, got: {}", djot_out);
+        assert!(md_out.contains("## Section"), "md heading 2, got: {}", md_out);
+        assert!(djot_out.contains("### Subsection"), "djot heading 3, got: {}", djot_out);
+        assert!(md_out.contains("### Subsection"), "md heading 3, got: {}", md_out);
+    }
+
+    #[test]
+    fn test_djot_markdown_table_content_parity() {
+        use crate::rendering::render_markdown;
+
+        let mut b = InternalDocumentBuilder::new("test");
+        let cells = vec![
+            vec!["Name".to_string(), "Value".to_string()],
+            vec!["Alpha".to_string(), "100".to_string()],
+            vec!["Beta".to_string(), "200".to_string()],
+        ];
+        b.push_table_from_cells(&cells, None, None);
+        let doc = b.build();
+
+        let djot_out = render_djot(&doc);
+        let md_out = render_markdown(&doc);
+
+        // Both formats should contain identical table cell content
+        for cell in &["Name", "Value", "Alpha", "100", "Beta", "200"] {
+            assert!(
+                djot_out.contains(cell),
+                "djot missing cell '{}', got: {}",
+                cell,
+                djot_out
+            );
+            assert!(md_out.contains(cell), "md missing cell '{}', got: {}", cell, md_out);
+        }
+    }
+
+    #[test]
+    fn test_djot_markdown_block_count_parity() {
+        use crate::rendering::render_markdown;
+
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_heading(1, "Title", None, None);
+        b.push_paragraph("First paragraph.", vec![], None, None);
+        b.push_paragraph("Second paragraph.", vec![], None, None);
+        b.push_list(false);
+        b.push_list_item("Item A", false, vec![], None, None);
+        b.push_list_item("Item B", false, vec![], None, None);
+        b.end_list();
+        b.push_code("x = 1", Some("python"), None, None);
+        let doc = b.build();
+
+        let djot_out = render_djot(&doc);
+        let md_out = render_markdown(&doc);
+
+        // Count non-empty lines (blocks) in each output
+        let djot_blocks: Vec<&str> = djot_out.lines().filter(|l| !l.trim().is_empty()).collect();
+        let md_blocks: Vec<&str> = md_out.lines().filter(|l| !l.trim().is_empty()).collect();
+
+        // Djot may have more blocks than markdown (no paragraph consolidation),
+        // but should have at least as many.
+        assert!(
+            djot_blocks.len() >= md_blocks.len() - 1,
+            "djot block count ({}) should be close to markdown ({})\ndjot:\n{}\nmd:\n{}",
+            djot_blocks.len(),
+            md_blocks.len(),
+            djot_out,
+            md_out,
+        );
+
+        // Both should contain the same text content
+        for text in &[
+            "Title",
+            "First paragraph",
+            "Second paragraph",
+            "Item A",
+            "Item B",
+            "x = 1",
+        ] {
+            assert!(djot_out.contains(text), "djot missing '{}', got: {}", text, djot_out);
+            assert!(md_out.contains(text), "md missing '{}', got: {}", text, md_out);
+        }
     }
 }
