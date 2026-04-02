@@ -31,6 +31,10 @@ env:
   RUN_OCR_BENCHMARKS: "true"
   GROUND_TRUTH_DIR: "test_documents/ground_truth"
 
+concurrency:
+  group: benchmarks-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -143,7 +147,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -208,7 +212,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -278,7 +282,7 @@ jobs:
     env:
       RUSTUP_TOOLCHAIN: stable
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -357,7 +361,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -439,7 +443,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -521,7 +525,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -617,7 +621,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -703,7 +707,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -805,7 +809,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -902,7 +906,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -994,7 +998,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -1075,7 +1079,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -1170,7 +1174,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file, batch]
     steps:
@@ -1243,7 +1247,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3]
@@ -1307,7 +1311,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3]
@@ -1367,7 +1371,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1431,7 +1435,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3, 4]
@@ -1495,7 +1499,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3]
@@ -1559,7 +1563,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3]
@@ -1624,7 +1628,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1682,7 +1686,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
         shard: [1, 2, 3]
@@ -1746,7 +1750,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1804,7 +1808,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1862,7 +1866,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1925,7 +1929,7 @@ jobs:
     permissions:
       contents: read
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         mode: [single-file]
     steps:
@@ -1979,7 +1983,7 @@ jobs:
     name: Aggregate & Release Results
     needs: [kreuzberg-gate, bench-docling, bench-markitdown, bench-pandoc, bench-unstructured, bench-tika, bench-pymupdf4llm, bench-pdfplumber, bench-mineru, bench-pypdf, bench-pdfminer, bench-pdftotext, bench-playa-pdf]
     runs-on: ubuntu-24.04-arm
-    if: ${{ always() && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ !cancelled() && !failure() && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') }}
     permissions:
       contents: write
     steps:
