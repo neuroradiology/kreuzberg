@@ -230,7 +230,7 @@ public class OcrTest {
   public void ocrPaddleTableDetection() throws Exception {
     JsonNode config =
         MAPPER.readTree(
-            "{\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
+            "{\"output_format\":\"markdown\",\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
     E2EHelpers.skipIfFeatureUnavailable("paddle-ocr");
     E2EHelpers.skipIfFeatureUnavailable("paddle-ocr");
     if ((System.getProperty("os.arch").equals("aarch64")

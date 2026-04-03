@@ -85,7 +85,11 @@ Deno.test("pdf_bayesian_data_analysis", { permissions: { read: true, net: true }
 });
 
 Deno.test("pdf_bounding_boxes", { permissions: { read: true, net: true } }, async () => {
-	const config = buildConfig({ images: { extract_images: true } });
+	const config = buildConfig({
+		output_format: "markdown",
+		layout: { table_model: "tatr" },
+		images: { extract_images: true },
+	});
 	let result: ExtractionResult | null = null;
 	try {
 		const documentBytes = await resolveDocument("pdf/tiny.pdf");
@@ -351,7 +355,7 @@ Deno.test("pdf_tables_medium", { permissions: { read: true, net: true } }, async
 });
 
 Deno.test("pdf_tables_small", { permissions: { read: true, net: true } }, async () => {
-	const config = buildConfig(undefined);
+	const config = buildConfig({ output_format: "markdown", layout: { table_model: "tatr" } });
 	let result: ExtractionResult | null = null;
 	try {
 		const documentBytes = await resolveDocument("pdf/tiny.pdf");

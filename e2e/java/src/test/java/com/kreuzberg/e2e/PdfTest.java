@@ -83,7 +83,9 @@ public class PdfTest {
 
   @Test
   public void pdfBoundingBoxes() throws Exception {
-    JsonNode config = MAPPER.readTree("{\"images\":{\"extract_images\":true}}");
+    JsonNode config =
+        MAPPER.readTree(
+            "{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"},\"images\":{\"extract_images\":true}}");
     E2EHelpers.skipIfFeatureUnavailable("pdf");
     if ((System.getProperty("os.arch").equals("aarch64")
         && System.getProperty("os.name").startsWith("Linux"))) {
@@ -324,7 +326,8 @@ public class PdfTest {
 
   @Test
   public void pdfTablesSmall() throws Exception {
-    JsonNode config = null;
+    JsonNode config =
+        MAPPER.readTree("{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"}}");
     E2EHelpers.skipIfFeatureUnavailable("ocr");
     if ((System.getProperty("os.arch").equals("aarch64")
         && System.getProperty("os.name").startsWith("Linux"))) {

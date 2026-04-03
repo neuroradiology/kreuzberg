@@ -272,6 +272,7 @@ defmodule E2E.OcrTest do
              "ocr_paddle_table_detection",
              "images/simple_table.png",
              %{
+               output_format: "markdown",
                ocr: %{backend: "paddle-ocr", language: "en", paddle_ocr_config: %{enable_table_detection: true}},
                force_ocr: true
              },

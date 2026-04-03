@@ -171,6 +171,7 @@ func TestOcrOcrPaddleTableDetection(t *testing.T) {
 	skipIfFeatureUnavailable(t, "paddle-ocr")
 	skipIfFeatureUnavailable(t, "paddle-ocr")
 	result := runExtraction(t, "images/simple_table.png", []byte(`{
+"output_format": "markdown",
 "ocr": {
 	"backend": "paddle-ocr",
 	"language": "en",

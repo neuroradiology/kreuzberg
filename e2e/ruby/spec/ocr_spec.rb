@@ -210,7 +210,7 @@ RSpec.describe 'ocr fixtures' do
     E2ERuby.run_fixture(
       'ocr_paddle_table_detection',
       'images/simple_table.png',
-      { ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { enable_table_detection: true } }, force_ocr: true },
+      { output_format: 'markdown', ocr: { backend: 'paddle-ocr', language: 'en', paddle_ocr_config: { enable_table_detection: true } }, force_ocr: true },
       requirements: %w[paddle-ocr paddle-ocr onnxruntime],
       notes: 'Tests table detection capability with PaddleOCR. ONNX Runtime model loading unstable on ARM Linux.',
       skip_if_missing: true

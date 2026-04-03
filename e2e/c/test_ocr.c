@@ -112,7 +112,7 @@ static void test_ocr_ocr_paddle_structured(void) {
 static void test_ocr_ocr_paddle_table_detection(void) {
     if (skip_if_feature_unavailable("paddle-ocr")) return;
     if (skip_if_feature_unavailable("paddle-ocr")) return;
-    CExtractionResult *result = run_extraction("images/simple_table.png", "{\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
+    CExtractionResult *result = run_extraction("images/simple_table.png", "{\"output_format\":\"markdown\",\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
     if (!result) return; /* skipped */
     assert_expected_mime(result, (const char *[]){"image/png"}, 1);
     assert_min_content_length(result, 10);

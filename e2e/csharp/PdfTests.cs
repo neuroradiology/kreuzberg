@@ -63,7 +63,7 @@ namespace Kreuzberg.E2E.Pdf
             TestHelpers.SkipIfLegacyOfficeDisabled("pdf/tiny.pdf");
             TestHelpers.SkipIfOfficeTestOnWindows("pdf/tiny.pdf");
             var documentPath = TestHelpers.EnsureDocument("pdf/tiny.pdf", true);
-            var config = TestHelpers.BuildConfig("{\"images\":{\"extract_images\":true}}");
+            var config = TestHelpers.BuildConfig("{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"},\"images\":{\"extract_images\":true}}");
 
             var result = KreuzbergClient.ExtractFileSync(documentPath, config);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });
@@ -253,7 +253,7 @@ namespace Kreuzberg.E2E.Pdf
             TestHelpers.SkipIfLegacyOfficeDisabled("pdf/tiny.pdf");
             TestHelpers.SkipIfOfficeTestOnWindows("pdf/tiny.pdf");
             var documentPath = TestHelpers.EnsureDocument("pdf/tiny.pdf", true);
-            var config = TestHelpers.BuildConfig(null);
+            var config = TestHelpers.BuildConfig("{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"}}");
 
             var result = KreuzbergClient.ExtractFileSync(documentPath, config);
             TestHelpers.AssertExpectedMime(result, new[] { "application/pdf" });

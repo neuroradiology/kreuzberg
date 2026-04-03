@@ -374,9 +374,6 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 	if (isPlainRecord(source.layout)) {
 		const layout = source.layout as PlainRecord;
 		const layoutConfig: LayoutDetectionConfig = {};
-		if (typeof layout.preset === "string") {
-			layoutConfig.preset = layout.preset;
-		}
 		if (typeof layout.confidence_threshold === "number") {
 			layoutConfig.confidenceThreshold = layout.confidence_threshold;
 		}

@@ -99,7 +99,11 @@ describe("pdf", () => {
 			return;
 		}
 
-		const config = buildConfig({ images: { extract_images: true } });
+		const config = buildConfig({
+			output_format: "markdown",
+			layout: { table_model: "tatr" },
+			images: { extract_images: true },
+		});
 		let result: ExtractionResult | null = null;
 		try {
 			result = await extractBytes(documentBytes, "application/octet-stream", config);
@@ -407,7 +411,7 @@ describe("pdf", () => {
 			return;
 		}
 
-		const config = buildConfig(undefined);
+		const config = buildConfig({ output_format: "markdown", layout: { table_model: "tatr" } });
 		let result: ExtractionResult | null = null;
 		try {
 			result = await extractBytes(documentBytes, "application/pdf", config);

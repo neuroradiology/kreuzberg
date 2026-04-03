@@ -52,7 +52,7 @@ test_that("pdf_bounding_boxes", {
   result <- run_fixture(
     "pdf_bounding_boxes",
     "pdf/tiny.pdf",
-    list(images = list(extract_images = TRUE)),
+    list(output_format = "markdown", layout = list(table_model = "tatr"), images = list(extract_images = TRUE)),
     requirements = c("pdf"),
     notes = "ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables",
     skip_if_missing = TRUE
@@ -237,7 +237,7 @@ test_that("pdf_tables_small", {
   result <- run_fixture(
     "pdf_tables_small",
     "pdf/tiny.pdf",
-    NULL,
+    list(output_format = "markdown", layout = list(table_model = "tatr")),
     requirements = c("ocr"),
     notes = "PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.",
     skip_if_missing = TRUE

@@ -88,7 +88,7 @@ class PdfTest extends TestCase
 
         Helpers::skipIfFeatureUnavailable('pdf');
 
-        $config = Helpers::buildConfig(['images' => ['extract_images' => true]]);
+        $config = Helpers::buildConfig(['output_format' => 'markdown', 'layout' => ['table_model' => 'tatr'], 'images' => ['extract_images' => true]]);
 
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($documentPath);
@@ -353,7 +353,7 @@ class PdfTest extends TestCase
 
         Helpers::skipIfFeatureUnavailable('ocr');
 
-        $config = Helpers::buildConfig(null);
+        $config = Helpers::buildConfig(['output_format' => 'markdown', 'layout' => ['table_model' => 'tatr']]);
 
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($documentPath);

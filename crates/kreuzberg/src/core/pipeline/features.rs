@@ -5,7 +5,9 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::types::{ExtractionResult, PageBoundary, ProcessingWarning};
+#[cfg(feature = "chunking")]
+use crate::types::PageBoundary;
+use crate::types::{ExtractionResult, ProcessingWarning};
 use std::borrow::Cow;
 
 /// Recompute page boundaries against the rendered `content` string.

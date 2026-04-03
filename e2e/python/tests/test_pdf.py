@@ -79,7 +79,9 @@ def test_pdf_bounding_boxes() -> None:
     if _platform.machine() == "aarch64" and _platform.system() == "Linux":
         pytest.skip("Skipping pdf_bounding_boxes: not supported on this platform")
 
-    config = helpers.build_config({"images": {"extract_images": True}})
+    config = helpers.build_config(
+        {"output_format": "markdown", "layout": {"table_model": "tatr"}, "images": {"extract_images": True}}
+    )
 
     result = extract_file_sync(document_path, None, config)
 
@@ -295,7 +297,7 @@ def test_pdf_tables_small() -> None:
     if _platform.machine() == "aarch64" and _platform.system() == "Linux":
         pytest.skip("Skipping pdf_tables_small: not supported on this platform")
 
-    config = helpers.build_config(None)
+    config = helpers.build_config({"output_format": "markdown", "layout": {"table_model": "tatr"}})
 
     result = extract_file_sync(document_path, None, config)
 

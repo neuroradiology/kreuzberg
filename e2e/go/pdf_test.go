@@ -32,6 +32,10 @@ func TestPdfPdfBayesianDataAnalysis(t *testing.T) {
 func TestPdfPdfBoundingBoxes(t *testing.T) {
 	skipIfFeatureUnavailable(t, "pdf")
 	result := runExtraction(t, "pdf/tiny.pdf", []byte(`{
+"output_format": "markdown",
+"layout": {
+	"table_model": "tatr"
+},
 "images": {
 	"extract_images": true
 }
@@ -130,7 +134,12 @@ func TestPdfPdfTablesMedium(t *testing.T) {
 
 func TestPdfPdfTablesSmall(t *testing.T) {
 	skipIfFeatureUnavailable(t, "ocr")
-	result := runExtraction(t, "pdf/tiny.pdf", nil)
+	result := runExtraction(t, "pdf/tiny.pdf", []byte(`{
+"output_format": "markdown",
+"layout": {
+	"table_model": "tatr"
+}
+}`))
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 50)
 	assertContentContainsAll(t, result, []string{"Table 1", "Selected Numbers", "Celsius", "Fahrenheit", "Water Freezing Point", "Water Boiling Point"})

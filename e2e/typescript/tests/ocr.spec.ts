@@ -397,6 +397,7 @@ describe("ocr fixtures", () => {
 				return;
 			}
 			const config = buildConfig({
+				output_format: "markdown",
 				ocr: { backend: "paddle-ocr", language: "en", paddle_ocr_config: { enable_table_detection: true } },
 				force_ocr: true,
 			});

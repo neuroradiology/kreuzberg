@@ -253,7 +253,7 @@ class OcrTest extends TestCase
         Helpers::skipIfFeatureUnavailable('paddle-ocr');
         Helpers::skipIfFeatureUnavailable('paddle-ocr');
 
-        $config = Helpers::buildConfig(['ocr' => ['backend' => 'paddle-ocr', 'language' => 'en', 'paddle_ocr_config' => ['enable_table_detection' => true]], 'force_ocr' => true]);
+        $config = Helpers::buildConfig(['output_format' => 'markdown', 'ocr' => ['backend' => 'paddle-ocr', 'language' => 'en', 'paddle_ocr_config' => ['enable_table_detection' => true]], 'force_ocr' => true]);
 
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($documentPath);

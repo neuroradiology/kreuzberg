@@ -36,7 +36,7 @@ static void test_pdf_pdf_bayesian_data_analysis(void) {
 
 static void test_pdf_pdf_bounding_boxes(void) {
     if (skip_if_feature_unavailable("pdf")) return;
-    CExtractionResult *result = run_extraction("pdf/tiny.pdf", "{\"images\":{\"extract_images\":true}}");
+    CExtractionResult *result = run_extraction("pdf/tiny.pdf", "{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"},\"images\":{\"extract_images\":true}}");
     if (!result) return; /* skipped */
     assert_expected_mime(result, (const char *[]){"application/pdf"}, 1);
     assert_min_content_length(result, 50);
@@ -160,7 +160,7 @@ static void test_pdf_pdf_tables_medium(void) {
 
 static void test_pdf_pdf_tables_small(void) {
     if (skip_if_feature_unavailable("ocr")) return;
-    CExtractionResult *result = run_extraction("pdf/tiny.pdf", NULL);
+    CExtractionResult *result = run_extraction("pdf/tiny.pdf", "{\"output_format\":\"markdown\",\"layout\":{\"table_model\":\"tatr\"}}");
     if (!result) return; /* skipped */
     assert_expected_mime(result, (const char *[]){"application/pdf"}, 1);
     assert_min_content_length(result, 50);

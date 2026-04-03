@@ -122,7 +122,11 @@ describe("pdf fixtures", () => {
 				console.warn("Skipping pdf_bounding_boxes: not supported on this platform");
 				return;
 			}
-			const config = buildConfig({ images: { extract_images: true } });
+			const config = buildConfig({
+				output_format: "markdown",
+				layout: { table_model: "tatr" },
+				images: { extract_images: true },
+			});
 			let result: ExtractionResult | null = null;
 			try {
 				result = extractFileSync(documentPath, null, config);
@@ -509,7 +513,7 @@ describe("pdf fixtures", () => {
 				console.warn("Skipping pdf_tables_small: not supported on this platform");
 				return;
 			}
-			const config = buildConfig(undefined);
+			const config = buildConfig({ output_format: "markdown", layout: { table_model: "tatr" } });
 			let result: ExtractionResult | null = null;
 			try {
 				result = extractFileSync(documentPath, null, config);

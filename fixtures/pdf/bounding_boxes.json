@@ -9,6 +9,10 @@
 		"method": "sync",
 		"input_type": "file",
 		"config": {
+			"output_format": "markdown",
+			"layout": {
+				"table_model": "tatr"
+			},
 			"images": {
 				"extract_images": true
 			}

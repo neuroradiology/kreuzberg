@@ -9,6 +9,7 @@
 	},
 	"extraction": {
 		"config": {
+			"output_format": "markdown",
 			"ocr": {
 				"backend": "paddle-ocr",
 				"language": "en",

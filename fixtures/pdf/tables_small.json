@@ -7,7 +7,12 @@
 		"media_type": "application/pdf"
 	},
 	"extraction": {
-		"config": {}
+		"config": {
+			"output_format": "markdown",
+			"layout": {
+				"table_model": "tatr"
+			}
+		}
 	},
 	"assertions": {
 		"expected_mime": "application/pdf",

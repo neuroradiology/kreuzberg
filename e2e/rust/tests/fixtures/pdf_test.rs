@@ -108,6 +108,10 @@ fn test_pdf_bounding_boxes() {
     }
     let config: ExtractionConfig = serde_json::from_str(
         r#"{
+  "output_format": "markdown",
+  "layout": {
+    "table_model": "tatr"
+  },
   "images": {
     "extract_images": true
   }
@@ -469,7 +473,15 @@ fn test_pdf_tables_small() {
         println!("Skipping pdf_tables_small: not supported on aarch64-unknown-linux-gnu");
         return;
     }
-    let config = ExtractionConfig::default();
+    let config: ExtractionConfig = serde_json::from_str(
+        r#"{
+  "output_format": "markdown",
+  "layout": {
+    "table_model": "tatr"
+  }
+}"#,
+    )
+    .expect("Fixture config should deserialize");
 
     let result = match kreuzberg::extract_file_sync(&document_path, None, &config) {
         Err(KreuzbergError::MissingDependency(dep)) => {

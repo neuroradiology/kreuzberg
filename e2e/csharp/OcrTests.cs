@@ -174,7 +174,7 @@ namespace Kreuzberg.E2E.Ocr
             TestHelpers.SkipIfLegacyOfficeDisabled("images/simple_table.png");
             TestHelpers.SkipIfOfficeTestOnWindows("images/simple_table.png");
             var documentPath = TestHelpers.EnsureDocument("images/simple_table.png", true);
-            var config = TestHelpers.BuildConfig("{\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
+            var config = TestHelpers.BuildConfig("{\"output_format\":\"markdown\",\"ocr\":{\"backend\":\"paddle-ocr\",\"language\":\"en\",\"paddle_ocr_config\":{\"enable_table_detection\":true}},\"force_ocr\":true}");
 
             var result = KreuzbergClient.ExtractFileSync(documentPath, config);
             TestHelpers.AssertExpectedMime(result, new[] { "image/png" });

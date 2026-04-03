@@ -811,10 +811,13 @@ pub(crate) async fn extract_with_ocr(
 
                 if let Some(ref scaled_det) = scaled_detection {
                     let hints = detection_to_layout_hints(scaled_det, height as f32);
+                    // Use higher confidence threshold for OCR path (0.7 vs 0.5 for native).
+                    // OCR paragraphs lack font-size metadata for heading validation,
+                    // so the layout model must be more confident to reclassify.
                     crate::pdf::structure::layout_classify::apply_layout_overrides(
                         &mut paragraphs,
                         &hints,
-                        0.5,
+                        0.7,
                         0.2,
                         None,
                     );

@@ -527,6 +527,7 @@ fn test_ocr_paddle_table_detection() {
     }
     let config: ExtractionConfig = serde_json::from_str(
         r#"{
+  "output_format": "markdown",
   "ocr": {
     "backend": "paddle-ocr",
     "language": "en",

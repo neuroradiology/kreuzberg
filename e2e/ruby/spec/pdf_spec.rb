@@ -69,7 +69,7 @@ RSpec.describe 'pdf fixtures' do
     E2ERuby.run_fixture(
       'pdf_bounding_boxes',
       'pdf/tiny.pdf',
-      { images: { extract_images: true } },
+      { output_format: 'markdown', layout: { table_model: 'tatr' }, images: { extract_images: true } },
       requirements: %w[pdf],
       notes: 'ONNX Runtime model loading unstable on ARM Linux; table detection returns 0 tables',
       skip_if_missing: true
@@ -306,7 +306,7 @@ RSpec.describe 'pdf fixtures' do
     E2ERuby.run_fixture(
       'pdf_tables_small',
       'pdf/tiny.pdf',
-      nil,
+      { output_format: 'markdown', layout: { table_model: 'tatr' } },
       requirements: %w[ocr],
       notes: 'PDF table extraction requires OCR feature. ONNX Runtime model loading unstable on ARM Linux.',
       skip_if_missing: true
