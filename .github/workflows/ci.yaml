@@ -139,11 +139,6 @@ jobs:
       - name: Run Rust lint checks
         run: task rust:lint:check
 
-      - name: Run Rust toolchain linters (taplo, cargo-sort, rumdl, checkmake)
-        uses: j178/prek-action@v2
-        with:
-          extra-args: taplo-format cargo-sort rumdl-fmt checkmake --all-files
-
       - name: Run C lint checks
         run: task c:lint:check
 
@@ -238,6 +233,9 @@ jobs:
         run: |
           Rscript -e "install.packages(c('styler', 'lintr', 'testthat', 'jsonlite', 'withr'), repos = 'https://cloud.r-project.org')"
         shell: bash
+
+      - name: Install Task
+        uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Run all lightweight lint checks
         uses: j178/prek-action@v2
