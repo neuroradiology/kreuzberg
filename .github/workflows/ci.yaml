@@ -79,7 +79,7 @@ permissions:
 
 jobs:
   validate-universal:
-    name: Validate (Universal)
+    name: "Validate: Universal"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
@@ -111,7 +111,7 @@ jobs:
           [ "$FAIL" -eq 0 ] || exit 1
 
   validate-rust:
-    name: Validate (Rust)
+    name: "Validate: Rust"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
@@ -159,7 +159,7 @@ jobs:
         shell: bash
 
   validate-lightweight:
-    name: Validate (Python/TypeScript/Ruby/Java/C#/PHP/Elixir/R)
+    name: "Validate: Python/TypeScript/Ruby/Java/C#/PHP/Elixir/R"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
@@ -243,7 +243,7 @@ jobs:
           extra-args: ruff ruff-format mypy biome-format biome-lint oxlint ruby-format ruby-lint cpd checkstyle java-verify csharp-format csharp-lint php-format php-lint mix-credo mix-format r-format r-lint --all-files
 
   typescript-typecheck:
-    name: TypeScript Type Check
+    name: "Validate: TypeScript Types"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -284,12 +284,90 @@ jobs:
       - name: Run TypeScript type checking
         run: task typescript:typecheck:check
 
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+      python: ${{ steps.filter.outputs.python }}
+      typescript: ${{ steps.filter.outputs.typescript }}
+      ruby: ${{ steps.filter.outputs.ruby }}
+      php: ${{ steps.filter.outputs.php }}
+      go: ${{ steps.filter.outputs.go }}
+      java: ${{ steps.filter.outputs.java }}
+      csharp: ${{ steps.filter.outputs.csharp }}
+      elixir: ${{ steps.filter.outputs.elixir }}
+      r: ${{ steps.filter.outputs.r }}
+      wasm: ${{ steps.filter.outputs.wasm }}
+      ffi: ${{ steps.filter.outputs.ffi }}
+      docker: ${{ steps.filter.outputs.docker }}
+      core: ${{ steps.filter.outputs.core }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'crates/kreuzberg/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            rust:
+              - 'crates/kreuzberg/**'
+              - 'crates/kreuzberg-cli/**'
+              - 'crates/kreuzberg-tesseract/**'
+              - 'e2e/rust/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            ffi:
+              - 'crates/kreuzberg-ffi/**'
+            python:
+              - 'crates/kreuzberg-py/**'
+              - 'packages/python/**'
+              - 'e2e/python/**'
+            typescript:
+              - 'crates/kreuzberg-node/**'
+              - 'packages/typescript/**'
+              - 'e2e/typescript/**'
+            ruby:
+              - 'packages/ruby/**'
+              - 'e2e/ruby/**'
+            php:
+              - 'crates/kreuzberg-php/**'
+              - 'packages/php/**'
+              - 'e2e/php/**'
+            go:
+              - 'packages/go/**'
+              - 'e2e/go/**'
+            java:
+              - 'packages/java/**'
+              - 'e2e/java/**'
+            csharp:
+              - 'packages/csharp/**'
+              - 'e2e/csharp/**'
+            elixir:
+              - 'packages/elixir/**'
+              - 'e2e/elixir/**'
+            r:
+              - 'packages/r/**'
+              - 'e2e/r/**'
+            wasm:
+              - 'crates/kreuzberg-wasm/**'
+              - 'e2e/wasm-deno/**'
+              - 'e2e/wasm-workers/**'
+            docker:
+              - 'Dockerfile*'
+              - 'docker/**'
+              - '.dockerignore'
+
 # --- Stage 2: Build FFI + Rust Tests + Docker ---
 
   build-ffi:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Build FFI (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck, changes]
+    name: "Build: FFI (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ffi == 'true')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:
@@ -385,10 +463,12 @@ jobs:
         if: always() && steps.checkout.outcome == 'success'
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
-  rust-unit:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Rust Unit Tests (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+  rust-tests:
+    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck, changes]
+    name: "Test: Rust (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.rust == 'true')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:
@@ -428,7 +508,7 @@ jobs:
       - name: Setup Rust
         uses: kreuzberg-dev/actions/setup-rust@v1
         with:
-          cache-key-prefix: rust-unit-${{ matrix.os }}
+          cache-key-prefix: rust-tests-${{ matrix.os }}
           target: ${{ matrix.target }}
           use-sccache: "true"
           report-stats: "true"
@@ -480,71 +560,8 @@ jobs:
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
           DYLD_FALLBACK_LIBRARY_PATH: ${{ env.DYLD_FALLBACK_LIBRARY_PATH || '' }}
 
-      - name: Cleanup Rust cache
-        if: always() && steps.checkout.outcome == 'success'
-        uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
-
-  rust-e2e:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Rust E2E Tests
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        id: checkout
-
-      - name: Install system dependencies
-        uses: ./.github/actions/install-system-deps
-
-      - name: Free disk space before setup
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-        with:
-          show-initial: "true"
-          show-final: "true"
-
-      - name: Setup OpenSSL
-        uses: kreuzberg-dev/actions/setup-openssl@v1
-
-      - name: Cache Hugging Face models (fastembed)
-        uses: ./.github/actions/cache-hf-fastembed
-
-      - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: rust-e2e
-          use-sccache: "true"
-          report-stats: "true"
-
-      - name: Cache PDFium
-        uses: ./.github/actions/cache-pdfium
-        with:
-          pdfium-version: ${{ env.PDFIUM_VERSION }}
-
-      - name: Download PDFium
-        uses: ./.github/actions/download-pdfium
-        with:
-          pdfium-version: ${{ env.PDFIUM_VERSION }}
-
-      - name: Stage PDFium runtime
-        uses: ./.github/actions/stage-pdfium-runtime
-        with:
-          destination: target/release
-
-      - name: Setup ONNX Runtime
-        uses: ./.github/actions/setup-onnx-runtime
-        with:
-          ort-version: ${{ env.ORT_VERSION }}
-
-      - name: Setup Layout Models
-        uses: ./.github/actions/setup-layout-models
-
-      - name: Install Task
-        uses: kreuzberg-dev/actions/install-task@v1
-
       - name: Run E2E tests
+        if: matrix.os == 'ubuntu-latest'
         env:
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr/5/tessdata"
           LD_LIBRARY_PATH: "${{ github.workspace }}/target/release:${{ env.LD_LIBRARY_PATH || '' }}"
@@ -559,10 +576,12 @@ jobs:
         if: always() && steps.checkout.outcome == 'success'
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
-  docker:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Docker (${{ matrix.variant }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+  docker-build:
+    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck, changes]
+    name: "Build: Docker (${{ matrix.variant }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.docker == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:
@@ -596,7 +615,7 @@ jobs:
           tags: kreuzberg:${{ matrix.variant }}
           build-args: |
             ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }}
-          cache-from: type=gha
+          cache-from: type=gha,scope=ci-docker-${{ matrix.variant }}
           cache-to: type=gha,mode=max,scope=ci-docker-${{ matrix.variant }}
 
       - name: Build Docker image (cli)
@@ -608,8 +627,65 @@ jobs:
           push: false
           load: true
           tags: kreuzberg:cli
-          cache-from: type=gha
+          cache-from: type=gha,scope=ci-docker-cli
           cache-to: type=gha,mode=max,scope=ci-docker-cli
+
+      - name: Save Docker image as artifact (core/full)
+        if: matrix.variant != 'cli'
+        shell: bash
+        run: scripts/ci/docker/save-image.sh "${{ matrix.variant }}" /tmp
+
+      - name: Save Docker image as artifact (cli)
+        if: matrix.variant == 'cli'
+        shell: bash
+        run: |
+          mkdir -p /tmp
+          docker save kreuzberg:cli | gzip > /tmp/kreuzberg-cli.tar.gz
+          ls -lh /tmp/kreuzberg-cli.tar.gz
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-image-${{ matrix.variant }}
+          path: /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
+          retention-days: 7
+          compression-level: 0
+
+  docker-test:
+    needs: [docker-build]
+    name: "Test: Docker (${{ matrix.variant }})"
+    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: true
+      matrix:
+        variant:
+          - core
+          - full
+          - cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Free up disk space
+        shell: bash
+        run: scripts/ci/docker/free-disk-space.sh
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: docker-image-${{ matrix.variant }}
+          path: /tmp
+
+      - name: Load Docker image
+        shell: bash
+        run: docker load < /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
 
       - name: Test Docker image size (core/full)
         if: matrix.variant != 'cli'
@@ -651,28 +727,6 @@ jobs:
       - name: Run CLI feature tests
         if: matrix.variant == 'cli'
         run: scripts/ci/docker/run-cli-tests.sh
-
-      - name: Save Docker image as artifact (core/full)
-        if: success() && matrix.variant != 'cli'
-        shell: bash
-        run: scripts/ci/docker/save-image.sh "${{ matrix.variant }}" /tmp
-
-      - name: Save Docker image as artifact (cli)
-        if: success() && matrix.variant == 'cli'
-        shell: bash
-        run: |
-          mkdir -p /tmp
-          docker save kreuzberg:cli | gzip > /tmp/kreuzberg-cli.tar.gz
-          ls -lh /tmp/kreuzberg-cli.tar.gz
-
-      - name: Upload Docker image artifact
-        if: success()
-        uses: actions/upload-artifact@v7
-        with:
-          name: docker-image-${{ matrix.variant }}
-          path: /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
-          retention-days: 7
-          compression-level: 0
 
       - name: Upload test results
         if: always() && matrix.variant != 'cli' && hashFiles('/tmp/kreuzberg-docker-test-results.json') != ''
@@ -735,9 +789,11 @@ jobs:
 # --- Stage 3: Build Bindings ---
 
   build-python:
-    needs: [build-ffi]
-    name: Python Build (${{ matrix.target }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: Python (${{ matrix.target }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.python == 'true')
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -882,9 +938,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-python-sdist:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Python Sdist
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: Python Sdist"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.python == 'true')
     timeout-minutes: 180
     runs-on: ubuntu-latest
     steps:
@@ -919,9 +977,11 @@ jobs:
           retention-days: 7
 
   build-node:
-    needs: [build-ffi]
-    name: Node Build (${{ matrix.target }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: Node (${{ matrix.target }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.typescript == 'true')
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 360 || (matrix.os == 'ubuntu-24.04-arm' && 240 || 180) }}
     # Serialize matrix jobs to prevent concurrent cache API writes that trigger rate limits
     concurrency:
@@ -934,40 +994,19 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             platform: linux-x64
-            matrix-index: 1
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
             platform: linux-arm64
-            matrix-index: 2
           - os: macos-latest
             target: aarch64-apple-darwin
             platform: macos-arm64
-            matrix-index: 3
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             platform: windows-x64
-            matrix-index: 4
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
         id: checkout
-
-      - name: Serialize matrix job execution (prevent cache API rate limits)
-        shell: bash
-        run: |
-          MATRIX_INDEX=${{ matrix.matrix-index }}
-          MATRIX_SIZE=4
-
-          # Calculate delay based on matrix index to stagger cache saves
-          # Each job delays by 5 minutes to avoid concurrent cache API writes
-          if [ "$MATRIX_INDEX" -gt 1 ]; then
-            DELAY_SECONDS=$(((MATRIX_INDEX - 1) * 300))
-            echo "Matrix index: $MATRIX_INDEX of $MATRIX_SIZE"
-            echo "Delaying cache save by $DELAY_SECONDS seconds to prevent GitHub cache API rate limits"
-            sleep "$DELAY_SECONDS"
-          else
-            echo "First matrix job (index $MATRIX_INDEX) - proceeding immediately"
-          fi
 
       - name: Dump system information
         shell: bash
@@ -1101,9 +1140,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-ruby:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Ruby Gem (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: Ruby Gem (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.ruby == 'true')
     timeout-minutes: 180
     strategy:
       fail-fast: true
@@ -1375,9 +1416,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-php:
-    needs: [build-ffi]
-    name: PHP Build (${{ matrix.os }}, PHP ${{ matrix.php-version }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: PHP (${{ matrix.os }}, PHP ${{ matrix.php-version }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.php == 'true')
     timeout-minutes: 240
     strategy:
       fail-fast: true
@@ -1521,9 +1564,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-wasm:
-    needs: [validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
-    name: Build WASM (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: WASM (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.wasm == 'true')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:
@@ -1538,26 +1583,13 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            matrix-index: 1
           - os: macos-latest
             target: aarch64-apple-darwin
-            matrix-index: 2
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            matrix-index: 3
     steps:
       - uses: actions/checkout@v6
         id: checkout
-
-      - name: Serialize matrix job execution (prevent cache API rate limits)
-        shell: bash
-        run: |
-          MATRIX_INDEX=${{ matrix.matrix-index }}
-          if [ "$MATRIX_INDEX" -gt 1 ]; then
-            DELAY_SECONDS=$(((MATRIX_INDEX - 1) * 300))
-            echo "Matrix index: $MATRIX_INDEX — delaying $DELAY_SECONDS seconds to prevent cache API rate limits"
-            sleep "$DELAY_SECONDS"
-          fi
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -1623,9 +1655,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-java:
-    needs: [build-ffi]
-    name: Java Bindings (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: Java (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.java == 'true')
     timeout-minutes: 240
     strategy:
       fail-fast: true
@@ -1752,9 +1786,11 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   build-csharp:
-    needs: [build-ffi]
-    name: C# Build (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    needs: [rust-tests, build-ffi, changes, validate-universal, validate-rust, validate-lightweight, typescript-typecheck]
+    name: "Build: C# (${{ matrix.os }})"
+    if: |
+      github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.core == 'true' || needs.changes.outputs.csharp == 'true')
     timeout-minutes: 240
     strategy:
       fail-fast: true
@@ -1872,7 +1908,7 @@ jobs:
   # --- Stage 4: Test ---
 
   test-python:
-    name: Python Tests (${{ matrix.os }})
+    name: "Test: Python (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-python]
     timeout-minutes: 180
@@ -1979,7 +2015,7 @@ jobs:
         run: task python:e2e:test
 
   test-node:
-    name: TypeScript Tests (${{ matrix.os }})
+    name: "Test: TypeScript (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-node]
     timeout-minutes: 180
@@ -2088,7 +2124,7 @@ jobs:
           set +x
 
   test-ruby:
-    name: Ruby Tests (${{ matrix.os }})
+    name: "Test: Ruby (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ruby]
     timeout-minutes: 180
@@ -2219,7 +2255,7 @@ jobs:
         run: task ruby:e2e:test
 
   test-php:
-    name: PHP Tests (${{ matrix.os }}, PHP 8.4)
+    name: "Test: PHP (${{ matrix.os }}, PHP 8.4)"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-php]
     timeout-minutes: 240
@@ -2328,7 +2364,7 @@ jobs:
         run: task php:e2e:test
 
   test-go:
-    name: Go Tests (${{ matrix.os }})
+    name: "Test: Go (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     timeout-minutes: 240
@@ -2538,7 +2574,7 @@ jobs:
           KREUZBERG_KEYWORDS_YAKE_AVAILABLE: "1"
 
   test-java:
-    name: Java Tests (${{ matrix.os }})
+    name: "Test: Java (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-java]
     timeout-minutes: 240
@@ -2687,7 +2723,7 @@ jobs:
           retention-days: 7
 
   test-csharp:
-    name: C# Tests (${{ matrix.os }})
+    name: "Test: C# (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-csharp]
     timeout-minutes: 240
@@ -2811,7 +2847,7 @@ jobs:
           retention-days: 7
 
   test-elixir:
-    name: Elixir Tests (${{ matrix.os }})
+    name: "Test: Elixir (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     timeout-minutes: 240
@@ -2974,7 +3010,7 @@ jobs:
         run: task elixir:e2e:test
 
   test-r:
-    name: R Tests (${{ matrix.os }})
+    name: "Test: R (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     timeout-minutes: 180
@@ -3060,7 +3096,7 @@ jobs:
         run: task r:e2e:test
 
   test-c-ffi:
-    name: C FFI Tests (${{ matrix.os }})
+    name: "Test: C FFI (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     timeout-minutes: 60
@@ -3070,12 +3106,14 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: macos-latest
+          - os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
         id: checkout
 
       - name: Install system dependencies
+        if: runner.os != 'Windows'
         uses: ./.github/actions/install-system-deps
 
       - name: Setup ONNX Runtime
@@ -3088,23 +3126,20 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: ffi-${{ matrix.os }}
-          path: ffi-download
+          path: .
 
-      - name: Stage FFI library
+      - name: Make FFI library executable
+        if: runner.os != 'Windows'
         shell: bash
-        run: |
-          mkdir -p target/release
-          cp -r ffi-download/. target/release/ 2>/dev/null || true
-          # Also restore header to expected location
-          if [ -f ffi-download/crates/kreuzberg-ffi/kreuzberg.h ]; then
-            cp ffi-download/crates/kreuzberg-ffi/kreuzberg.h crates/kreuzberg-ffi/kreuzberg.h
-          fi
+        run: chmod +x target/release/libkreuzberg_ffi.* 2>/dev/null || true
 
       - name: Compile C tests
+        if: runner.os != 'Windows'
         shell: bash
         run: make -C crates/kreuzberg-ffi/tests/c LIBDIR="$(pwd)/target/release" clean all
 
       - name: Run C tests
+        if: runner.os != 'Windows'
         shell: bash
         env:
           LD_LIBRARY_PATH: ${{ github.workspace }}/target/release
@@ -3124,6 +3159,7 @@ jobs:
           [ "$FAILED" -eq 0 ] || exit 1
 
       - name: Verify pkg-config output
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           PC_DIR="$(pwd)/target/release"
@@ -3136,6 +3172,7 @@ jobs:
           fi
 
       - name: Verify header version constants
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           HEADER="crates/kreuzberg-ffi/kreuzberg.h"
@@ -3147,43 +3184,23 @@ jobs:
           echo "Version constants verified."
 
       - name: Verify CMake config files exist
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           test -f crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config.cmake
           test -f crates/kreuzberg-ffi/cmake/kreuzberg-ffi-config-version.cmake
           echo "CMake config files verified."
 
-  test-c-ffi-windows:
-    name: C FFI Tests (windows-latest)
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
-    needs: [build-ffi]
-    runs-on: windows-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v6
-        id: checkout
-
-      - name: Setup ONNX Runtime
-        uses: ./.github/actions/setup-onnx-runtime
-        with:
-          ort-version: ${{ env.ORT_VERSION }}
-          dest-dir: target/release
-
-      - name: Download FFI library
-        uses: actions/download-artifact@v8
-        with:
-          name: ffi-windows-latest
-          path: .
-
-      - name: Verify header generated
+      - name: Verify header generated (Windows)
+        if: runner.os == 'Windows'
         shell: bash
         run: |
           test -f crates/kreuzberg-ffi/kreuzberg.h
           grep 'KREUZBERG_VERSION_MAJOR' crates/kreuzberg-ffi/kreuzberg.h
           echo "Header verified on Windows."
 
-  test-wasm-unit:
-    name: WASM Unit Tests (${{ matrix.os }})
+  test-wasm:
+    name: "Test: WASM (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-wasm]
     timeout-minutes: 180
@@ -3245,81 +3262,26 @@ jobs:
         env:
           RUST_BACKTRACE: 1
 
-      - name: Cleanup Rust cache
-        if: always() && steps.checkout.outcome == 'success'
-        uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
-
-  test-wasm-e2e:
-    name: WASM E2E Tests
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
-    needs: [build-wasm]
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
-    steps:
-      - uses: actions/checkout@v6
-        id: checkout
-
-      - name: Install system dependencies
-        uses: ./.github/actions/install-system-deps
-
-      - name: Install WASI SDK
-        uses: kreuzberg-dev/actions/install-wasi-sdk@v1
-
-      - name: Configure WASM C compiler
-        shell: bash
-        run: |
-          echo "CC_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/clang" >> "$GITHUB_ENV"
-          echo "AR_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/ar" >> "$GITHUB_ENV"
-
-      - name: Setup Node
-        uses: kreuzberg-dev/actions/setup-node-workspace@v1
-
-      - name: Download WASM artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: wasm-x86_64-unknown-linux-gnu
-          path: crates/kreuzberg-wasm/pkg/
-
-      - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: wasm-e2e-ubuntu
-          use-sccache: 'true'
-          report-stats: 'true'
-          target: wasm32-unknown-unknown
-
-      - name: Install wasm-pack
-        shell: bash
-        run: scripts/ci/wasm/install-wasm-pack.sh
-
-      - name: Install Task
-        uses: kreuzberg-dev/actions/install-task@v1
-
-      - name: Run WASM unit tests
-        shell: bash
-        run: |
-          cd crates/kreuzberg-wasm
-          pnpm run fix:wasi
-          pnpm run build:ts
-          pnpm run copy:pkg
-          pnpm test
-
       - name: Install Deno
+        if: matrix.os == 'ubuntu-latest'
         uses: denoland/setup-deno@v2
         with:
           deno-version: "2.x"
 
       - name: Download tessdata
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           mkdir -p tessdata
           wget -q https://github.com/tesseract-ocr/tessdata_fast/raw/main/eng.traineddata -O tessdata/eng.traineddata
 
       - name: Build WASM (all targets for E2E)
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: task wasm:build:all
 
       - name: Generate and run Deno E2E tests
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           task wasm:e2e:deno:generate
@@ -3328,6 +3290,7 @@ jobs:
           TESSDATA_PREFIX: ${{ github.workspace }}/tessdata
 
       - name: Generate and run Workers E2E tests
+        if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           task wasm:e2e:workers:generate
@@ -3338,7 +3301,7 @@ jobs:
         uses: kreuzberg-dev/actions/cleanup-rust-cache@v1
 
   test-cli:
-    name: CLI Tests (${{ matrix.os }})
+    name: "Test: CLI (${{ matrix.os }})"
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     timeout-minutes: 60
@@ -3383,6 +3346,11 @@ jobs:
         with:
           label: ${{ matrix.os }}
           enable-cache: "true"
+
+      - name: Make binaries executable
+        if: runner.os != 'Windows'
+        shell: bash
+        run: chmod +x target/release/kreuzberg target/release/libkreuzberg_ffi.* 2>/dev/null || true
 
       - name: Verify CLI binary exists
         shell: bash
