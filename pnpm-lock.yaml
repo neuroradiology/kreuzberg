@@ -197,8 +197,8 @@ importers:
   test_apps/typescript:
     dependencies:
       '@kreuzberg/node':
-        specifier: 4.7.1
-        version: 4.7.1
+        specifier: 4.7.2
+        version: 4.7.2
     devDependencies:
       '@types/node':
         specifier: ^25.5.2
@@ -219,8 +219,8 @@ importers:
   test_apps/wasm:
     dependencies:
       '@kreuzberg/wasm':
-        specifier: 4.7.1
-        version: 4.7.1
+        specifier: 4.7.2
+        version: 4.7.2
     devDependencies:
       '@types/node':
         specifier: ^25.5.2
@@ -691,39 +691,39 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kreuzberg/node-darwin-arm64@4.7.1':
-    resolution: {integrity: sha512-ChkbAf412HvRK7dFLpYJDfJ4+L2XmTZo8q6QWKh/9e/K3rLCnC8CX1iJ9bfEjOdkQAQPKcF0aJ1nHms31DTkGQ==}
+  '@kreuzberg/node-darwin-arm64@4.7.2':
+    resolution: {integrity: sha512-lpLRUJ5pcxX7a6Tq1tyKrxOF+DvpJ+m3T5gMm1gFpGlQ4/iqdhd0Da/9KTLeURxOAUUygmWm9H9mt9nLXax4nQ==}
     engines: {bun: '>= 1.3', node: '>= 22'}
     cpu: [arm64]
     os: [darwin]
 
-  '@kreuzberg/node-linux-arm64-gnu@4.7.1':
-    resolution: {integrity: sha512-0UbcsuhjpKrNNY1k42ZFaySS6FfXfvCJRDaJaAq4/P+GlAnCSMXR8Y3zsX1vHllsm7TgIa1ysDfStz9stVKziA==}
+  '@kreuzberg/node-linux-arm64-gnu@4.7.2':
+    resolution: {integrity: sha512-5R+/lb+qbr1G/YEoUoqbgPryikWDFfLqgPC0uqI79DjN68W2BTplnllAno7mdxwNSfiQ+IuZD6/rNp9MdZL15A==}
     engines: {bun: '>= 1.3', node: '>= 22'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@kreuzberg/node-linux-x64-gnu@4.7.1':
-    resolution: {integrity: sha512-kwsQyyrjzCTvrPGlF6AQS03b1ismGz0+JBRzRm6HeJP2fFGSFladasvoxLVAL3Ni/udR0KvlEYGX71fsSePCPg==}
+  '@kreuzberg/node-linux-x64-gnu@4.7.2':
+    resolution: {integrity: sha512-JuSIGC2FJnnvj8gjUKNUuosh6Jjfac0M8vqeBYlJySYoAs77Zy5jNyi7P1RGe8+Zt0kgAJ1QGmXz3SW4ru+KNg==}
     engines: {bun: '>= 1.3', node: '>= 22'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@kreuzberg/node-win32-x64-msvc@4.7.1':
-    resolution: {integrity: sha512-fhfV6tIrdlGmZ5WxBwgowltHd5S2GVXNkas1zZgXVtppVe6GmYtBN/Kv1dCkDFiU+WETVePTCa1ZkaH1gi14fQ==}
+  '@kreuzberg/node-win32-x64-msvc@4.7.2':
+    resolution: {integrity: sha512-aL0cFmsKxzaHEKZIi3KvxRqgc/ml7Prf6EINUJaO9IxDvPYyvyRsBHHNTLVqtQtfwDFf/frDwhTW+QHf/uaL/w==}
     engines: {bun: '>= 1.3', node: '>= 22'}
     cpu: [x64]
     os: [win32]
 
-  '@kreuzberg/node@4.7.1':
-    resolution: {integrity: sha512-j9u5FS77DKcur3gOWU1EjRiCRjKN2eIxkGqmR2vuOthW38iTQuK6UsrGDuxpM9chqzPw4vEWl9T/19i+VaPAlw==}
+  '@kreuzberg/node@4.7.2':
+    resolution: {integrity: sha512-KMtnfeT6zu02y61f47wybeh8HvUZtZ7banG1xRUxT4G9jTJl6JjIpdwpTx7crTcehHeF3lSMtuSnyVi7mFnH7g==}
     engines: {bun: '>= 1.3', node: '>= 22'}
     hasBin: true
 
-  '@kreuzberg/wasm@4.7.1':
-    resolution: {integrity: sha512-WMdP1vLMgKD7/j8krlV5F1LBmaWtVHLZY0boRLJ7Cw+n6fBzZzD+gIbUtwTG2mm+UNDzYhSEH7VUYveRYkbEgw==}
+  '@kreuzberg/wasm@4.7.2':
+    resolution: {integrity: sha512-EW26IvGXDytr9aVzVW4qfvxE65t/Ztq3N8yUGsMl0S/8iGT5CUQQesOmy3NLV4aSddHyXXWVescrtHibZbaynw==}
     engines: {node: '>= 16'}
 
   '@napi-rs/cli@3.6.0':
@@ -2368,11 +2368,11 @@ packages:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.27:
-    resolution: {integrity: sha512-YQ7uPjgWUibIK6DW5lrKujGwUKhLevU4hcGbP5O6TcIUb+oTjJYJVWPS4nZsIHrEEEG6myk/oqAJUEQmpZrHsg==}
+  tldts-core@7.0.28:
+    resolution: {integrity: sha512-7W5Efjhsc3chVdFhqtaU0KtK32J37Zcr9RKtID54nG+tIpcY79CQK/veYPODxtD/LJ4Lue66jvrQzIX2Z2/pUQ==}
 
-  tldts@7.0.27:
-    resolution: {integrity: sha512-I4FZcVFcqCRuT0ph6dCDpPuO4Xgzvh+spkcTr1gK7peIvxWauoloVO0vuy1FQnijT63ss6AsHB6+OIM4aXHbPg==}
+  tldts@7.0.28:
+    resolution: {integrity: sha512-+Zg3vWhRUv8B1maGSTFdev9mjoo8Etn2Ayfs4cnjlD3CsGkxXX4QyW3j2WJ0wdjYcYmy7Lx2RDsZMhgCWafKIw==}
     hasBin: true
 
   totalist@3.0.1:
@@ -2906,29 +2906,29 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kreuzberg/node-darwin-arm64@4.7.1':
+  '@kreuzberg/node-darwin-arm64@4.7.2':
     optional: true
 
-  '@kreuzberg/node-linux-arm64-gnu@4.7.1':
+  '@kreuzberg/node-linux-arm64-gnu@4.7.2':
     optional: true
 
-  '@kreuzberg/node-linux-x64-gnu@4.7.1':
+  '@kreuzberg/node-linux-x64-gnu@4.7.2':
     optional: true
 
-  '@kreuzberg/node-win32-x64-msvc@4.7.1':
+  '@kreuzberg/node-win32-x64-msvc@4.7.2':
     optional: true
 
-  '@kreuzberg/node@4.7.1':
+  '@kreuzberg/node@4.7.2':
     dependencies:
       '@emnapi/runtime': 1.9.2
       which: 6.0.1
     optionalDependencies:
-      '@kreuzberg/node-darwin-arm64': 4.7.1
-      '@kreuzberg/node-linux-arm64-gnu': 4.7.1
-      '@kreuzberg/node-linux-x64-gnu': 4.7.1
-      '@kreuzberg/node-win32-x64-msvc': 4.7.1
+      '@kreuzberg/node-darwin-arm64': 4.7.2
+      '@kreuzberg/node-linux-arm64-gnu': 4.7.2
+      '@kreuzberg/node-linux-x64-gnu': 4.7.2
+      '@kreuzberg/node-win32-x64-msvc': 4.7.2
 
-  '@kreuzberg/wasm@4.7.1':
+  '@kreuzberg/wasm@4.7.2':
     optionalDependencies:
       tesseract-wasm: 0.11.0
 
@@ -4349,17 +4349,17 @@ snapshots:
 
   tinyrainbow@3.1.0: {}
 
-  tldts-core@7.0.27: {}
+  tldts-core@7.0.28: {}
 
-  tldts@7.0.27:
+  tldts@7.0.28:
     dependencies:
-      tldts-core: 7.0.27
+      tldts-core: 7.0.28
 
   totalist@3.0.1: {}
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.27
+      tldts: 7.0.28
 
   tr46@6.0.0:
     dependencies:

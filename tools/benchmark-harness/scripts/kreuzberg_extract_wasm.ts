@@ -2,6 +2,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as readline from "node:readline";
+// Import from the local build path to avoid pnpm workspace resolution issues.
+// The @kreuzberg/wasm package is resolved through pnpm's virtual store which
+// doesn't reliably provide the WASM binary and glue JS via import.meta.url.
 import {
 	type ExtractionConfig,
 	enableOcr,
@@ -9,7 +12,7 @@ import {
 	getWasmModule,
 	initializePdfiumAsync,
 	initWasm,
-} from "@kreuzberg/wasm";
+} from "../../../crates/kreuzberg-wasm/dist/index.js";
 
 /** Default per-extraction timeout in milliseconds (5 minutes). */
 const DEFAULT_TIMEOUT_MS = 300_000;

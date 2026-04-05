@@ -602,12 +602,18 @@ pub fn create_node_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 
 /// Create WASM adapter (persistent server mode)
 pub fn create_wasm_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    create_from_spec(&wasm_spec(), ocr_enabled, false)
+    let mut adapter = create_from_spec(&wasm_spec(), ocr_enabled, false)?;
+    // WASM module resolution requires running from the crate directory
+    // so pnpm can resolve the @kreuzberg/wasm workspace package
+    adapter.set_working_dir(workspace_root()?.join("crates/kreuzberg-wasm"));
+    Ok(adapter)
 }
 
 /// Create WASM batch adapter (Promise.all extractFile via @kreuzberg/wasm)
 pub fn create_wasm_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    create_from_spec(&wasm_spec(), ocr_enabled, true)
+    let mut adapter = create_from_spec(&wasm_spec(), ocr_enabled, true)?;
+    adapter.set_working_dir(workspace_root()?.join("crates/kreuzberg-wasm"));
+    Ok(adapter)
 }
 
 /// Create Ruby adapter (persistent server mode)

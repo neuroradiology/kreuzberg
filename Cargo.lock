@@ -2027,9 +2027,9 @@ dependencies = [
 
 [[package]]
 name = "fastrand"
-version = "2.3.0"
+version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
+checksum = "a043dc74da1e37d6afe657061213aa6f425f855399a11d3463c6ecccc4dfda1f"
 
 [[package]]
 name = "fax"
@@ -4774,9 +4774,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.19"
+version = "0.3.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b982248994758a28606aa5aae4d90c7e9f9c2f66287767e512987f3afe974ab"
+checksum = "9259bb7f8da7011beb7270b6a168bfecc9c1fd6c73ac57c90e2462d57a4b7b4e"
 dependencies = [
  "aes",
  "base64 0.22.1",
