@@ -8,6 +8,7 @@ use pyo3::types::PyDict;
 
 use crate::html_options::parse_html_options_dict;
 use crate::keywords::KeywordConfig;
+use crate::plugins::json_value_to_py;
 
 /// Main extraction configuration.
 ///
@@ -67,7 +68,8 @@ impl ExtractionConfig {
         cache_namespace=None,
         cache_ttl_secs=None,
         extraction_timeout_secs=None,
-        tree_sitter=None
+        tree_sitter=None,
+        structured_extraction=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -98,6 +100,7 @@ impl ExtractionConfig {
         cache_ttl_secs: Option<u64>,
         extraction_timeout_secs: Option<u64>,
         tree_sitter: Option<TreeSitterConfig>,
+        structured_extraction: Option<PyStructuredExtractionConfig>,
     ) -> PyResult<Self> {
         let (html_options_inner, html_options_dict) = parse_html_options_dict(html_options)?;
         Ok(Self {
@@ -161,7 +164,7 @@ impl ExtractionConfig {
                 concurrency: concurrency.map(Into::into),
                 max_archive_depth: 3,
                 tree_sitter: tree_sitter.map(Into::into),
-                structured_extraction: None,
+                structured_extraction: structured_extraction.map(|s| s.inner),
             },
             html_options_dict,
         })
@@ -534,6 +537,19 @@ impl ExtractionConfig {
         Ok(())
     }
 
+    #[getter]
+    fn structured_extraction(&self) -> Option<PyStructuredExtractionConfig> {
+        self.inner
+            .structured_extraction
+            .clone()
+            .map(|s| PyStructuredExtractionConfig { inner: s })
+    }
+
+    #[setter]
+    fn set_structured_extraction(&mut self, value: Option<PyStructuredExtractionConfig>) {
+        self.inner.structured_extraction = value.map(|s| s.inner);
+    }
+
     fn __repr__(&self) -> String {
         format!(
             "ExtractionConfig(use_cache={}, enable_quality_processing={}, ocr={}, force_ocr={}, extraction_timeout_secs={:?}, force_ocr_pages={:?})",
@@ -623,7 +639,7 @@ pub struct OcrConfig {
 #[pymethods]
 impl OcrConfig {
     #[new]
-    #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None))]
+    #[pyo3(signature = (backend=None, language=None, tesseract_config=None, paddle_ocr_config=None, element_config=None, vlm_config=None, vlm_prompt=None))]
     fn new(
         py: Python<'_>,
         backend: Option<String>,
@@ -631,6 +647,8 @@ impl OcrConfig {
         tesseract_config: Option<TesseractConfig>,
         paddle_ocr_config: Option<Bound<'_, pyo3::types::PyAny>>,
         element_config: Option<Bound<'_, pyo3::types::PyAny>>,
+        vlm_config: Option<PyLlmConfig>,
+        vlm_prompt: Option<String>,
     ) -> PyResult<Self> {
         let paddle_ocr_json = if let Some(obj) = paddle_ocr_config {
             let json_mod = py.import("json")?;
@@ -663,8 +681,8 @@ impl OcrConfig {
                 quality_thresholds: None,
                 pipeline: None,
                 auto_rotate: false,
-                vlm_config: None,
-                vlm_prompt: None,
+                vlm_config: vlm_config.map(|c| c.inner),
+                vlm_prompt,
             },
         })
     }
@@ -697,6 +715,26 @@ impl OcrConfig {
     #[setter]
     fn set_tesseract_config(&mut self, value: Option<TesseractConfig>) {
         self.inner.tesseract_config = value.map(Into::into);
+    }
+
+    #[getter]
+    fn vlm_config(&self) -> Option<PyLlmConfig> {
+        self.inner.vlm_config.clone().map(|c| PyLlmConfig { inner: c })
+    }
+
+    #[setter]
+    fn set_vlm_config(&mut self, value: Option<PyLlmConfig>) {
+        self.inner.vlm_config = value.map(|c| c.inner);
+    }
+
+    #[getter]
+    fn vlm_prompt(&self) -> Option<String> {
+        self.inner.vlm_prompt.clone()
+    }
+
+    #[setter]
+    fn set_vlm_prompt(&mut self, value: Option<String>) {
+        self.inner.vlm_prompt = value;
     }
 
     fn __repr__(&self) -> String {
@@ -3044,6 +3082,262 @@ impl FileExtractionConfig {
             self.inner.include_document_structure,
             self.inner.timeout_secs,
             self.inner.force_ocr_pages
+        )
+    }
+}
+
+/// LLM provider/model configuration for liter-llm integration.
+///
+/// Each feature (VLM OCR, structured extraction) carries its own LlmConfig,
+/// allowing different providers per feature.
+///
+/// Attributes:
+///     model (str): Provider/model string using liter-llm routing format
+///         (e.g., "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514")
+///     api_key (str | None): API key for the provider (falls back to env var if None)
+///     base_url (str | None): Custom base URL override for the provider endpoint
+///     timeout_secs (int | None): Request timeout in seconds (default: 60)
+///     max_retries (int | None): Maximum retry attempts (default: 3)
+///     temperature (float | None): Sampling temperature for generation tasks
+///     max_tokens (int | None): Maximum tokens to generate
+///
+/// Example:
+///     >>> from kreuzberg import LlmConfig
+///     >>> config = LlmConfig(model="openai/gpt-4o", temperature=0.0)
+#[pyclass(name = "LlmConfig", module = "kreuzberg", from_py_object)]
+#[derive(Clone)]
+pub struct PyLlmConfig {
+    pub inner: kreuzberg::LlmConfig,
+}
+
+#[pymethods]
+impl PyLlmConfig {
+    #[new]
+    #[pyo3(signature = (model, api_key=None, base_url=None, timeout_secs=None, max_retries=None, temperature=None, max_tokens=None))]
+    fn new(
+        model: String,
+        api_key: Option<String>,
+        base_url: Option<String>,
+        timeout_secs: Option<u64>,
+        max_retries: Option<u32>,
+        temperature: Option<f64>,
+        max_tokens: Option<u64>,
+    ) -> Self {
+        Self {
+            inner: kreuzberg::LlmConfig {
+                model,
+                api_key,
+                base_url,
+                timeout_secs,
+                max_retries,
+                temperature,
+                max_tokens,
+            },
+        }
+    }
+
+    #[getter]
+    fn model(&self) -> String {
+        self.inner.model.clone()
+    }
+
+    #[setter]
+    fn set_model(&mut self, value: String) {
+        self.inner.model = value;
+    }
+
+    #[getter]
+    fn api_key(&self) -> Option<String> {
+        self.inner.api_key.clone()
+    }
+
+    #[setter]
+    fn set_api_key(&mut self, value: Option<String>) {
+        self.inner.api_key = value;
+    }
+
+    #[getter]
+    fn base_url(&self) -> Option<String> {
+        self.inner.base_url.clone()
+    }
+
+    #[setter]
+    fn set_base_url(&mut self, value: Option<String>) {
+        self.inner.base_url = value;
+    }
+
+    #[getter]
+    fn timeout_secs(&self) -> Option<u64> {
+        self.inner.timeout_secs
+    }
+
+    #[setter]
+    fn set_timeout_secs(&mut self, value: Option<u64>) {
+        self.inner.timeout_secs = value;
+    }
+
+    #[getter]
+    fn max_retries(&self) -> Option<u32> {
+        self.inner.max_retries
+    }
+
+    #[setter]
+    fn set_max_retries(&mut self, value: Option<u32>) {
+        self.inner.max_retries = value;
+    }
+
+    #[getter]
+    fn temperature(&self) -> Option<f64> {
+        self.inner.temperature
+    }
+
+    #[setter]
+    fn set_temperature(&mut self, value: Option<f64>) {
+        self.inner.temperature = value;
+    }
+
+    #[getter]
+    fn max_tokens(&self) -> Option<u64> {
+        self.inner.max_tokens
+    }
+
+    #[setter]
+    fn set_max_tokens(&mut self, value: Option<u64>) {
+        self.inner.max_tokens = value;
+    }
+
+    fn __repr__(&self) -> String {
+        format!("LlmConfig(model={:?})", self.inner.model)
+    }
+}
+
+/// Configuration for LLM-based structured data extraction.
+///
+/// Sends extracted document content to a VLM with a JSON schema,
+/// returning structured data that conforms to the schema.
+///
+/// Attributes:
+///     schema (dict): JSON Schema defining the desired output structure
+///     llm (LlmConfig): LLM configuration for the extraction
+///     schema_name (str): Schema name passed to the LLM's structured output mode (default: "extraction")
+///     schema_description (str | None): Optional schema description for the LLM
+///     strict (bool): Enable strict mode -- output must exactly match the schema (default: False)
+///     prompt (str | None): Custom extraction prompt template (Jinja2 format)
+///
+/// Example:
+///     >>> from kreuzberg import StructuredExtractionConfig, LlmConfig
+///     >>> config = StructuredExtractionConfig(
+///     ...     schema={"type": "object", "properties": {"vendor": {"type": "string"}}},
+///     ...     llm=LlmConfig(model="openai/gpt-4o"),
+///     ...     schema_name="invoice_data",
+///     ...     strict=True,
+///     ... )
+#[pyclass(name = "StructuredExtractionConfig", module = "kreuzberg", from_py_object)]
+#[derive(Clone)]
+pub struct PyStructuredExtractionConfig {
+    pub inner: kreuzberg::StructuredExtractionConfig,
+}
+
+#[pymethods]
+impl PyStructuredExtractionConfig {
+    #[new]
+    #[pyo3(signature = (schema, llm, schema_name=None, schema_description=None, strict=None, prompt=None))]
+    fn new(
+        py: Python<'_>,
+        schema: Bound<'_, pyo3::types::PyAny>,
+        llm: PyLlmConfig,
+        schema_name: Option<String>,
+        schema_description: Option<String>,
+        strict: Option<bool>,
+        prompt: Option<String>,
+    ) -> PyResult<Self> {
+        let json_mod = py.import("json")?;
+        let json_str: String = json_mod.call_method1("dumps", (&schema,))?.extract()?;
+        let schema_value: serde_json::Value = serde_json::from_str(&json_str)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid schema: {e}")))?;
+
+        Ok(Self {
+            inner: kreuzberg::StructuredExtractionConfig {
+                schema: schema_value,
+                schema_name: schema_name.unwrap_or_else(|| "extraction".to_string()),
+                schema_description,
+                strict: strict.unwrap_or(false),
+                prompt,
+                llm: llm.inner,
+            },
+        })
+    }
+
+    #[getter]
+    fn schema<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, pyo3::types::PyAny>> {
+        json_value_to_py(py, &self.inner.schema)
+    }
+
+    #[setter]
+    fn set_schema(&mut self, py: Python<'_>, value: Bound<'_, pyo3::types::PyAny>) -> PyResult<()> {
+        let json_mod = py.import("json")?;
+        let json_str: String = json_mod.call_method1("dumps", (&value,))?.extract()?;
+        self.inner.schema = serde_json::from_str(&json_str)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid schema: {e}")))?;
+        Ok(())
+    }
+
+    #[getter]
+    fn llm(&self) -> PyLlmConfig {
+        PyLlmConfig {
+            inner: self.inner.llm.clone(),
+        }
+    }
+
+    #[setter]
+    fn set_llm(&mut self, value: PyLlmConfig) {
+        self.inner.llm = value.inner;
+    }
+
+    #[getter]
+    fn schema_name(&self) -> String {
+        self.inner.schema_name.clone()
+    }
+
+    #[setter]
+    fn set_schema_name(&mut self, value: String) {
+        self.inner.schema_name = value;
+    }
+
+    #[getter]
+    fn schema_description(&self) -> Option<String> {
+        self.inner.schema_description.clone()
+    }
+
+    #[setter]
+    fn set_schema_description(&mut self, value: Option<String>) {
+        self.inner.schema_description = value;
+    }
+
+    #[getter]
+    fn strict(&self) -> bool {
+        self.inner.strict
+    }
+
+    #[setter]
+    fn set_strict(&mut self, value: bool) {
+        self.inner.strict = value;
+    }
+
+    #[getter]
+    fn prompt(&self) -> Option<String> {
+        self.inner.prompt.clone()
+    }
+
+    #[setter]
+    fn set_prompt(&mut self, value: Option<String>) {
+        self.inner.prompt = value;
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "StructuredExtractionConfig(schema_name={:?}, strict={}, llm=LlmConfig(model={:?}))",
+            self.inner.schema_name, self.inner.strict, self.inner.llm.model
         )
     }
 }

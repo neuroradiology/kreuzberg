@@ -351,6 +351,18 @@ readonly class ExtractionConfig
          * @default null
          */
         public ?TreeSitterConfig $treeSitter = null,
+
+        /**
+         * Structured extraction configuration for LLM-based data extraction.
+         *
+         * When set, sends extracted document content to a VLM with a JSON schema,
+         * returning structured data that conforms to the schema in the result's
+         * structured_output field.
+         *
+         * @var StructuredExtractionConfig|null
+         * @default null
+         */
+        public ?StructuredExtractionConfig $structuredExtraction = null,
     ) {
     }
 
@@ -581,6 +593,13 @@ readonly class ExtractionConfig
             $treeSitter = TreeSitterConfig::fromArray($treeSitterData);
         }
 
+        $structuredExtraction = null;
+        if (isset($data['structured_extraction']) && is_array($data['structured_extraction'])) {
+            /** @var array<string, mixed> $structuredExtractionData */
+            $structuredExtractionData = $data['structured_extraction'];
+            $structuredExtraction = StructuredExtractionConfig::fromArray($structuredExtractionData);
+        }
+
         return new self(
             useCache: $useCache,
             enableQualityProcessing: $enableQualityProcessing,
@@ -611,6 +630,7 @@ readonly class ExtractionConfig
             maxArchiveDepth: $maxArchiveDepth,
             layout: $layout,
             treeSitter: $treeSitter,
+            structuredExtraction: $structuredExtraction,
         );
     }
 
@@ -783,6 +803,7 @@ readonly class ExtractionConfig
             'concurrency' => $this->concurrency?->toArray(),
             'layout' => $this->layout?->toArray(),
             'tree_sitter' => $this->treeSitter?->toArray(),
+            'structured_extraction' => $this->structuredExtraction?->toArray(),
         ];
 
         // Add simple boolean/string fields only if explicitly set to non-default values

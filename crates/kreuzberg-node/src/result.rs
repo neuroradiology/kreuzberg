@@ -233,6 +233,9 @@ pub struct JsExtractionResult {
     /// Code intelligence results from tree-sitter processing.
     #[napi(ts_type = "CodeProcessResult | null", js_name = "codeIntelligence")]
     pub code_intelligence: serde_json::Value,
+    /// Structured extraction output conforming to the provided JSON schema.
+    #[napi(ts_type = "Record<string, unknown> | null", js_name = "structuredOutput")]
+    pub structured_output: serde_json::Value,
 }
 
 impl TryFrom<RustExtractionResult> for JsExtractionResult {
@@ -619,6 +622,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             // code_intelligence will be populated once the core ExtractionResult
             // adds the field; for now, always null.
             code_intelligence: serde_json::Value::Null,
+            structured_output: val.structured_output.unwrap_or(serde_json::Value::Null),
         })
     }
 }
@@ -969,7 +973,11 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
             code_intelligence: None,
             formatted_content: None,
             ocr_internal_document: None,
-            structured_output: None,
+            structured_output: if val.structured_output.is_null() {
+                None
+            } else {
+                Some(val.structured_output)
+            },
         })
     }
 }

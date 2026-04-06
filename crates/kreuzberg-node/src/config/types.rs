@@ -16,8 +16,9 @@ use kreuzberg::{
     EmailConfig as RustEmailConfig, EmbeddingConfig as RustEmbeddingConfig,
     EmbeddingModelType as RustEmbeddingModelType, ExecutionProviderType as RustExecutionProviderType, ExtractionConfig,
     FileExtractionConfig, ImageExtractionConfig as RustImageExtractionConfig,
-    LanguageDetectionConfig as RustLanguageDetectionConfig, OcrConfig as RustOcrConfig, PdfConfig as RustPdfConfig,
-    PostProcessorConfig as RustPostProcessorConfig, TesseractConfig as RustTesseractConfig,
+    LanguageDetectionConfig as RustLanguageDetectionConfig, LlmConfig as RustLlmConfig, OcrConfig as RustOcrConfig,
+    PdfConfig as RustPdfConfig, PostProcessorConfig as RustPostProcessorConfig,
+    StructuredExtractionConfig as RustStructuredExtractionConfig, TesseractConfig as RustTesseractConfig,
     TokenReductionConfig as RustTokenReductionConfig, TreeSitterConfig as RustTreeSitterConfig,
     TreeSitterProcessConfig as RustTreeSitterProcessConfig,
 };
@@ -46,6 +47,10 @@ pub struct JsOcrConfig {
     pub tesseract_config: Option<JsTesseractConfig>,
     pub paddle_ocr_config: Option<JsPaddleOcrConfig>,
     pub element_config: Option<JsOcrElementConfig>,
+    /// VLM configuration for vision-language model OCR backend.
+    pub vlm_config: Option<JsLlmConfig>,
+    /// Custom prompt template for VLM OCR.
+    pub vlm_prompt: Option<String>,
 }
 
 #[napi(object)]
@@ -150,8 +155,8 @@ impl From<JsOcrConfig> for RustOcrConfig {
             quality_thresholds: None,
             pipeline: None,
             auto_rotate: false,
-            vlm_config: None,
-            vlm_prompt: None,
+            vlm_config: val.vlm_config.map(Into::into),
+            vlm_prompt: val.vlm_prompt,
         }
     }
 }
@@ -300,6 +305,102 @@ impl From<RustTreeSitterConfig> for JsTreeSitterConfig {
     }
 }
 
+/// LLM provider/model configuration for Node.js bindings.
+///
+/// Used for VLM OCR, VLM embeddings, and structured extraction features.
+#[napi(object)]
+pub struct JsLlmConfig {
+    /// Provider/model string using liter-llm routing format (e.g., "openai/gpt-4o").
+    pub model: String,
+    /// API key for the provider. When not set, falls back to provider env var.
+    pub api_key: Option<String>,
+    /// Custom base URL override for the provider endpoint.
+    pub base_url: Option<String>,
+    /// Request timeout in seconds.
+    pub timeout_secs: Option<u32>,
+    /// Maximum retry attempts.
+    pub max_retries: Option<u32>,
+    /// Sampling temperature for generation tasks.
+    pub temperature: Option<f64>,
+    /// Maximum tokens to generate.
+    pub max_tokens: Option<u32>,
+}
+
+impl From<JsLlmConfig> for RustLlmConfig {
+    fn from(val: JsLlmConfig) -> Self {
+        RustLlmConfig {
+            model: val.model,
+            api_key: val.api_key,
+            base_url: val.base_url,
+            timeout_secs: val.timeout_secs.map(|v| v as u64),
+            max_retries: val.max_retries,
+            temperature: val.temperature,
+            max_tokens: val.max_tokens.map(|v| v as u64),
+        }
+    }
+}
+
+impl From<RustLlmConfig> for JsLlmConfig {
+    fn from(val: RustLlmConfig) -> Self {
+        Self {
+            model: val.model,
+            api_key: val.api_key,
+            base_url: val.base_url,
+            timeout_secs: val.timeout_secs.map(|v| v as u32),
+            max_retries: val.max_retries,
+            temperature: val.temperature,
+            max_tokens: val.max_tokens.map(|v| v as u32),
+        }
+    }
+}
+
+/// Structured extraction configuration for Node.js bindings.
+///
+/// Sends extracted document content to an LLM with a JSON schema,
+/// returning structured data conforming to the schema.
+#[napi(object)]
+pub struct JsStructuredExtractionConfig {
+    /// JSON Schema defining the desired output structure.
+    #[napi(ts_type = "Record<string, unknown>")]
+    pub schema: serde_json::Value,
+    /// LLM configuration for the extraction.
+    pub llm: JsLlmConfig,
+    /// Schema name passed to the LLM's structured output mode.
+    pub schema_name: Option<String>,
+    /// Optional schema description for the LLM.
+    pub schema_description: Option<String>,
+    /// Enable strict mode — output must exactly match the schema.
+    pub strict: Option<bool>,
+    /// Custom Jinja2 extraction prompt template.
+    pub prompt: Option<String>,
+}
+
+impl From<JsStructuredExtractionConfig> for RustStructuredExtractionConfig {
+    fn from(val: JsStructuredExtractionConfig) -> Self {
+        RustStructuredExtractionConfig {
+            schema: val.schema,
+            llm: val.llm.into(),
+            schema_name: val.schema_name.unwrap_or_else(|| "extraction".to_string()),
+            schema_description: val.schema_description,
+            strict: val.strict.unwrap_or(false),
+            prompt: val.prompt,
+        }
+    }
+}
+
+impl From<RustStructuredExtractionConfig> for JsStructuredExtractionConfig {
+    fn from(val: RustStructuredExtractionConfig) -> Self {
+        Self {
+            schema: val.schema,
+            llm: val.llm.into(),
+            schema_name: Some(val.schema_name),
+            schema_description: val.schema_description,
+            strict: Some(val.strict),
+            prompt: val.prompt,
+        }
+    }
+}
+
 /// Embedding model type configuration for Node.js bindings.
 ///
 /// This struct represents different embedding model sources:
@@ -322,6 +423,17 @@ impl From<JsEmbeddingModelType> for RustEmbeddingModelType {
             "custom" => RustEmbeddingModelType::Custom {
                 model_id: val.value,
                 dimensions: val.dimensions.unwrap_or(512) as usize,
+            },
+            "llm" => RustEmbeddingModelType::Llm {
+                llm: RustLlmConfig {
+                    model: val.value,
+                    api_key: None,
+                    base_url: None,
+                    timeout_secs: None,
+                    max_retries: None,
+                    temperature: None,
+                    max_tokens: None,
+                },
             },
             _ => RustEmbeddingModelType::Preset {
                 name: "balanced".to_string(),
@@ -1259,6 +1371,8 @@ pub struct JsExtractionConfig {
     pub extraction_timeout_secs: Option<u32>,
     /// Tree-sitter language pack configuration for code analysis
     pub tree_sitter: Option<JsTreeSitterConfig>,
+    /// Structured extraction configuration for LLM-based data extraction
+    pub structured_extraction: Option<JsStructuredExtractionConfig>,
 }
 
 impl TryFrom<JsPageConfig> for kreuzberg::core::config::PageConfig {
@@ -1348,7 +1462,7 @@ impl TryFrom<JsExtractionConfig> for ExtractionConfig {
             cache_ttl_secs: val.cache_ttl_secs.map(|v| v as u64),
             max_archive_depth: val.max_archive_depth.map(|v| v as usize).unwrap_or(3),
             tree_sitter: val.tree_sitter.map(Into::into),
-            structured_extraction: None,
+            structured_extraction: val.structured_extraction.map(Into::into),
         })
     }
 }
@@ -1398,6 +1512,8 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
                     min_confidence: Some(ec.min_confidence),
                     build_hierarchy: Some(ec.build_hierarchy),
                 }),
+                vlm_config: ocr.vlm_config.map(JsLlmConfig::from),
+                vlm_prompt: ocr.vlm_prompt,
             }),
             force_ocr: Some(val.force_ocr),
             disable_ocr: Some(val.disable_ocr),
@@ -1530,6 +1646,7 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
             max_archive_depth: Some(val.max_archive_depth as u32),
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as u32),
             tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
+            structured_extraction: val.structured_extraction.map(JsStructuredExtractionConfig::from),
         })
     }
 }
@@ -1667,6 +1784,8 @@ pub struct JsFileExtractionConfig {
     pub timeout_secs: Option<u32>,
     /// Tree-sitter language pack configuration for code analysis
     pub tree_sitter: Option<JsTreeSitterConfig>,
+    /// Structured extraction configuration for LLM-based data extraction
+    pub structured_extraction: Option<JsStructuredExtractionConfig>,
 }
 
 impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
@@ -1721,7 +1840,7 @@ impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
             layout: val.layout.map(Into::into),
             timeout_secs: val.timeout_secs.map(|v| v as u64),
             tree_sitter: val.tree_sitter.map(Into::into),
-            structured_extraction: None,
+            structured_extraction: val.structured_extraction.map(Into::into),
         })
     }
 }
@@ -1770,6 +1889,8 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
                     min_confidence: Some(ec.min_confidence),
                     build_hierarchy: Some(ec.build_hierarchy),
                 }),
+                vlm_config: ocr.vlm_config.map(JsLlmConfig::from),
+                vlm_prompt: ocr.vlm_prompt,
             }),
             force_ocr: val.force_ocr,
             disable_ocr: val.disable_ocr,
@@ -1871,6 +1992,7 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
             layout: val.layout.map(JsLayoutDetectionConfig::from),
             timeout_secs: val.timeout_secs.map(|v| v as u32),
             tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
+            structured_extraction: val.structured_extraction.map(JsStructuredExtractionConfig::from),
         })
     }
 }

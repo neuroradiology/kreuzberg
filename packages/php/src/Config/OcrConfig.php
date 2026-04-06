@@ -78,6 +78,27 @@ readonly class OcrConfig
          * @default null
          */
         public ?OcrElementConfig $elementConfig = null,
+
+        /**
+         * VLM (Vision Language Model) configuration for OCR.
+         *
+         * When set, uses a VLM via liter-llm for OCR instead of or in addition
+         * to traditional OCR backends.
+         *
+         * @var LlmConfig|null
+         * @default null
+         */
+        public ?LlmConfig $vlmConfig = null,
+
+        /**
+         * Custom prompt for VLM-based OCR.
+         *
+         * When set, overrides the default VLM OCR prompt template.
+         *
+         * @var string|null
+         * @default null
+         */
+        public ?string $vlmPrompt = null,
     ) {
     }
 
@@ -150,6 +171,25 @@ readonly class OcrConfig
             $elementConfig = OcrElementConfig::fromArray($configData);
         }
 
+        /** @var LlmConfig|null $vlmConfig */
+        $vlmConfig = null;
+        if (isset($data['vlm_config'])) {
+            $configData = $data['vlm_config'];
+            if (!is_array($configData)) {
+                /** @var array<string, mixed> $configData */
+                $configData = (array) $configData;
+            }
+            /** @var array<string, mixed> $configData */
+            $vlmConfig = LlmConfig::fromArray($configData);
+        }
+
+        /** @var string|null $vlmPrompt */
+        $vlmPrompt = $data['vlm_prompt'] ?? null;
+        if ($vlmPrompt !== null && !is_string($vlmPrompt)) {
+            /** @var string $vlmPrompt */
+            $vlmPrompt = (string) $vlmPrompt;
+        }
+
         return new self(
             backend: $backend,
             language: $language,
@@ -157,6 +197,8 @@ readonly class OcrConfig
             paddleOcrConfig: $paddleOcrConfig ?? null,
             imagePreprocessing: $imagePreprocessing ?? null,
             elementConfig: $elementConfig ?? null,
+            vlmConfig: $vlmConfig,
+            vlmPrompt: $vlmPrompt,
         );
     }
 
@@ -203,6 +245,8 @@ readonly class OcrConfig
             'paddle_ocr_config' => $this->paddleOcrConfig?->toArray(),
             'image_preprocessing' => $this->imagePreprocessing?->toArray(),
             'element_config' => $this->elementConfig?->toArray(),
+            'vlm_config' => $this->vlmConfig?->toArray(),
+            'vlm_prompt' => $this->vlmPrompt,
         ], static fn ($value): bool => $value !== null);
     }
 

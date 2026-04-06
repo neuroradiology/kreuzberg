@@ -90,6 +90,8 @@ fn _internal_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<config::TreeSitterProcessConfig>()?;
     m.add_class::<config::TreeSitterConfig>()?;
     m.add_class::<config::FileExtractionConfig>()?;
+    m.add_class::<config::PyLlmConfig>()?;
+    m.add_class::<config::PyStructuredExtractionConfig>()?;
 
     m.add_class::<keywords::YakeParams>()?;
     m.add_class::<keywords::RakeParams>()?;
