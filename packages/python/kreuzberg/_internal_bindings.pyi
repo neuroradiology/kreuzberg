@@ -38,6 +38,7 @@ __all__ = [
     "CodeStructureItem",
     "CodeSymbolInfo",
     "ConcurrencyConfig",
+    "ContentFilterConfig",
     "ContentLayer",
     "ContributorRole",
     "CsvMetadata",
@@ -466,6 +467,42 @@ class EmailConfig:
         msg_fallback_codepage: int | None = None,
     ) -> None: ...
 
+class ContentFilterConfig:
+    """Content filtering configuration.
+
+    Controls whether "furniture" content (headers, footers, page numbers,
+    watermarks, repeating text) is included in or stripped from extraction results.
+
+    Attributes:
+        include_headers (bool): Include running headers in extraction output.
+            Default: False
+        include_footers (bool): Include running footers in extraction output.
+            Default: False
+        strip_repeating_text (bool): Enable cross-page repeating text detection
+            and removal. Default: True
+        include_watermarks (bool): Include watermark text in extraction output.
+            Default: False
+
+    Example:
+        Include headers and footers:
+            >>> from kreuzberg import ContentFilterConfig
+            >>> config = ContentFilterConfig(include_headers=True, include_footers=True)
+    """
+
+    include_headers: bool
+    include_footers: bool
+    strip_repeating_text: bool
+    include_watermarks: bool
+
+    def __init__(
+        self,
+        *,
+        include_headers: bool | None = None,
+        include_footers: bool | None = None,
+        strip_repeating_text: bool | None = None,
+        include_watermarks: bool | None = None,
+    ) -> None: ...
+
 class ConcurrencyConfig:
     """Concurrency configuration for controlling thread usage.
 
@@ -786,6 +823,7 @@ class ExtractionConfig:
     email: EmailConfig | None
     concurrency: ConcurrencyConfig | None
     tree_sitter: TreeSitterConfig | None
+    content_filter: ContentFilterConfig | None
     cache_namespace: str | None
     cache_ttl_secs: int | None
     extraction_timeout_secs: int | None
@@ -818,6 +856,7 @@ class ExtractionConfig:
         email: EmailConfig | None = None,
         concurrency: ConcurrencyConfig | None = None,
         tree_sitter: TreeSitterConfig | None = None,
+        content_filter: ContentFilterConfig | None = None,
         cache_namespace: str | None = ...,
         cache_ttl_secs: int | None = ...,
         extraction_timeout_secs: int | None = ...,
@@ -855,6 +894,7 @@ class FileExtractionConfig:
     layout: LayoutDetectionConfig | None
     timeout_secs: int | None
     tree_sitter: TreeSitterConfig | None
+    content_filter: ContentFilterConfig | None
 
     def __init__(
         self,
@@ -878,6 +918,7 @@ class FileExtractionConfig:
         layout: LayoutDetectionConfig | None = None,
         timeout_secs: int | None = None,
         tree_sitter: TreeSitterConfig | None = None,
+        content_filter: ContentFilterConfig | None = None,
     ) -> None: ...
 
 class OcrConfig:

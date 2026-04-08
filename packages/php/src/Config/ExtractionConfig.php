@@ -363,6 +363,17 @@ readonly class ExtractionConfig
          * @default null
          */
         public ?StructuredExtractionConfig $structuredExtraction = null,
+
+        /**
+         * Content filtering configuration.
+         *
+         * Controls which content elements are included or excluded during extraction,
+         * such as headers, footers, watermarks, and repeating text.
+         *
+         * @var ContentFilterConfig|null
+         * @default null
+         */
+        public ?ContentFilterConfig $contentFilter = null,
     ) {
     }
 
@@ -600,6 +611,13 @@ readonly class ExtractionConfig
             $structuredExtraction = StructuredExtractionConfig::fromArray($structuredExtractionData);
         }
 
+        $contentFilter = null;
+        if (isset($data['content_filter']) && is_array($data['content_filter'])) {
+            /** @var array<string, mixed> $contentFilterData */
+            $contentFilterData = $data['content_filter'];
+            $contentFilter = ContentFilterConfig::fromArray($contentFilterData);
+        }
+
         return new self(
             useCache: $useCache,
             enableQualityProcessing: $enableQualityProcessing,
@@ -631,6 +649,7 @@ readonly class ExtractionConfig
             layout: $layout,
             treeSitter: $treeSitter,
             structuredExtraction: $structuredExtraction,
+            contentFilter: $contentFilter,
         );
     }
 
@@ -804,6 +823,7 @@ readonly class ExtractionConfig
             'layout' => $this->layout?->toArray(),
             'tree_sitter' => $this->treeSitter?->toArray(),
             'structured_extraction' => $this->structuredExtraction?->toArray(),
+            'content_filter' => $this->contentFilter?->toArray(),
         ];
 
         // Add simple boolean/string fields only if explicitly set to non-default values

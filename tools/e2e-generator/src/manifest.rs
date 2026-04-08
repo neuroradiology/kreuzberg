@@ -455,6 +455,7 @@ fn sample_extraction_config() -> Value {
         force_ocr_pages: Some(vec![1]),
         disable_ocr: false,
         chunking: Some(kreuzberg::ChunkingConfig::default()),
+        content_filter: None,
         images: Some(kreuzberg::ImageExtractionConfig::default()),
         pdf_options: Some(kreuzberg::PdfConfig::default()),
         token_reduction: Some(kreuzberg::TokenReductionConfig {

@@ -69,7 +69,8 @@ impl ExtractionConfig {
         cache_ttl_secs=None,
         extraction_timeout_secs=None,
         tree_sitter=None,
-        structured_extraction=None
+        structured_extraction=None,
+        content_filter=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -101,6 +102,7 @@ impl ExtractionConfig {
         extraction_timeout_secs: Option<u64>,
         tree_sitter: Option<TreeSitterConfig>,
         structured_extraction: Option<PyStructuredExtractionConfig>,
+        content_filter: Option<ContentFilterConfig>,
     ) -> PyResult<Self> {
         let (html_options_inner, html_options_dict) = parse_html_options_dict(html_options)?;
         Ok(Self {
@@ -112,6 +114,7 @@ impl ExtractionConfig {
                 disable_ocr: disable_ocr.unwrap_or(false),
                 force_ocr_pages,
                 chunking: chunking.map(Into::into),
+                content_filter: content_filter.map(Into::into),
                 images: images.map(Into::into),
                 pdf_options: pdf_options.map(Into::into),
                 token_reduction: token_reduction.map(Into::into),
@@ -434,6 +437,16 @@ impl ExtractionConfig {
     #[setter]
     fn set_tree_sitter(&mut self, value: Option<TreeSitterConfig>) {
         self.inner.tree_sitter = value.map(Into::into);
+    }
+
+    #[getter]
+    fn content_filter(&self) -> Option<ContentFilterConfig> {
+        self.inner.content_filter.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_content_filter(&mut self, value: Option<ContentFilterConfig>) {
+        self.inner.content_filter = value.map(Into::into);
     }
 
     #[getter]
@@ -2298,6 +2311,112 @@ impl EmailConfig {
     }
 }
 
+/// Content filtering configuration.
+///
+/// Controls whether "furniture" content (headers, footers, page numbers,
+/// watermarks, repeating text) is included in or stripped from extraction results.
+///
+/// Example:
+///     >>> from kreuzberg import ContentFilterConfig
+///     >>> # Include headers and footers
+///     >>> config = ContentFilterConfig(include_headers=True, include_footers=True)
+///     >>>
+///     >>> # Disable repeating-text stripping (default is True)
+///     >>> config = ContentFilterConfig(strip_repeating_text=False)
+#[pyclass(name = "ContentFilterConfig", module = "kreuzberg", from_py_object)]
+#[derive(Clone)]
+pub struct ContentFilterConfig {
+    pub inner: kreuzberg::ContentFilterConfig,
+}
+
+#[pymethods]
+impl ContentFilterConfig {
+    #[new]
+    #[pyo3(signature = (
+        include_headers=None,
+        include_footers=None,
+        strip_repeating_text=None,
+        include_watermarks=None
+    ))]
+    fn new(
+        include_headers: Option<bool>,
+        include_footers: Option<bool>,
+        strip_repeating_text: Option<bool>,
+        include_watermarks: Option<bool>,
+    ) -> Self {
+        Self {
+            inner: kreuzberg::ContentFilterConfig {
+                include_headers: include_headers.unwrap_or(false),
+                include_footers: include_footers.unwrap_or(false),
+                strip_repeating_text: strip_repeating_text.unwrap_or(true),
+                include_watermarks: include_watermarks.unwrap_or(false),
+            },
+        }
+    }
+
+    #[getter]
+    fn include_headers(&self) -> bool {
+        self.inner.include_headers
+    }
+
+    #[setter]
+    fn set_include_headers(&mut self, value: bool) {
+        self.inner.include_headers = value;
+    }
+
+    #[getter]
+    fn include_footers(&self) -> bool {
+        self.inner.include_footers
+    }
+
+    #[setter]
+    fn set_include_footers(&mut self, value: bool) {
+        self.inner.include_footers = value;
+    }
+
+    #[getter]
+    fn strip_repeating_text(&self) -> bool {
+        self.inner.strip_repeating_text
+    }
+
+    #[setter]
+    fn set_strip_repeating_text(&mut self, value: bool) {
+        self.inner.strip_repeating_text = value;
+    }
+
+    #[getter]
+    fn include_watermarks(&self) -> bool {
+        self.inner.include_watermarks
+    }
+
+    #[setter]
+    fn set_include_watermarks(&mut self, value: bool) {
+        self.inner.include_watermarks = value;
+    }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "ContentFilterConfig(include_headers={}, include_footers={}, strip_repeating_text={}, include_watermarks={})",
+            self.inner.include_headers,
+            self.inner.include_footers,
+            self.inner.strip_repeating_text,
+            self.inner.include_watermarks
+        )
+    }
+}
+
+impl From<ContentFilterConfig> for kreuzberg::ContentFilterConfig {
+    fn from(val: ContentFilterConfig) -> Self {
+        val.inner
+    }
+}
+
+impl From<kreuzberg::ContentFilterConfig> for ContentFilterConfig {
+    fn from(val: kreuzberg::ContentFilterConfig) -> Self {
+        Self { inner: val }
+    }
+}
+
 /// Concurrency configuration.
 ///
 /// Controls thread usage for constrained environments.
@@ -2753,7 +2872,8 @@ impl FileExtractionConfig {
         include_document_structure=None,
         layout=None,
         timeout_secs=None,
-        tree_sitter=None
+        tree_sitter=None,
+        content_filter=None
     ))]
     #[allow(clippy::too_many_arguments)]
     fn new(
@@ -2777,6 +2897,7 @@ impl FileExtractionConfig {
         layout: Option<LayoutDetectionConfig>,
         timeout_secs: Option<u64>,
         tree_sitter: Option<TreeSitterConfig>,
+        content_filter: Option<ContentFilterConfig>,
     ) -> PyResult<Self> {
         let (html_options_inner, html_options_dict) = parse_html_options_dict(html_options)?;
         Ok(Self {
@@ -2787,6 +2908,7 @@ impl FileExtractionConfig {
                 disable_ocr,
                 force_ocr_pages,
                 chunking: chunking.map(Into::into),
+                content_filter: content_filter.map(Into::into),
                 images: images.map(Into::into),
                 pdf_options: pdf_options.map(Into::into),
                 token_reduction: token_reduction.map(Into::into),
@@ -3081,6 +3203,16 @@ impl FileExtractionConfig {
     #[setter]
     fn set_tree_sitter(&mut self, value: Option<TreeSitterConfig>) {
         self.inner.tree_sitter = value.map(Into::into);
+    }
+
+    #[getter]
+    fn content_filter(&self) -> Option<ContentFilterConfig> {
+        self.inner.content_filter.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_content_filter(&mut self, value: Option<ContentFilterConfig>) {
+        self.inner.content_filter = value.map(Into::into);
     }
 
     fn __repr__(&self) -> String {

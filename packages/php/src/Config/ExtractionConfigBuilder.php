@@ -49,6 +49,7 @@ class ExtractionConfigBuilder
     private ?int $cacheTtlSecs = null;
     private ?int $extractionTimeoutSecs = null;
     private ?TreeSitterConfig $treeSitter = null;
+    private ?ContentFilterConfig $contentFilter = null;
 
     /**
      * Set whether to enable caching of extraction results.
@@ -322,6 +323,18 @@ class ExtractionConfigBuilder
     }
 
     /**
+     * Set the content filter configuration.
+     *
+     * @param ContentFilterConfig|null $contentFilter Content filtering settings
+     * @return self For method chaining
+     */
+    public function withContentFilter(?ContentFilterConfig $contentFilter): self
+    {
+        $this->contentFilter = $contentFilter;
+        return $this;
+    }
+
+    /**
      * Build and return the configured ExtractionConfig instance.
      *
      * @return ExtractionConfig The constructed configuration object
@@ -351,6 +364,7 @@ class ExtractionConfigBuilder
             cacheTtlSecs: $this->cacheTtlSecs,
             extractionTimeoutSecs: $this->extractionTimeoutSecs,
             treeSitter: $this->treeSitter,
+            contentFilter: $this->contentFilter,
         );
     }
 }

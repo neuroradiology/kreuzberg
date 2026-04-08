@@ -856,6 +856,40 @@ module Kreuzberg
       end
     end
 
+    # Content filter configuration for controlling extraction of headers, footers,
+    # watermarks, and repeating text across document formats.
+    #
+    # @example Include headers and footers
+    #   filter = ContentFilter.new(include_headers: true, include_footers: true)
+    #
+    # @example Disable repeating text removal
+    #   filter = ContentFilter.new(strip_repeating_text: false)
+    #
+    class ContentFilter
+      attr_reader :include_headers, :include_footers, :strip_repeating_text, :include_watermarks
+
+      def initialize(
+        include_headers: false,
+        include_footers: false,
+        strip_repeating_text: true,
+        include_watermarks: false
+      )
+        @include_headers = include_headers ? true : false
+        @include_footers = include_footers ? true : false
+        @strip_repeating_text = strip_repeating_text ? true : false
+        @include_watermarks = include_watermarks ? true : false
+      end
+
+      def to_h
+        {
+          include_headers: @include_headers,
+          include_footers: @include_footers,
+          strip_repeating_text: @strip_repeating_text,
+          include_watermarks: @include_watermarks
+        }
+      end
+    end
+
     # Layout detection configuration
     #
     # @example Basic usage
@@ -951,7 +985,7 @@ module Kreuzberg
                   :max_concurrent_extractions, :output_format, :result_format,
                   :security_limits, :layout, :concurrency,
                   :cache_namespace, :cache_ttl_secs, :extraction_timeout_secs,
-                  :max_archive_depth, :acceleration, :email
+                  :max_archive_depth, :acceleration, :email, :content_filter
 
       # Alias for backward compatibility - image_extraction is the canonical name
       alias image_extraction images
@@ -977,7 +1011,7 @@ module Kreuzberg
         postprocessor token_reduction keywords html_options pages
         max_concurrent_extractions output_format result_format
         security_limits layout concurrency cache_namespace cache_ttl_secs extraction_timeout_secs
-        max_archive_depth acceleration email
+        max_archive_depth acceleration email content_filter
       ].freeze
 
       # Aliases for backward compatibility
@@ -1062,7 +1096,8 @@ module Kreuzberg
                      extraction_timeout_secs: nil,
                      max_archive_depth: 3,
                      acceleration: nil,
-                     email: nil)
+                     email: nil,
+                     content_filter: nil)
         kwargs = {
           use_cache: use_cache, enable_quality_processing: enable_quality_processing,
           force_ocr: force_ocr, disable_ocr: disable_ocr, force_ocr_pages: force_ocr_pages,
@@ -1080,7 +1115,8 @@ module Kreuzberg
           extraction_timeout_secs: extraction_timeout_secs,
           max_archive_depth: max_archive_depth,
           acceleration: acceleration,
-          email: email
+          email: email,
+          content_filter: content_filter
         }
         extracted = extract_from_hash(hash, kwargs)
 
@@ -1115,6 +1151,7 @@ module Kreuzberg
         @concurrency = normalize_config(params[:concurrency], Concurrency)
         @acceleration = normalize_config(params[:acceleration], Acceleration)
         @email = normalize_config(params[:email], Email)
+        @content_filter = normalize_config(params[:content_filter], ContentFilter)
         @max_concurrent_extractions = params[:max_concurrent_extractions]&.to_i
         @max_archive_depth = params[:max_archive_depth]&.to_i || 3
         @output_format = validate_output_format(params[:output_format])
@@ -1175,7 +1212,8 @@ module Kreuzberg
           token_reduction: @token_reduction&.to_h, keywords: @keywords&.to_h,
           html_options: @html_options&.to_h, pages: @pages&.to_h,
           layout: @layout&.to_h, concurrency: @concurrency&.to_h,
-          acceleration: @acceleration&.to_h, email: @email&.to_h
+          acceleration: @acceleration&.to_h, email: @email&.to_h,
+          content_filter: @content_filter&.to_h
         }
       end
 

@@ -69,6 +69,10 @@ pub struct FileExtractionConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chunking: Option<ChunkingConfig>,
 
+    /// Override content filtering configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_filter: Option<super::super::content_filter::ContentFilterConfig>,
+
     /// Override image extraction configuration for this file.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub images: Option<ImageExtractionConfig>,

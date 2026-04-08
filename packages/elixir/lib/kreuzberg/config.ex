@@ -41,6 +41,7 @@ defmodule Kreuzberg.ExtractionConfig do
     * `:acceleration` - GPU acceleration configuration (provider, device_id)
     * `:security_limits` - Security limits for archive extraction (max sizes, compression ratio, etc.)
     * `:email` - Email extraction configuration (msg_fallback_codepage)
+    * `:content_filter` - Content filter configuration (include_headers, include_footers, strip_repeating_text, include_watermarks)
     * `:max_concurrent_extractions` - Maximum concurrent extractions in batch operations (positive integer or nil)
     * `:cache_namespace` - Cache namespace for tenant isolation (string or nil)
     * `:cache_ttl_secs` - Per-request cache TTL in seconds (non-negative integer or nil)
@@ -115,6 +116,7 @@ defmodule Kreuzberg.ExtractionConfig do
         "cache_ttl_secs" => nil,
         "chunking" => %{"size" => 512},
         "concurrency" => nil,
+        "content_filter" => nil,
         "email" => nil,
         "disable_ocr" => false,
         "enable_quality_processing" => true,
@@ -174,6 +176,7 @@ defmodule Kreuzberg.ExtractionConfig do
           acceleration: nested_config,
           security_limits: nested_config,
           email: nested_config,
+          content_filter: nested_config,
           concurrency: nested_config,
           tree_sitter: Kreuzberg.TreeSitterConfig.t() | nested_config,
           use_cache: boolean(),
@@ -207,6 +210,7 @@ defmodule Kreuzberg.ExtractionConfig do
     :acceleration,
     :security_limits,
     :email,
+    :content_filter,
     :concurrency,
     :tree_sitter,
     :cache_namespace,
@@ -361,6 +365,7 @@ defmodule Kreuzberg.ExtractionConfig do
         "cache_ttl_secs" => nil,
         "chunking" => nil,
         "concurrency" => nil,
+        "content_filter" => nil,
         "email" => nil,
         "disable_ocr" => false,
         "enable_quality_processing" => true,
@@ -422,6 +427,7 @@ defmodule Kreuzberg.ExtractionConfig do
       "acceleration" => normalize_acceleration_config(config.acceleration),
       "security_limits" => normalize_nested_config(config.security_limits),
       "email" => normalize_email_config(config.email),
+      "content_filter" => normalize_nested_config(config.content_filter),
       "concurrency" => normalize_concurrency_config(config.concurrency),
       "tree_sitter" => normalize_nested_config(config.tree_sitter),
       "use_cache" => config.use_cache,
@@ -701,6 +707,7 @@ defmodule Kreuzberg.ExtractionConfig do
          :ok <- validate_nested_field(config.security_limits, "security_limits"),
          :ok <- validate_nested_field(config.email, "email"),
          :ok <- validate_email_config(config.email),
+         :ok <- validate_nested_field(config.content_filter, "content_filter"),
          :ok <- validate_nested_field(config.concurrency, "concurrency"),
          :ok <- validate_concurrency_config(config.concurrency),
          :ok <- validate_nested_field(config.tree_sitter, "tree_sitter") do

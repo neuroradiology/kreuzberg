@@ -467,6 +467,23 @@ export interface CodeProcessResult {
 }
 
 /**
+ * Content filtering configuration.
+ *
+ * Controls whether "furniture" content (headers, footers, watermarks,
+ * repeating text) is included in or stripped from extraction results.
+ */
+export interface ContentFilterConfig {
+	/** Include running headers in extraction output (default: false) */
+	includeHeaders?: boolean;
+	/** Include running footers in extraction output (default: false) */
+	includeFooters?: boolean;
+	/** Enable cross-page repeating text detection and removal (default: true) */
+	stripRepeatingText?: boolean;
+	/** Include watermark text in extraction output (default: false) */
+	includeWatermarks?: boolean;
+}
+
+/**
  * Configuration for document extraction
  */
 export interface ExtractionConfig {
@@ -546,6 +563,8 @@ export interface ExtractionConfig {
 	cacheTtlSecs?: number;
 	/** Tree-sitter configuration for code file extraction */
 	treeSitter?: TreeSitterConfig;
+	/** Content filtering configuration for headers/footers/watermarks */
+	contentFilter?: ContentFilterConfig;
 }
 
 /**

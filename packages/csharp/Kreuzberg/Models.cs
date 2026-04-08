@@ -2487,6 +2487,14 @@ public sealed class ExtractionConfig
     [JsonPropertyName("tree_sitter")]
     public TreeSitterConfig? TreeSitter { get; init; }
 
+    /// <summary>
+    /// Content filtering configuration for controlling header, footer, watermark,
+    /// and repeating text inclusion in extraction results.
+    /// If null, each extractor uses its default behavior.
+    /// </summary>
+    [JsonPropertyName("content_filter")]
+    public ContentFilterConfig? ContentFilter { get; init; }
+
 }
 
 /// <summary>
@@ -3055,6 +3063,47 @@ public sealed class PostProcessorConfig
     /// </summary>
     [JsonPropertyName("disabled_processors")]
     public List<string>? DisabledProcessors { get; init; }
+}
+
+/// <summary>
+/// Cross-extractor content filtering configuration.
+///
+/// Controls whether "furniture" content (headers, footers, page numbers,
+/// watermarks, repeating text) is included in or stripped from extraction
+/// results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.)
+/// with format-specific implementation.
+/// </summary>
+public sealed class ContentFilterConfig
+{
+    /// <summary>
+    /// Include running headers in extraction output.
+    /// Default: false (headers are stripped or excluded).
+    /// </summary>
+    [JsonPropertyName("include_headers")]
+    public bool? IncludeHeaders { get; init; }
+
+    /// <summary>
+    /// Include running footers in extraction output.
+    /// Default: false (footers are stripped or excluded).
+    /// </summary>
+    [JsonPropertyName("include_footers")]
+    public bool? IncludeFooters { get; init; }
+
+    /// <summary>
+    /// Enable cross-page repeating text detection and removal.
+    /// When true (default), text that repeats verbatim across a supermajority
+    /// of pages is stripped.
+    /// Default: true.
+    /// </summary>
+    [JsonPropertyName("strip_repeating_text")]
+    public bool? StripRepeatingText { get; init; }
+
+    /// <summary>
+    /// Include watermark text in extraction output.
+    /// Default: false (watermarks are stripped).
+    /// </summary>
+    [JsonPropertyName("include_watermarks")]
+    public bool? IncludeWatermarks { get; init; }
 }
 
 /// <summary>

@@ -87,6 +87,7 @@ fn _internal_bindings(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<config::AccelerationConfig>()?;
     m.add_class::<config::EmailConfig>()?;
     m.add_class::<config::ConcurrencyConfig>()?;
+    m.add_class::<config::ContentFilterConfig>()?;
     m.add_class::<config::TreeSitterProcessConfig>()?;
     m.add_class::<config::TreeSitterConfig>()?;
     m.add_class::<config::FileExtractionConfig>()?;

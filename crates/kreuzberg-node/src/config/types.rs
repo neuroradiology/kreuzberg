@@ -13,14 +13,14 @@ use kreuzberg::keywords::{
 use kreuzberg::pdf::HierarchyConfig as RustHierarchyConfig;
 use kreuzberg::{
     AccelerationConfig as RustAccelerationConfig, ChunkerType, ChunkingConfig as RustChunkingConfig,
-    EmailConfig as RustEmailConfig, EmbeddingConfig as RustEmbeddingConfig,
-    EmbeddingModelType as RustEmbeddingModelType, ExecutionProviderType as RustExecutionProviderType, ExtractionConfig,
-    FileExtractionConfig, ImageExtractionConfig as RustImageExtractionConfig,
-    LanguageDetectionConfig as RustLanguageDetectionConfig, LlmConfig as RustLlmConfig, OcrConfig as RustOcrConfig,
-    PdfConfig as RustPdfConfig, PostProcessorConfig as RustPostProcessorConfig,
-    StructuredExtractionConfig as RustStructuredExtractionConfig, TesseractConfig as RustTesseractConfig,
-    TokenReductionConfig as RustTokenReductionConfig, TreeSitterConfig as RustTreeSitterConfig,
-    TreeSitterProcessConfig as RustTreeSitterProcessConfig,
+    ContentFilterConfig as RustContentFilterConfig, EmailConfig as RustEmailConfig,
+    EmbeddingConfig as RustEmbeddingConfig, EmbeddingModelType as RustEmbeddingModelType,
+    ExecutionProviderType as RustExecutionProviderType, ExtractionConfig, FileExtractionConfig,
+    ImageExtractionConfig as RustImageExtractionConfig, LanguageDetectionConfig as RustLanguageDetectionConfig,
+    LlmConfig as RustLlmConfig, OcrConfig as RustOcrConfig, PdfConfig as RustPdfConfig,
+    PostProcessorConfig as RustPostProcessorConfig, StructuredExtractionConfig as RustStructuredExtractionConfig,
+    TesseractConfig as RustTesseractConfig, TokenReductionConfig as RustTokenReductionConfig,
+    TreeSitterConfig as RustTreeSitterConfig, TreeSitterProcessConfig as RustTreeSitterProcessConfig,
 };
 use std::ffi::c_char;
 
@@ -1186,6 +1186,44 @@ impl From<JsEmailConfig> for RustEmailConfig {
     }
 }
 
+/// Content filtering configuration for Node.js bindings.
+///
+/// Controls whether "furniture" content (headers, footers, watermarks,
+/// repeating text) is included in or stripped from extraction results.
+#[napi(object)]
+pub struct JsContentFilterConfig {
+    /// Include running headers in extraction output. Default: false.
+    pub include_headers: Option<bool>,
+    /// Include running footers in extraction output. Default: false.
+    pub include_footers: Option<bool>,
+    /// Enable cross-page repeating text detection and removal. Default: true.
+    pub strip_repeating_text: Option<bool>,
+    /// Include watermark text in extraction output. Default: false.
+    pub include_watermarks: Option<bool>,
+}
+
+impl From<JsContentFilterConfig> for RustContentFilterConfig {
+    fn from(val: JsContentFilterConfig) -> Self {
+        RustContentFilterConfig {
+            include_headers: val.include_headers.unwrap_or(false),
+            include_footers: val.include_footers.unwrap_or(false),
+            strip_repeating_text: val.strip_repeating_text.unwrap_or(true),
+            include_watermarks: val.include_watermarks.unwrap_or(false),
+        }
+    }
+}
+
+impl From<RustContentFilterConfig> for JsContentFilterConfig {
+    fn from(val: RustContentFilterConfig) -> Self {
+        Self {
+            include_headers: Some(val.include_headers),
+            include_footers: Some(val.include_footers),
+            strip_repeating_text: Some(val.strip_repeating_text),
+            include_watermarks: Some(val.include_watermarks),
+        }
+    }
+}
+
 /// Hardware acceleration configuration for ONNX Runtime inference.
 ///
 /// Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
@@ -1373,6 +1411,8 @@ pub struct JsExtractionConfig {
     pub tree_sitter: Option<JsTreeSitterConfig>,
     /// Structured extraction configuration for LLM-based data extraction
     pub structured_extraction: Option<JsStructuredExtractionConfig>,
+    /// Content filtering configuration for headers/footers/watermarks
+    pub content_filter: Option<JsContentFilterConfig>,
 }
 
 impl TryFrom<JsPageConfig> for kreuzberg::core::config::PageConfig {
@@ -1421,6 +1461,7 @@ impl TryFrom<JsExtractionConfig> for ExtractionConfig {
             disable_ocr: val.disable_ocr.unwrap_or(false),
             force_ocr_pages: val.force_ocr_pages.map(|v| v.into_iter().map(|p| p as usize).collect()),
             chunking: val.chunking.map(Into::into),
+            content_filter: val.content_filter.map(Into::into),
             images: val.images.map(Into::into),
             pdf_options: val.pdf_options.map(Into::into),
             token_reduction: val.token_reduction.map(Into::into),
@@ -1647,6 +1688,7 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
             extraction_timeout_secs: val.extraction_timeout_secs.map(|v| v as u32),
             tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
             structured_extraction: val.structured_extraction.map(JsStructuredExtractionConfig::from),
+            content_filter: val.content_filter.map(JsContentFilterConfig::from),
         })
     }
 }
@@ -1786,6 +1828,8 @@ pub struct JsFileExtractionConfig {
     pub tree_sitter: Option<JsTreeSitterConfig>,
     /// Structured extraction configuration for LLM-based data extraction
     pub structured_extraction: Option<JsStructuredExtractionConfig>,
+    /// Content filtering configuration for headers/footers/watermarks
+    pub content_filter: Option<JsContentFilterConfig>,
 }
 
 impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
@@ -1809,6 +1853,7 @@ impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
             disable_ocr: val.disable_ocr,
             force_ocr_pages: val.force_ocr_pages.map(|v| v.into_iter().map(|p| p as usize).collect()),
             chunking: val.chunking.map(Into::into),
+            content_filter: val.content_filter.map(Into::into),
             images: val.images.map(Into::into),
             pdf_options: val.pdf_options.map(Into::into),
             token_reduction: val.token_reduction.map(Into::into),
@@ -1993,6 +2038,7 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
             timeout_secs: val.timeout_secs.map(|v| v as u32),
             tree_sitter: val.tree_sitter.map(JsTreeSitterConfig::from),
             structured_extraction: val.structured_extraction.map(JsStructuredExtractionConfig::from),
+            content_filter: val.content_filter.map(JsContentFilterConfig::from),
         })
     }
 }

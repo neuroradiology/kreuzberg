@@ -748,6 +748,16 @@ module Kreuzberg
       def to_h: () -> Hash[Symbol, untyped]
     end
 
+    class ContentFilter
+      attr_reader include_headers: bool
+      attr_reader include_footers: bool
+      attr_reader strip_repeating_text: bool
+      attr_reader include_watermarks: bool
+
+      def initialize: (?include_headers: bool, ?include_footers: bool, ?strip_repeating_text: bool, ?include_watermarks: bool) -> void
+      def to_h: () -> Hash[Symbol, untyped]
+    end
+
     class LayoutDetection
       attr_reader preset: String
       attr_reader confidence_threshold: Float?
@@ -814,6 +824,7 @@ module Kreuzberg
       attr_reader concurrency: Concurrency?
       attr_reader acceleration: Acceleration?
       attr_reader email: Email?
+      attr_reader content_filter: ContentFilter?
       attr_reader tree_sitter: TreeSitterConfig?
       attr_reader max_concurrent_extractions: Integer?
       attr_reader max_archive_depth: Integer
@@ -845,6 +856,7 @@ module Kreuzberg
         ?concurrency: (Concurrency | Hash[Symbol, untyped])?,
         ?acceleration: (Acceleration | Hash[Symbol, untyped])?,
         ?email: (Email | Hash[Symbol, untyped])?,
+        ?content_filter: (ContentFilter | Hash[Symbol, untyped])?,
         ?tree_sitter: (TreeSitterConfig | Hash[Symbol, untyped])?,
         ?max_concurrent_extractions: Integer?,
         ?max_archive_depth: Integer,

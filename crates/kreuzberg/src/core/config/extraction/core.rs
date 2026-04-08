@@ -6,6 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::super::acceleration::AccelerationConfig;
+use super::super::content_filter::ContentFilterConfig;
 use super::super::formats::OutputFormat;
 use super::super::ocr::OcrConfig;
 use super::super::page::PageConfig;
@@ -73,6 +74,14 @@ pub struct ExtractionConfig {
     /// Text chunking configuration (None = chunking disabled)
     #[serde(default)]
     pub chunking: Option<ChunkingConfig>,
+
+    /// Content filtering configuration (None = use extractor defaults).
+    ///
+    /// Controls whether document "furniture" (headers, footers, watermarks,
+    /// repeating text) is included in or stripped from extraction results.
+    /// See [`ContentFilterConfig`] for per-field documentation.
+    #[serde(default)]
+    pub content_filter: Option<ContentFilterConfig>,
 
     /// Image extraction configuration (None = no image extraction)
     #[serde(default)]
@@ -251,6 +260,7 @@ impl Default for ExtractionConfig {
             force_ocr_pages: None,
             disable_ocr: false,
             chunking: None,
+            content_filter: None,
             images: None,
             #[cfg(feature = "pdf")]
             pdf_options: None,
@@ -315,6 +325,7 @@ impl ExtractionConfig {
             ref force_ocr_pages,
             ref disable_ocr,
             ref chunking,
+            ref content_filter,
             ref images,
             #[cfg(feature = "pdf")]
             ref pdf_options,
@@ -356,6 +367,9 @@ impl ExtractionConfig {
         }
         if let Some(v) = chunking {
             config.chunking = Some(v.clone());
+        }
+        if let Some(v) = content_filter {
+            config.content_filter = Some(v.clone());
         }
         if let Some(v) = images {
             config.images = Some(v.clone());

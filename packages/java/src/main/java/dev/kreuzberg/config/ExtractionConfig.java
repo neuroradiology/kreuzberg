@@ -61,6 +61,7 @@ public final class ExtractionConfig {
 	private final Integer maxArchiveDepth;
 	private final boolean maxArchiveDepthSet;
 	private final TreeSitterConfig treeSitter;
+	private final ContentFilterConfig contentFilter;
 
 	private ExtractionConfig(Builder builder) {
 		this.useCache = builder.useCache;
@@ -98,6 +99,7 @@ public final class ExtractionConfig {
 		this.maxArchiveDepth = builder.maxArchiveDepth;
 		this.maxArchiveDepthSet = builder.maxArchiveDepthSet;
 		this.treeSitter = builder.treeSitter;
+		this.contentFilter = builder.contentFilter;
 	}
 
 	public static Builder builder() {
@@ -305,6 +307,16 @@ public final class ExtractionConfig {
 	 */
 	public TreeSitterConfig getTreeSitter() {
 		return treeSitter;
+	}
+
+	/**
+	 * Get the content filter configuration.
+	 *
+	 * @return the content filter configuration, or null if not set
+	 * @since 4.8.0
+	 */
+	public ContentFilterConfig getContentFilter() {
+		return contentFilter;
 	}
 
 	/**
@@ -632,6 +644,9 @@ public final class ExtractionConfig {
 		if (treeSitter != null) {
 			map.put("tree_sitter", treeSitter.toMap());
 		}
+		if (contentFilter != null) {
+			map.put("content_filter", contentFilter.toMap());
+		}
 		return map;
 	}
 
@@ -760,6 +775,10 @@ public final class ExtractionConfig {
 		if (treeSitterMap != null) {
 			builder.treeSitter(TreeSitterConfig.fromMap(treeSitterMap));
 		}
+		Map<String, Object> contentFilterMap = asMap(raw.get("content_filter"));
+		if (contentFilterMap != null) {
+			builder.contentFilter(ContentFilterConfig.fromMap(contentFilterMap));
+		}
 	}
 
 	private static boolean asBoolean(Object value, boolean defaultValue) {
@@ -843,6 +862,7 @@ public final class ExtractionConfig {
 		private Integer maxArchiveDepth;
 		private boolean maxArchiveDepthSet = false;
 		private TreeSitterConfig treeSitter;
+		private ContentFilterConfig contentFilter;
 
 		private Builder() {
 		}
@@ -1114,6 +1134,19 @@ public final class ExtractionConfig {
 		 */
 		public Builder treeSitter(TreeSitterConfig treeSitter) {
 			this.treeSitter = treeSitter;
+			return this;
+		}
+
+		/**
+		 * Set the content filter configuration.
+		 *
+		 * @param contentFilter
+		 *            the content filter configuration
+		 * @return this builder for chaining
+		 * @since 4.8.0
+		 */
+		public Builder contentFilter(ContentFilterConfig contentFilter) {
+			this.contentFilter = contentFilter;
 			return this;
 		}
 

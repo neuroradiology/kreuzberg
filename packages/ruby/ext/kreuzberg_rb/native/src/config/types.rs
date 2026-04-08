@@ -22,6 +22,7 @@ use kreuzberg::{
     ImageExtractionConfig, LanguageDetectionConfig, LayoutDetectionConfig, OcrConfig, OutputFormat, PdfConfig,
     PostProcessorConfig, TokenReductionConfig,
 };
+use kreuzberg::core::config::ContentFilterConfig;
 use magnus::value::ReprValue;
 use magnus::{Error, RArray, RHash, Ruby, TryConvert, Value};
 use std::fs;
@@ -862,6 +863,42 @@ pub fn parse_email_config(ruby: &Ruby, hash: RHash) -> Result<EmailConfig, Error
     Ok(config)
 }
 
+/// Parse ContentFilterConfig from Ruby Hash
+pub fn parse_content_filter_config(ruby: &Ruby, hash: RHash) -> Result<ContentFilterConfig, Error> {
+    let include_headers = if let Some(val) = get_kw(ruby, hash, "include_headers") {
+        bool::try_convert(val)?
+    } else {
+        false
+    };
+
+    let include_footers = if let Some(val) = get_kw(ruby, hash, "include_footers") {
+        bool::try_convert(val)?
+    } else {
+        false
+    };
+
+    let strip_repeating_text = if let Some(val) = get_kw(ruby, hash, "strip_repeating_text") {
+        bool::try_convert(val)?
+    } else {
+        true
+    };
+
+    let include_watermarks = if let Some(val) = get_kw(ruby, hash, "include_watermarks") {
+        bool::try_convert(val)?
+    } else {
+        false
+    };
+
+    let config = ContentFilterConfig {
+        include_headers,
+        include_footers,
+        strip_repeating_text,
+        include_watermarks,
+    };
+
+    Ok(config)
+}
+
 /// Parse ExtractionConfig from Ruby Hash
 pub fn parse_extraction_config(ruby: &Ruby, opts: Option<RHash>) -> Result<ExtractionConfig, Error> {
     let mut config = ExtractionConfig::default();
@@ -996,6 +1033,13 @@ pub fn parse_extraction_config(ruby: &Ruby, opts: Option<RHash>) -> Result<Extra
         {
             let email_hash = RHash::try_convert(val)?;
             config.email = Some(parse_email_config(ruby, email_hash)?);
+        }
+
+        if let Some(val) = get_kw(ruby, hash, "content_filter")
+            && val.equal(ruby.qnil()).ok() != Some(true)
+        {
+            let content_filter_hash = RHash::try_convert(val)?;
+            config.content_filter = Some(parse_content_filter_config(ruby, content_filter_hash)?);
         }
 
         if let Some(val) = get_kw(ruby, hash, "max_concurrent_extractions") {

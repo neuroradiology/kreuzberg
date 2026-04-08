@@ -70,6 +70,9 @@ type HTMLPreprocessingOption func(*HTMLPreprocessingOptions)
 // HTMLConversionOption is a functional option for configuring HTMLConversionOptions.
 type HTMLConversionOption func(*HTMLConversionOptions)
 
+// ContentFilterOption is a functional option for configuring ContentFilterConfig.
+type ContentFilterOption func(*ContentFilterConfig)
+
 // ConcurrencyOption is a functional option for configuring ConcurrencyConfig.
 type ConcurrencyOption func(*ConcurrencyConfig)
 
@@ -105,6 +108,7 @@ type ExtractionConfig struct {
 	SecurityLimits           *SecurityLimitsConfig    `json:"security_limits,omitempty"`
 	Acceleration             *AccelerationConfig      `json:"acceleration,omitempty"`
 	Email                    *EmailConfig             `json:"email,omitempty"`
+	ContentFilter            *ContentFilterConfig     `json:"content_filter,omitempty"`
 	Concurrency              *ConcurrencyConfig       `json:"concurrency,omitempty"`
 	MaxConcurrentExtractions *int                     `json:"max_concurrent_extractions,omitempty"`
 	IncludeDocumentStructure *bool                    `json:"include_document_structure,omitempty"`
@@ -383,6 +387,16 @@ type AccelerationConfig struct {
 	DeviceID uint32 `json:"device_id,omitempty"`
 }
 
+// ContentFilterConfig controls cross-extractor content filtering.
+// When set, it controls whether furniture content (headers, footers, watermarks,
+// repeating text) is included in or stripped from extraction results.
+type ContentFilterConfig struct {
+	IncludeHeaders     *bool `json:"include_headers,omitempty"`
+	IncludeFooters     *bool `json:"include_footers,omitempty"`
+	StripRepeatingText *bool `json:"strip_repeating_text,omitempty"`
+	IncludeWatermarks  *bool `json:"include_watermarks,omitempty"`
+}
+
 // EmailConfig controls email extraction settings.
 type EmailConfig struct {
 	// MsgFallbackCodepage is the fallback code page for MSG email body decoding.
@@ -469,6 +483,7 @@ type FileExtractionConfig struct {
 	Postprocessor            *PostProcessorConfig     `json:"postprocessor,omitempty"`
 	HTMLOptions              *HTMLConversionOptions   `json:"html_options,omitempty"`
 	Layout                   *LayoutDetectionConfig   `json:"layout,omitempty"`
+	ContentFilter            *ContentFilterConfig     `json:"content_filter,omitempty"`
 	IncludeDocumentStructure *bool                    `json:"include_document_structure,omitempty"`
 	OutputFormat             string                   `json:"output_format,omitempty"`
 	ResultFormat             string                   `json:"result_format,omitempty"`

@@ -650,6 +650,26 @@ export interface CodeProcessResult {
 	chunks: CodeChunk[];
 }
 
+/**
+ * Content filtering configuration.
+ *
+ * Controls which content elements are included or excluded during extraction,
+ * such as headers, footers, watermarks, and repeating text.
+ */
+export interface ContentFilterConfig {
+	/** Include page headers in extracted content. Default: false. */
+	includeHeaders?: boolean;
+
+	/** Include page footers in extracted content. Default: false. */
+	includeFooters?: boolean;
+
+	/** Strip repeating text (e.g., running headers/footers) from output. Default: true. */
+	stripRepeatingText?: boolean;
+
+	/** Include watermark text in extracted content. Default: false. */
+	includeWatermarks?: boolean;
+}
+
 export interface ExtractionConfig {
 	useCache?: boolean;
 	enableQualityProcessing?: boolean;
@@ -711,4 +731,6 @@ export interface ExtractionConfig {
 	extractionTimeoutSecs?: number;
 	/** Maximum recursion depth for archive extraction (ZIP, TAR, 7Z, GZIP). Default: 3. */
 	maxArchiveDepth?: number;
+	/** Content filtering configuration for headers, footers, watermarks, and repeating text */
+	contentFilter?: ContentFilterConfig;
 }

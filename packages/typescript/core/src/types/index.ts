@@ -17,6 +17,7 @@ export type {
 	AccelerationConfig,
 	ChunkingConfig,
 	ConcurrencyConfig,
+	ContentFilterConfig,
 	EmailConfig,
 	EmbeddingConfig,
 	EmbeddingModelType,

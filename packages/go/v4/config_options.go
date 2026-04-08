@@ -129,6 +129,13 @@ func WithLayoutDetection(opts ...LayoutDetectionOption) ExtractionOption {
 	}
 }
 
+// WithContentFilter sets the content filter configuration with functional options.
+func WithContentFilter(opts ...ContentFilterOption) ExtractionOption {
+	return func(c *ExtractionConfig) {
+		c.ContentFilter = NewContentFilterConfig(opts...)
+	}
+}
+
 // WithPages sets the page configuration with functional options.
 func WithPages(opts ...PageOption) ExtractionOption {
 	return func(c *ExtractionConfig) {
@@ -1341,5 +1348,46 @@ func WithInsertPageMarkers(enabled bool) PageOption {
 func WithMarkerFormat(format string) PageOption {
 	return func(c *PageConfig) {
 		c.MarkerFormat = &format
+	}
+}
+
+// ============================================================================
+// ContentFilterConfig Options
+// ============================================================================
+
+// NewContentFilterConfig creates a new ContentFilterConfig with the given options.
+func NewContentFilterConfig(opts ...ContentFilterOption) *ContentFilterConfig {
+	cfg := &ContentFilterConfig{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	return cfg
+}
+
+// WithIncludeHeaders sets whether to include running headers in extraction output.
+func WithIncludeHeaders(enabled bool) ContentFilterOption {
+	return func(c *ContentFilterConfig) {
+		c.IncludeHeaders = &enabled
+	}
+}
+
+// WithIncludeFooters sets whether to include running footers in extraction output.
+func WithIncludeFooters(enabled bool) ContentFilterOption {
+	return func(c *ContentFilterConfig) {
+		c.IncludeFooters = &enabled
+	}
+}
+
+// WithStripRepeatingText sets whether to enable cross-page repeating text detection and removal.
+func WithStripRepeatingText(enabled bool) ContentFilterOption {
+	return func(c *ContentFilterConfig) {
+		c.StripRepeatingText = &enabled
+	}
+}
+
+// WithIncludeWatermarks sets whether to include watermark text in extraction output.
+func WithIncludeWatermarks(enabled bool) ContentFilterOption {
+	return func(c *ContentFilterConfig) {
+		c.IncludeWatermarks = &enabled
 	}
 }

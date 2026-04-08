@@ -81,6 +81,7 @@ pub fn parse_extraction_config(_env: Env, options: Term) -> Result<kreuzberg::co
         "pdf_options",
         "html_options",
         "security_limits",
+        "content_filter",
     ];
     // String/enum fields that are passed through via serde deserialization
     let string_fields = ["result_format", "output_format"];
@@ -208,6 +209,7 @@ pub fn parse_extraction_config(_env: Env, options: Term) -> Result<kreuzberg::co
             config.html_options = deserialized.html_options;
             config.max_concurrent_extractions = deserialized.max_concurrent_extractions;
             config.security_limits = deserialized.security_limits;
+            config.content_filter = deserialized.content_filter;
         }
         Err(e) => {
             // Nested structure deserialization failed

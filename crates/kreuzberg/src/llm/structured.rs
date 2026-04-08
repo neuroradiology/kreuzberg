@@ -142,7 +142,7 @@ pub async fn extract_structured(
         crate::KreuzbergError::parsing(format!(
             "LLM structured extraction returned invalid JSON (model={}): {e}\nRaw response: {}",
             config.llm.model,
-            &text[..text.len().min(200)]
+            &text[..text.floor_char_boundary(text.len().min(200))]
         ))
     })
 }

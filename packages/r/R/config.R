@@ -35,6 +35,7 @@
 #'   When set, limits the maximum time allowed for an extraction operation.
 #'   When NULL, the server default is used.
 #' @param tree_sitter Tree-sitter configuration created by \code{tree_sitter_config()}.
+#' @param content_filter Content filter configuration created by \code{content_filter_config()}.
 #' @param ... Additional configuration options passed as named list elements.
 #' @return A named list representing the extraction configuration.
 #' @export
@@ -55,6 +56,7 @@ extraction_config <- function(force_ocr = FALSE, disable_ocr = FALSE,
                               cache_namespace = NULL, cache_ttl_secs = NULL,
                               extraction_timeout_secs = NULL,
                               tree_sitter = NULL,
+                              content_filter = NULL,
                               ...) {
   config <- list()
   if (isTRUE(force_ocr)) config$force_ocr <- TRUE
@@ -109,9 +111,38 @@ extraction_config <- function(force_ocr = FALSE, disable_ocr = FALSE,
     config$extraction_timeout_secs <- as.integer(extraction_timeout_secs)
   }
   if (!is.null(tree_sitter)) config$tree_sitter <- tree_sitter
+  if (!is.null(content_filter)) config$content_filter <- content_filter
   extras <- list(...)
   if (length(extras) > 0) config <- c(config, extras)
   config
+}
+
+#' Create a content filter configuration
+#'
+#' Controls whether "furniture" content (headers, footers, page numbers,
+#' watermarks, repeating text) is included in or stripped from extraction
+#' results. Applies across all extractors.
+#'
+#' @param include_headers Logical. Include running headers in output. Default FALSE.
+#' @param include_footers Logical. Include running footers in output. Default FALSE.
+#' @param strip_repeating_text Logical. Enable cross-page repeating text
+#'   detection and removal. Default TRUE.
+#' @param include_watermarks Logical. Include watermark text in output. Default FALSE.
+#' @return A named list representing the content filter configuration.
+#' @export
+content_filter_config <- function(include_headers = FALSE, include_footers = FALSE,
+                                  strip_repeating_text = TRUE,
+                                  include_watermarks = FALSE) {
+  stopifnot(is.logical(include_headers), length(include_headers) == 1L)
+  stopifnot(is.logical(include_footers), length(include_footers) == 1L)
+  stopifnot(is.logical(strip_repeating_text), length(strip_repeating_text) == 1L)
+  stopifnot(is.logical(include_watermarks), length(include_watermarks) == 1L)
+  list(
+    include_headers = include_headers,
+    include_footers = include_footers,
+    strip_repeating_text = strip_repeating_text,
+    include_watermarks = include_watermarks
+  )
 }
 
 #' Create an OCR configuration

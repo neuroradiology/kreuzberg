@@ -39,6 +39,7 @@ namespace Kreuzberg;
 [JsonSerializable(typeof(TokenReductionConfig))]
 [JsonSerializable(typeof(LanguageDetectionConfig))]
 [JsonSerializable(typeof(PostProcessorConfig))]
+[JsonSerializable(typeof(ContentFilterConfig))]
 [JsonSerializable(typeof(HtmlConversionOptions))]
 [JsonSerializable(typeof(HtmlPreprocessingOptions))]
 [JsonSerializable(typeof(KeywordConfig))]

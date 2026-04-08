@@ -109,6 +109,27 @@
 				}
 			}
 		},
+		"ContentFilterConfig": {
+			"kind": "struct",
+			"fields": {
+				"include_footers": {
+					"json_type": "boolean",
+					"required": false
+				},
+				"include_headers": {
+					"json_type": "boolean",
+					"required": false
+				},
+				"include_watermarks": {
+					"json_type": "boolean",
+					"required": false
+				},
+				"strip_repeating_text": {
+					"json_type": "boolean",
+					"required": false
+				}
+			}
+		},
 		"ContentLayer": {
 			"kind": "enum",
 			"values": ["body", "header", "footer", "footnote"]
@@ -149,6 +170,10 @@
 					"required": false
 				},
 				"concurrency": {
+					"json_type": "object",
+					"required": false
+				},
+				"content_filter": {
 					"json_type": "object",
 					"required": false
 				},

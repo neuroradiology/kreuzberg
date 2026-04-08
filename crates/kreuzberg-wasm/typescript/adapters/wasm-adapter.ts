@@ -212,12 +212,11 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 			if (table && typeof table === "object") {
 				const t = table as Record<string, unknown>;
 				const pageNumber =
-					typeof t.pageNumber === "number" ? t.pageNumber : typeof t.page_number === "number" ? t.page_number : null;
+					typeof t.pageNumber === "number" ? t.pageNumber : typeof t.page_number === "number" ? t.page_number : 0;
 				if (
 					Array.isArray(t.cells) &&
 					t.cells.every((row) => Array.isArray(row) && row.every((cell) => typeof cell === "string")) &&
-					typeof t.markdown === "string" &&
-					pageNumber !== null
+					typeof t.markdown === "string"
 				) {
 					tables.push({
 						cells: t.cells as string[][],

@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.8.0] - 2026-04-07
+## [4.8.0] - Unreleased
 
 ### Added
 
+- **Cross-extractor content filtering configuration** — New `ContentFilterConfig` on `ExtractionConfig` with `include_headers`, `include_footers`, `strip_repeating_text`, and `include_watermarks` flags. Controls header/footer/furniture inclusion across PDF, DOCX, RTF, ODT, HTML, EPUB, and PPT extractors. Typed in all bindings (Python, TypeScript, Ruby, Go, Elixir, PHP, Java, C#, WASM).
 - **Local LLM support** via liter-llm 1.2 — use Ollama, LM Studio, vLLM, llama.cpp, LocalAI, or llamafile as VLM OCR, embedding, or structured extraction backends with zero API key configuration
 - **LLM-powered document intelligence via liter-llm** — Integrates with 146 LLM providers (including local inference engines) for three new capabilities:
   - **VLM OCR**: Vision language models as OCR backend (OpenAI GPT-4o, Anthropic Claude, Google Gemini, etc.). Superior accuracy for low-quality scans, handwriting, Arabic/Farsi, and complex layouts. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config`.
@@ -43,6 +44,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Flaky FFI string_intern tests serialized with `serial_test`
 - TypeScript `NativeBinding` interface updated with `embedSync`/`embed` declarations
 - E2E generator emits minimal `cfg` (no `any()` wrapper for single conditions)
+- **PDF: brand names stripped by repeating text detection** — `ContentFilterConfig.strip_repeating_text = false` disables cross-page repeating text removal that incorrectly strips brand names from PowerPoint-exported decks (#667)
+- **PPTX: slide order scrambled for decks with 10+ slides** — Fixed lexicographic sort of slide paths (`slide10.xml` before `slide2.xml`) to use numeric ordering (#669)
+- **UTF-8 panic in arXiv watermark stripping** — `strip_arxiv_watermark_noise` panics when a multi-byte character spans the 6000-byte search limit. Fixed with `floor_char_boundary` (#663)
+- **DOC: garbled text from old Word files** — CP1252 text misread as UTF-16LE when the fCompressed bit is unreliable. Added heuristic to detect and re-decode garbled output (#666)
+- **WASM: table extraction returns empty array** — TypeScript validation silently drops tables when `pageNumber` is null. Fixed to default to page 0 (#655)
 
 ---
 
