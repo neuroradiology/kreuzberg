@@ -429,12 +429,13 @@ pub(crate) fn extract_all_from_oxide_document(
             }
         })?;
 
-    // --- Tables ---
-    let allow_single_column = config
-        .pdf_options
-        .as_ref()
-        .is_some_and(|o| o.allow_single_column_tables);
-    let tables = extract_tables_from_oxide_document(&mut doc, allow_single_column)?;
+    // --- Tables (native pdf_oxide detection) ---
+    let tables = crate::pdf::oxide::table::extract_tables_native(&mut doc).map_err(|e| {
+        crate::error::KreuzbergError::Parsing {
+            message: format!("pdf_oxide table extraction failed: {e}"),
+            source: None,
+        }
+    })?;
 
     // --- Annotations ---
     let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
@@ -444,72 +445,85 @@ pub(crate) fn extract_all_from_oxide_document(
         None
     };
 
+    // --- Image positions for assembly pipeline ---
+    let image_positions = crate::pdf::oxide::images::extract_image_positions(&mut doc).map_err(|e| {
+        crate::error::KreuzbergError::Parsing {
+            message: format!("pdf_oxide image position extraction failed: {e}"),
+            source: None,
+        }
+    })?;
+
     // Pre-render structured document for output formats that benefit from headings.
     let needs_structured = matches!(
         config.output_format,
         OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
     );
 
-    let pre_rendered_doc = if needs_structured && !config.force_ocr {
-        let k = config
-            .pdf_options
-            .as_ref()
-            .and_then(|opts| opts.hierarchy.as_ref())
-            .map(|h| h.k_clusters)
-            .unwrap_or(4);
+    let pre_rendered_doc =
+        if needs_structured && !config.force_ocr {
+            let k = config
+                .pdf_options
+                .as_ref()
+                .and_then(|opts| opts.hierarchy.as_ref())
+                .map(|h| h.k_clusters)
+                .unwrap_or(4);
 
-        let (strip_repeating_text, include_headers, include_footers) = config
-            .content_filter
-            .as_ref()
-            .map(|cf| (cf.strip_repeating_text, cf.include_headers, cf.include_footers))
-            .unwrap_or((true, false, false));
+            let (strip_repeating_text, include_headers, include_footers) = config
+                .content_filter
+                .as_ref()
+                .map(|cf| (cf.strip_repeating_text, cf.include_headers, cf.include_footers))
+                .unwrap_or((true, false, false));
 
-        // Extract font-metric segments from oxide for heading detection.
-        let segments = crate::pdf::oxide::hierarchy::extract_all_segments(&mut doc).map_err(|e| {
-            crate::error::KreuzbergError::Parsing {
-                message: format!("pdf_oxide hierarchy extraction failed: {e}"),
-                source: None,
-            }
-        })?;
+            // Extract font-metric segments from oxide for heading detection.
+            // When the PDF has a reliable structure tree, segments carry pre-assigned
+            // heading roles (assigned_role) and the pipeline can skip font-size clustering.
+            let (segments, used_structure_tree) = crate::pdf::oxide::hierarchy::extract_all_segments(&mut doc)
+                .map_err(|e| crate::error::KreuzbergError::Parsing {
+                    message: format!("pdf_oxide hierarchy extraction failed: {e}"),
+                    source: None,
+                })?;
 
-        let total_segs: usize = segments.iter().map(|s| s.len()).sum();
-        tracing::debug!(
-            total_segs,
-            k,
-            "oxide structure: extracted segments for heading detection"
-        );
+            let total_segs: usize = segments.iter().map(|s| s.len()).sum();
+            tracing::debug!(
+                total_segs,
+                k,
+                used_structure_tree,
+                "oxide structure: extracted segments for heading detection"
+            );
 
-        match crate::pdf::structure::extract_document_structure_from_segments(
-            segments,
-            k,
-            &tables,
-            strip_repeating_text,
-            include_headers,
-            include_footers,
-        ) {
-            Ok(structured_doc) if !structured_doc.elements.is_empty() => {
-                tracing::debug!(
-                    elements = structured_doc.elements.len(),
-                    has_headings = structured_doc
-                        .elements
-                        .iter()
-                        .any(|e| matches!(e.kind, crate::types::internal::ElementKind::Heading { .. })),
-                    "oxide structure: render succeeded"
-                );
-                Some(structured_doc)
+            match crate::pdf::structure::extract_document_structure_from_segments(
+                segments,
+                k,
+                &tables,
+                strip_repeating_text,
+                include_headers,
+                include_footers,
+                used_structure_tree,
+                &image_positions,
+            ) {
+                Ok(structured_doc) if !structured_doc.elements.is_empty() => {
+                    tracing::debug!(
+                        elements = structured_doc.elements.len(),
+                        has_headings = structured_doc
+                            .elements
+                            .iter()
+                            .any(|e| matches!(e.kind, crate::types::internal::ElementKind::Heading { .. })),
+                        "oxide structure: render succeeded"
+                    );
+                    Some(structured_doc)
+                }
+                Ok(_) => {
+                    tracing::warn!("oxide structure: rendering produced empty output, falling back to plain text");
+                    None
+                }
+                Err(e) => {
+                    tracing::warn!("oxide structure: rendering failed: {:?}, falling back to plain text", e);
+                    None
+                }
             }
-            Ok(_) => {
-                tracing::warn!("oxide structure: rendering produced empty output, falling back to plain text");
-                None
-            }
-            Err(e) => {
-                tracing::warn!("oxide structure: rendering failed: {:?}, falling back to plain text", e);
-                None
-            }
-        }
-    } else {
-        None
-    };
+        } else {
+            None
+        };
 
     let has_font_encoding_issues = false;
 
@@ -523,112 +537,6 @@ pub(crate) fn extract_all_from_oxide_document(
         has_font_encoding_issues,
         annotations,
     ))
-}
-
-/// Extract tables from an oxide document using the shared table reconstruction pipeline.
-#[cfg(feature = "pdf-oxide")]
-fn extract_tables_from_oxide_document(
-    doc: &mut crate::pdf::oxide::OxideDocument,
-    allow_single_column: bool,
-) -> Result<Vec<Table>> {
-    use crate::pdf::table_reconstruct::{post_process_table, reconstruct_table, table_to_markdown};
-
-    let page_count = doc
-        .doc
-        .page_count()
-        .map_err(|e| crate::error::KreuzbergError::Parsing {
-            message: format!("pdf_oxide: failed to get page count: {e}"),
-            source: None,
-        })?;
-
-    let mut all_tables = Vec::new();
-
-    for page_index in 0..page_count {
-        let words = match crate::pdf::oxide::table::extract_words_from_page(doc, page_index, 0.0) {
-            Ok(w) => w,
-            Err(e) => {
-                tracing::debug!(page = page_index, "oxide table word extraction failed: {e}");
-                continue;
-            }
-        };
-
-        if words.len() < 6 {
-            continue;
-        }
-
-        if !has_column_alignment(&words) {
-            continue;
-        }
-
-        let column_threshold = 50;
-        let row_threshold_ratio = 0.5;
-        let table_cells = reconstruct_table(&words, column_threshold, row_threshold_ratio);
-
-        if table_cells.is_empty() || table_cells[0].is_empty() {
-            continue;
-        }
-
-        let table_cells = match post_process_table(table_cells, false, allow_single_column) {
-            Some(cleaned) => cleaned,
-            None => continue,
-        };
-
-        let markdown = table_to_markdown(&table_cells);
-
-        // Compute page height for bounding box conversion
-        let page_height = doc
-            .doc
-            .get_page_media_box(page_index)
-            .ok()
-            .map(|(_, lly, _, ury)| (ury - lly).abs() as f64)
-            .unwrap_or(792.0);
-
-        let img_left = words.iter().map(|w| w.left as f64).fold(f64::INFINITY, f64::min);
-        let img_top = words.iter().map(|w| w.top as f64).fold(f64::INFINITY, f64::min);
-        let img_right = words
-            .iter()
-            .map(|w| (w.left + w.width) as f64)
-            .fold(f64::NEG_INFINITY, f64::max);
-        let img_bottom = words
-            .iter()
-            .map(|w| (w.top + w.height) as f64)
-            .fold(f64::NEG_INFINITY, f64::max);
-
-        let bounding_box = if img_left.is_finite() {
-            Some(crate::types::BoundingBox {
-                x0: img_left,
-                y0: page_height - img_bottom,
-                x1: img_right,
-                y1: page_height - img_top,
-            })
-        } else {
-            None
-        };
-
-        // Reject false-positive tables spanning most of the page
-        if let Some(ref bb) = bounding_box {
-            let bbox_height = (bb.y1 - bb.y0).abs();
-            if table_cells.len() <= 3 && page_height > 0.0 && bbox_height / page_height > 0.5 {
-                tracing::trace!(
-                    page = page_index,
-                    rows = table_cells.len(),
-                    bbox_height,
-                    page_height,
-                    "oxide: heuristic table with <=3 rows spans >50% of page — skipping"
-                );
-                continue;
-            }
-        }
-
-        all_tables.push(Table {
-            cells: table_cells,
-            markdown,
-            page_number: page_index + 1,
-            bounding_box,
-        });
-    }
-
-    Ok(all_tables)
 }
 
 #[cfg(test)]

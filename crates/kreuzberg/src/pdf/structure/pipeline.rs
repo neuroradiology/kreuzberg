@@ -334,6 +334,67 @@ fn build_heading_map(
     Ok((heading_map, struct_tree_needs_classify))
 }
 
+/// Build a heading map from structure-tree-assigned roles on segments.
+///
+/// Instead of clustering font sizes heuristically, this examines the
+/// `assigned_role` field on each segment (populated from the PDF structure tree).
+/// Each unique font size is mapped to the heading level most commonly assigned
+/// to segments at that size. Font sizes with no assigned role are treated as body text.
+#[cfg(feature = "pdf-oxide")]
+fn build_heading_map_from_assigned_roles(all_page_segments: &[Vec<SegmentData>]) -> Vec<(f32, Option<u8>)> {
+    use std::collections::HashMap;
+
+    // Collect (font_size → Vec<Option<u8>>) from all segments
+    let mut size_roles: HashMap<u32, Vec<Option<u8>>> = HashMap::new();
+    for page_segs in all_page_segments {
+        for seg in page_segs {
+            if seg.text.trim().is_empty() {
+                continue;
+            }
+            // Quantize font size to tenths for grouping (avoid floating-point noise)
+            let key = (seg.font_size * 10.0).round() as u32;
+            size_roles.entry(key).or_default().push(seg.assigned_role);
+        }
+    }
+
+    // For each font size group, determine the dominant role.
+    // If the majority of segments have an assigned heading level, use it.
+    // Otherwise, mark it as body text (None).
+    let mut heading_map: Vec<(f32, Option<u8>)> = size_roles
+        .into_iter()
+        .map(|(quantized_size, roles)| {
+            let font_size = quantized_size as f32 / 10.0;
+            let total = roles.len();
+            // Count occurrences of each heading level
+            let mut level_counts: HashMap<u8, usize> = HashMap::new();
+            let mut none_count = 0usize;
+            for role in &roles {
+                match role {
+                    Some(level) => *level_counts.entry(*level).or_default() += 1,
+                    None => none_count += 1,
+                }
+            }
+            // Use the most common heading level if it appears in >=50% of segments
+            let dominant_level = level_counts
+                .into_iter()
+                .max_by_key(|(_, count)| *count)
+                .and_then(|(level, count)| if count * 2 >= total { Some(level) } else { None });
+
+            // If body text (None) is the majority, mark as body
+            if none_count > total / 2 && dominant_level.is_none() {
+                (font_size, None)
+            } else {
+                (font_size, dominant_level)
+            }
+        })
+        .collect();
+
+    // Sort by font size descending (largest first = highest heading level)
+    heading_map.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
+
+    heading_map
+}
+
 /// Per-page input bundle for Stage 3 parallel processing.
 ///
 /// Each page's data is pre-extracted before `into_par_iter` so all threads
@@ -1311,7 +1372,7 @@ pub fn extract_document_structure(
 /// the same font-clustering, heading-classification, paragraph-assembly, and
 /// post-processing stages without requiring a pdfium `PdfDocument`.
 ///
-/// Layout detection and image extraction are not supported on this path (yet).
+/// Image positions can be supplied to insert image placeholders into the document.
 ///
 /// Returns the assembled `InternalDocument`.
 #[cfg(feature = "pdf-oxide")]
@@ -1322,25 +1383,44 @@ pub(crate) fn extract_document_structure_from_segments(
     strip_repeating_text: bool,
     include_headers: bool,
     include_footers: bool,
+    used_structure_tree: bool,
+    image_positions: &[(usize, usize)],
 ) -> Result<crate::types::internal::InternalDocument> {
     let page_count = all_page_segments.len();
     tracing::debug!(
         page_count,
+        used_structure_tree,
         "oxide structure pipeline: starting from pre-extracted segments"
     );
 
-    // No structure tree on the oxide path — all pages use heuristic (segment-based) extraction.
+    // When segments carry pre-assigned heading roles from the structure tree,
+    // build the heading map directly from those roles instead of clustering.
     let struct_tree_results: Vec<Option<Vec<PdfParagraph>>> = vec![None; page_count];
     let heuristic_pages: Vec<usize> = (0..page_count).collect();
 
-    // Stage 2: Global font-size clustering.
-    let (heading_map, _struct_tree_needs_classify) =
-        build_heading_map(&all_page_segments, &struct_tree_results, &heuristic_pages, k_clusters)?;
-
-    let doc_body_font_size: Option<f32> = heading_map
-        .iter()
-        .find(|(_, level)| level.is_none())
-        .map(|(size, _)| *size);
+    let (heading_map, doc_body_font_size) = if used_structure_tree {
+        // Build heading map from structure-tree-assigned roles.
+        // Each unique (font_size, assigned_role) pair is honoured directly.
+        let heading_map = build_heading_map_from_assigned_roles(&all_page_segments);
+        let doc_body_font_size: Option<f32> = heading_map
+            .iter()
+            .find(|(_, level)| level.is_none())
+            .map(|(size, _)| *size);
+        tracing::debug!(
+            heading_map_len = heading_map.len(),
+            "oxide structure pipeline: heading map from structure tree"
+        );
+        (heading_map, doc_body_font_size)
+    } else {
+        // Stage 2: Global font-size clustering (heuristic path).
+        let (heading_map, _struct_tree_needs_classify) =
+            build_heading_map(&all_page_segments, &struct_tree_results, &heuristic_pages, k_clusters)?;
+        let doc_body_font_size: Option<f32> = heading_map
+            .iter()
+            .find(|(_, level)| level.is_none())
+            .map(|(size, _)| *size);
+        (heading_map, doc_body_font_size)
+    };
 
     // Build per-page table bbox suppression map.
     let extracted_table_bboxes_by_page: ahash::AHashMap<usize, Vec<crate::types::BoundingBox>> = {
@@ -1413,7 +1493,7 @@ pub(crate) fn extract_document_structure_from_segments(
     );
 
     // Stage 4: Assemble InternalDocument.
-    let mut doc = assemble_internal_document(all_page_paragraphs, tables, &[]);
+    let mut doc = assemble_internal_document(all_page_paragraphs, tables, image_positions);
 
     // Stage 5: Element-level text normalization.
     for elem in &mut doc.elements {
@@ -2100,6 +2180,7 @@ mod tests {
             is_italic: false,
             is_monospace: false,
             baseline_y: 0.0,
+            assigned_role: None,
         }
     }
 

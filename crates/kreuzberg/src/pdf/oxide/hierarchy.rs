@@ -3,6 +3,12 @@
 //! Uses pdf_oxide's span extraction to get font_size, font_weight, is_italic,
 //! and font_name, converting them to `SegmentData` for the backend-agnostic
 //! clustering pipeline that assigns heading levels (H1-H6) to text blocks.
+//!
+//! When the PDF is a tagged PDF with a reliable structure tree, heading roles
+//! (H1-H6) are read directly from the tree and assigned via `SegmentData::assigned_role`,
+//! bypassing font-size clustering entirely for more accurate heading detection.
+
+use std::collections::HashMap;
 
 use super::OxideDocument;
 use crate::pdf::error::Result;
@@ -28,6 +34,18 @@ use crate::pdf::hierarchy::SegmentData;
 ///
 /// Vector of `SegmentData` objects with font metrics for hierarchy detection.
 pub(crate) fn extract_segments_from_page(doc: &mut OxideDocument, page_index: usize) -> Result<Vec<SegmentData>> {
+    extract_segments_from_page_inner(doc, page_index, &HashMap::new())
+}
+
+/// Inner implementation of per-page segment extraction.
+///
+/// When `mcid_roles` is non-empty, spans with matching MCIDs receive pre-assigned
+/// heading levels from the PDF structure tree.
+fn extract_segments_from_page_inner(
+    doc: &mut OxideDocument,
+    page_index: usize,
+    mcid_roles: &HashMap<u32, Option<u8>>,
+) -> Result<Vec<SegmentData>> {
     // Get page height for coordinate conversion
     let page_height = doc
         .doc
@@ -62,6 +80,9 @@ pub(crate) fn extract_segments_from_page(doc: &mut OxideDocument, page_index: us
             let pdf_baseline_y = page_height - screen_bottom;
             let pdf_y = page_height - bbox.y - bbox.height;
 
+            // Look up structure-tree heading role via MCID
+            let assigned_role = span.mcid.and_then(|mcid| mcid_roles.get(&mcid).copied()).flatten();
+
             SegmentData {
                 text: span.text,
                 x: bbox.x,
@@ -73,6 +94,7 @@ pub(crate) fn extract_segments_from_page(doc: &mut OxideDocument, page_index: us
                 is_italic: span.is_italic,
                 is_monospace: span.is_monospace,
                 baseline_y: pdf_baseline_y,
+                assigned_role,
             }
         })
         .collect();
@@ -80,10 +102,101 @@ pub(crate) fn extract_segments_from_page(doc: &mut OxideDocument, page_index: us
     Ok(segments)
 }
 
+/// Try to extract segments using the PDF structure tree for heading detection.
+///
+/// Checks `MarkInfo` to see if the structure tree is reliable (marked && !suspects),
+/// then traverses the tree to build MCID → heading-level mappings per page.
+/// Spans are then extracted normally but annotated with `assigned_role` from the tree.
+///
+/// Returns `(segments, used_structure_tree)`. When `used_structure_tree` is true,
+/// the caller should skip font-size clustering and use the pre-assigned roles.
+fn extract_segments_with_structure_tree(doc: &mut OxideDocument) -> Result<(Vec<Vec<SegmentData>>, bool)> {
+    // Check MarkInfo — cheap, no tree parsing required
+    let mark_info = match doc.doc.mark_info() {
+        Ok(mi) => mi,
+        Err(e) => {
+            tracing::debug!("pdf_oxide: mark_info() failed, skipping structure tree: {e}");
+            return Ok((Vec::new(), false));
+        }
+    };
+
+    if !mark_info.is_structure_reliable() {
+        tracing::debug!(
+            marked = mark_info.marked,
+            suspects = mark_info.suspects,
+            "pdf_oxide: structure tree not reliable, falling back to font-size clustering"
+        );
+        return Ok((Vec::new(), false));
+    }
+
+    // Parse the structure tree
+    let struct_tree = match doc.doc.structure_tree() {
+        Ok(Some(tree)) => tree,
+        Ok(None) => {
+            tracing::debug!("pdf_oxide: no structure tree found despite marked=true");
+            return Ok((Vec::new(), false));
+        }
+        Err(e) => {
+            tracing::debug!("pdf_oxide: structure_tree() failed: {e}");
+            return Ok((Vec::new(), false));
+        }
+    };
+
+    // Traverse the tree once for all pages
+    let all_page_content = pdf_oxide::structure::traverse_structure_tree_all_pages(&struct_tree);
+
+    // Check if the tree has any heading information at all
+    let has_headings = all_page_content
+        .values()
+        .any(|contents| contents.iter().any(|c| c.parsed_type.heading_level().is_some()));
+
+    if !has_headings {
+        tracing::debug!("pdf_oxide: structure tree has no heading elements, falling back to font-size clustering");
+        return Ok((Vec::new(), false));
+    }
+
+    // Build per-page MCID → heading-level maps
+    let page_count = doc.doc.page_count().map_err(|e| {
+        crate::pdf::error::PdfError::TextExtractionFailed(format!("pdf_oxide: failed to get page count: {e}"))
+    })?;
+
+    let mut all_pages: Vec<Vec<SegmentData>> = Vec::with_capacity(page_count);
+    let mut total_role_assigned = 0usize;
+
+    for page_idx in 0..page_count {
+        // Build MCID → role map for this page
+        let mcid_roles: HashMap<u32, Option<u8>> = all_page_content
+            .get(&(page_idx as u32))
+            .map(|contents| {
+                contents
+                    .iter()
+                    .filter_map(|c| c.mcid.map(|mcid| (mcid, c.parsed_type.heading_level())))
+                    .collect()
+            })
+            .unwrap_or_default();
+
+        let segments = extract_segments_from_page_inner(doc, page_idx, &mcid_roles)?;
+        total_role_assigned += segments.iter().filter(|s| s.assigned_role.is_some()).count();
+        all_pages.push(segments);
+    }
+
+    tracing::debug!(
+        page_count,
+        total_role_assigned,
+        "pdf_oxide: structure tree heading detection complete"
+    );
+
+    Ok((all_pages, true))
+}
+
 /// Extract text segments from all pages of a PDF document using pdf_oxide.
 ///
-/// Returns segments indexed by page (0-based). This is the oxide equivalent
-/// of calling `extract_segments_with_oxide` from `oxide_text.rs`.
+/// Attempts structure tree extraction first for tagged PDFs. Falls back to
+/// plain font-metric extraction when the structure tree is unavailable or
+/// unreliable.
+///
+/// Returns `(segments, used_structure_tree)` where the flag indicates whether
+/// heading roles were pre-assigned from the structure tree.
 ///
 /// # Arguments
 ///
@@ -91,8 +204,15 @@ pub(crate) fn extract_segments_from_page(doc: &mut OxideDocument, page_index: us
 ///
 /// # Returns
 ///
-/// Vector of per-page segment vectors, indexed by page number (0-based).
-pub(crate) fn extract_all_segments(doc: &mut OxideDocument) -> Result<Vec<Vec<SegmentData>>> {
+/// Tuple of (per-page segment vectors, structure-tree-used flag).
+pub(crate) fn extract_all_segments(doc: &mut OxideDocument) -> Result<(Vec<Vec<SegmentData>>, bool)> {
+    // Try structure tree first
+    let (tree_segments, used_tree) = extract_segments_with_structure_tree(doc)?;
+    if used_tree && !tree_segments.is_empty() {
+        return Ok((tree_segments, true));
+    }
+
+    // Fallback: plain font-metric extraction
     let page_count = doc.doc.page_count().map_err(|e| {
         crate::pdf::error::PdfError::TextExtractionFailed(format!("pdf_oxide: failed to get page count: {e}"))
     })?;
@@ -104,5 +224,5 @@ pub(crate) fn extract_all_segments(doc: &mut OxideDocument) -> Result<Vec<Vec<Se
         all_pages.push(segments);
     }
 
-    Ok(all_pages)
+    Ok((all_pages, false))
 }

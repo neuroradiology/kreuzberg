@@ -6,7 +6,6 @@
 
 pub(crate) mod annotations;
 pub(crate) mod hierarchy;
-#[allow(dead_code)] // Not yet wired into dispatch; kept for future use
 pub(crate) mod images;
 pub(crate) mod metadata;
 #[cfg(feature = "pdf-oxide-rendering")]

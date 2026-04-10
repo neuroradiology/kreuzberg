@@ -1,101 +1,169 @@
-//! Table detection using the pdf_oxide backend.
+//! Native table detection using the pdf_oxide backend.
 //!
-//! Extracts word-level text with bounding boxes from PDF pages via pdf_oxide
-//! spans, then feeds them into the backend-agnostic table reconstruction
-//! pipeline (`table_reconstruct`).
+//! Uses pdf_oxide's built-in `extract_tables_with_config` API with strict mode
+//! to detect tables with high precision, replacing the heuristic word-based
+//! approach that caused false positives on paragraph text.
 
 use super::OxideDocument;
-use crate::pdf::error::Result;
-use crate::pdf::hierarchy::SegmentData;
-use crate::pdf::table_reconstruct::{HocrWord, split_segment_to_words};
+use crate::pdf::error::{PdfError, Result};
+use crate::types::{BoundingBox, Table};
 
-/// Minimum word length for table detection (filter out noise).
-const MIN_WORD_LENGTH: usize = 1;
-
-/// Extract words with positions from a PDF page for table detection.
+/// Extract tables from all pages using pdf_oxide's native table detection.
 ///
-/// Uses pdf_oxide's span extraction to get text with font metadata, then
-/// splits spans into individual words with proportional bounding boxes.
-/// The resulting `HocrWord` vector can be fed directly into `reconstruct_table`.
+/// Uses `TableDetectionConfig::strict()` to reduce false positives from
+/// paragraph text being misidentified as tables.
 ///
 /// # Arguments
 ///
 /// * `doc` - Mutable reference to the oxide document
-/// * `page_index` - Zero-based page index
-/// * `min_confidence` - Minimum confidence threshold (0.0-100.0). PDF text uses 95.0.
 ///
 /// # Returns
 ///
-/// Vector of `HocrWord` objects with text and bounding box information.
-pub(crate) fn extract_words_from_page(
-    doc: &mut OxideDocument,
-    page_index: usize,
-    min_confidence: f64,
-) -> Result<Vec<HocrWord>> {
-    // Get page height for coordinate conversion (PDF y=0 at bottom → image y=0 at top)
-    let page_height = doc
+/// A `Vec<Table>` containing all detected tables with cells, markdown, and bounding boxes.
+pub(crate) fn extract_tables_native(doc: &mut OxideDocument) -> Result<Vec<Table>> {
+    let page_count = doc
         .doc
-        .get_page_media_box(page_index)
-        .ok()
-        .map(|(_, lly, _, ury)| (ury - lly).abs())
-        .unwrap_or(792.0); // Letter size fallback
+        .page_count()
+        .map_err(|e| PdfError::MetadataExtractionFailed(format!("pdf_oxide: failed to get page count: {e}")))?;
 
-    let spans = match doc.doc.extract_spans(page_index) {
-        Ok(spans) => spans,
-        Err(e) => {
-            tracing::debug!(page = page_index, "pdf_oxide extract_spans failed for table: {e}");
-            return Ok(Vec::new());
-        }
-    };
+    let config = pdf_oxide::structure::spatial_table_detector::TableDetectionConfig::strict();
+    let mut all_tables = Vec::new();
 
-    // Native PDF text has implicit 100% confidence; min_confidence parameter
-    // accepted for API compatibility but not applied.
-    let _ = min_confidence;
-
-    let mut words: Vec<HocrWord> = Vec::new();
-
-    for span in spans {
-        // Skip artifacts (headers/footers/watermarks)
-        if span.artifact_type.is_some() {
-            continue;
-        }
-
-        let text = span.text.trim();
-        if text.is_empty() {
-            continue;
-        }
-
-        let is_bold = span.font_weight == pdf_oxide::layout::text_block::FontWeight::Bold;
-        let bbox = &span.bbox;
-
-        // Convert from screen coords (y=0 at top) to PDF coords (y=0 at bottom)
-        let screen_bottom = bbox.y + bbox.height;
-        let pdf_baseline_y = page_height - screen_bottom;
-        let pdf_y = page_height - bbox.y - bbox.height;
-
-        let seg = SegmentData {
-            text: span.text.clone(),
-            x: bbox.x,
-            y: pdf_y,
-            width: bbox.width,
-            height: bbox.height,
-            font_size: span.font_size,
-            is_bold,
-            is_italic: span.is_italic,
-            is_monospace: span.is_monospace,
-            baseline_y: pdf_baseline_y,
+    for page_idx in 0..page_count {
+        let extracted = match doc.doc.extract_tables_with_config(page_idx, config.clone()) {
+            Ok(tables) => tables,
+            Err(e) => {
+                tracing::debug!(page = page_idx, "pdf_oxide extract_tables failed: {e}");
+                continue;
+            }
         };
 
-        // Split multi-word segments into individual HocrWords
-        let segment_words = split_segment_to_words(&seg, page_height);
-        for word in segment_words {
-            if word.text.len() >= MIN_WORD_LENGTH {
-                words.push(word);
+        let page_number = page_idx + 1; // Kreuzberg uses 1-indexed page numbers
+
+        for extracted_table in extracted {
+            if extracted_table.rows.is_empty() || extracted_table.col_count == 0 {
+                continue;
+            }
+
+            let (cells, markdown) = convert_extracted_table(&extracted_table);
+
+            // Skip tables that produced no meaningful content
+            if cells.is_empty() || markdown.trim().is_empty() {
+                continue;
+            }
+
+            let bounding_box = extracted_table.bbox.map(|rect| BoundingBox {
+                x0: rect.x as f64,
+                y0: rect.y as f64,
+                x1: (rect.x + rect.width) as f64,
+                y1: (rect.y + rect.height) as f64,
+            });
+
+            all_tables.push(Table {
+                cells,
+                markdown,
+                page_number,
+                bounding_box,
+            });
+        }
+    }
+
+    Ok(all_tables)
+}
+
+/// Extract bounding boxes of all detected table regions for text suppression.
+///
+/// Returns (page_index, BoundingBox) pairs that can be used to exclude table regions
+/// from paragraph text extraction, preventing duplicate content.
+///
+/// # Arguments
+///
+/// * `doc` - Mutable reference to the oxide document
+///
+/// # Returns
+///
+/// A `Vec<(usize, BoundingBox)>` of (zero-based page index, bounding box) pairs.
+pub(crate) fn extract_table_regions(doc: &mut OxideDocument) -> Result<Vec<(usize, BoundingBox)>> {
+    let page_count = doc
+        .doc
+        .page_count()
+        .map_err(|e| PdfError::MetadataExtractionFailed(format!("pdf_oxide: failed to get page count: {e}")))?;
+
+    let config = pdf_oxide::structure::spatial_table_detector::TableDetectionConfig::strict();
+    let mut regions = Vec::new();
+
+    for page_idx in 0..page_count {
+        let extracted = match doc.doc.extract_tables_with_config(page_idx, config.clone()) {
+            Ok(tables) => tables,
+            Err(e) => {
+                tracing::debug!(page = page_idx, "pdf_oxide extract_tables (regions) failed: {e}");
+                continue;
+            }
+        };
+
+        for table in extracted {
+            if let Some(rect) = table.bbox {
+                regions.push((
+                    page_idx,
+                    BoundingBox {
+                        x0: rect.x as f64,
+                        y0: rect.y as f64,
+                        x1: (rect.x + rect.width) as f64,
+                        y1: (rect.y + rect.height) as f64,
+                    },
+                ));
             }
         }
     }
 
-    Ok(words)
+    Ok(regions)
+}
+
+/// Convert a pdf_oxide `ExtractedTable` to kreuzberg's cell grid and markdown.
+///
+/// Maps rows/cells from the native table structure to a 2D `Vec<Vec<String>>`
+/// grid and builds a markdown representation with proper header separators.
+fn convert_extracted_table(
+    table: &pdf_oxide::structure::table_extractor::ExtractedTable,
+) -> (Vec<Vec<String>>, String) {
+    let mut cells: Vec<Vec<String>> = Vec::with_capacity(table.rows.len());
+    let mut markdown = String::new();
+    let mut found_header = false;
+
+    for (row_idx, row) in table.rows.iter().enumerate() {
+        let row_cells: Vec<String> = row.cells.iter().map(|cell| cell.text.trim().to_string()).collect();
+
+        // Build markdown row
+        markdown.push('|');
+        for cell in &row_cells {
+            markdown.push(' ');
+            markdown.push_str(cell);
+            markdown.push_str(" |");
+        }
+        markdown.push('\n');
+
+        // Insert header separator after the first header row
+        if row.is_header && !found_header {
+            found_header = true;
+            markdown.push('|');
+            for _ in &row_cells {
+                markdown.push_str(" --- |");
+            }
+            markdown.push('\n');
+        } else if row_idx == 0 && !found_header {
+            // If no explicit header, treat first row as header for markdown formatting
+            found_header = true;
+            markdown.push('|');
+            for _ in &row_cells {
+                markdown.push_str(" --- |");
+            }
+            markdown.push('\n');
+        }
+
+        cells.push(row_cells);
+    }
+
+    (cells, markdown)
 }
 
 #[cfg(test)]
@@ -103,7 +171,121 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_min_word_length_constant() {
-        assert_eq!(MIN_WORD_LENGTH, 1);
+    fn test_convert_extracted_table_basic() {
+        use pdf_oxide::structure::table_extractor::{ExtractedTable, TableCell, TableRow};
+
+        let table = ExtractedTable {
+            rows: vec![
+                TableRow {
+                    cells: vec![
+                        TableCell {
+                            text: "Name".to_string(),
+                            colspan: 1,
+                            rowspan: 1,
+                            mcids: vec![],
+                            bbox: None,
+                            is_header: true,
+                        },
+                        TableCell {
+                            text: "Age".to_string(),
+                            colspan: 1,
+                            rowspan: 1,
+                            mcids: vec![],
+                            bbox: None,
+                            is_header: true,
+                        },
+                    ],
+                    is_header: true,
+                },
+                TableRow {
+                    cells: vec![
+                        TableCell {
+                            text: "Alice".to_string(),
+                            colspan: 1,
+                            rowspan: 1,
+                            mcids: vec![],
+                            bbox: None,
+                            is_header: false,
+                        },
+                        TableCell {
+                            text: "30".to_string(),
+                            colspan: 1,
+                            rowspan: 1,
+                            mcids: vec![],
+                            bbox: None,
+                            is_header: false,
+                        },
+                    ],
+                    is_header: false,
+                },
+            ],
+            has_header: true,
+            col_count: 2,
+            bbox: None,
+        };
+
+        let (cells, markdown) = convert_extracted_table(&table);
+        assert_eq!(cells.len(), 2);
+        assert_eq!(cells[0], vec!["Name", "Age"]);
+        assert_eq!(cells[1], vec!["Alice", "30"]);
+        assert!(markdown.contains("| Name | Age |"));
+        assert!(markdown.contains("| --- | --- |"));
+        assert!(markdown.contains("| Alice | 30 |"));
+    }
+
+    #[test]
+    fn test_convert_extracted_table_no_header() {
+        use pdf_oxide::structure::table_extractor::{ExtractedTable, TableCell, TableRow};
+
+        let table = ExtractedTable {
+            rows: vec![
+                TableRow {
+                    cells: vec![TableCell {
+                        text: "A".to_string(),
+                        colspan: 1,
+                        rowspan: 1,
+                        mcids: vec![],
+                        bbox: None,
+                        is_header: false,
+                    }],
+                    is_header: false,
+                },
+                TableRow {
+                    cells: vec![TableCell {
+                        text: "B".to_string(),
+                        colspan: 1,
+                        rowspan: 1,
+                        mcids: vec![],
+                        bbox: None,
+                        is_header: false,
+                    }],
+                    is_header: false,
+                },
+            ],
+            has_header: false,
+            col_count: 1,
+            bbox: None,
+        };
+
+        let (cells, markdown) = convert_extracted_table(&table);
+        assert_eq!(cells.len(), 2);
+        // Even without explicit header, first row gets separator for valid markdown
+        assert!(markdown.contains("| --- |"));
+    }
+
+    #[test]
+    fn test_convert_extracted_table_empty() {
+        use pdf_oxide::structure::table_extractor::ExtractedTable;
+
+        let table = ExtractedTable {
+            rows: vec![],
+            has_header: false,
+            col_count: 0,
+            bbox: None,
+        };
+
+        let (cells, markdown) = convert_extracted_table(&table);
+        assert!(cells.is_empty());
+        assert!(markdown.is_empty());
     }
 }

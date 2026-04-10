@@ -204,7 +204,8 @@ fn extract_page_text_column_aware(doc: &mut pdf_oxide::PdfDocument, page_index: 
             PdfError::TextExtractionFailed(format!("Page {} text extraction failed: {}", page_index + 1, e))
         })?;
 
-    // Assemble text from column-aware ordered spans.
+    // Assemble text from column-aware ordered spans, filtering out artifacts
+    // (headers, footers, watermarks, page numbers) to keep main body content only.
     let mut text = String::with_capacity(page_text_data.spans.len() * 20);
     let mut prev_span: Option<&pdf_oxide::layout::TextSpan> = None;
 

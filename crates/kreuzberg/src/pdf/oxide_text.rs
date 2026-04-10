@@ -109,6 +109,7 @@ pub(crate) fn extract_segments_with_oxide(page_count: usize) -> Option<Vec<Vec<S
                     is_italic: span.is_italic,
                     is_monospace: span.is_monospace,
                     baseline_y: pdf_baseline_y,
+                    assigned_role: None,
                 }
             })
             .collect();
