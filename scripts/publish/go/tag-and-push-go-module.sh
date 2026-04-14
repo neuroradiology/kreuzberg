@@ -30,12 +30,16 @@ create_tag() {
 
   git tag -a "$t" "$tag" -m "Go module tag ${t}"
 
-  # Push via the GitHub API to avoid the GITHUB_TOKEN 'workflows' permission
-  # restriction that blocks git push when the repo contains workflow files.
-  gh api "repos/${repo}/git/refs" \
-    -f "ref=refs/tags/${t}" \
-    -f "sha=${sha}" \
-    --silent
+  # Push the tag directly. The job has contents:write permission.
+  # If GITHUB_TOKEN is blocked by tag protection rules, fall back to
+  # the GitHub API (which may also fail, but gives a clearer error).
+  if ! git push origin "refs/tags/${t}" 2>/dev/null; then
+    echo "::warning::git push failed for tag $t, trying GitHub API..."
+    gh api "repos/${repo}/git/refs" \
+      -f "ref=refs/tags/${t}" \
+      -f "sha=${sha}" \
+      --silent
+  fi
 
   echo "✅ Go module tag created: $t (sha: ${sha:0:12})"
 }
