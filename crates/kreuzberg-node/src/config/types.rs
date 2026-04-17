@@ -42,6 +42,7 @@ unsafe extern "C" {
 
 #[napi(object)]
 pub struct JsOcrConfig {
+    pub enabled: Option<bool>,
     pub backend: String,
     pub language: Option<String>,
     pub tesseract_config: Option<JsTesseractConfig>,
@@ -78,6 +79,7 @@ pub struct JsOcrElementConfig {
 impl From<JsOcrConfig> for RustOcrConfig {
     fn from(val: JsOcrConfig) -> Self {
         RustOcrConfig {
+            enabled: val.enabled.unwrap_or(true),
             backend: val.backend,
             language: val.language.unwrap_or_else(|| "eng".to_string()),
             tesseract_config: val.tesseract_config.map(Into::into),
@@ -1576,6 +1578,7 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
             use_cache: Some(val.use_cache),
             enable_quality_processing: Some(val.enable_quality_processing),
             ocr: val.ocr.map(|ocr| JsOcrConfig {
+                enabled: Some(ocr.enabled),
                 backend: ocr.backend,
                 language: Some(ocr.language),
                 tesseract_config: ocr.tesseract_config.map(|tc| JsTesseractConfig {
@@ -1958,6 +1961,7 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
         Ok(JsFileExtractionConfig {
             enable_quality_processing: val.enable_quality_processing,
             ocr: val.ocr.map(|ocr| JsOcrConfig {
+                enabled: Some(ocr.enabled),
                 backend: ocr.backend,
                 language: Some(ocr.language),
                 tesseract_config: ocr.tesseract_config.map(|tc| JsTesseractConfig {

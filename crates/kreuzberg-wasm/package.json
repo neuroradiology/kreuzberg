@@ -115,7 +115,7 @@
 		"jsdom": "^29.0.2",
 		"oxlint": "^1.60.0",
 		"tsup": "^8.5.1",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.4"
 	},
 	"optionalDependencies": {

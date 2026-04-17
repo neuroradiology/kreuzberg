@@ -106,7 +106,7 @@
 		"version": "napi version"
 	},
 	"devDependencies": {
-		"@napi-rs/cli": "^3.6.1",
+		"@napi-rs/cli": "^3.6.2",
 		"@types/archiver": "^7.0.0",
 		"@types/node": "^25.6.0",
 		"@types/which": "^3.0.4",
@@ -114,11 +114,11 @@
 		"archiver": "^7.0.1",
 		"oxlint": "^1.60.0",
 		"tsup": "^8.5.1",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.4"
 	},
 	"dependencies": {
-		"@emnapi/runtime": "1.9.2",
+		"@emnapi/runtime": "1.10.0",
 		"which": "^6.0.1"
 	}
 }

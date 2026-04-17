@@ -68,10 +68,10 @@
 		"lint:fix": "biome check --write src"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.11",
+		"@biomejs/biome": "^2.4.12",
 		"@types/node": "^25.6.0",
 		"tsup": "^8.5.1",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.4"
 	}
 }
