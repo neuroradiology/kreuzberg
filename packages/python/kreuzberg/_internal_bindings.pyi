@@ -20,6 +20,7 @@ __all__ = [
     "Attributes",
     "BibtexMetadata",
     "BoundingBox",
+    "CancellationToken",
     "Chunk",
     "ChunkMetadata",
     "ChunkingConfig",
@@ -202,6 +203,12 @@ class ValidationError(Exception): ...
 class ParsingError(Exception): ...
 class OCRError(Exception): ...
 class MissingDependencyError(Exception): ...
+class ExtractionCancelledError(Exception): ...
+
+class CancellationToken:
+    def __init__(self) -> None: ...
+    def cancel(self) -> None: ...
+    def is_cancelled(self) -> bool: ...
 
 def init_async_runtime() -> None: ...
 
@@ -867,6 +874,7 @@ class ExtractionConfig:
     cache_ttl_secs: int | None
     extraction_timeout_secs: int | None
     max_archive_depth: int
+    cancel_token: CancellationToken | None
 
     def __init__(
         self,
@@ -901,6 +909,7 @@ class ExtractionConfig:
         cache_ttl_secs: int | None = ...,
         extraction_timeout_secs: int | None = ...,
         max_archive_depth: int = ...,
+        cancel_token: CancellationToken | None = None,
     ) -> None: ...
     @staticmethod
     def from_file(path: str | Path) -> ExtractionConfig: ...

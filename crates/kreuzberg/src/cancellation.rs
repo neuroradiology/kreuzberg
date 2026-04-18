@@ -12,8 +12,8 @@
 //!   sync and async contexts.
 //! - `Ordering::Relaxed` is sufficient: we only need eventual visibility, not
 //!   happens-before ordering relative to other memory accesses.
-//! - The token is intentionally `#[repr(transparent)]` over the `Arc` so it
-//!   can be stored in `ExtractionConfig` without layout surprises.
+//! - The token wraps an `Arc<AtomicBool>` and can be stored in
+//!   `ExtractionConfig` without layout surprises.
 //!
 //! # FFI
 //!
@@ -60,15 +60,6 @@ impl CancellationToken {
     #[inline]
     pub fn is_cancelled(&self) -> bool {
         self.cancelled.load(Ordering::Relaxed)
-    }
-
-    /// Return a reference to the underlying `Arc<AtomicBool>`.
-    ///
-    /// Useful for FFI wrappers that need to clone the inner `Arc` without going
-    /// through the outer struct.
-    #[inline]
-    pub fn inner(&self) -> &Arc<AtomicBool> {
-        &self.cancelled
     }
 }
 

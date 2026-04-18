@@ -220,9 +220,6 @@ async fn run_ocr_with_layout(
         return Ok((text, Vec::new(), ocr_elements, pipeline_doc, llm_usage));
     }
 
-    #[cfg(feature = "layout-detection")]
-    let layout_detections = run_layout_detection_ocr_pass(content, config);
-
     let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage) = extract_with_ocr(
         Some(content),
         None, // Lazy stream 300 DPI pages in extract_with_ocr's batch loop
@@ -503,34 +500,74 @@ impl PdfExtractor {
                         Err(e) => return Err(e.into()),
                     }
                 } else {
-                    let pdfium = crate::pdf::bindings::bind_pdfium(
-                        PdfError::MetadataExtractionFailed,
-                        "initialize Pdfium",
-                        config.cancel_token.as_ref(),
-                    )?;
+                    // Even in non-batch mode, `bind_pdfium` may spin with
+                    // `std::thread::sleep` when a cancellation token is provided
+                    // (waiting for `PDFIUM_OPERATION_LOCK`).  Running that sleep
+                    // on a Tokio worker thread would stall the runtime, so we
+                    // always dispatch to the blocking thread pool here.
+                    let content_owned = content.to_vec();
+                    let span = tracing::Span::current();
+                    let config_owned = config.clone();
+                    let oxide_path = crate::pdf::oxide_text::current_pdf_path();
+                    let result = tokio::task::spawn_blocking(move || {
+                        let _guard = span.entered();
+                        crate::pdf::oxide_text::set_current_pdf_path(oxide_path);
 
-                    let document = load_pdf_from_byte_slice(&pdfium, content, config)?;
+                        let pdfium = crate::pdf::bindings::bind_pdfium(
+                            PdfError::MetadataExtractionFailed,
+                            "initialize Pdfium",
+                            config_owned.cancel_token.as_ref(),
+                        )?;
 
-                    let (a, b, c, mut d, e, f, g, h) = extract_all_from_document(
-                        &document,
-                        config,
-                        layout_hints.as_deref(),
+                        let document = load_pdf_from_byte_slice(&pdfium, &content_owned, &config_owned)?;
+
+                        let (
+                            pdf_metadata,
+                            native_text,
+                            tables,
+                            mut pages,
+                            images,
+                            ocr_elements,
+                            ocr_internal_doc,
+                            structure_doc,
+                        ) = extract_all_from_document(
+                            &document,
+                            &config_owned,
+                            layout_hints.as_deref(),
+                            #[cfg(feature = "layout-detection")]
+                            layout_images.as_deref(),
+                            #[cfg(not(feature = "layout-detection"))]
+                            None,
+                            #[cfg(feature = "layout-detection")]
+                            layout_results.as_deref(),
+                            #[cfg(not(feature = "layout-detection"))]
+                            None,
+                        )
+                        .map_err(|e| PdfError::ExtractionFailed(e.to_string()))?;
+
                         #[cfg(feature = "layout-detection")]
-                        layout_images.as_deref(),
-                        #[cfg(not(feature = "layout-detection"))]
-                        None,
-                        #[cfg(feature = "layout-detection")]
-                        layout_results.as_deref(),
-                        #[cfg(not(feature = "layout-detection"))]
-                        None,
-                    )?;
+                        if let Some(ref lr) = layout_results {
+                            pages::assign_layout_regions_to_pages(&mut pages, lr);
+                        }
 
-                    #[cfg(feature = "layout-detection")]
-                    if let Some(ref lr) = layout_results {
-                        pages::assign_layout_regions_to_pages(&mut d, lr);
+                        Ok::<_, crate::pdf::error::PdfError>((
+                            pdf_metadata,
+                            native_text,
+                            tables,
+                            pages,
+                            images,
+                            ocr_elements,
+                            ocr_internal_doc,
+                            structure_doc,
+                        ))
+                    })
+                    .await
+                    .map_err(|e| crate::error::KreuzbergError::Other(format!("PDF extraction task failed: {}", e)))?;
+
+                    match result {
+                        Ok(tuple) => tuple,
+                        Err(e) => return Err(e.into()),
                     }
-
-                    (a, b, c, d, e, f, g, h)
                 }
             }
             #[cfg(all(not(target_arch = "wasm32"), not(feature = "tokio-runtime")))]

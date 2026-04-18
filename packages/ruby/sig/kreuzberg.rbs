@@ -1831,6 +1831,9 @@ module Kreuzberg
 
     class EmbeddingError < Error
     end
+
+    class CancelledError < Error
+    end
   end
 
   # Internal modules (prepended to Kreuzberg singleton)

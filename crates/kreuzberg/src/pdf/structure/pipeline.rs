@@ -2114,6 +2114,18 @@ fn populate_images_from_pdfium(
         // loop was catastrophically slow in those cases.
         let indices_set: ahash::AHashSet<usize> = indices.iter().copied().collect();
 
+        // INVARIANT: Image indices assigned to a single page are contiguous starting
+        // from the minimum index in `indices`. This holds because `objects_to_page_data`
+        // in bridge.rs increments `image_offset` sequentially per page object.
+        debug_assert!(
+            {
+                let max = indices.iter().copied().max().unwrap_or(0);
+                let min = indices.iter().copied().min().unwrap_or(0);
+                max - min + 1 == indices.len()
+            },
+            "image indices must form a contiguous set within a page"
+        );
+
         // Walk page objects, extracting image data for each matching index.
         let first_idx_on_page = indices.iter().copied().min().unwrap_or(0);
         let mut current_image = 0usize;
@@ -2127,8 +2139,9 @@ fn populate_images_from_pdfium(
                 {
                     let w = dynamic_image.width();
                     let h = dynamic_image.height();
-                    // Skip tiny inline images (e.g., Ghostscript vector decomposition
-                    // artifacts such as 16x16 CCITT masks). These are not content images.
+                    // Skip images where BOTH dimensions are tiny (< 32px). This targets
+                    // Ghostscript vector decomposition artifacts (16×16 CCITT masks) while
+                    // preserving thin rules and decorative elements that may be intentional.
                     if w < 32 && h < 32 {
                         current_image += 1;
                         continue;
