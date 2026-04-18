@@ -672,6 +672,7 @@ pub fn derive_extraction_result(
         annotations: std::mem::take(&mut doc.annotations),
         children: std::mem::take(&mut doc.children),
         uris,
+        llm_usage: std::mem::take(&mut doc.llm_usage),
         #[cfg(feature = "tree-sitter")]
         code_intelligence,
         formatted_content,

@@ -192,6 +192,7 @@ async fn run_ocr_with_layout(
     Vec<crate::types::Table>,
     Vec<crate::types::OcrElement>,
     Option<crate::types::internal::InternalDocument>,
+    Vec<crate::types::LlmUsage>,
 )> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
@@ -206,7 +207,7 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, _ocr_tables, ocr_elements, pipeline_doc) = ocr::run_ocr_pipeline(
+        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage) = ocr::run_ocr_pipeline(
             Some(content),
             None,
             #[cfg(feature = "layout-detection")]
@@ -216,13 +217,13 @@ async fn run_ocr_with_layout(
             path,
         )
         .await?;
-        return Ok((text, Vec::new(), ocr_elements, pipeline_doc));
+        return Ok((text, Vec::new(), ocr_elements, pipeline_doc, llm_usage));
     }
 
     #[cfg(feature = "layout-detection")]
     let layout_detections = run_layout_detection_ocr_pass(content, config);
 
-    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc) = extract_with_ocr(
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage) = extract_with_ocr(
         Some(content),
         None, // Lazy stream 300 DPI pages in extract_with_ocr's batch loop
         #[cfg(feature = "layout-detection")]
@@ -231,7 +232,7 @@ async fn run_ocr_with_layout(
         path,
     )
     .await?;
-    Ok((text, ocr_tables, ocr_elements, ocr_doc))
+    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage))
 }
 
 /// PDF document extractor using pypdfium2 and playa-pdf.
@@ -570,13 +571,17 @@ impl PdfExtractor {
         #[cfg(feature = "ocr")]
         let mut ocr_internal_doc: Option<crate::types::internal::InternalDocument> = None;
         #[cfg(feature = "ocr")]
+        let mut ocr_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
+        #[cfg(feature = "ocr")]
         let (text, used_ocr) = if config.effective_disable_ocr() {
             (native_text, false)
         } else if config.force_ocr {
-            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc) = run_ocr_with_layout(content, config, path).await?;
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage) =
+                run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             _ocr_elements_from_ocr = ocr_elems;
             ocr_internal_doc = ocr_doc;
+            ocr_llm_usage = llm_usage;
             (ocr_text, true)
         } else if let Some(ref ocr_pages) = config.force_ocr_pages {
             if !ocr_pages.is_empty() {
@@ -676,10 +681,11 @@ impl PdfExtractor {
                 (native_text, false)
             } else if decision.fallback || has_font_encoding_issues {
                 match run_ocr_with_layout(content, config, path).await {
-                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc)) => {
+                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage)) => {
                         ocr_tables = ocr_tbls;
                         _ocr_elements_from_ocr = ocr_elems;
                         ocr_internal_doc = ocr_doc;
+                        ocr_llm_usage = llm_usage;
                         (ocr_text, true)
                     }
                     Err(e) => {
@@ -1091,6 +1097,12 @@ impl PdfExtractor {
         // Attach pre-built per-page content so derive_extraction_result can use it.
         doc.prebuilt_pages = final_pages;
 
+        // Attach LLM usage accumulated during OCR so derive_extraction_result can transfer it.
+        #[cfg(feature = "ocr")]
+        if !ocr_llm_usage.is_empty() {
+            doc.llm_usage = Some(ocr_llm_usage);
+        }
+
         #[cfg(feature = "pdf")]
         tracing::debug!(
             elements = doc.elements.len(),
@@ -1149,15 +1161,19 @@ impl PdfExtractor {
         let mut _ocr_elements_from_ocr: Vec<crate::types::OcrElement> = Vec::new();
         #[cfg(feature = "ocr")]
         let mut ocr_internal_doc: Option<InternalDocument> = None;
+        #[cfg(feature = "ocr")]
+        let mut ocr_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
 
         #[cfg(feature = "ocr")]
         let (text, _used_ocr) = if config.effective_disable_ocr() {
             (native_text, false)
         } else if config.force_ocr {
-            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc) = run_ocr_with_layout(content, config, path).await?;
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage) =
+                run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             _ocr_elements_from_ocr = ocr_elems;
             ocr_internal_doc = ocr_doc;
+            ocr_llm_usage = llm_usage;
             (ocr_text, true)
         } else if let Some(ocr_config) = config.ocr.as_ref() {
             let thresholds = ocr_config.effective_thresholds();
@@ -1170,10 +1186,11 @@ impl PdfExtractor {
 
             if decision.fallback {
                 match run_ocr_with_layout(content, config, path).await {
-                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc)) => {
+                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage)) => {
                         ocr_tables = ocr_tbls;
                         _ocr_elements_from_ocr = ocr_elems;
                         ocr_internal_doc = ocr_doc;
+                        ocr_llm_usage = llm_usage;
                         (ocr_text, true)
                     }
                     Err(e) => {
@@ -1392,6 +1409,12 @@ impl PdfExtractor {
         }
 
         doc.prebuilt_pages = final_pages;
+
+        // Attach LLM usage accumulated during OCR so derive_extraction_result can transfer it.
+        #[cfg(feature = "ocr")]
+        if !ocr_llm_usage.is_empty() {
+            doc.llm_usage = Some(ocr_llm_usage);
+        }
 
         tracing::debug!(
             elements = doc.elements.len(),
