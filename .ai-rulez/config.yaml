@@ -43,7 +43,7 @@ builtins:
   - default-commands
 presets:
   - claude
-  - gemini
+  - copilot
   - codex
 compression:
   level: moderate
