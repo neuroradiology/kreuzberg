@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [4.9.3] - 2026-04-22
 
 ### Added
 
@@ -75,6 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Broken wasm-deno/wasm-workers e2e tasks** — removed non-functional deno and workers e2e generate/lint/test tasks that referenced invalid generator lang values.
 - **oxlint path in node e2e lint** — `oxlint --fix typescript` changed to `oxlint --fix .` (was looking for nonexistent `typescript/` directory).
 - **Clippy warnings in benchmark-harness** — `sort_by` replaced with `sort_by_key` + `Reverse`.
+- **Clippy warnings and compilation errors across workspace** — added missing `max_images_per_page` field to `ImageExtractionConfig` in node and Python bindings; added missing `vlm_prompt` argument to VLM OCR test calls; collapsed nested `if-let` in WASM embeddings; added `embeddings` and `tree-sitter` passthrough features to `kreuzberg-ffi` to silence `unexpected_cfgs` warnings.
+- **Cancellation token not wired in oxide segment structure pipeline** — `cancel_token` was passed into `SegmentStructureConfig` but never checked, meaning cancellation/timeout had no effect during pdf-oxide table extraction or paragraph building. Added cancellation checks at table page prep, heuristic table extraction loops, and a pre-flight guard before parallel paragraph extraction.
 - **#771**: `OcrConfig.vlm_prompt` is now correctly honored in VLM OCR requests. Previously, it was documented but never forwarded to the underlying VLM calls, causing the default template to be used regardless of configuration.
 - **#762**: PDF image links are no longer silently dropped from markdown output. Image extraction now correctly preserves correspondence between pdfium objects and lopdf data, and respects the `inject_placeholders` configuration.
 - **#769**: Downgraded `pre-commit-shfmt` to `v3.13.1-1` (fixes broken CI due to non-existent version in `main`).
