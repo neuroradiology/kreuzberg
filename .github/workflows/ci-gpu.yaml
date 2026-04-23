@@ -138,3 +138,4 @@ jobs:
           ./gpu-acceleration-test --ignored --nocapture
         env:
           RUST_LOG: "kreuzberg=debug"
+          TEST_DOCUMENTS_DIR: ${{ github.workspace }}/test_documents

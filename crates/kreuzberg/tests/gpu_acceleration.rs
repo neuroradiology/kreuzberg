@@ -22,6 +22,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 fn test_documents_dir() -> PathBuf {
+    if let Ok(dir) = std::env::var("TEST_DOCUMENTS_DIR") {
+        return PathBuf::from(dir);
+    }
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap()
