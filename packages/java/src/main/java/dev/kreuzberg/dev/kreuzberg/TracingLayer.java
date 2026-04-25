@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * A [`tower::Layer`] that wraps each extraction in a semantic tracing span.
  */
 public class TracingLayer implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    TracingLayer(MemorySegment handle) {
-        this.handle = handle;
-    }
+	TracingLayer(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_TRACING_LAYER_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free TracingLayer: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_TRACING_LAYER_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free TracingLayer: " + e.getMessage(), e);
+			}
+		}
+	}
 }

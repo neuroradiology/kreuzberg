@@ -12,13 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Model manifest response.
  */
 public record ManifestResponse(
-    /** Kreuzberg version */
-    @JsonProperty("kreuzberg_version") String kreuzbergVersion,
-    /** Total size of all models in bytes */
-    @JsonProperty("total_size_bytes") long totalSizeBytes,
-    /** Number of models in the manifest */
-    @JsonProperty("model_count") long modelCount,
-    /** Individual model entries */
-    List<ManifestEntryResponse> models
-) {
+		/** Kreuzberg version */
+		@JsonProperty("kreuzberg_version") String kreuzbergVersion,
+		/** Total size of all models in bytes */
+		@JsonProperty("total_size_bytes") long totalSizeBytes,
+		/** Number of models in the manifest */
+		@JsonProperty("model_count") long modelCount,
+		/** Individual model entries */
+		List<ManifestEntryResponse> models) {
 }

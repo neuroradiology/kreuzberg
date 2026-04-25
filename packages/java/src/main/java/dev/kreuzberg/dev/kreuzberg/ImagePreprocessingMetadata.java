@@ -16,29 +16,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * including DPI normalization, resizing, and resampling.
  */
 public record ImagePreprocessingMetadata(
-    /** Original image dimensions (width, height) in pixels */
-    @JsonProperty("original_dimensions") List<Long> originalDimensions,
-    /** Original image DPI (horizontal, vertical) */
-    @JsonProperty("original_dpi") List<Double> originalDpi,
-    /** Target DPI from configuration */
-    @JsonProperty("target_dpi") int targetDpi,
-    /** Scaling factor applied to the image */
-    @JsonProperty("scale_factor") double scaleFactor,
-    /** Whether DPI was auto-adjusted based on content */
-    @JsonProperty("auto_adjusted") boolean autoAdjusted,
-    /** Final DPI after processing */
-    @JsonProperty("final_dpi") int finalDpi,
-    /** New dimensions after resizing (if resized) */
-    @JsonProperty("new_dimensions") Optional<List<Long>> newDimensions,
-    /** Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) */
-    @JsonProperty("resample_method") String resampleMethod,
-    /** Whether dimensions were clamped to max_image_dimension */
-    @JsonProperty("dimension_clamped") boolean dimensionClamped,
-    /** Calculated optimal DPI (if auto_adjust_dpi enabled) */
-    @JsonProperty("calculated_dpi") Optional<Integer> calculatedDpi,
-    /** Whether resize was skipped (dimensions already optimal) */
-    @JsonProperty("skipped_resize") boolean skippedResize,
-    /** Error message if resize failed */
-    @JsonProperty("resize_error") Optional<String> resizeError
-) {
+		/** Original image dimensions (width, height) in pixels */
+		@JsonProperty("original_dimensions") List<Long> originalDimensions,
+		/** Original image DPI (horizontal, vertical) */
+		@JsonProperty("original_dpi") List<Double> originalDpi,
+		/** Target DPI from configuration */
+		@JsonProperty("target_dpi") int targetDpi,
+		/** Scaling factor applied to the image */
+		@JsonProperty("scale_factor") double scaleFactor,
+		/** Whether DPI was auto-adjusted based on content */
+		@JsonProperty("auto_adjusted") boolean autoAdjusted,
+		/** Final DPI after processing */
+		@JsonProperty("final_dpi") int finalDpi,
+		/** New dimensions after resizing (if resized) */
+		@JsonProperty("new_dimensions") Optional<List<Long>> newDimensions,
+		/** Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) */
+		@JsonProperty("resample_method") String resampleMethod,
+		/** Whether dimensions were clamped to max_image_dimension */
+		@JsonProperty("dimension_clamped") boolean dimensionClamped,
+		/** Calculated optimal DPI (if auto_adjust_dpi enabled) */
+		@JsonProperty("calculated_dpi") Optional<Integer> calculatedDpi,
+		/** Whether resize was skipped (dimensions already optimal) */
+		@JsonProperty("skipped_resize") boolean skippedResize,
+		/** Error message if resize failed */
+		@JsonProperty("resize_error") Optional<String> resizeError) {
 }

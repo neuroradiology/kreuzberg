@@ -16,42 +16,37 @@ import java.util.Optional;
  */
 public class HierarchyConfigBuilder {
 
-    private boolean enabled = false;
-    private long kClusters = 0;
-    private boolean includeBbox = false;
-    private Optional<Float> ocrCoverageThreshold = Optional.empty();
+	private boolean enabled = false;
+	private long kClusters = 0;
+	private boolean includeBbox = false;
+	private Optional<Float> ocrCoverageThreshold = Optional.empty();
 
-    /** Sets the enabled field. */
-    public HierarchyConfigBuilder withEnabled(final boolean value) {
-        this.enabled = value;
-        return this;
-    }
+	/** Sets the enabled field. */
+	public HierarchyConfigBuilder withEnabled(final boolean value) {
+		this.enabled = value;
+		return this;
+	}
 
-    /** Sets the kClusters field. */
-    public HierarchyConfigBuilder withKClusters(final long value) {
-        this.kClusters = value;
-        return this;
-    }
+	/** Sets the kClusters field. */
+	public HierarchyConfigBuilder withKClusters(final long value) {
+		this.kClusters = value;
+		return this;
+	}
 
-    /** Sets the includeBbox field. */
-    public HierarchyConfigBuilder withIncludeBbox(final boolean value) {
-        this.includeBbox = value;
-        return this;
-    }
+	/** Sets the includeBbox field. */
+	public HierarchyConfigBuilder withIncludeBbox(final boolean value) {
+		this.includeBbox = value;
+		return this;
+	}
 
-    /** Sets the ocrCoverageThreshold field. */
-    public HierarchyConfigBuilder withOcrCoverageThreshold(final Optional<Float> value) {
-        this.ocrCoverageThreshold = value;
-        return this;
-    }
+	/** Sets the ocrCoverageThreshold field. */
+	public HierarchyConfigBuilder withOcrCoverageThreshold(final Optional<Float> value) {
+		this.ocrCoverageThreshold = value;
+		return this;
+	}
 
-    /** Builds the HierarchyConfig instance. */
-    public HierarchyConfig build() {
-        return new HierarchyConfig(
-            enabled,
-            kClusters,
-            includeBbox,
-            ocrCoverageThreshold
-        );
-    }
+	/** Builds the HierarchyConfig instance. */
+	public HierarchyConfig build() {
+		return new HierarchyConfig(enabled, kClusters, includeBbox, ocrCoverageThreshold);
+	}
 }

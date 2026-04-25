@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Convenience type alias for a pooled Vec<u8>.
  */
 public class ByteBufferPool implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    ByteBufferPool(MemorySegment handle) {
-        this.handle = handle;
-    }
+	ByteBufferPool(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_BYTE_BUFFER_POOL_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free ByteBufferPool: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_BYTE_BUFFER_POOL_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free ByteBufferPool: " + e.getMessage(), e);
+			}
+		}
+	}
 }

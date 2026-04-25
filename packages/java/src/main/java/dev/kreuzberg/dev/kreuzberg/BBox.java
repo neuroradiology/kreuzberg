@@ -5,9 +5,9 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
- * Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
+ * Bounding box in original image coordinates (x1, y1) top-left, (x2, y2)
+ * bottom-right.
  */
 public record BBox(float x1, float y1, float x2, float y2) {
 }

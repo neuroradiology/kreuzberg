@@ -12,28 +12,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A unified OCR element representing detected text with full metadata.
  *
- * This is the primary type for structured OCR output, preserving all information
- * from both Tesseract and PaddleOCR backends.
+ * This is the primary type for structured OCR output, preserving all
+ * information from both Tesseract and PaddleOCR backends.
  */
 public record OcrElement(
-    /** The recognized text content. */
-    String text,
-    /** Bounding geometry (rectangle or quadrilateral). */
-    OcrBoundingGeometry geometry,
-    /** Confidence scores for detection and recognition. */
-    OcrConfidence confidence,
-    /** Hierarchical level (word, line, block, page). */
-    OcrElementLevel level,
-    /** Rotation information (if detected). */
-    Optional<OcrRotation> rotation,
-    /** Page number (1-indexed). */
-    @JsonProperty("page_number") long pageNumber,
-    /** Parent element ID for hierarchical relationships. */
-    @JsonProperty("parent_id") Optional<String> parentId,
-    /** Backend-specific metadata that doesn't fit the unified schema. */
-    @JsonProperty("backend_metadata") Map<String, Object> backendMetadata
-) {
-    public static OcrElementBuilder builder() {
-        return new OcrElementBuilder();
-    }
+		/** The recognized text content. */
+		String text,
+		/** Bounding geometry (rectangle or quadrilateral). */
+		OcrBoundingGeometry geometry,
+		/** Confidence scores for detection and recognition. */
+		OcrConfidence confidence,
+		/** Hierarchical level (word, line, block, page). */
+		OcrElementLevel level,
+		/** Rotation information (if detected). */
+		Optional<OcrRotation> rotation,
+		/** Page number (1-indexed). */
+		@JsonProperty("page_number") long pageNumber,
+		/** Parent element ID for hierarchical relationships. */
+		@JsonProperty("parent_id") Optional<String> parentId,
+		/** Backend-specific metadata that doesn't fit the unified schema. */
+		@JsonProperty("backend_metadata") Map<String, Object> backendMetadata) {
+	public static OcrElementBuilder builder() {
+		return new OcrElementBuilder();
+	}
 }

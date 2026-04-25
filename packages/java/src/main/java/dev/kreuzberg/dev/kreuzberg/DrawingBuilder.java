@@ -12,42 +12,37 @@ import java.util.Optional;
  */
 public class DrawingBuilder {
 
-    private String drawingType = "";
-    private Optional<String> extent = Optional.empty();
-    private Optional<String> docProperties = Optional.empty();
-    private Optional<String> imageRef = Optional.empty();
+	private String drawingType = "";
+	private Optional<String> extent = Optional.empty();
+	private Optional<String> docProperties = Optional.empty();
+	private Optional<String> imageRef = Optional.empty();
 
-    /** Sets the drawingType field. */
-    public DrawingBuilder withDrawingType(final String value) {
-        this.drawingType = value;
-        return this;
-    }
+	/** Sets the drawingType field. */
+	public DrawingBuilder withDrawingType(final String value) {
+		this.drawingType = value;
+		return this;
+	}
 
-    /** Sets the extent field. */
-    public DrawingBuilder withExtent(final Optional<String> value) {
-        this.extent = value;
-        return this;
-    }
+	/** Sets the extent field. */
+	public DrawingBuilder withExtent(final Optional<String> value) {
+		this.extent = value;
+		return this;
+	}
 
-    /** Sets the docProperties field. */
-    public DrawingBuilder withDocProperties(final Optional<String> value) {
-        this.docProperties = value;
-        return this;
-    }
+	/** Sets the docProperties field. */
+	public DrawingBuilder withDocProperties(final Optional<String> value) {
+		this.docProperties = value;
+		return this;
+	}
 
-    /** Sets the imageRef field. */
-    public DrawingBuilder withImageRef(final Optional<String> value) {
-        this.imageRef = value;
-        return this;
-    }
+	/** Sets the imageRef field. */
+	public DrawingBuilder withImageRef(final Optional<String> value) {
+		this.imageRef = value;
+		return this;
+	}
 
-    /** Builds the Drawing instance. */
-    public Drawing build() {
-        return new Drawing(
-            drawingType,
-            extent,
-            docProperties,
-            imageRef
-        );
-    }
+	/** Builds the Drawing instance. */
+	public Drawing build() {
+		return new Drawing(drawingType, extent, docProperties, imageRef);
+	}
 }

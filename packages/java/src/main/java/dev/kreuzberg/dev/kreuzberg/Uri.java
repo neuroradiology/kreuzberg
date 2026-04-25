@@ -11,8 +11,8 @@ import java.util.Optional;
  * A URI extracted from a document.
  *
  * Represents any link, reference, or resource pointer found during extraction.
- * The {@code kind} field classifies the URI semantically, while {@code label} carries
- * optional human-readable display text.
+ * The {@code kind} field classifies the URI semantically, while {@code label}
+ * carries optional human-readable display text.
  */
 public record Uri(String url, Optional<String> label, Optional<Integer> page, UriKind kind) {
 }

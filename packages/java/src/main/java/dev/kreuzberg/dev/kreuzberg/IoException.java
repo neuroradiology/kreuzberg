@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class IoException extends KreuzbergErrorException {
-    /** Creates a new IoException with the given message. */
-    public IoException(final String message) {
-        super(message);
-    }
+	/** Creates a new IoException with the given message. */
+	public IoException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new IoException with the given message and cause. */
-    public IoException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new IoException with the given message and cause. */
+	public IoException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

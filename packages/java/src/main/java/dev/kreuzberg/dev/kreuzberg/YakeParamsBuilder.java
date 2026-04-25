@@ -5,24 +5,21 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * YAKE-specific parameters.
  */
 public class YakeParamsBuilder {
 
-    private long windowSize = 0;
+	private long windowSize = 0;
 
-    /** Sets the windowSize field. */
-    public YakeParamsBuilder withWindowSize(final long value) {
-        this.windowSize = value;
-        return this;
-    }
+	/** Sets the windowSize field. */
+	public YakeParamsBuilder withWindowSize(final long value) {
+		this.windowSize = value;
+		return this;
+	}
 
-    /** Builds the YakeParams instance. */
-    public YakeParams build() {
-        return new YakeParams(
-            windowSize
-        );
-    }
+	/** Builds the YakeParams instance. */
+	public YakeParams build() {
+		return new YakeParams(windowSize);
+	}
 }

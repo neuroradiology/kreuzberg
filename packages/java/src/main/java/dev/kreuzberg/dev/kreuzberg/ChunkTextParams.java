@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for text chunking.
  */
 public record ChunkTextParams(
-    /** Text content to split into chunks */
-    String text,
-    /** Maximum characters per chunk (default: 2000) */
-    @JsonProperty("max_characters") Optional<Long> maxCharacters,
-    /** Number of overlapping characters between chunks (default: 100) */
-    Optional<Long> overlap,
-    /** Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") */
-    @JsonProperty("chunker_type") Optional<String> chunkerType,
-    /** Topic threshold for semantic chunking (0.0-1.0, default: 0.75) */
-    @JsonProperty("topic_threshold") Optional<Float> topicThreshold
-) {
+		/** Text content to split into chunks */
+		String text,
+		/** Maximum characters per chunk (default: 2000) */
+		@JsonProperty("max_characters") Optional<Long> maxCharacters,
+		/** Number of overlapping characters between chunks (default: 100) */
+		Optional<Long> overlap,
+		/** Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") */
+		@JsonProperty("chunker_type") Optional<String> chunkerType,
+		/** Topic threshold for semantic chunking (0.0-1.0, default: 0.75) */
+		@JsonProperty("topic_threshold") Optional<Float> topicThreshold) {
 }

@@ -10,21 +10,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Page extraction and tracking configuration.
  *
- * Controls how pages are extracted, tracked, and represented in the extraction results.
- * When {@code None}, page tracking is disabled.
+ * Controls how pages are extracted, tracked, and represented in the extraction
+ * results. When {@code None}, page tracking is disabled.
  *
- * Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
- * when page boundaries are available and chunking is configured.
+ * Page range tracking in chunk metadata (first_page/last_page) is automatically
+ * enabled when page boundaries are available and chunking is configured.
  */
 public record PageConfig(
-    /** Extract pages as separate array (ExtractionResult.pages) */
-    @JsonProperty("extract_pages") boolean extractPages,
-    /** Insert page markers in main content string */
-    @JsonProperty("insert_page_markers") boolean insertPageMarkers,
-    /** Page marker format (use {page_num} placeholder) */
-    @JsonProperty("marker_format") String markerFormat
-) {
-    public static PageConfigBuilder builder() {
-        return new PageConfigBuilder();
-    }
+		/** Extract pages as separate array (ExtractionResult.pages) */
+		@JsonProperty("extract_pages") boolean extractPages,
+		/** Insert page markers in main content string */
+		@JsonProperty("insert_page_markers") boolean insertPageMarkers,
+		/** Page marker format (use {page_num} placeholder) */
+		@JsonProperty("marker_format") String markerFormat) {
+	public static PageConfigBuilder builder() {
+		return new PageConfigBuilder();
+	}
 }

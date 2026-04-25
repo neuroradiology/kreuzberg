@@ -12,32 +12,32 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Keyword algorithm selection.
  */
 public enum KeywordAlgorithm {
-    /** YAKE (Yet Another Keyword Extractor) - statistical approach */
-    Yake("yake"),
-    /** RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based */
-    Rake("rake");
+	/** YAKE (Yet Another Keyword Extractor) - statistical approach */
+	Yake("yake"),
+	/** RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based */
+	Rake("rake");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    KeywordAlgorithm(final String value) {
-        this.value = value;
-    }
+	KeywordAlgorithm(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static KeywordAlgorithm fromValue(final String value) {
-        for (KeywordAlgorithm e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static KeywordAlgorithm fromValue(final String value) {
+		for (KeywordAlgorithm e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

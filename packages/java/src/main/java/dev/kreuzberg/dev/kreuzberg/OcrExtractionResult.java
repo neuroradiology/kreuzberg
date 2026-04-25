@@ -13,21 +13,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * OCR extraction result.
  *
- * Result of performing OCR on an image or scanned document,
- * including recognized text and detected tables.
+ * Result of performing OCR on an image or scanned document, including
+ * recognized text and detected tables.
  */
 public record OcrExtractionResult(
-    /** Recognized text content */
-    String content,
-    /** Original MIME type of the processed image */
-    @JsonProperty("mime_type") String mimeType,
-    /** OCR processing metadata (confidence scores, language, etc.) */
-    Map<String, Object> metadata,
-    /** Tables detected and extracted via OCR */
-    List<OcrTable> tables,
-    /** Structured OCR elements with bounding boxes and confidence scores. */
-    @JsonProperty("ocr_elements") Optional<List<OcrElement>> ocrElements,
-    /** Structured document produced from hOCR parsing. */
-    @JsonProperty("internal_document") Optional<String> internalDocument
-) {
+		/** Recognized text content */
+		String content,
+		/** Original MIME type of the processed image */
+		@JsonProperty("mime_type") String mimeType,
+		/** OCR processing metadata (confidence scores, language, etc.) */
+		Map<String, Object> metadata,
+		/** Tables detected and extracted via OCR */
+		List<OcrTable> tables,
+		/** Structured OCR elements with bounding boxes and confidence scores. */
+		@JsonProperty("ocr_elements") Optional<List<OcrElement>> ocrElements,
+		/** Structured document produced from hOCR parsing. */
+		@JsonProperty("internal_document") Optional<String> internalDocument) {
 }

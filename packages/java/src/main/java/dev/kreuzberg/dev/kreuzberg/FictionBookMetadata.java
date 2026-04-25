@@ -11,12 +11,8 @@ import java.util.Optional;
 /**
  * FictionBook (FB2) metadata.
  */
-public record FictionBookMetadata(
-    List<String> genres,
-    List<String> sequences,
-    Optional<String> annotation
-) {
-    public static FictionBookMetadataBuilder builder() {
-        return new FictionBookMetadataBuilder();
-    }
+public record FictionBookMetadata(List<String> genres, List<String> sequences, Optional<String> annotation) {
+	public static FictionBookMetadataBuilder builder() {
+		return new FictionBookMetadataBuilder();
+	}
 }

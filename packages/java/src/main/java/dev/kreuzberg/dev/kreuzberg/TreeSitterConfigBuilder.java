@@ -15,63 +15,52 @@ import java.util.Optional;
  *
  * # Example (TOML)
  *
- * {@code }{@code toml}
- * [tree_sitter]
- * languages = ["python", "rust"]
- * groups = ["web"]
+ * {@code }{@code toml} [tree_sitter] languages = ["python", "rust"] groups =
+ * ["web"]
  *
- * [tree_sitter.process]
- * structure = true
- * comments = true
- * docstrings = true
+ * [tree_sitter.process] structure = true comments = true docstrings = true
  * {@code }{@code }
  */
 public class TreeSitterConfigBuilder {
 
-    private boolean enabled = false;
-    private Optional<java.nio.file.Path> cacheDir = Optional.empty();
-    private Optional<List<String>> languages = Optional.empty();
-    private Optional<List<String>> groups = Optional.empty();
-    private TreeSitterProcessConfig process = null;
+	private boolean enabled = false;
+	private Optional<java.nio.file.Path> cacheDir = Optional.empty();
+	private Optional<List<String>> languages = Optional.empty();
+	private Optional<List<String>> groups = Optional.empty();
+	private TreeSitterProcessConfig process = null;
 
-    /** Sets the enabled field. */
-    public TreeSitterConfigBuilder withEnabled(final boolean value) {
-        this.enabled = value;
-        return this;
-    }
+	/** Sets the enabled field. */
+	public TreeSitterConfigBuilder withEnabled(final boolean value) {
+		this.enabled = value;
+		return this;
+	}
 
-    /** Sets the cacheDir field. */
-    public TreeSitterConfigBuilder withCacheDir(final Optional<java.nio.file.Path> value) {
-        this.cacheDir = value;
-        return this;
-    }
+	/** Sets the cacheDir field. */
+	public TreeSitterConfigBuilder withCacheDir(final Optional<java.nio.file.Path> value) {
+		this.cacheDir = value;
+		return this;
+	}
 
-    /** Sets the languages field. */
-    public TreeSitterConfigBuilder withLanguages(final Optional<List<String>> value) {
-        this.languages = value;
-        return this;
-    }
+	/** Sets the languages field. */
+	public TreeSitterConfigBuilder withLanguages(final Optional<List<String>> value) {
+		this.languages = value;
+		return this;
+	}
 
-    /** Sets the groups field. */
-    public TreeSitterConfigBuilder withGroups(final Optional<List<String>> value) {
-        this.groups = value;
-        return this;
-    }
+	/** Sets the groups field. */
+	public TreeSitterConfigBuilder withGroups(final Optional<List<String>> value) {
+		this.groups = value;
+		return this;
+	}
 
-    /** Sets the process field. */
-    public TreeSitterConfigBuilder withProcess(final TreeSitterProcessConfig value) {
-        this.process = value;
-        return this;
-    }
+	/** Sets the process field. */
+	public TreeSitterConfigBuilder withProcess(final TreeSitterProcessConfig value) {
+		this.process = value;
+		return this;
+	}
 
-    /** Builds the TreeSitterConfig instance. */
-    public TreeSitterConfig build() {
-        return new TreeSitterConfig(
-            enabled,
-            cacheDir,
-            languages,
-            groups,
-            process
-        );
-    }
+	/** Builds the TreeSitterConfig instance. */
+	public TreeSitterConfig build() {
+		return new TreeSitterConfig(enabled, cacheDir, languages, groups, process);
+	}
 }

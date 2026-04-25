@@ -11,48 +11,48 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Which table structure recognition model to use.
  *
- * Controls the model used for table cell detection within layout-detected
- * table regions.
+ * Controls the model used for table cell detection within layout-detected table
+ * regions.
  */
 public enum TableModel {
-    /**
-     * TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
-     */
-    Tatr("tatr"),
-    /** SLANeXT wired variant -- 365MB, optimized for bordered tables. */
-    SlanetWired("slanetwired"),
-    /** SLANeXT wireless variant -- 365MB, optimized for borderless tables. */
-    SlanetWireless("slanetwireless"),
-    /** SLANet-plus -- 7.78MB, lightweight general-purpose. */
-    SlanetPlus("slanetplus"),
-    /** Classifier-routed SLANeXT: auto-select wired/wireless per table. */
-    SlanetAuto("slanetauto"),
-    /**
-     * Disable table structure model inference entirely; use heuristic path only.
-     */
-    Disabled("disabled");
+	/**
+	 * TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
+	 */
+	Tatr("tatr"),
+	/** SLANeXT wired variant -- 365MB, optimized for bordered tables. */
+	SlanetWired("slanetwired"),
+	/** SLANeXT wireless variant -- 365MB, optimized for borderless tables. */
+	SlanetWireless("slanetwireless"),
+	/** SLANet-plus -- 7.78MB, lightweight general-purpose. */
+	SlanetPlus("slanetplus"),
+	/** Classifier-routed SLANeXT: auto-select wired/wireless per table. */
+	SlanetAuto("slanetauto"),
+	/**
+	 * Disable table structure model inference entirely; use heuristic path only.
+	 */
+	Disabled("disabled");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    TableModel(final String value) {
-        this.value = value;
-    }
+	TableModel(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static TableModel fromValue(final String value) {
-        for (TableModel e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static TableModel fromValue(final String value) {
+		for (TableModel e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

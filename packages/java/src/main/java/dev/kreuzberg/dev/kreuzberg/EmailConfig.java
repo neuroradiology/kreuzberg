@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Configuration for email extraction.
  */
 public record EmailConfig(@JsonProperty("msg_fallback_codepage") Optional<Integer> msgFallbackCodepage) {
-    public static EmailConfigBuilder builder() {
-        return new EmailConfigBuilder();
-    }
+	public static EmailConfigBuilder builder() {
+		return new EmailConfigBuilder();
+	}
 }

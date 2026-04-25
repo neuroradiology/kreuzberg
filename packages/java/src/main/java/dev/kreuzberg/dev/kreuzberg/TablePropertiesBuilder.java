@@ -12,82 +12,72 @@ import java.util.Optional;
  */
 public class TablePropertiesBuilder {
 
-    private Optional<String> styleId = Optional.empty();
-    private Optional<String> width = Optional.empty();
-    private Optional<String> alignment = Optional.empty();
-    private Optional<String> layout = Optional.empty();
-    private Optional<String> look = Optional.empty();
-    private Optional<String> borders = Optional.empty();
-    private Optional<String> cellMargins = Optional.empty();
-    private Optional<String> indent = Optional.empty();
-    private Optional<String> caption = Optional.empty();
+	private Optional<String> styleId = Optional.empty();
+	private Optional<String> width = Optional.empty();
+	private Optional<String> alignment = Optional.empty();
+	private Optional<String> layout = Optional.empty();
+	private Optional<String> look = Optional.empty();
+	private Optional<String> borders = Optional.empty();
+	private Optional<String> cellMargins = Optional.empty();
+	private Optional<String> indent = Optional.empty();
+	private Optional<String> caption = Optional.empty();
 
-    /** Sets the styleId field. */
-    public TablePropertiesBuilder withStyleId(final Optional<String> value) {
-        this.styleId = value;
-        return this;
-    }
+	/** Sets the styleId field. */
+	public TablePropertiesBuilder withStyleId(final Optional<String> value) {
+		this.styleId = value;
+		return this;
+	}
 
-    /** Sets the width field. */
-    public TablePropertiesBuilder withWidth(final Optional<String> value) {
-        this.width = value;
-        return this;
-    }
+	/** Sets the width field. */
+	public TablePropertiesBuilder withWidth(final Optional<String> value) {
+		this.width = value;
+		return this;
+	}
 
-    /** Sets the alignment field. */
-    public TablePropertiesBuilder withAlignment(final Optional<String> value) {
-        this.alignment = value;
-        return this;
-    }
+	/** Sets the alignment field. */
+	public TablePropertiesBuilder withAlignment(final Optional<String> value) {
+		this.alignment = value;
+		return this;
+	}
 
-    /** Sets the layout field. */
-    public TablePropertiesBuilder withLayout(final Optional<String> value) {
-        this.layout = value;
-        return this;
-    }
+	/** Sets the layout field. */
+	public TablePropertiesBuilder withLayout(final Optional<String> value) {
+		this.layout = value;
+		return this;
+	}
 
-    /** Sets the look field. */
-    public TablePropertiesBuilder withLook(final Optional<String> value) {
-        this.look = value;
-        return this;
-    }
+	/** Sets the look field. */
+	public TablePropertiesBuilder withLook(final Optional<String> value) {
+		this.look = value;
+		return this;
+	}
 
-    /** Sets the borders field. */
-    public TablePropertiesBuilder withBorders(final Optional<String> value) {
-        this.borders = value;
-        return this;
-    }
+	/** Sets the borders field. */
+	public TablePropertiesBuilder withBorders(final Optional<String> value) {
+		this.borders = value;
+		return this;
+	}
 
-    /** Sets the cellMargins field. */
-    public TablePropertiesBuilder withCellMargins(final Optional<String> value) {
-        this.cellMargins = value;
-        return this;
-    }
+	/** Sets the cellMargins field. */
+	public TablePropertiesBuilder withCellMargins(final Optional<String> value) {
+		this.cellMargins = value;
+		return this;
+	}
 
-    /** Sets the indent field. */
-    public TablePropertiesBuilder withIndent(final Optional<String> value) {
-        this.indent = value;
-        return this;
-    }
+	/** Sets the indent field. */
+	public TablePropertiesBuilder withIndent(final Optional<String> value) {
+		this.indent = value;
+		return this;
+	}
 
-    /** Sets the caption field. */
-    public TablePropertiesBuilder withCaption(final Optional<String> value) {
-        this.caption = value;
-        return this;
-    }
+	/** Sets the caption field. */
+	public TablePropertiesBuilder withCaption(final Optional<String> value) {
+		this.caption = value;
+		return this;
+	}
 
-    /** Builds the TableProperties instance. */
-    public TableProperties build() {
-        return new TableProperties(
-            styleId,
-            width,
-            alignment,
-            layout,
-            look,
-            borders,
-            cellMargins,
-            indent,
-            caption
-        );
-    }
+	/** Builds the TableProperties instance. */
+	public TableProperties build() {
+		return new TableProperties(styleId, width, alignment, layout, look, borders, cellMargins, indent, caption);
+	}
 }

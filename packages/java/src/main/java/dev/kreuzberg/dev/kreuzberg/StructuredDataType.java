@@ -12,34 +12,34 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Structured data type classification.
  */
 public enum StructuredDataType {
-    /** JSON-LD structured data */
-    JsonLd("json-ld"),
-    /** Microdata */
-    Microdata("microdata"),
-    /** RDFa */
-    RDFa("rdfa");
+	/** JSON-LD structured data */
+	JsonLd("json-ld"),
+	/** Microdata */
+	Microdata("microdata"),
+	/** RDFa */
+	RDFa("rdfa");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    StructuredDataType(final String value) {
-        this.value = value;
-    }
+	StructuredDataType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static StructuredDataType fromValue(final String value) {
-        for (StructuredDataType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static StructuredDataType fromValue(final String value) {
+		for (StructuredDataType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

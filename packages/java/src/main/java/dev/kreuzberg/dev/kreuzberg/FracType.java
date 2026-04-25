@@ -9,32 +9,29 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum FracType {
-    Bar("bar"),
-    NoBar("nobar"),
-    Linear("linear"),
-    Skewed("skewed");
+	Bar("bar"), NoBar("nobar"), Linear("linear"), Skewed("skewed");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    FracType(final String value) {
-        this.value = value;
-    }
+	FracType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static FracType fromValue(final String value) {
-        for (FracType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static FracType fromValue(final String value) {
+		for (FracType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

@@ -16,16 +16,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * included in page content.
  */
 public record HierarchyConfig(
-    /** Enable hierarchy extraction */
-    boolean enabled,
-    /** Number of font size clusters to use for hierarchy levels (1-7) */
-    @JsonProperty("k_clusters") long kClusters,
-    /** Include bounding box information in hierarchy blocks */
-    @JsonProperty("include_bbox") boolean includeBbox,
-    /** OCR coverage threshold for smart OCR triggering (0.0-1.0) */
-    @JsonProperty("ocr_coverage_threshold") Optional<Float> ocrCoverageThreshold
-) {
-    public static HierarchyConfigBuilder builder() {
-        return new HierarchyConfigBuilder();
-    }
+		/** Enable hierarchy extraction */
+		boolean enabled,
+		/** Number of font size clusters to use for hierarchy levels (1-7) */
+		@JsonProperty("k_clusters") long kClusters,
+		/** Include bounding box information in hierarchy blocks */
+		@JsonProperty("include_bbox") boolean includeBbox,
+		/** OCR coverage threshold for smart OCR triggering (0.0-1.0) */
+		@JsonProperty("ocr_coverage_threshold") Optional<Float> ocrCoverageThreshold) {
+	public static HierarchyConfigBuilder builder() {
+		return new HierarchyConfigBuilder();
+	}
 }

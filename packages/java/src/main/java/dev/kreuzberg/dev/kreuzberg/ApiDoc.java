@@ -10,28 +10,28 @@ import java.lang.foreign.MemorySegment;
 /**
  * OpenAPI documentation structure.
  *
- * Defines all endpoints, request/response schemas, and examples
- * for the Kreuzberg document extraction API.
+ * Defines all endpoints, request/response schemas, and examples for the
+ * Kreuzberg document extraction API.
  */
 public class ApiDoc implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    ApiDoc(MemorySegment handle) {
-        this.handle = handle;
-    }
+	ApiDoc(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_API_DOC_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free ApiDoc: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_API_DOC_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free ApiDoc: " + e.getMessage(), e);
+			}
+		}
+	}
 }

@@ -11,13 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A drawing object extracted from {@code <w:drawing>}.
  */
-public record Drawing(
-    @JsonProperty("drawing_type") String drawingType,
-    Optional<String> extent,
-    @JsonProperty("doc_properties") Optional<String> docProperties,
-    @JsonProperty("image_ref") Optional<String> imageRef
-) {
-    public static DrawingBuilder builder() {
-        return new DrawingBuilder();
-    }
+public record Drawing(@JsonProperty("drawing_type") String drawingType, Optional<String> extent,
+		@JsonProperty("doc_properties") Optional<String> docProperties,
+		@JsonProperty("image_ref") Optional<String> imageRef) {
+	public static DrawingBuilder builder() {
+		return new DrawingBuilder();
+	}
 }

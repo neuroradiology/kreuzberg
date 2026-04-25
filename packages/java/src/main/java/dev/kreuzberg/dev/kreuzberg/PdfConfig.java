@@ -13,26 +13,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * PDF-specific configuration.
  */
 public record PdfConfig(
-    /** PDF extraction backend. Default: {@code Pdfium}. */
-    PdfBackend backend,
-    /** Extract images from PDF */
-    @JsonProperty("extract_images") boolean extractImages,
-    /** List of passwords to try when opening encrypted PDFs */
-    Optional<List<String>> passwords,
-    /** Extract PDF metadata */
-    @JsonProperty("extract_metadata") boolean extractMetadata,
-    /** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
-    Optional<HierarchyConfig> hierarchy,
-    /** Extract PDF annotations (text notes, highlights, links, stamps). */
-    @JsonProperty("extract_annotations") boolean extractAnnotations,
-    /** Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. */
-    @JsonProperty("top_margin_fraction") Optional<Float> topMarginFraction,
-    /** Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. */
-    @JsonProperty("bottom_margin_fraction") Optional<Float> bottomMarginFraction,
-    /** Allow single-column pseudo tables in extraction results. */
-    @JsonProperty("allow_single_column_tables") boolean allowSingleColumnTables
-) {
-    public static PdfConfigBuilder builder() {
-        return new PdfConfigBuilder();
-    }
+		/** PDF extraction backend. Default: {@code Pdfium}. */
+		PdfBackend backend,
+		/** Extract images from PDF */
+		@JsonProperty("extract_images") boolean extractImages,
+		/** List of passwords to try when opening encrypted PDFs */
+		Optional<List<String>> passwords,
+		/** Extract PDF metadata */
+		@JsonProperty("extract_metadata") boolean extractMetadata,
+		/** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
+		Optional<HierarchyConfig> hierarchy,
+		/** Extract PDF annotations (text notes, highlights, links, stamps). */
+		@JsonProperty("extract_annotations") boolean extractAnnotations,
+		/**
+		 * Top margin fraction (0.0–1.0) of page height to exclude headers/running
+		 * heads.
+		 */
+		@JsonProperty("top_margin_fraction") Optional<Float> topMarginFraction,
+		/**
+		 * Bottom margin fraction (0.0–1.0) of page height to exclude footers/page
+		 * numbers.
+		 */
+		@JsonProperty("bottom_margin_fraction") Optional<Float> bottomMarginFraction,
+		/** Allow single-column pseudo tables in extraction results. */
+		@JsonProperty("allow_single_column_tables") boolean allowSingleColumnTables) {
+	public static PdfConfigBuilder builder() {
+		return new PdfConfigBuilder();
+	}
 }

@@ -10,9 +10,5 @@ import java.util.List;
 /**
  * Result of HTML extraction with optional images and warnings.
  */
-public record HtmlExtractionResult(
-    String markdown,
-    List<ExtractedInlineImage> images,
-    List<String> warnings
-) {
+public record HtmlExtractionResult(String markdown, List<ExtractedInlineImage> images, List<String> warnings) {
 }

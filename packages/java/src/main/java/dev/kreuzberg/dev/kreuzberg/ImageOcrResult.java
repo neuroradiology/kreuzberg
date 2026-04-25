@@ -13,11 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Result of OCR extraction from an image with optional page tracking.
  */
 public record ImageOcrResult(
-    /** Extracted text content */
-    String content,
-    /** Character byte boundaries per frame (for multi-frame TIFFs) */
-    Optional<List<PageBoundary>> boundaries,
-    /** Per-frame content information */
-    @JsonProperty("page_contents") Optional<List<PageContent>> pageContents
-) {
+		/** Extracted text content */
+		String content,
+		/** Character byte boundaries per frame (for multi-frame TIFFs) */
+		Optional<List<PageBoundary>> boundaries,
+		/** Per-frame content information */
+		@JsonProperty("page_contents") Optional<List<PageContent>> pageContents) {
 }

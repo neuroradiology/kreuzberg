@@ -15,13 +15,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Represents text with formatting, links, images, etc.
  */
 public record InlineElement(
-    /** Type of inline element */
-    @JsonProperty("element_type") InlineType elementType,
-    /** Text content */
-    String content,
-    /** Element attributes */
-    Optional<String> attributes,
-    /** Additional metadata (e.g., href for links, src/alt for images) */
-    Optional<Map<String, String>> metadata
-) {
+		/** Type of inline element */
+		@JsonProperty("element_type") InlineType elementType,
+		/** Text content */
+		String content,
+		/** Element attributes */
+		Optional<String> attributes,
+		/** Additional metadata (e.g., href for links, src/alt for images) */
+		Optional<Map<String, String>> metadata) {
 }

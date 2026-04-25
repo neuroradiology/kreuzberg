@@ -11,32 +11,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Comprehensive Djot document structure with semantic preservation.
  *
- * This type captures the full richness of Djot markup, including:
- * - Block-level structures (headings, lists, blockquotes, code blocks, etc.)
- * - Inline formatting (emphasis, strong, highlight, subscript, superscript, etc.)
- * - Attributes (classes, IDs, key-value pairs)
- * - Links, images, footnotes
- * - Math expressions (inline and display)
- * - Tables with full structure
+ * This type captures the full richness of Djot markup, including: - Block-level
+ * structures (headings, lists, blockquotes, code blocks, etc.) - Inline
+ * formatting (emphasis, strong, highlight, subscript, superscript, etc.) -
+ * Attributes (classes, IDs, key-value pairs) - Links, images, footnotes - Math
+ * expressions (inline and display) - Tables with full structure
  *
  * Available when the {@code djot} feature is enabled.
  */
 public record DjotContent(
-    /** Plain text representation for backwards compatibility */
-    @JsonProperty("plain_text") String plainText,
-    /** Structured block-level content */
-    List<FormattedBlock> blocks,
-    /** Metadata from YAML frontmatter */
-    Metadata metadata,
-    /** Extracted tables as structured data */
-    List<String> tables,
-    /** Extracted images with metadata */
-    List<DjotImage> images,
-    /** Extracted links with URLs */
-    List<DjotLink> links,
-    /** Footnote definitions */
-    List<Footnote> footnotes,
-    /** Attributes mapped by element identifier (if present) */
-    List<String> attributes
-) {
+		/** Plain text representation for backwards compatibility */
+		@JsonProperty("plain_text") String plainText,
+		/** Structured block-level content */
+		List<FormattedBlock> blocks,
+		/** Metadata from YAML frontmatter */
+		Metadata metadata,
+		/** Extracted tables as structured data */
+		List<String> tables,
+		/** Extracted images with metadata */
+		List<DjotImage> images,
+		/** Extracted links with URLs */
+		List<DjotLink> links,
+		/** Footnote definitions */
+		List<Footnote> footnotes,
+		/** Attributes mapped by element identifier (if present) */
+		List<String> attributes) {
 }

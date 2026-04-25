@@ -10,28 +10,28 @@ import java.lang.foreign.MemorySegment;
 /**
  * Custom properties from docProps/custom.xml
  *
- * Maps property names to their values. Values are converted to JSON types
- * based on the VT (Variant Type) specified in the XML.
+ * Maps property names to their values. Values are converted to JSON types based
+ * on the VT (Variant Type) specified in the XML.
  */
 public class CustomProperties implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    CustomProperties(MemorySegment handle) {
-        this.handle = handle;
-    }
+	CustomProperties(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_CUSTOM_PROPERTIES_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free CustomProperties: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_CUSTOM_PROPERTIES_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free CustomProperties: " + e.getMessage(), e);
+			}
+		}
+	}
 }

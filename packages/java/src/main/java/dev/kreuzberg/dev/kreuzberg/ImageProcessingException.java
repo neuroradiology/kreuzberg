@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class ImageProcessingException extends KreuzbergErrorException {
-    /** Creates a new ImageProcessingException with the given message. */
-    public ImageProcessingException(final String message) {
-        super(message);
-    }
+	/** Creates a new ImageProcessingException with the given message. */
+	public ImageProcessingException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new ImageProcessingException with the given message and cause. */
-    public ImageProcessingException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new ImageProcessingException with the given message and cause. */
+	public ImageProcessingException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

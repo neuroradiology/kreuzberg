@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Helper struct for tracking and validating string growth.
  */
 public class StringGrowthValidator implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    StringGrowthValidator(MemorySegment handle) {
-        this.handle = handle;
-    }
+	StringGrowthValidator(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_STRING_GROWTH_VALIDATOR_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free StringGrowthValidator: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_STRING_GROWTH_VALIDATOR_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free StringGrowthValidator: " + e.getMessage(), e);
+			}
+		}
+	}
 }

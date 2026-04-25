@@ -8,24 +8,24 @@ package dev.kreuzberg;
 import java.lang.foreign.MemorySegment;
 
 public class StreamReader implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    StreamReader(MemorySegment handle) {
-        this.handle = handle;
-    }
+	StreamReader(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_STREAM_READER_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free StreamReader: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_STREAM_READER_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free StreamReader: " + e.getMessage(), e);
+			}
+		}
+	}
 }

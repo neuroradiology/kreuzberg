@@ -11,38 +11,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Configuration for LLM-based structured data extraction.
  *
- * Sends extracted document content to a VLM with a JSON schema,
- * returning structured data that conforms to the schema.
+ * Sends extracted document content to a VLM with a JSON schema, returning
+ * structured data that conforms to the schema.
  *
  * # Example
  *
- * {@code }{@code toml}
- * [structured_extraction]
- * schema_name = "invoice_data"
+ * {@code }{@code toml} [structured_extraction] schema_name = "invoice_data"
  * strict = true
  *
- * [structured_extraction.schema]
- * type = "object"
- * properties.vendor = { type = "string" }
- * properties.total = { type = "number" }
- * required = ["vendor", "total"]
+ * [structured_extraction.schema] type = "object" properties.vendor = { type =
+ * "string" } properties.total = { type = "number" } required = ["vendor",
+ * "total"]
  *
- * [structured_extraction.llm]
- * model = "openai/gpt-4o"
- * {@code }{@code }
+ * [structured_extraction.llm] model = "openai/gpt-4o" {@code }{@code }
  */
 public record StructuredExtractionConfig(
-    /** JSON Schema defining the desired output structure. */
-    Object schema,
-    /** Schema name passed to the LLM's structured output mode. */
-    @JsonProperty("schema_name") String schemaName,
-    /** Optional schema description for the LLM. */
-    @JsonProperty("schema_description") Optional<String> schemaDescription,
-    /** Enable strict mode — output must exactly match the schema. */
-    boolean strict,
-    /** Custom Jinja2 extraction prompt template. When {@code None}, a default template is used. */
-    Optional<String> prompt,
-    /** LLM configuration for the extraction. */
-    LlmConfig llm
-) {
+		/** JSON Schema defining the desired output structure. */
+		Object schema,
+		/** Schema name passed to the LLM's structured output mode. */
+		@JsonProperty("schema_name") String schemaName,
+		/** Optional schema description for the LLM. */
+		@JsonProperty("schema_description") Optional<String> schemaDescription,
+		/** Enable strict mode — output must exactly match the schema. */
+		boolean strict,
+		/**
+		 * Custom Jinja2 extraction prompt template. When {@code None}, a default
+		 * template is used.
+		 */
+		Optional<String> prompt,
+		/** LLM configuration for the extraction. */
+		LlmConfig llm) {
 }

@@ -8,12 +8,9 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record HeaderFooter(
-    List<String> paragraphs,
-    List<String> tables,
-    @JsonProperty("header_type") String headerType
-) {
-    public static HeaderFooterBuilder builder() {
-        return new HeaderFooterBuilder();
-    }
+public record HeaderFooter(List<String> paragraphs, List<String> tables,
+		@JsonProperty("header_type") String headerType) {
+	public static HeaderFooterBuilder builder() {
+		return new HeaderFooterBuilder();
+	}
 }

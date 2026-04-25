@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Helper struct for validating table cell counts.
  */
 public class TableValidator implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    TableValidator(MemorySegment handle) {
-        this.handle = handle;
-    }
+	TableValidator(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_TABLE_VALIDATOR_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free TableValidator: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_TABLE_VALIDATOR_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free TableValidator: " + e.getMessage(), e);
+			}
+		}
+	}
 }

@@ -15,26 +15,23 @@ import java.util.List;
  */
 public class ExcelMetadataBuilder {
 
-    private long sheetCount = 0;
-    private List<String> sheetNames = List.of();
+	private long sheetCount = 0;
+	private List<String> sheetNames = List.of();
 
-    /** Sets the sheetCount field. */
-    public ExcelMetadataBuilder withSheetCount(final long value) {
-        this.sheetCount = value;
-        return this;
-    }
+	/** Sets the sheetCount field. */
+	public ExcelMetadataBuilder withSheetCount(final long value) {
+		this.sheetCount = value;
+		return this;
+	}
 
-    /** Sets the sheetNames field. */
-    public ExcelMetadataBuilder withSheetNames(final List<String> value) {
-        this.sheetNames = value;
-        return this;
-    }
+	/** Sets the sheetNames field. */
+	public ExcelMetadataBuilder withSheetNames(final List<String> value) {
+		this.sheetNames = value;
+		return this;
+	}
 
-    /** Builds the ExcelMetadata instance. */
-    public ExcelMetadata build() {
-        return new ExcelMetadata(
-            sheetCount,
-            sheetNames
-        );
-    }
+	/** Builds the ExcelMetadata instance. */
+	public ExcelMetadata build() {
+		return new ExcelMetadata(sheetCount, sheetNames);
+	}
 }

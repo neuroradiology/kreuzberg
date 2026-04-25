@@ -10,9 +10,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A single layout detection result.
  */
-public record LayoutDetection(
-    @JsonProperty("class_name") LayoutClass className,
-    float confidence,
-    BBox bbox
-) {
+public record LayoutDetection(@JsonProperty("class_name") LayoutClass className, float confidence, BBox bbox) {
 }

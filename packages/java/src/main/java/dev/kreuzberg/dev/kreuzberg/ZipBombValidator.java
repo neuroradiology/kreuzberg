@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Helper struct for validating ZIP archives for security issues.
  */
 public class ZipBombValidator implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    ZipBombValidator(MemorySegment handle) {
-        this.handle = handle;
-    }
+	ZipBombValidator(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_ZIP_BOMB_VALIDATOR_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free ZipBombValidator: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_ZIP_BOMB_VALIDATOR_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free ZipBombValidator: " + e.getMessage(), e);
+			}
+		}
+	}
 }

@@ -3,13 +3,15 @@
 package dev.kreuzberg;
 
 public class UnsupportedFormatException extends KreuzbergErrorException {
-    /** Creates a new UnsupportedFormatException with the given message. */
-    public UnsupportedFormatException(final String message) {
-        super(message);
-    }
+	/** Creates a new UnsupportedFormatException with the given message. */
+	public UnsupportedFormatException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new UnsupportedFormatException with the given message and cause. */
-    public UnsupportedFormatException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Creates a new UnsupportedFormatException with the given message and cause.
+	 */
+	public UnsupportedFormatException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

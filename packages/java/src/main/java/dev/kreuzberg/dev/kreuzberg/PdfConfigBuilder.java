@@ -13,82 +13,73 @@ import java.util.Optional;
  */
 public class PdfConfigBuilder {
 
-    private PdfBackend backend = null;
-    private boolean extractImages = false;
-    private Optional<List<String>> passwords = Optional.empty();
-    private boolean extractMetadata = false;
-    private Optional<HierarchyConfig> hierarchy = Optional.empty();
-    private boolean extractAnnotations = false;
-    private Optional<Float> topMarginFraction = Optional.empty();
-    private Optional<Float> bottomMarginFraction = Optional.empty();
-    private boolean allowSingleColumnTables = false;
+	private PdfBackend backend = null;
+	private boolean extractImages = false;
+	private Optional<List<String>> passwords = Optional.empty();
+	private boolean extractMetadata = false;
+	private Optional<HierarchyConfig> hierarchy = Optional.empty();
+	private boolean extractAnnotations = false;
+	private Optional<Float> topMarginFraction = Optional.empty();
+	private Optional<Float> bottomMarginFraction = Optional.empty();
+	private boolean allowSingleColumnTables = false;
 
-    /** Sets the backend field. */
-    public PdfConfigBuilder withBackend(final PdfBackend value) {
-        this.backend = value;
-        return this;
-    }
+	/** Sets the backend field. */
+	public PdfConfigBuilder withBackend(final PdfBackend value) {
+		this.backend = value;
+		return this;
+	}
 
-    /** Sets the extractImages field. */
-    public PdfConfigBuilder withExtractImages(final boolean value) {
-        this.extractImages = value;
-        return this;
-    }
+	/** Sets the extractImages field. */
+	public PdfConfigBuilder withExtractImages(final boolean value) {
+		this.extractImages = value;
+		return this;
+	}
 
-    /** Sets the passwords field. */
-    public PdfConfigBuilder withPasswords(final Optional<List<String>> value) {
-        this.passwords = value;
-        return this;
-    }
+	/** Sets the passwords field. */
+	public PdfConfigBuilder withPasswords(final Optional<List<String>> value) {
+		this.passwords = value;
+		return this;
+	}
 
-    /** Sets the extractMetadata field. */
-    public PdfConfigBuilder withExtractMetadata(final boolean value) {
-        this.extractMetadata = value;
-        return this;
-    }
+	/** Sets the extractMetadata field. */
+	public PdfConfigBuilder withExtractMetadata(final boolean value) {
+		this.extractMetadata = value;
+		return this;
+	}
 
-    /** Sets the hierarchy field. */
-    public PdfConfigBuilder withHierarchy(final Optional<HierarchyConfig> value) {
-        this.hierarchy = value;
-        return this;
-    }
+	/** Sets the hierarchy field. */
+	public PdfConfigBuilder withHierarchy(final Optional<HierarchyConfig> value) {
+		this.hierarchy = value;
+		return this;
+	}
 
-    /** Sets the extractAnnotations field. */
-    public PdfConfigBuilder withExtractAnnotations(final boolean value) {
-        this.extractAnnotations = value;
-        return this;
-    }
+	/** Sets the extractAnnotations field. */
+	public PdfConfigBuilder withExtractAnnotations(final boolean value) {
+		this.extractAnnotations = value;
+		return this;
+	}
 
-    /** Sets the topMarginFraction field. */
-    public PdfConfigBuilder withTopMarginFraction(final Optional<Float> value) {
-        this.topMarginFraction = value;
-        return this;
-    }
+	/** Sets the topMarginFraction field. */
+	public PdfConfigBuilder withTopMarginFraction(final Optional<Float> value) {
+		this.topMarginFraction = value;
+		return this;
+	}
 
-    /** Sets the bottomMarginFraction field. */
-    public PdfConfigBuilder withBottomMarginFraction(final Optional<Float> value) {
-        this.bottomMarginFraction = value;
-        return this;
-    }
+	/** Sets the bottomMarginFraction field. */
+	public PdfConfigBuilder withBottomMarginFraction(final Optional<Float> value) {
+		this.bottomMarginFraction = value;
+		return this;
+	}
 
-    /** Sets the allowSingleColumnTables field. */
-    public PdfConfigBuilder withAllowSingleColumnTables(final boolean value) {
-        this.allowSingleColumnTables = value;
-        return this;
-    }
+	/** Sets the allowSingleColumnTables field. */
+	public PdfConfigBuilder withAllowSingleColumnTables(final boolean value) {
+		this.allowSingleColumnTables = value;
+		return this;
+	}
 
-    /** Builds the PdfConfig instance. */
-    public PdfConfig build() {
-        return new PdfConfig(
-            backend,
-            extractImages,
-            passwords,
-            extractMetadata,
-            hierarchy,
-            extractAnnotations,
-            topMarginFraction,
-            bottomMarginFraction,
-            allowSingleColumnTables
-        );
-    }
+	/** Builds the PdfConfig instance. */
+	public PdfConfig build() {
+		return new PdfConfig(backend, extractImages, passwords, extractMetadata, hierarchy, extractAnnotations,
+				topMarginFraction, bottomMarginFraction, allowSingleColumnTables);
+	}
 }

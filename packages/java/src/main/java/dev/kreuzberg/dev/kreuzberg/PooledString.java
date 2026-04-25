@@ -9,24 +9,24 @@ import java.lang.foreign.MemorySegment;
  * Automatically returns the buffer to the pool when dropped.
  */
 public class PooledString implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    PooledString(MemorySegment handle) {
-        this.handle = handle;
-    }
+	PooledString(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_POOLED_STRING_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free PooledString: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_POOLED_STRING_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free PooledString: " + e.getMessage(), e);
+			}
+		}
+	}
 }

@@ -137,12 +137,15 @@ class EasyOCRBackend:
         self._reader: Any | None = None
 
     def name(self) -> str:
+        """Return the backend name."""
         return "easyocr"
 
     def supported_languages(self) -> list[str]:
+        """Return sorted list of supported language codes."""
         return sorted(SUPPORTED_LANGUAGES)
 
     def initialize(self) -> None:
+        """Initialize the EasyOCR reader, loading models into memory."""
         if self._reader is not None:
             return
         try:
@@ -156,12 +159,15 @@ class EasyOCRBackend:
             raise OcrError(f"Failed to initialize EasyOCR: {e}") from e
 
     def shutdown(self) -> None:
+        """Release the EasyOCR reader and free model memory."""
         self._reader = None
 
     def supports_document_processing(self) -> bool:
+        """Return False — EasyOCR operates on individual images only."""
         return False
 
     def process_image(self, image_bytes: bytes, language: str) -> dict[str, Any]:
+        """Process raw image bytes with EasyOCR and return content and metadata."""
         if self._reader is None:
             self.initialize()
         if self._reader is None:
@@ -171,6 +177,7 @@ class EasyOCRBackend:
 
         try:
             import io  # noqa: PLC0415
+
             import numpy as np  # noqa: PLC0415  # type: ignore[import-not-found]
             from PIL import Image  # noqa: PLC0415
 
@@ -186,6 +193,7 @@ class EasyOCRBackend:
             raise OcrError(f"EasyOCR processing failed: {e}") from e
 
     def process_image_file(self, path: str, language: str) -> dict[str, Any]:
+        """Process an image file at the given path by reading its bytes and calling process_image."""
         from pathlib import Path  # noqa: PLC0415
 
         return self.process_image(Path(path).read_bytes(), language)

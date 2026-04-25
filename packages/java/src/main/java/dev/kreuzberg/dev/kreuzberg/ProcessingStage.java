@@ -11,38 +11,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Processing stages for post-processors.
  *
- * Post-processors are executed in stage order (Early → Middle → Late).
- * Use stages to control the order of post-processing operations.
+ * Post-processors are executed in stage order (Early → Middle → Late). Use
+ * stages to control the order of post-processing operations.
  */
 public enum ProcessingStage {
-    /** Early stage - foundational processing. */
-    Early("early"),
-    /** Middle stage - content transformation. */
-    Middle("middle"),
-    /** Late stage - final enrichment. */
-    Late("late");
+	/** Early stage - foundational processing. */
+	Early("early"),
+	/** Middle stage - content transformation. */
+	Middle("middle"),
+	/** Late stage - final enrichment. */
+	Late("late");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ProcessingStage(final String value) {
-        this.value = value;
-    }
+	ProcessingStage(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ProcessingStage fromValue(final String value) {
-        for (ProcessingStage e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ProcessingStage fromValue(final String value) {
+		for (ProcessingStage e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

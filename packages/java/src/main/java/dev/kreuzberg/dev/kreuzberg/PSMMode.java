@@ -12,39 +12,31 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Page Segmentation Mode for Tesseract OCR
  */
 public enum PSMMode {
-    OsdOnly("osdonly"),
-    AutoOsd("autoosd"),
-    AutoOnly("autoonly"),
-    Auto("auto"),
-    SingleColumn("singlecolumn"),
-    SingleBlockVertical("singleblockvertical"),
-    SingleBlock("singleblock"),
-    SingleLine("singleline"),
-    SingleWord("singleword"),
-    CircleWord("circleword"),
-    SingleChar("singlechar");
+	OsdOnly("osdonly"), AutoOsd("autoosd"), AutoOnly("autoonly"), Auto("auto"), SingleColumn(
+			"singlecolumn"), SingleBlockVertical("singleblockvertical"), SingleBlock("singleblock"), SingleLine(
+					"singleline"), SingleWord("singleword"), CircleWord("circleword"), SingleChar("singlechar");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    PSMMode(final String value) {
-        this.value = value;
-    }
+	PSMMode(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static PSMMode fromValue(final String value) {
-        for (PSMMode e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static PSMMode fromValue(final String value) {
+		for (PSMMode e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

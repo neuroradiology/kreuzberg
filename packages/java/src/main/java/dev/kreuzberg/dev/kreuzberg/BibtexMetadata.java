@@ -13,15 +13,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * BibTeX bibliography metadata.
  */
-public record BibtexMetadata(
-    /** Number of entries in the bibliography. */
-    @JsonProperty("entry_count") long entryCount,
-    @JsonProperty("citation_keys") List<String> citationKeys,
-    List<String> authors,
-    @JsonProperty("year_range") Optional<YearRange> yearRange,
-    @JsonProperty("entry_types") Optional<Map<String, Long>> entryTypes
-) {
-    public static BibtexMetadataBuilder builder() {
-        return new BibtexMetadataBuilder();
-    }
+public record BibtexMetadata(/** Number of entries in the bibliography. */
+@JsonProperty("entry_count") long entryCount, @JsonProperty("citation_keys") List<String> citationKeys,
+		List<String> authors, @JsonProperty("year_range") Optional<YearRange> yearRange,
+		@JsonProperty("entry_types") Optional<Map<String, Long>> entryTypes) {
+	public static BibtexMetadataBuilder builder() {
+		return new BibtexMetadataBuilder();
+	}
 }

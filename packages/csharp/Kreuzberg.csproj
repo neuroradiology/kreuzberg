@@ -7,7 +7,7 @@
     <Description>High-performance document intelligence library</Description>
     <PackageLicenseExpression>Elastic-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/kreuzberg-dev/kreuzberg</RepositoryUrl>
-    <Authors>Na'aman Hirschfeld <naaman@kreuzberg.dev></Authors>
+    <Authors>Na'aman Hirschfeld</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 </Project>

@@ -13,13 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * JATS (Journal Article Tag Suite) metadata.
  */
-public record JatsMetadata(
-    Optional<String> copyright,
-    Optional<String> license,
-    @JsonProperty("history_dates") Map<String, String> historyDates,
-    @JsonProperty("contributor_roles") List<ContributorRole> contributorRoles
-) {
-    public static JatsMetadataBuilder builder() {
-        return new JatsMetadataBuilder();
-    }
+public record JatsMetadata(Optional<String> copyright, Optional<String> license,
+		@JsonProperty("history_dates") Map<String, String> historyDates,
+		@JsonProperty("contributor_roles") List<ContributorRole> contributorRoles) {
+	public static JatsMetadataBuilder builder() {
+		return new JatsMetadataBuilder();
+	}
 }

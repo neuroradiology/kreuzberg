@@ -13,34 +13,30 @@ import java.util.Optional;
  */
 public class FictionBookMetadataBuilder {
 
-    private List<String> genres = List.of();
-    private List<String> sequences = List.of();
-    private Optional<String> annotation = Optional.empty();
+	private List<String> genres = List.of();
+	private List<String> sequences = List.of();
+	private Optional<String> annotation = Optional.empty();
 
-    /** Sets the genres field. */
-    public FictionBookMetadataBuilder withGenres(final List<String> value) {
-        this.genres = value;
-        return this;
-    }
+	/** Sets the genres field. */
+	public FictionBookMetadataBuilder withGenres(final List<String> value) {
+		this.genres = value;
+		return this;
+	}
 
-    /** Sets the sequences field. */
-    public FictionBookMetadataBuilder withSequences(final List<String> value) {
-        this.sequences = value;
-        return this;
-    }
+	/** Sets the sequences field. */
+	public FictionBookMetadataBuilder withSequences(final List<String> value) {
+		this.sequences = value;
+		return this;
+	}
 
-    /** Sets the annotation field. */
-    public FictionBookMetadataBuilder withAnnotation(final Optional<String> value) {
-        this.annotation = value;
-        return this;
-    }
+	/** Sets the annotation field. */
+	public FictionBookMetadataBuilder withAnnotation(final Optional<String> value) {
+		this.annotation = value;
+		return this;
+	}
 
-    /** Builds the FictionBookMetadata instance. */
-    public FictionBookMetadata build() {
-        return new FictionBookMetadata(
-            genres,
-            sequences,
-            annotation
-        );
-    }
+	/** Builds the FictionBookMetadata instance. */
+	public FictionBookMetadata build() {
+		return new FictionBookMetadata(genres, sequences, annotation);
+	}
 }

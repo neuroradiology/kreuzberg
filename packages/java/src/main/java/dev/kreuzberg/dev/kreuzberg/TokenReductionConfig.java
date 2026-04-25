@@ -10,20 +10,16 @@ import java.util.Map;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record TokenReductionConfig(
-    ReductionLevel level,
-    @JsonProperty("language_hint") Optional<String> languageHint,
-    @JsonProperty("preserve_markdown") boolean preserveMarkdown,
-    @JsonProperty("preserve_code") boolean preserveCode,
-    @JsonProperty("semantic_threshold") float semanticThreshold,
-    @JsonProperty("enable_parallel") boolean enableParallel,
-    @JsonProperty("use_simd") boolean useSimd,
-    @JsonProperty("custom_stopwords") Optional<Map<String, List<String>>> customStopwords,
-    @JsonProperty("preserve_patterns") List<String> preservePatterns,
-    @JsonProperty("target_reduction") Optional<Float> targetReduction,
-    @JsonProperty("enable_semantic_clustering") boolean enableSemanticClustering
-) {
-    public static TokenReductionConfigBuilder builder() {
-        return new TokenReductionConfigBuilder();
-    }
+public record TokenReductionConfig(ReductionLevel level, @JsonProperty("language_hint") Optional<String> languageHint,
+		@JsonProperty("preserve_markdown") boolean preserveMarkdown,
+		@JsonProperty("preserve_code") boolean preserveCode,
+		@JsonProperty("semantic_threshold") float semanticThreshold,
+		@JsonProperty("enable_parallel") boolean enableParallel, @JsonProperty("use_simd") boolean useSimd,
+		@JsonProperty("custom_stopwords") Optional<Map<String, List<String>>> customStopwords,
+		@JsonProperty("preserve_patterns") List<String> preservePatterns,
+		@JsonProperty("target_reduction") Optional<Float> targetReduction,
+		@JsonProperty("enable_semantic_clustering") boolean enableSemanticClustering) {
+	public static TokenReductionConfigBuilder builder() {
+		return new TokenReductionConfigBuilder();
+	}
 }

@@ -126,7 +126,7 @@ jobs:
         uses: j178/prek-action@v2
         with:
           cache: false
-          extra-args: ruff ruff-format biome-format biome-lint oxlint cargo-fmt taplo-format typos rumdl-fmt textlint helm-lint kubeconform --all-files
+          extra-args: cargo-fmt cargo-clippy alef-fmt alef-lint typos rumdl-fmt textlint helm-lint kubeconform --all-files
 
       - name: Validate C header
         shell: bash

@@ -11,42 +11,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * ONNX Runtime execution provider type.
  *
- * Determines which hardware backend is used for model inference.
- * {@code Auto} (default) selects the best available provider per platform.
+ * Determines which hardware backend is used for model inference. {@code Auto}
+ * (default) selects the best available provider per platform.
  */
 public enum ExecutionProviderType {
-    /** Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. */
-    Auto("auto"),
-    /** CPU execution provider (always available). */
-    Cpu("cpu"),
-    /** Apple CoreML (macOS/iOS Neural Engine + GPU). */
-    CoreMl("coreml"),
-    /** NVIDIA CUDA GPU acceleration. */
-    Cuda("cuda"),
-    /** NVIDIA TensorRT (optimized CUDA inference). */
-    TensorRt("tensorrt");
+	/** Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. */
+	Auto("auto"),
+	/** CPU execution provider (always available). */
+	Cpu("cpu"),
+	/** Apple CoreML (macOS/iOS Neural Engine + GPU). */
+	CoreMl("coreml"),
+	/** NVIDIA CUDA GPU acceleration. */
+	Cuda("cuda"),
+	/** NVIDIA TensorRT (optimized CUDA inference). */
+	TensorRt("tensorrt");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ExecutionProviderType(final String value) {
-        this.value = value;
-    }
+	ExecutionProviderType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ExecutionProviderType fromValue(final String value) {
-        for (ExecutionProviderType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ExecutionProviderType fromValue(final String value) {
+		for (ExecutionProviderType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

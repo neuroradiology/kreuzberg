@@ -5,46 +5,41 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * Page extraction and tracking configuration.
  *
- * Controls how pages are extracted, tracked, and represented in the extraction results.
- * When {@code None}, page tracking is disabled.
+ * Controls how pages are extracted, tracked, and represented in the extraction
+ * results. When {@code None}, page tracking is disabled.
  *
- * Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
- * when page boundaries are available and chunking is configured.
+ * Page range tracking in chunk metadata (first_page/last_page) is automatically
+ * enabled when page boundaries are available and chunking is configured.
  */
 public class PageConfigBuilder {
 
-    private boolean extractPages = false;
-    private boolean insertPageMarkers = false;
-    private String markerFormat = "";
+	private boolean extractPages = false;
+	private boolean insertPageMarkers = false;
+	private String markerFormat = "";
 
-    /** Sets the extractPages field. */
-    public PageConfigBuilder withExtractPages(final boolean value) {
-        this.extractPages = value;
-        return this;
-    }
+	/** Sets the extractPages field. */
+	public PageConfigBuilder withExtractPages(final boolean value) {
+		this.extractPages = value;
+		return this;
+	}
 
-    /** Sets the insertPageMarkers field. */
-    public PageConfigBuilder withInsertPageMarkers(final boolean value) {
-        this.insertPageMarkers = value;
-        return this;
-    }
+	/** Sets the insertPageMarkers field. */
+	public PageConfigBuilder withInsertPageMarkers(final boolean value) {
+		this.insertPageMarkers = value;
+		return this;
+	}
 
-    /** Sets the markerFormat field. */
-    public PageConfigBuilder withMarkerFormat(final String value) {
-        this.markerFormat = value;
-        return this;
-    }
+	/** Sets the markerFormat field. */
+	public PageConfigBuilder withMarkerFormat(final String value) {
+		this.markerFormat = value;
+		return this;
+	}
 
-    /** Builds the PageConfig instance. */
-    public PageConfig build() {
-        return new PageConfig(
-            extractPages,
-            insertPageMarkers,
-            markerFormat
-        );
-    }
+	/** Builds the PageConfig instance. */
+	public PageConfig build() {
+		return new PageConfig(extractPages, insertPageMarkers, markerFormat);
+	}
 }

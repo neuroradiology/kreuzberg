@@ -14,60 +14,60 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Maps user-friendly language codes to paddle-ocr-rs language identifiers.
  */
 public enum PaddleLanguage {
-    /** English */
-    English("english"),
-    /** Simplified Chinese */
-    Chinese("chinese"),
-    /** Japanese */
-    Japanese("japanese"),
-    /** Korean */
-    Korean("korean"),
-    /** German */
-    German("german"),
-    /** French */
-    French("french"),
-    /** Latin script (covers most European languages) */
-    Latin("latin"),
-    /** Cyrillic (Russian and related) */
-    Cyrillic("cyrillic"),
-    /** Traditional Chinese */
-    TraditionalChinese("traditionalchinese"),
-    /** Thai */
-    Thai("thai"),
-    /** Greek */
-    Greek("greek"),
-    /** East Slavic (Russian, Ukrainian, Belarusian) */
-    EastSlavic("eastslavic"),
-    /** Arabic (Arabic, Persian, Urdu) */
-    Arabic("arabic"),
-    /** Devanagari (Hindi, Marathi, Sanskrit, Nepali) */
-    Devanagari("devanagari"),
-    /** Tamil */
-    Tamil("tamil"),
-    /** Telugu */
-    Telugu("telugu");
+	/** English */
+	English("english"),
+	/** Simplified Chinese */
+	Chinese("chinese"),
+	/** Japanese */
+	Japanese("japanese"),
+	/** Korean */
+	Korean("korean"),
+	/** German */
+	German("german"),
+	/** French */
+	French("french"),
+	/** Latin script (covers most European languages) */
+	Latin("latin"),
+	/** Cyrillic (Russian and related) */
+	Cyrillic("cyrillic"),
+	/** Traditional Chinese */
+	TraditionalChinese("traditionalchinese"),
+	/** Thai */
+	Thai("thai"),
+	/** Greek */
+	Greek("greek"),
+	/** East Slavic (Russian, Ukrainian, Belarusian) */
+	EastSlavic("eastslavic"),
+	/** Arabic (Arabic, Persian, Urdu) */
+	Arabic("arabic"),
+	/** Devanagari (Hindi, Marathi, Sanskrit, Nepali) */
+	Devanagari("devanagari"),
+	/** Tamil */
+	Tamil("tamil"),
+	/** Telugu */
+	Telugu("telugu");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    PaddleLanguage(final String value) {
-        this.value = value;
-    }
+	PaddleLanguage(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static PaddleLanguage fromValue(final String value) {
-        for (PaddleLanguage e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static PaddleLanguage fromValue(final String value) {
+		for (PaddleLanguage e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

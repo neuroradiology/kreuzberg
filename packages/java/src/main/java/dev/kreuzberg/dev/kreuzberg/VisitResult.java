@@ -6,37 +6,51 @@
 package dev.kreuzberg;
 
 /** Controls how the visitor affects the conversion pipeline. */
-public sealed interface VisitResult
-        permits VisitResult.Continue, VisitResult.Skip, VisitResult.PreserveHtml,
-                VisitResult.Custom, VisitResult.Error {
+public sealed interface VisitResult permits VisitResult.Continue, VisitResult.Skip, VisitResult.PreserveHtml,
+		VisitResult.Custom, VisitResult.Error {
 
-    /** Proceed with default conversion. */
-    record Continue() implements VisitResult {}
+	/** Proceed with default conversion. */
+	record Continue() implements VisitResult {
+	}
 
-    /** Omit this element from output entirely. */
-    record Skip() implements VisitResult {}
+	/** Omit this element from output entirely. */
+	record Skip() implements VisitResult {
+	}
 
-    /** Keep original HTML verbatim. */
-    record PreserveHtml() implements VisitResult {}
+	/** Keep original HTML verbatim. */
+	record PreserveHtml() implements VisitResult {
+	}
 
-    /** Replace with custom Markdown. */
-    record Custom(String markdown) implements VisitResult {}
+	/** Replace with custom Markdown. */
+	record Custom(String markdown) implements VisitResult {
+	}
 
-    /** Abort conversion with an error message. */
-    record Error(String message) implements VisitResult {}
+	/** Abort conversion with an error message. */
+	record Error(String message) implements VisitResult {
+	}
 
-    /** Convenience: continue with default conversion. */
-    static VisitResult continueDefault() { return new Continue(); }
+	/** Convenience: continue with default conversion. */
+	static VisitResult continueDefault() {
+		return new Continue();
+	}
 
-    /** Convenience: skip this element. */
-    static VisitResult skip() { return new Skip(); }
+	/** Convenience: skip this element. */
+	static VisitResult skip() {
+		return new Skip();
+	}
 
-    /** Convenience: preserve original HTML. */
-    static VisitResult preserveHtml() { return new PreserveHtml(); }
+	/** Convenience: preserve original HTML. */
+	static VisitResult preserveHtml() {
+		return new PreserveHtml();
+	}
 
-    /** Convenience: emit custom Markdown. */
-    static VisitResult custom(String markdown) { return new Custom(markdown); }
+	/** Convenience: emit custom Markdown. */
+	static VisitResult custom(String markdown) {
+		return new Custom(markdown);
+	}
 
-    /** Convenience: abort with error. */
-    static VisitResult error(String message) { return new Error(message); }
+	/** Convenience: abort with error. */
+	static VisitResult error(String message) {
+		return new Error(message);
+	}
 }

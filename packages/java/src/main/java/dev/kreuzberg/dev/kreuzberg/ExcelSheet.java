@@ -12,21 +12,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Single Excel worksheet.
  *
- * Represents one sheet from an Excel workbook with its content
- * converted to Markdown format and dimensional statistics.
+ * Represents one sheet from an Excel workbook with its content converted to
+ * Markdown format and dimensional statistics.
  */
 public record ExcelSheet(
-    /** Sheet name as it appears in Excel */
-    String name,
-    /** Sheet content converted to Markdown tables */
-    String markdown,
-    /** Number of rows */
-    @JsonProperty("row_count") long rowCount,
-    /** Number of columns */
-    @JsonProperty("col_count") long colCount,
-    /** Total number of non-empty cells */
-    @JsonProperty("cell_count") long cellCount,
-    /** Pre-extracted table cells (2D vector of cell values) */
-    @JsonProperty("table_cells") Optional<List<List<String>>> tableCells
-) {
+		/** Sheet name as it appears in Excel */
+		String name,
+		/** Sheet content converted to Markdown tables */
+		String markdown,
+		/** Number of rows */
+		@JsonProperty("row_count") long rowCount,
+		/** Number of columns */
+		@JsonProperty("col_count") long colCount,
+		/** Total number of non-empty cells */
+		@JsonProperty("cell_count") long cellCount,
+		/** Pre-extracted table cells (2D vector of cell values) */
+		@JsonProperty("table_cells") Optional<List<List<String>>> tableCells) {
 }

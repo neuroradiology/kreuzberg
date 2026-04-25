@@ -12,21 +12,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Archive (ZIP/TAR/7Z) metadata.
  *
- * Extracted from compressed archive files containing file lists and size information.
+ * Extracted from compressed archive files containing file lists and size
+ * information.
  */
 public record ArchiveMetadata(
-    /** Archive format ("ZIP", "TAR", "7Z", etc.) */
-    String format,
-    /** Total number of files in the archive */
-    @JsonProperty("file_count") long fileCount,
-    /** List of file paths within the archive */
-    @JsonProperty("file_list") List<String> fileList,
-    /** Total uncompressed size in bytes */
-    @JsonProperty("total_size") long totalSize,
-    /** Compressed size in bytes (if available) */
-    @JsonProperty("compressed_size") Optional<Long> compressedSize
-) {
-    public static ArchiveMetadataBuilder builder() {
-        return new ArchiveMetadataBuilder();
-    }
+		/** Archive format ("ZIP", "TAR", "7Z", etc.) */
+		String format,
+		/** Total number of files in the archive */
+		@JsonProperty("file_count") long fileCount,
+		/** List of file paths within the archive */
+		@JsonProperty("file_list") List<String> fileList,
+		/** Total uncompressed size in bytes */
+		@JsonProperty("total_size") long totalSize, /** Compressed size in bytes (if available) */
+		@JsonProperty("compressed_size") Optional<Long> compressedSize) {
+	public static ArchiveMetadataBuilder builder() {
+		return new ArchiveMetadataBuilder();
+	}
 }

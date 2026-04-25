@@ -14,26 +14,23 @@ import java.util.List;
  */
 public class XmlMetadataBuilder {
 
-    private long elementCount = 0;
-    private List<String> uniqueElements = List.of();
+	private long elementCount = 0;
+	private List<String> uniqueElements = List.of();
 
-    /** Sets the elementCount field. */
-    public XmlMetadataBuilder withElementCount(final long value) {
-        this.elementCount = value;
-        return this;
-    }
+	/** Sets the elementCount field. */
+	public XmlMetadataBuilder withElementCount(final long value) {
+		this.elementCount = value;
+		return this;
+	}
 
-    /** Sets the uniqueElements field. */
-    public XmlMetadataBuilder withUniqueElements(final List<String> value) {
-        this.uniqueElements = value;
-        return this;
-    }
+	/** Sets the uniqueElements field. */
+	public XmlMetadataBuilder withUniqueElements(final List<String> value) {
+		this.uniqueElements = value;
+		return this;
+	}
 
-    /** Builds the XmlMetadata instance. */
-    public XmlMetadata build() {
-        return new XmlMetadata(
-            elementCount,
-            uniqueElements
-        );
-    }
+	/** Builds the XmlMetadata instance. */
+	public XmlMetadata build() {
+		return new XmlMetadata(elementCount, uniqueElements);
+	}
 }

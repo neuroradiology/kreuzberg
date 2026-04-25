@@ -16,30 +16,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * # Example (TOML)
  *
- * {@code }{@code toml}
- * [tree_sitter]
- * languages = ["python", "rust"]
- * groups = ["web"]
+ * {@code }{@code toml} [tree_sitter] languages = ["python", "rust"] groups =
+ * ["web"]
  *
- * [tree_sitter.process]
- * structure = true
- * comments = true
- * docstrings = true
+ * [tree_sitter.process] structure = true comments = true docstrings = true
  * {@code }{@code }
  */
 public record TreeSitterConfig(
-    /** Enable code intelligence processing (default: true). */
-    boolean enabled,
-    /** Custom cache directory for downloaded grammars. */
-    @JsonProperty("cache_dir") Optional<java.nio.file.Path> cacheDir,
-    /** Languages to pre-download on init (e.g., {@code ["python", "rust"]}). */
-    Optional<List<String>> languages,
-    /** Language groups to pre-download (e.g., {@code ["web", "systems", "scripting"]}). */
-    Optional<List<String>> groups,
-    /** Processing options for code analysis. */
-    TreeSitterProcessConfig process
-) {
-    public static TreeSitterConfigBuilder builder() {
-        return new TreeSitterConfigBuilder();
-    }
+		/** Enable code intelligence processing (default: true). */
+		boolean enabled,
+		/** Custom cache directory for downloaded grammars. */
+		@JsonProperty("cache_dir") Optional<java.nio.file.Path> cacheDir,
+		/** Languages to pre-download on init (e.g., {@code ["python", "rust"]}). */
+		Optional<List<String>> languages,
+		/**
+		 * Language groups to pre-download (e.g.,
+		 * {@code ["web", "systems", "scripting"]}).
+		 */
+		Optional<List<String>> groups, /** Processing options for code analysis. */
+		TreeSitterProcessConfig process) {
+	public static TreeSitterConfigBuilder builder() {
+		return new TreeSitterConfigBuilder();
+	}
 }

@@ -11,9 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A detected structural boundary in the text.
  */
 public record DetectedBoundary(
-    /** Byte offset of the start of the line in the original text. */
-    @JsonProperty("byte_offset") long byteOffset,
-    /** Whether this boundary looks like a header/section title. */
-    @JsonProperty("is_header") boolean isHeader
-) {
+		/** Byte offset of the start of the line in the original text. */
+		@JsonProperty("byte_offset") long byteOffset,
+		/** Whether this boundary looks like a header/section title. */
+		@JsonProperty("is_header") boolean isHeader) {
 }

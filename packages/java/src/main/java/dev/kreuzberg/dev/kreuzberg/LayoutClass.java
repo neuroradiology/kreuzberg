@@ -11,50 +11,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * The 17 canonical document layout classes.
  *
- * All model backends (RT-DETR, YOLO, etc.) map their native class IDs
- * to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
- * map to the closest equivalent.
+ * All model backends (RT-DETR, YOLO, etc.) map their native class IDs to this
+ * shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5) map to
+ * the closest equivalent.
  */
 public enum LayoutClass {
-    Caption("caption"),
-    Footnote("footnote"),
-    Formula("formula"),
-    ListItem("listitem"),
-    PageFooter("pagefooter"),
-    PageHeader("pageheader"),
-    Picture("picture"),
-    SectionHeader("sectionheader"),
-    Table("table"),
-    Text("text"),
-    Title("title"),
-    DocumentIndex("documentindex"),
-    Code("code"),
-    CheckboxSelected("checkboxselected"),
-    CheckboxUnselected("checkboxunselected"),
-    Form("form"),
-    KeyValueRegion("keyvalueregion");
+	Caption("caption"), Footnote("footnote"), Formula("formula"), ListItem("listitem"), PageFooter(
+			"pagefooter"), PageHeader("pageheader"), Picture("picture"), SectionHeader("sectionheader"), Table(
+					"table"), Text("text"), Title("title"), DocumentIndex("documentindex"), Code(
+							"code"), CheckboxSelected("checkboxselected"), CheckboxUnselected(
+									"checkboxunselected"), Form("form"), KeyValueRegion("keyvalueregion");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    LayoutClass(final String value) {
-        this.value = value;
-    }
+	LayoutClass(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static LayoutClass fromValue(final String value) {
-        for (LayoutClass e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static LayoutClass fromValue(final String value) {
+		for (LayoutClass e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

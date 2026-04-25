@@ -12,18 +12,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A text chunk with optional embedding and metadata.
  *
- * Chunks are created when chunking is enabled in {@code ExtractionConfig}. Each chunk
- * contains the text content, optional embedding vector (if embedding generation
- * is configured), and metadata about its position in the document.
+ * Chunks are created when chunking is enabled in {@code ExtractionConfig}. Each
+ * chunk contains the text content, optional embedding vector (if embedding
+ * generation is configured), and metadata about its position in the document.
  */
 public record Chunk(
-    /** The text content of this chunk. */
-    String content,
-    /** Semantic structural classification of this chunk. */
-    @JsonProperty("chunk_type") ChunkType chunkType,
-    /** Optional embedding vector for this chunk. */
-    Optional<List<Float>> embedding,
-    /** Metadata about this chunk's position and properties. */
-    ChunkMetadata metadata
-) {
+		/** The text content of this chunk. */
+		String content,
+		/** Semantic structural classification of this chunk. */
+		@JsonProperty("chunk_type") ChunkType chunkType,
+		/** Optional embedding vector for this chunk. */
+		Optional<List<Float>> embedding,
+		/** Metadata about this chunk's position and properties. */
+		ChunkMetadata metadata) {
 }

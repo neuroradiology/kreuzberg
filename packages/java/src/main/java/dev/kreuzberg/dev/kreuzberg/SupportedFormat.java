@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A supported document format entry.
  *
- * Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+ * Represents a file extension and its corresponding MIME type that Kreuzberg
+ * can process.
  */
 public record SupportedFormat(String extension, @JsonProperty("mime_type") String mimeType) {
 }

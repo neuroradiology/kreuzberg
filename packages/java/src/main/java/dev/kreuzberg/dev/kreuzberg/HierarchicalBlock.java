@@ -16,13 +16,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * font size clustering and hierarchical analysis.
  */
 public record HierarchicalBlock(
-    /** The text content of this block */
-    String text,
-    /** The font size of the text in this block */
-    @JsonProperty("font_size") float fontSize,
-    /** The hierarchy level of this block (H1-H6 or Body) */
-    String level,
-    /** Bounding box information for the block */
-    Optional<List<Float>> bbox
-) {
+		/** The text content of this block */
+		String text,
+		/** The font size of the text in this block */
+		@JsonProperty("font_size") float fontSize,
+		/** The hierarchy level of this block (H1-H6 or Body) */
+		String level,
+		/** Bounding box information for the block */
+		Optional<List<Float>> bbox) {
 }

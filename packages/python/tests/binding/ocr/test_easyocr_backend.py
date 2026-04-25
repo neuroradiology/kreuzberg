@@ -95,7 +95,7 @@ def test_process_easyocr_result_line_grouping() -> None:
         ([[0, 50], [50, 50], [50, 70], [0, 70]], "Second", 0.88),
         ([[60, 50], [110, 50], [110, 70], [60, 70]], "Line", 0.87),
     ]
-    content, conf, n = EasyOCRBackend._process_easyocr_result(result)
+    content, _conf, n = EasyOCRBackend._process_easyocr_result(result)
     assert "Hello World" in content
     assert "Second Line" in content
     assert n == 4

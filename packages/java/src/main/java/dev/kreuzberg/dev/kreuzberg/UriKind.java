@@ -12,42 +12,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Semantic classification of an extracted URI.
  */
 public enum UriKind {
-    /** A clickable hyperlink (web URL, file link). */
-    Hyperlink("hyperlink"),
-    /** An image or media resource reference. */
-    Image("image"),
-    /** An internal anchor or cross-reference target. */
-    Anchor("anchor"),
-    /** A citation or bibliographic reference (DOI, academic ref). */
-    Citation("citation"),
-    /**
-     * A general reference (e.g. {@code \ref{}} in LaTeX, {@code :ref:} in RST).
-     */
-    Reference("reference"),
-    /** An email address ({@code mailto:} link or bare email). */
-    Email("email");
+	/** A clickable hyperlink (web URL, file link). */
+	Hyperlink("hyperlink"),
+	/** An image or media resource reference. */
+	Image("image"),
+	/** An internal anchor or cross-reference target. */
+	Anchor("anchor"),
+	/** A citation or bibliographic reference (DOI, academic ref). */
+	Citation("citation"),
+	/**
+	 * A general reference (e.g. {@code \ref{}} in LaTeX, {@code :ref:} in RST).
+	 */
+	Reference("reference"),
+	/** An email address ({@code mailto:} link or bare email). */
+	Email("email");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    UriKind(final String value) {
-        this.value = value;
-    }
+	UriKind(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static UriKind fromValue(final String value) {
-        for (UriKind e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static UriKind fromValue(final String value) {
+		for (UriKind e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

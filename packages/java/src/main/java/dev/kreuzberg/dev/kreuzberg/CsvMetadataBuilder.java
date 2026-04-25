@@ -13,50 +13,44 @@ import java.util.Optional;
  */
 public class CsvMetadataBuilder {
 
-    private long rowCount = 0;
-    private long columnCount = 0;
-    private Optional<String> delimiter = Optional.empty();
-    private boolean hasHeader = false;
-    private Optional<List<String>> columnTypes = Optional.empty();
+	private long rowCount = 0;
+	private long columnCount = 0;
+	private Optional<String> delimiter = Optional.empty();
+	private boolean hasHeader = false;
+	private Optional<List<String>> columnTypes = Optional.empty();
 
-    /** Sets the rowCount field. */
-    public CsvMetadataBuilder withRowCount(final long value) {
-        this.rowCount = value;
-        return this;
-    }
+	/** Sets the rowCount field. */
+	public CsvMetadataBuilder withRowCount(final long value) {
+		this.rowCount = value;
+		return this;
+	}
 
-    /** Sets the columnCount field. */
-    public CsvMetadataBuilder withColumnCount(final long value) {
-        this.columnCount = value;
-        return this;
-    }
+	/** Sets the columnCount field. */
+	public CsvMetadataBuilder withColumnCount(final long value) {
+		this.columnCount = value;
+		return this;
+	}
 
-    /** Sets the delimiter field. */
-    public CsvMetadataBuilder withDelimiter(final Optional<String> value) {
-        this.delimiter = value;
-        return this;
-    }
+	/** Sets the delimiter field. */
+	public CsvMetadataBuilder withDelimiter(final Optional<String> value) {
+		this.delimiter = value;
+		return this;
+	}
 
-    /** Sets the hasHeader field. */
-    public CsvMetadataBuilder withHasHeader(final boolean value) {
-        this.hasHeader = value;
-        return this;
-    }
+	/** Sets the hasHeader field. */
+	public CsvMetadataBuilder withHasHeader(final boolean value) {
+		this.hasHeader = value;
+		return this;
+	}
 
-    /** Sets the columnTypes field. */
-    public CsvMetadataBuilder withColumnTypes(final Optional<List<String>> value) {
-        this.columnTypes = value;
-        return this;
-    }
+	/** Sets the columnTypes field. */
+	public CsvMetadataBuilder withColumnTypes(final Optional<List<String>> value) {
+		this.columnTypes = value;
+		return this;
+	}
 
-    /** Builds the CsvMetadata instance. */
-    public CsvMetadata build() {
-        return new CsvMetadata(
-            rowCount,
-            columnCount,
-            delimiter,
-            hasHeader,
-            columnTypes
-        );
-    }
+	/** Builds the CsvMetadata instance. */
+	public CsvMetadata build() {
+		return new CsvMetadata(rowCount, columnCount, delimiter, hasHeader, columnTypes);
+	}
 }

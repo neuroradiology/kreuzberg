@@ -11,15 +11,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * XML extraction result.
  *
- * Contains extracted text content from XML files along with
- * structural statistics about the XML document.
+ * Contains extracted text content from XML files along with structural
+ * statistics about the XML document.
  */
 public record XmlExtractionResult(
-    /** Extracted text content (XML structure filtered out) */
-    String content,
-    /** Total number of XML elements processed */
-    @JsonProperty("element_count") long elementCount,
-    /** List of unique element names found (sorted) */
-    @JsonProperty("unique_elements") List<String> uniqueElements
-) {
+		/** Extracted text content (XML structure filtered out) */
+		String content,
+		/** Total number of XML elements processed */
+		@JsonProperty("element_count") long elementCount,
+		/** List of unique element names found (sorted) */
+		@JsonProperty("unique_elements") List<String> uniqueElements) {
 }

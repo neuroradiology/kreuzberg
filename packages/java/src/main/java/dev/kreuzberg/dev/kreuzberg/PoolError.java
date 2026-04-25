@@ -12,30 +12,30 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Error type for pool operations.
  */
 public enum PoolError {
-    /** The pool's internal mutex was poisoned. */
-    LockPoisoned("lockpoisoned");
+	/** The pool's internal mutex was poisoned. */
+	LockPoisoned("lockpoisoned");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    PoolError(final String value) {
-        this.value = value;
-    }
+	PoolError(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static PoolError fromValue(final String value) {
-        for (PoolError e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static PoolError fromValue(final String value) {
+		for (PoolError e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

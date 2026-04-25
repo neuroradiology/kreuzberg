@@ -11,11 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Cache clear response.
  */
 public record CacheClearResponse(
-    /** Cache directory path */
-    String directory,
-    /** Number of files removed */
-    @JsonProperty("removed_files") long removedFiles,
-    /** Space freed in MB */
-    @JsonProperty("freed_mb") double freedMb
-) {
+		/** Cache directory path */
+		String directory,
+		/** Number of files removed */
+		@JsonProperty("removed_files") long removedFiles,
+		/** Space freed in MB */
+		@JsonProperty("freed_mb") double freedMb) {
 }

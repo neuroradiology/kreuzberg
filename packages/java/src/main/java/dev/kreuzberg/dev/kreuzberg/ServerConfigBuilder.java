@@ -15,58 +15,51 @@ import java.util.List;
  *
  * # Defaults
  *
- * - {@code host}: "127.0.0.1" (localhost only)
- * - {@code port}: 8000
- * - {@code cors_origins}: empty vector (allows all origins)
- * - {@code max_request_body_bytes}: 104_857_600 (100 MB)
- * - {@code max_multipart_field_bytes}: 104_857_600 (100 MB)
+ * - {@code host}: "127.0.0.1" (localhost only) - {@code port}: 8000 -
+ * {@code cors_origins}: empty vector (allows all origins) -
+ * {@code max_request_body_bytes}: 104_857_600 (100 MB) -
+ * {@code max_multipart_field_bytes}: 104_857_600 (100 MB)
  */
 public class ServerConfigBuilder {
 
-    private String host = "";
-    private short port = 0;
-    private List<String> corsOrigins = List.of();
-    private long maxRequestBodyBytes = 0;
-    private long maxMultipartFieldBytes = 0;
+	private String host = "";
+	private short port = 0;
+	private List<String> corsOrigins = List.of();
+	private long maxRequestBodyBytes = 0;
+	private long maxMultipartFieldBytes = 0;
 
-    /** Sets the host field. */
-    public ServerConfigBuilder withHost(final String value) {
-        this.host = value;
-        return this;
-    }
+	/** Sets the host field. */
+	public ServerConfigBuilder withHost(final String value) {
+		this.host = value;
+		return this;
+	}
 
-    /** Sets the port field. */
-    public ServerConfigBuilder withPort(final short value) {
-        this.port = value;
-        return this;
-    }
+	/** Sets the port field. */
+	public ServerConfigBuilder withPort(final short value) {
+		this.port = value;
+		return this;
+	}
 
-    /** Sets the corsOrigins field. */
-    public ServerConfigBuilder withCorsOrigins(final List<String> value) {
-        this.corsOrigins = value;
-        return this;
-    }
+	/** Sets the corsOrigins field. */
+	public ServerConfigBuilder withCorsOrigins(final List<String> value) {
+		this.corsOrigins = value;
+		return this;
+	}
 
-    /** Sets the maxRequestBodyBytes field. */
-    public ServerConfigBuilder withMaxRequestBodyBytes(final long value) {
-        this.maxRequestBodyBytes = value;
-        return this;
-    }
+	/** Sets the maxRequestBodyBytes field. */
+	public ServerConfigBuilder withMaxRequestBodyBytes(final long value) {
+		this.maxRequestBodyBytes = value;
+		return this;
+	}
 
-    /** Sets the maxMultipartFieldBytes field. */
-    public ServerConfigBuilder withMaxMultipartFieldBytes(final long value) {
-        this.maxMultipartFieldBytes = value;
-        return this;
-    }
+	/** Sets the maxMultipartFieldBytes field. */
+	public ServerConfigBuilder withMaxMultipartFieldBytes(final long value) {
+		this.maxMultipartFieldBytes = value;
+		return this;
+	}
 
-    /** Builds the ServerConfig instance. */
-    public ServerConfig build() {
-        return new ServerConfig(
-            host,
-            port,
-            corsOrigins,
-            maxRequestBodyBytes,
-            maxMultipartFieldBytes
-        );
-    }
+	/** Builds the ServerConfig instance. */
+	public ServerConfig build() {
+		return new ServerConfig(host, port, corsOrigins, maxRequestBodyBytes, maxMultipartFieldBytes);
+	}
 }

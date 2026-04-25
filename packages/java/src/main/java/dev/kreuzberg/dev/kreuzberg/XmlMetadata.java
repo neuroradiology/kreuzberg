@@ -14,12 +14,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Provides statistics about XML document structure.
  */
 public record XmlMetadata(
-    /** Total number of XML elements processed */
-    @JsonProperty("element_count") long elementCount,
-    /** List of unique element tag names (sorted) */
-    @JsonProperty("unique_elements") List<String> uniqueElements
-) {
-    public static XmlMetadataBuilder builder() {
-        return new XmlMetadataBuilder();
-    }
+		/** Total number of XML elements processed */
+		@JsonProperty("element_count") long elementCount, /** List of unique element tag names (sorted) */
+		@JsonProperty("unique_elements") List<String> uniqueElements) {
+	public static XmlMetadataBuilder builder() {
+		return new XmlMetadataBuilder();
+	}
 }

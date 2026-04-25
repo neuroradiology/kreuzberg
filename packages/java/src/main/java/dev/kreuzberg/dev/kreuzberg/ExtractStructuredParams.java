@@ -12,21 +12,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for LLM-based structured extraction.
  */
 public record ExtractStructuredParams(
-    /** File path to extract from */
-    String path,
-    /** JSON schema for structured output */
-    Object schema,
-    /** LLM model (e.g., "openai/gpt-4o") */
-    String model,
-    /** Schema name (default: "extraction") */
-    @JsonProperty("schema_name") String schemaName,
-    /** Schema description for the LLM */
-    @JsonProperty("schema_description") Optional<String> schemaDescription,
-    /** Custom Jinja2 prompt template */
-    Optional<String> prompt,
-    /** API key (optional, falls back to env) */
-    @JsonProperty("api_key") Optional<String> apiKey,
-    /** Enable strict mode */
-    boolean strict
-) {
+		/** File path to extract from */
+		String path,
+		/** JSON schema for structured output */
+		Object schema,
+		/** LLM model (e.g., "openai/gpt-4o") */
+		String model,
+		/** Schema name (default: "extraction") */
+		@JsonProperty("schema_name") String schemaName,
+		/** Schema description for the LLM */
+		@JsonProperty("schema_description") Optional<String> schemaDescription,
+		/** Custom Jinja2 prompt template */
+		Optional<String> prompt,
+		/** API key (optional, falls back to env) */
+		@JsonProperty("api_key") Optional<String> apiKey,
+		/** Enable strict mode */
+		boolean strict) {
 }

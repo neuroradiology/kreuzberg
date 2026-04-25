@@ -15,16 +15,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Extracted from PPTX files containing slide counts and presentation details.
  */
 public record PptxMetadata(
-    /** Total number of slides in the presentation */
-    @JsonProperty("slide_count") long slideCount,
-    /** Names of slides (if available) */
-    @JsonProperty("slide_names") List<String> slideNames,
-    /** Number of embedded images */
-    @JsonProperty("image_count") Optional<Long> imageCount,
-    /** Number of tables */
-    @JsonProperty("table_count") Optional<Long> tableCount
-) {
-    public static PptxMetadataBuilder builder() {
-        return new PptxMetadataBuilder();
-    }
+		/** Total number of slides in the presentation */
+		@JsonProperty("slide_count") long slideCount,
+		/** Names of slides (if available) */
+		@JsonProperty("slide_names") List<String> slideNames,
+		/** Number of embedded images */
+		@JsonProperty("image_count") Optional<Long> imageCount, /** Number of tables */
+		@JsonProperty("table_count") Optional<Long> tableCount) {
+	public static PptxMetadataBuilder builder() {
+		return new PptxMetadataBuilder();
+	}
 }

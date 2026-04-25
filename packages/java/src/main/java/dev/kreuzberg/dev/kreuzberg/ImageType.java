@@ -12,36 +12,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Image type classification.
  */
 public enum ImageType {
-    /** Data URI image */
-    DataUri("data-uri"),
-    /** Inline SVG */
-    InlineSvg("inline-svg"),
-    /** External image URL */
-    External("external"),
-    /** Relative path image */
-    Relative("relative");
+	/** Data URI image */
+	DataUri("data-uri"),
+	/** Inline SVG */
+	InlineSvg("inline-svg"),
+	/** External image URL */
+	External("external"),
+	/** Relative path image */
+	Relative("relative");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ImageType(final String value) {
-        this.value = value;
-    }
+	ImageType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ImageType fromValue(final String value) {
-        for (ImageType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ImageType fromValue(final String value) {
+		for (ImageType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

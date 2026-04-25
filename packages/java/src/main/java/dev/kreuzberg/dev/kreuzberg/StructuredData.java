@@ -12,11 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Structured data (Schema.org, microdata, RDFa) block.
  */
 public record StructuredData(
-    /** Type of structured data */
-    @JsonProperty("data_type") StructuredDataType dataType,
-    /** Raw JSON string representation */
-    @JsonProperty("raw_json") String rawJson,
-    /** Schema type if detectable (e.g., "Article", "Event", "Product") */
-    @JsonProperty("schema_type") Optional<String> schemaType
-) {
+		/** Type of structured data */
+		@JsonProperty("data_type") StructuredDataType dataType,
+		/** Raw JSON string representation */
+		@JsonProperty("raw_json") String rawJson,
+		/** Schema type if detectable (e.g., "Article", "Event", "Product") */
+		@JsonProperty("schema_type") Optional<String> schemaType) {
 }

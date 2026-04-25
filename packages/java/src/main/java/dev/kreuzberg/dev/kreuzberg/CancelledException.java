@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class CancelledException extends KreuzbergErrorException {
-    /** Creates a new CancelledException with the given message. */
-    public CancelledException(final String message) {
-        super(message);
-    }
+	/** Creates a new CancelledException with the given message. */
+	public CancelledException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new CancelledException with the given message and cause. */
-    public CancelledException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new CancelledException with the given message and cause. */
+	public CancelledException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

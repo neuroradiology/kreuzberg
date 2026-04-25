@@ -1158,7 +1158,7 @@ with confidence scores and spatial positions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class` | `str` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
+| `class_name` | `str` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
 | `confidence` | `float` | — | Confidence score from the layout detection model (0.0 to 1.0). |
 | `bounding_box` | `str` | — | Bounding box in document coordinate space. |
 | `area_fraction` | `float` | — | Fraction of the page area covered by this region (0.0 to 1.0). |

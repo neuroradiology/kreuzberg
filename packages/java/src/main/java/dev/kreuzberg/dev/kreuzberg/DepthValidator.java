@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Helper struct for validating nesting depth.
  */
 public class DepthValidator implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    DepthValidator(MemorySegment handle) {
-        this.handle = handle;
-    }
+	DepthValidator(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_DEPTH_VALIDATOR_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free DepthValidator: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_DEPTH_VALIDATOR_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free DepthValidator: " + e.getMessage(), e);
+			}
+		}
+	}
 }

@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Chunk response with chunks and metadata.
  */
 public record ChunkResponse(
-    /** List of chunks */
-    List<String> chunks,
-    /** Total number of chunks */
-    @JsonProperty("chunk_count") long chunkCount,
-    /** Configuration used for chunking */
-    String config,
-    /** Input text size in bytes */
-    @JsonProperty("input_size_bytes") long inputSizeBytes,
-    /** Chunker type used for chunking */
-    @JsonProperty("chunker_type") String chunkerType
-) {
+		/** List of chunks */
+		List<String> chunks,
+		/** Total number of chunks */
+		@JsonProperty("chunk_count") long chunkCount,
+		/** Configuration used for chunking */
+		String config,
+		/** Input text size in bytes */
+		@JsonProperty("input_size_bytes") long inputSizeBytes,
+		/** Chunker type used for chunking */
+		@JsonProperty("chunker_type") String chunkerType) {
 }

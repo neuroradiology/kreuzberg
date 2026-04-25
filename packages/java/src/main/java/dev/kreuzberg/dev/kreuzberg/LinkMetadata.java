@@ -13,17 +13,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Link element metadata.
  */
 public record LinkMetadata(
-    /** The href URL value */
-    String href,
-    /** Link text content (normalized) */
-    String text,
-    /** Optional title attribute */
-    Optional<String> title,
-    /** Link type classification */
-    @JsonProperty("link_type") LinkType linkType,
-    /** Rel attribute values */
-    List<String> rel,
-    /** Additional attributes as key-value pairs */
-    List<String> attributes
-) {
+		/** The href URL value */
+		String href,
+		/** Link text content (normalized) */
+		String text,
+		/** Optional title attribute */
+		Optional<String> title,
+		/** Link type classification */
+		@JsonProperty("link_type") LinkType linkType,
+		/** Rel attribute values */
+		List<String> rel,
+		/** Additional attributes as key-value pairs */
+		List<String> attributes) {
 }

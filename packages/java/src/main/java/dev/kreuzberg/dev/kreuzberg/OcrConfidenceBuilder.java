@@ -10,31 +10,29 @@ import java.util.Optional;
 /**
  * Confidence scores for an OCR element.
  *
- * Separates detection confidence (how confident that text exists at this location)
- * from recognition confidence (how confident about the actual text content).
+ * Separates detection confidence (how confident that text exists at this
+ * location) from recognition confidence (how confident about the actual text
+ * content).
  */
 public class OcrConfidenceBuilder {
 
-    private Optional<Double> detection = Optional.empty();
-    private double recognition = 0.0;
+	private Optional<Double> detection = Optional.empty();
+	private double recognition = 0.0;
 
-    /** Sets the detection field. */
-    public OcrConfidenceBuilder withDetection(final Optional<Double> value) {
-        this.detection = value;
-        return this;
-    }
+	/** Sets the detection field. */
+	public OcrConfidenceBuilder withDetection(final Optional<Double> value) {
+		this.detection = value;
+		return this;
+	}
 
-    /** Sets the recognition field. */
-    public OcrConfidenceBuilder withRecognition(final double value) {
-        this.recognition = value;
-        return this;
-    }
+	/** Sets the recognition field. */
+	public OcrConfidenceBuilder withRecognition(final double value) {
+		this.recognition = value;
+		return this;
+	}
 
-    /** Builds the OcrConfidence instance. */
-    public OcrConfidence build() {
-        return new OcrConfidence(
-            detection,
-            recognition
-        );
-    }
+	/** Builds the OcrConfidence instance. */
+	public OcrConfidence build() {
+		return new OcrConfidence(detection, recognition);
+	}
 }

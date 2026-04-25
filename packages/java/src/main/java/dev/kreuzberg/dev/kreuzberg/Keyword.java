@@ -12,13 +12,12 @@ import java.util.Optional;
  * Extracted keyword with metadata.
  */
 public record Keyword(
-    /** The keyword text. */
-    String text,
-    /** Relevance score (higher is better, algorithm-specific range). */
-    float score,
-    /** Algorithm that extracted this keyword. */
-    KeywordAlgorithm algorithm,
-    /** Optional positions where keyword appears in text (character offsets). */
-    Optional<List<Long>> positions
-) {
+		/** The keyword text. */
+		String text,
+		/** Relevance score (higher is better, algorithm-specific range). */
+		float score,
+		/** Algorithm that extracted this keyword. */
+		KeywordAlgorithm algorithm,
+		/** Optional positions where keyword appears in text (character offsets). */
+		Optional<List<Long>> positions) {
 }

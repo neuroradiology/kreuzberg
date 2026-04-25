@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Outlook PST archive metadata.
  */
 public record PstMetadata(@JsonProperty("message_count") long messageCount) {
-    public static PstMetadataBuilder builder() {
-        return new PstMetadataBuilder();
-    }
+	public static PstMetadataBuilder builder() {
+		return new PstMetadataBuilder();
+	}
 }

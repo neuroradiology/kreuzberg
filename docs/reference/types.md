@@ -1067,7 +1067,7 @@ with confidence scores and spatial positions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class` | `String` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
+| `class_name` | `String` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
 | `confidence` | `f64` | — | Confidence score from the layout detection model (0.0 to 1.0). |
 | `bounding_box` | `String` | — | Bounding box in document coordinate space. |
 | `area_fraction` | `f64` | — | Fraction of the page area covered by this region (0.0 to 1.0). |
@@ -1584,9 +1584,32 @@ Common metadata fields extracted from a PDF.
 
 ### Document Structure
 
-#### TableValidator
+#### DocumentExtractor
 
-Helper struct for validating table cell counts.
+Trait for document extractor plugins.
+
+Implement this trait to add support for new document formats or to override
+built-in extraction behavior with custom logic.
+
+# Return Type
+
+Extractors return `InternalDocument`, a flat intermediate representation.
+The pipeline converts this into the public `ExtractionResult` via the
+derivation step.
+
+# Priority System
+
+When multiple extractors support the same MIME type, the registry selects
+the extractor with the highest priority value. Use this to:
+- Override built-in extractors (priority > 50)
+- Provide fallback extractors (priority < 50)
+- Implement specialized extractors for specific use cases
+
+Default priority is 50.
+
+# Thread Safety
+
+Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
 *Opaque type — fields are not directly accessible.*
 
@@ -1843,33 +1866,35 @@ Helper struct for validating ZIP archives for security issues.
 
 ---
 
-#### StringGrowthValidator
+#### PostProcessor
 
-Helper struct for tracking and validating string growth.
+Trait for post-processor plugins.
 
-*Opaque type — fields are not directly accessible.*
+Post-processors transform or enrich extraction results after the initial
+extraction is complete. They can:
+- Clean and normalize text
+- Add metadata (language, keywords, entities)
+- Split content into chunks
+- Score quality
+- Apply custom transformations
 
----
+# Processing Order
 
-#### IterationValidator
+Post-processors are executed in stage order:
+1. **Early** - Language detection, entity extraction
+2. **Middle** - Keyword extraction, token reduction
+3. **Late** - Custom hooks, final validation
 
-Helper struct for validating iteration counts.
+Within each stage, processors are executed in registration order.
 
-*Opaque type — fields are not directly accessible.*
+# Error Handling
 
----
+Post-processor errors are non-fatal by default - they're captured in metadata
+and execution continues. To make errors fatal, return an error from `process()`.
 
-#### DepthValidator
+# Thread Safety
 
-Helper struct for validating nesting depth.
-
-*Opaque type — fields are not directly accessible.*
-
----
-
-#### EntityValidator
-
-Helper struct for validating entity/string length.
+Post-processors must be thread-safe (`Send + Sync`).
 
 *Opaque type — fields are not directly accessible.*
 
@@ -1885,6 +1910,37 @@ identification, and metadata.
 # Thread Safety
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### Validator
+
+Trait for validator plugins.
+
+Validators check extraction results for quality, completeness, or correctness.
+Unlike post-processors, validator errors **fail fast** - if a validator returns
+an error, the extraction fails immediately.
+
+# Use Cases
+
+- **Quality Gates**: Ensure extracted content meets minimum quality standards
+- **Compliance**: Verify content meets regulatory requirements
+- **Content Filtering**: Reject documents containing unwanted content
+- **Format Validation**: Verify extracted content structure
+- **Security Checks**: Scan for malicious content
+
+# Error Handling
+
+Validator errors are **fatal** - they cause the extraction to fail and bubble up
+to the caller. Use validators for hard requirements that must be met.
+
+For non-fatal checks, use post-processors instead.
+
+# Thread Safety
+
+Validators must be thread-safe (`Send + Sync`).
 
 *Opaque type — fields are not directly accessible.*
 
@@ -2776,7 +2832,7 @@ A single layout detection result.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class` | `LayoutClass` | — | Class (layout class) |
+| `class_name` | `LayoutClass` | — | Class name (layout class) |
 | `confidence` | `f32` | — | Confidence |
 | `bbox` | `BBox` | — | Bbox (b box) |
 

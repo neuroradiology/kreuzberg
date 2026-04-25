@@ -1,102 +1,89 @@
 version: "3"
+internal: true
+
+includes:
+  vars: ./vars.yml
 
 vars:
   EXE_EXT:
     sh: |
-      os="{{.OS}}"
-
-      # Direct OS detection
-      if [ "$os" = "windows" ]; then
+      if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
         echo ".exe"
-        exit 0
+      else
+        echo ""
       fi
-
-      # Windows environment indicators
-      if [ -n "$WINDIR" ] || [ -n "$SYSTEMROOT" ]; then
-        echo ".exe"
-        exit 0
-      fi
-
-      # Git Bash/MSYS2/MinGW indicators
-      if [ -n "$MSYSTEM" ]; then
-        echo ".exe"
-        exit 0
-      fi
-
-      # Check for Windows via PowerShell if available
-      if command -v powershell &>/dev/null; then
-        os_env=$(powershell -NoProfile -Command '$env:OS' 2>/dev/null || echo "")
-        if [ -n "$os_env" ] && echo "$os_env" | grep -qi windows; then
-          echo ".exe"
-          exit 0
-        fi
-      fi
-
-      # Unix-like systems have no extension
-      echo ""
 
   LIB_EXT:
     sh: |
-      os="{{.OS}}"
-      case "$os" in
-        darwin)
-          echo "dylib"
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "dylib"
+      elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        echo "dll"
+      else
+        echo "so"
+      fi
+
+  LIB_PREFIX:
+    sh: |
+      if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        echo ""
+      else
+        echo "lib"
+      fi
+
+  RUST_TARGET:
+    sh: |
+      ARCH=$(uname -m)
+      OS_TYPE="$OSTYPE"
+      case "$ARCH" in
+        x86_64|x64)
+          ARCH_STR="x86_64"
           ;;
-        linux|freebsd|openbsd|netbsd)
-          echo "so"
+        aarch64|arm64)
+          ARCH_STR="aarch64"
           ;;
-        windows|mingw*|msys*)
-          echo "dll"
+        armv7l|armv7)
+          ARCH_STR="armv7"
           ;;
         *)
-          echo "so"
+          ARCH_STR="$ARCH"
           ;;
       esac
 
-  NUM_CPUS:
+      if [[ "$OS_TYPE" == "darwin"* ]]; then
+        echo "${ARCH_STR}-apple-darwin"
+      elif [[ "$OS_TYPE" == "linux-gnu"* ]] || [[ "$OS_TYPE" == "linux"* ]]; then
+        echo "${ARCH_STR}-unknown-linux-gnu"
+      elif [[ "$OS_TYPE" == "msys" ]] || [[ "$OS_TYPE" == "cygwin" ]] || [[ "$OS_TYPE" == "win32" ]]; then
+        echo "${ARCH_STR}-pc-windows-msvc"
+      else
+        echo "${ARCH_STR}-unknown-unknown"
+      fi
+
+  IS_WINDOWS: "{{.IS_WINDOWS}}"
+  IS_MACOS: "{{.IS_MACOS}}"
+  IS_LINUX: "{{.IS_LINUX}}"
+
+  RUBY_FULL_PATH:
     sh: |
-      os="{{.OS}}"
-
-      # Try Windows PowerShell first
-      if [ "$os" = "windows" ]; then
-        if command -v powershell &>/dev/null; then
-          num=$(powershell -NoProfile -Command '$([System.Environment]::ProcessorCount)' 2>/dev/null || echo "")
-          if [ -n "$num" ] && [ "$num" -gt 0 ]; then
-            echo "$num"
-            exit 0
-          fi
-        fi
-
-        # Try environment variable for Windows
-        if [ -n "$NUMBER_OF_PROCESSORS" ]; then
-          echo "$NUMBER_OF_PROCESSORS"
-          exit 0
-        fi
+      if command -v ruby >/dev/null 2>&1; then
+        command -v ruby
+      elif [[ "$OSTYPE" == "darwin"* ]] && [[ -f "/opt/homebrew/opt/ruby/bin/ruby" ]]; then
+        echo "/opt/homebrew/opt/ruby/bin/ruby"
+      else
+        echo "ruby"
       fi
 
-      # macOS
-      if [ "$os" = "darwin" ]; then
-        sysctl -n hw.ncpu 2>/dev/null || echo 4
-        exit 0
-      fi
+  CARGO_BIN:
+    sh: command -v cargo 2>/dev/null || echo "cargo"
 
-      # Linux and other Unix-like systems
-      if command -v nproc &>/dev/null; then
-        nproc 2>/dev/null || echo 4
-        exit 0
-      fi
+  RUSTC_BIN:
+    sh: command -v rustc 2>/dev/null || echo "rustc"
 
-      # Fallback for Linux if nproc is not available
-      if [ -f /proc/cpuinfo ]; then
-        grep -c '^processor' /proc/cpuinfo 2>/dev/null || echo 4
-        exit 0
+  SHELL_EXT:
+    sh: |
+      if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        echo ".ps1"
+      else
+        echo ".sh"
       fi
-
-      # Fallback to sysctl for other systems
-      if command -v sysctl &>/dev/null; then
-        sysctl -n hw.ncpu 2>/dev/null || echo 4
-        exit 0
-      fi
-
-      # Ultimate fallback
-      echo 4

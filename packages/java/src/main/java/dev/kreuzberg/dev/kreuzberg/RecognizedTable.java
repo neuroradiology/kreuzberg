@@ -12,11 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Pre-computed table markdown for a table detection region.
  */
 public record RecognizedTable(
-    /** Detection bbox that this table corresponds to (for matching). */
-    @JsonProperty("detection_bbox") BBox detectionBbox,
-    /** Table cells as a 2D vector (rows x columns). */
-    List<List<String>> cells,
-    /** Rendered markdown table. */
-    String markdown
-) {
+		/** Detection bbox that this table corresponds to (for matching). */
+		@JsonProperty("detection_bbox") BBox detectionBbox,
+		/** Table cells as a 2D vector (rows x columns). */
+		List<List<String>> cells,
+		/** Rendered markdown table. */
+		String markdown) {
 }

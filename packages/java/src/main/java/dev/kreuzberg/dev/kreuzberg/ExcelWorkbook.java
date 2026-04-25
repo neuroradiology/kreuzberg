@@ -11,8 +11,8 @@ import java.util.Map;
 /**
  * Excel workbook representation.
  *
- * Contains all sheets from an Excel file (.xlsx, .xls, etc.) with
- * extracted content and metadata.
+ * Contains all sheets from an Excel file (.xlsx, .xls, etc.) with extracted
+ * content and metadata.
  */
 public record ExcelWorkbook(List<ExcelSheet> sheets, Map<String, String> metadata) {
 }

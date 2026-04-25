@@ -12,34 +12,30 @@ import java.util.List;
  */
 public class DbfMetadataBuilder {
 
-    private long recordCount = 0;
-    private long fieldCount = 0;
-    private List<DbfFieldInfo> fields = List.of();
+	private long recordCount = 0;
+	private long fieldCount = 0;
+	private List<DbfFieldInfo> fields = List.of();
 
-    /** Sets the recordCount field. */
-    public DbfMetadataBuilder withRecordCount(final long value) {
-        this.recordCount = value;
-        return this;
-    }
+	/** Sets the recordCount field. */
+	public DbfMetadataBuilder withRecordCount(final long value) {
+		this.recordCount = value;
+		return this;
+	}
 
-    /** Sets the fieldCount field. */
-    public DbfMetadataBuilder withFieldCount(final long value) {
-        this.fieldCount = value;
-        return this;
-    }
+	/** Sets the fieldCount field. */
+	public DbfMetadataBuilder withFieldCount(final long value) {
+		this.fieldCount = value;
+		return this;
+	}
 
-    /** Sets the fields field. */
-    public DbfMetadataBuilder withFields(final List<DbfFieldInfo> value) {
-        this.fields = value;
-        return this;
-    }
+	/** Sets the fields field. */
+	public DbfMetadataBuilder withFields(final List<DbfFieldInfo> value) {
+		this.fields = value;
+		return this;
+	}
 
-    /** Builds the DbfMetadata instance. */
-    public DbfMetadata build() {
-        return new DbfMetadata(
-            recordCount,
-            fieldCount,
-            fields
-        );
-    }
+	/** Builds the DbfMetadata instance. */
+	public DbfMetadata build() {
+		return new DbfMetadata(recordCount, fieldCount, fields);
+	}
 }

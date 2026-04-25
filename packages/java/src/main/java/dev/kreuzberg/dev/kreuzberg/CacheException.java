@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class CacheException extends KreuzbergErrorException {
-    /** Creates a new CacheException with the given message. */
-    public CacheException(final String message) {
-        super(message);
-    }
+	/** Creates a new CacheException with the given message. */
+	public CacheException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new CacheException with the given message and cause. */
-    public CacheException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new CacheException with the given message and cause. */
+	public CacheException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

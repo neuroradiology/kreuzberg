@@ -14,42 +14,37 @@ import java.util.Optional;
  */
 public class JatsMetadataBuilder {
 
-    private Optional<String> copyright = Optional.empty();
-    private Optional<String> license = Optional.empty();
-    private Map<String, String> historyDates = Map.of();
-    private List<ContributorRole> contributorRoles = List.of();
+	private Optional<String> copyright = Optional.empty();
+	private Optional<String> license = Optional.empty();
+	private Map<String, String> historyDates = Map.of();
+	private List<ContributorRole> contributorRoles = List.of();
 
-    /** Sets the copyright field. */
-    public JatsMetadataBuilder withCopyright(final Optional<String> value) {
-        this.copyright = value;
-        return this;
-    }
+	/** Sets the copyright field. */
+	public JatsMetadataBuilder withCopyright(final Optional<String> value) {
+		this.copyright = value;
+		return this;
+	}
 
-    /** Sets the license field. */
-    public JatsMetadataBuilder withLicense(final Optional<String> value) {
-        this.license = value;
-        return this;
-    }
+	/** Sets the license field. */
+	public JatsMetadataBuilder withLicense(final Optional<String> value) {
+		this.license = value;
+		return this;
+	}
 
-    /** Sets the historyDates field. */
-    public JatsMetadataBuilder withHistoryDates(final Map<String, String> value) {
-        this.historyDates = value;
-        return this;
-    }
+	/** Sets the historyDates field. */
+	public JatsMetadataBuilder withHistoryDates(final Map<String, String> value) {
+		this.historyDates = value;
+		return this;
+	}
 
-    /** Sets the contributorRoles field. */
-    public JatsMetadataBuilder withContributorRoles(final List<ContributorRole> value) {
-        this.contributorRoles = value;
-        return this;
-    }
+	/** Sets the contributorRoles field. */
+	public JatsMetadataBuilder withContributorRoles(final List<ContributorRole> value) {
+		this.contributorRoles = value;
+		return this;
+	}
 
-    /** Builds the JatsMetadata instance. */
-    public JatsMetadata build() {
-        return new JatsMetadata(
-            copyright,
-            license,
-            historyDates,
-            contributorRoles
-        );
-    }
+	/** Builds the JatsMetadata instance. */
+	public JatsMetadata build() {
+		return new JatsMetadata(copyright, license, historyDates, contributorRoles);
+	}
 }

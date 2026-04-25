@@ -12,24 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Image extraction configuration.
  */
 public record ImageExtractionConfig(
-    /** Extract images from documents */
-    @JsonProperty("extract_images") boolean extractImages,
-    /** Target DPI for image normalization */
-    @JsonProperty("target_dpi") int targetDpi,
-    /** Maximum dimension for images (width or height) */
-    @JsonProperty("max_image_dimension") int maxImageDimension,
-    /** Whether to inject image reference placeholders into markdown output. */
-    @JsonProperty("inject_placeholders") boolean injectPlaceholders,
-    /** Automatically adjust DPI based on image content */
-    @JsonProperty("auto_adjust_dpi") boolean autoAdjustDpi,
-    /** Minimum DPI threshold */
-    @JsonProperty("min_dpi") int minDpi,
-    /** Maximum DPI threshold */
-    @JsonProperty("max_dpi") int maxDpi,
-    /** Maximum number of image objects to extract per PDF page. */
-    @JsonProperty("max_images_per_page") Optional<Integer> maxImagesPerPage
-) {
-    public static ImageExtractionConfigBuilder builder() {
-        return new ImageExtractionConfigBuilder();
-    }
+		/** Extract images from documents */
+		@JsonProperty("extract_images") boolean extractImages,
+		/** Target DPI for image normalization */
+		@JsonProperty("target_dpi") int targetDpi,
+		/** Maximum dimension for images (width or height) */
+		@JsonProperty("max_image_dimension") int maxImageDimension,
+		/** Whether to inject image reference placeholders into markdown output. */
+		@JsonProperty("inject_placeholders") boolean injectPlaceholders,
+		/** Automatically adjust DPI based on image content */
+		@JsonProperty("auto_adjust_dpi") boolean autoAdjustDpi,
+		/** Minimum DPI threshold */
+		@JsonProperty("min_dpi") int minDpi,
+		/** Maximum DPI threshold */
+		@JsonProperty("max_dpi") int maxDpi, /** Maximum number of image objects to extract per PDF page. */
+		@JsonProperty("max_images_per_page") Optional<Integer> maxImagesPerPage) {
+	public static ImageExtractionConfigBuilder builder() {
+		return new ImageExtractionConfigBuilder();
+	}
 }

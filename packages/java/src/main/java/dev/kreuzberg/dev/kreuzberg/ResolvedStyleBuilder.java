@@ -5,32 +5,28 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * Fully resolved (flattened) style after walking the inheritance chain.
  */
 public class ResolvedStyleBuilder {
 
-    private String paragraphProperties = "";
-    private String runProperties = "";
+	private String paragraphProperties = "";
+	private String runProperties = "";
 
-    /** Sets the paragraphProperties field. */
-    public ResolvedStyleBuilder withParagraphProperties(final String value) {
-        this.paragraphProperties = value;
-        return this;
-    }
+	/** Sets the paragraphProperties field. */
+	public ResolvedStyleBuilder withParagraphProperties(final String value) {
+		this.paragraphProperties = value;
+		return this;
+	}
 
-    /** Sets the runProperties field. */
-    public ResolvedStyleBuilder withRunProperties(final String value) {
-        this.runProperties = value;
-        return this;
-    }
+	/** Sets the runProperties field. */
+	public ResolvedStyleBuilder withRunProperties(final String value) {
+		this.runProperties = value;
+		return this;
+	}
 
-    /** Builds the ResolvedStyle instance. */
-    public ResolvedStyle build() {
-        return new ResolvedStyle(
-            paragraphProperties,
-            runProperties
-        );
-    }
+	/** Builds the ResolvedStyle instance. */
+	public ResolvedStyle build() {
+		return new ResolvedStyle(paragraphProperties, runProperties);
+	}
 }

@@ -12,44 +12,33 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Types of block-level elements in Djot.
  */
 public enum BlockType {
-    Paragraph("paragraph"),
-    Heading("heading"),
-    Blockquote("blockquote"),
-    CodeBlock("code_block"),
-    ListItem("list_item"),
-    OrderedList("ordered_list"),
-    BulletList("bullet_list"),
-    TaskList("task_list"),
-    DefinitionList("definition_list"),
-    DefinitionTerm("definition_term"),
-    DefinitionDescription("definition_description"),
-    Div("div"),
-    Section("section"),
-    ThematicBreak("thematic_break"),
-    RawBlock("raw_block"),
-    MathDisplay("math_display");
+	Paragraph("paragraph"), Heading("heading"), Blockquote("blockquote"), CodeBlock("code_block"), ListItem(
+			"list_item"), OrderedList("ordered_list"), BulletList("bullet_list"), TaskList("task_list"), DefinitionList(
+					"definition_list"), DefinitionTerm("definition_term"), DefinitionDescription(
+							"definition_description"), Div("div"), Section("section"), ThematicBreak(
+									"thematic_break"), RawBlock("raw_block"), MathDisplay("math_display");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    BlockType(final String value) {
-        this.value = value;
-    }
+	BlockType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static BlockType fromValue(final String value) {
-        for (BlockType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static BlockType fromValue(final String value) {
+		for (BlockType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

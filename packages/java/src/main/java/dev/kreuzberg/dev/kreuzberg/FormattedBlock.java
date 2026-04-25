@@ -12,22 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Block-level element in a Djot document.
  *
- * Represents structural elements like headings, paragraphs, lists, code blocks, etc.
+ * Represents structural elements like headings, paragraphs, lists, code blocks,
+ * etc.
  */
 public record FormattedBlock(
-    /** Type of block element */
-    @JsonProperty("block_type") BlockType blockType,
-    /** Heading level (1-6) for headings, or nesting level for lists */
-    Optional<Long> level,
-    /** Inline content within the block */
-    @JsonProperty("inline_content") List<InlineElement> inlineContent,
-    /** Element attributes (classes, IDs, key-value pairs) */
-    Optional<String> attributes,
-    /** Language identifier for code blocks */
-    Optional<String> language,
-    /** Raw code content for code blocks */
-    Optional<String> code,
-    /** Nested blocks for containers (blockquotes, list items, divs) */
-    List<FormattedBlock> children
-) {
+		/** Type of block element */
+		@JsonProperty("block_type") BlockType blockType,
+		/** Heading level (1-6) for headings, or nesting level for lists */
+		Optional<Long> level,
+		/** Inline content within the block */
+		@JsonProperty("inline_content") List<InlineElement> inlineContent,
+		/** Element attributes (classes, IDs, key-value pairs) */
+		Optional<String> attributes,
+		/** Language identifier for code blocks */
+		Optional<String> language,
+		/** Raw code content for code blocks */
+		Optional<String> code,
+		/** Nested blocks for containers (blockquotes, list items, divs) */
+		List<FormattedBlock> children) {
 }

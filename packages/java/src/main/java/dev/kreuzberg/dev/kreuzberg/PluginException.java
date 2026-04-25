@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class PluginException extends KreuzbergErrorException {
-    /** Creates a new PluginException with the given message. */
-    public PluginException(final String message) {
-        super(message);
-    }
+	/** Creates a new PluginException with the given message. */
+	public PluginException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new PluginException with the given message and cause. */
-    public PluginException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new PluginException with the given message and cause. */
+	public PluginException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -11,15 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * EPUB metadata (Dublin Core extensions).
  */
-public record EpubMetadata(
-    Optional<String> coverage,
-    @JsonProperty("dc_format") Optional<String> dcFormat,
-    Optional<String> relation,
-    Optional<String> source,
-    @JsonProperty("dc_type") Optional<String> dcType,
-    @JsonProperty("cover_image") Optional<String> coverImage
-) {
-    public static EpubMetadataBuilder builder() {
-        return new EpubMetadataBuilder();
-    }
+public record EpubMetadata(Optional<String> coverage, @JsonProperty("dc_format") Optional<String> dcFormat,
+		Optional<String> relation, Optional<String> source, @JsonProperty("dc_type") Optional<String> dcType,
+		@JsonProperty("cover_image") Optional<String> coverImage) {
+	public static EpubMetadataBuilder builder() {
+		return new EpubMetadataBuilder();
+	}
 }

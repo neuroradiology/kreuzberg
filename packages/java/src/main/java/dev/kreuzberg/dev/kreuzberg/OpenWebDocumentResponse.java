@@ -13,9 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Returned by {@code PUT /process} for the OpenWebUI external document loader.
  */
 public record OpenWebDocumentResponse(
-    /** Extracted text content */
-    @JsonProperty("page_content") String pageContent,
-    /** Document metadata */
-    String metadata
-) {
+		/** Extracted text content */
+		@JsonProperty("page_content") String pageContent,
+		/** Document metadata */
+		String metadata) {
 }

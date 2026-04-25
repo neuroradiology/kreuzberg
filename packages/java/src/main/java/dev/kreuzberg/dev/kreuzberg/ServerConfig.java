@@ -16,25 +16,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * # Defaults
  *
- * - {@code host}: "127.0.0.1" (localhost only)
- * - {@code port}: 8000
- * - {@code cors_origins}: empty vector (allows all origins)
- * - {@code max_request_body_bytes}: 104_857_600 (100 MB)
- * - {@code max_multipart_field_bytes}: 104_857_600 (100 MB)
+ * - {@code host}: "127.0.0.1" (localhost only) - {@code port}: 8000 -
+ * {@code cors_origins}: empty vector (allows all origins) -
+ * {@code max_request_body_bytes}: 104_857_600 (100 MB) -
+ * {@code max_multipart_field_bytes}: 104_857_600 (100 MB)
  */
 public record ServerConfig(
-    /** Server host address (e.g., "127.0.0.1", "0.0.0.0") */
-    String host,
-    /** Server port number */
-    short port,
-    /** CORS allowed origins. Empty vector means allow all origins. */
-    @JsonProperty("cors_origins") List<String> corsOrigins,
-    /** Maximum size of request body in bytes (default: 100 MB) */
-    @JsonProperty("max_request_body_bytes") long maxRequestBodyBytes,
-    /** Maximum size of multipart fields in bytes (default: 100 MB) */
-    @JsonProperty("max_multipart_field_bytes") long maxMultipartFieldBytes
-) {
-    public static ServerConfigBuilder builder() {
-        return new ServerConfigBuilder();
-    }
+		/** Server host address (e.g., "127.0.0.1", "0.0.0.0") */
+		String host,
+		/** Server port number */
+		short port,
+		/** CORS allowed origins. Empty vector means allow all origins. */
+		@JsonProperty("cors_origins") List<String> corsOrigins,
+		/** Maximum size of request body in bytes (default: 100 MB) */
+		@JsonProperty("max_request_body_bytes") long maxRequestBodyBytes,
+		/** Maximum size of multipart fields in bytes (default: 100 MB) */
+		@JsonProperty("max_multipart_field_bytes") long maxMultipartFieldBytes) {
+	public static ServerConfigBuilder builder() {
+		return new ServerConfigBuilder();
+	}
 }

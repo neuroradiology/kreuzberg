@@ -10,63 +10,56 @@ import java.util.Optional;
 /**
  * Embedding configuration for text chunks.
  *
- * Configures embedding generation using ONNX models via the vendored embedding engine.
- * Requires the {@code embeddings} feature to be enabled.
+ * Configures embedding generation using ONNX models via the vendored embedding
+ * engine. Requires the {@code embeddings} feature to be enabled.
  */
 public class EmbeddingConfigBuilder {
 
-    private EmbeddingModelType model = null;
-    private boolean normalize = false;
-    private long batchSize = 0;
-    private boolean showDownloadProgress = false;
-    private Optional<java.nio.file.Path> cacheDir = Optional.empty();
-    private Optional<AccelerationConfig> acceleration = Optional.empty();
+	private EmbeddingModelType model = null;
+	private boolean normalize = false;
+	private long batchSize = 0;
+	private boolean showDownloadProgress = false;
+	private Optional<java.nio.file.Path> cacheDir = Optional.empty();
+	private Optional<AccelerationConfig> acceleration = Optional.empty();
 
-    /** Sets the model field. */
-    public EmbeddingConfigBuilder withModel(final EmbeddingModelType value) {
-        this.model = value;
-        return this;
-    }
+	/** Sets the model field. */
+	public EmbeddingConfigBuilder withModel(final EmbeddingModelType value) {
+		this.model = value;
+		return this;
+	}
 
-    /** Sets the normalize field. */
-    public EmbeddingConfigBuilder withNormalize(final boolean value) {
-        this.normalize = value;
-        return this;
-    }
+	/** Sets the normalize field. */
+	public EmbeddingConfigBuilder withNormalize(final boolean value) {
+		this.normalize = value;
+		return this;
+	}
 
-    /** Sets the batchSize field. */
-    public EmbeddingConfigBuilder withBatchSize(final long value) {
-        this.batchSize = value;
-        return this;
-    }
+	/** Sets the batchSize field. */
+	public EmbeddingConfigBuilder withBatchSize(final long value) {
+		this.batchSize = value;
+		return this;
+	}
 
-    /** Sets the showDownloadProgress field. */
-    public EmbeddingConfigBuilder withShowDownloadProgress(final boolean value) {
-        this.showDownloadProgress = value;
-        return this;
-    }
+	/** Sets the showDownloadProgress field. */
+	public EmbeddingConfigBuilder withShowDownloadProgress(final boolean value) {
+		this.showDownloadProgress = value;
+		return this;
+	}
 
-    /** Sets the cacheDir field. */
-    public EmbeddingConfigBuilder withCacheDir(final Optional<java.nio.file.Path> value) {
-        this.cacheDir = value;
-        return this;
-    }
+	/** Sets the cacheDir field. */
+	public EmbeddingConfigBuilder withCacheDir(final Optional<java.nio.file.Path> value) {
+		this.cacheDir = value;
+		return this;
+	}
 
-    /** Sets the acceleration field. */
-    public EmbeddingConfigBuilder withAcceleration(final Optional<AccelerationConfig> value) {
-        this.acceleration = value;
-        return this;
-    }
+	/** Sets the acceleration field. */
+	public EmbeddingConfigBuilder withAcceleration(final Optional<AccelerationConfig> value) {
+		this.acceleration = value;
+		return this;
+	}
 
-    /** Builds the EmbeddingConfig instance. */
-    public EmbeddingConfig build() {
-        return new EmbeddingConfig(
-            model,
-            normalize,
-            batchSize,
-            showDownloadProgress,
-            cacheDir,
-            acceleration
-        );
-    }
+	/** Builds the EmbeddingConfig instance. */
+	public EmbeddingConfig build() {
+		return new EmbeddingConfig(model, normalize, batchSize, showDownloadProgress, cacheDir, acceleration);
+	}
 }

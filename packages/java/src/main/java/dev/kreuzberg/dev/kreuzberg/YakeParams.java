@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * YAKE-specific parameters.
  */
 public record YakeParams(@JsonProperty("window_size") long windowSize) {
-    public static YakeParamsBuilder builder() {
-        return new YakeParamsBuilder();
-    }
+	public static YakeParamsBuilder builder() {
+		return new YakeParamsBuilder();
+	}
 }

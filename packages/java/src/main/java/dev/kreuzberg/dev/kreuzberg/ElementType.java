@@ -15,50 +15,50 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Supports the element types commonly found in Unstructured documents.
  */
 public enum ElementType {
-    /** Document title */
-    Title("title"),
-    /** Main narrative text body */
-    NarrativeText("narrative_text"),
-    /** Section heading */
-    Heading("heading"),
-    /** List item (bullet, numbered, etc.) */
-    ListItem("list_item"),
-    /** Table element */
-    Table("table"),
-    /** Image element */
-    Image("image"),
-    /** Page break marker */
-    PageBreak("page_break"),
-    /** Code block */
-    CodeBlock("code_block"),
-    /** Block quote */
-    BlockQuote("block_quote"),
-    /** Footer text */
-    Footer("footer"),
-    /** Header text */
-    Header("header");
+	/** Document title */
+	Title("title"),
+	/** Main narrative text body */
+	NarrativeText("narrative_text"),
+	/** Section heading */
+	Heading("heading"),
+	/** List item (bullet, numbered, etc.) */
+	ListItem("list_item"),
+	/** Table element */
+	Table("table"),
+	/** Image element */
+	Image("image"),
+	/** Page break marker */
+	PageBreak("page_break"),
+	/** Code block */
+	CodeBlock("code_block"),
+	/** Block quote */
+	BlockQuote("block_quote"),
+	/** Footer text */
+	Footer("footer"),
+	/** Header text */
+	Header("header");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ElementType(final String value) {
-        this.value = value;
-    }
+	ElementType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ElementType fromValue(final String value) {
-        for (ElementType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ElementType fromValue(final String value) {
+		for (ElementType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

@@ -5,52 +5,46 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * A detected layout region on a page.
  *
  * When layout detection is enabled, each page may have layout regions
- * identifying different content types (text, pictures, tables, etc.)
- * with confidence scores and spatial positions.
+ * identifying different content types (text, pictures, tables, etc.) with
+ * confidence scores and spatial positions.
  */
 public class LayoutRegionBuilder {
 
-    private String className = "";
-    private double confidence = 0.0;
-    private String boundingBox = "";
-    private double areaFraction = 0.0;
+	private String className = "";
+	private double confidence = 0.0;
+	private String boundingBox = "";
+	private double areaFraction = 0.0;
 
-    /** Sets the className field. */
-    public LayoutRegionBuilder withClassName(final String value) {
-        this.className = value;
-        return this;
-    }
+	/** Sets the className field. */
+	public LayoutRegionBuilder withClassName(final String value) {
+		this.className = value;
+		return this;
+	}
 
-    /** Sets the confidence field. */
-    public LayoutRegionBuilder withConfidence(final double value) {
-        this.confidence = value;
-        return this;
-    }
+	/** Sets the confidence field. */
+	public LayoutRegionBuilder withConfidence(final double value) {
+		this.confidence = value;
+		return this;
+	}
 
-    /** Sets the boundingBox field. */
-    public LayoutRegionBuilder withBoundingBox(final String value) {
-        this.boundingBox = value;
-        return this;
-    }
+	/** Sets the boundingBox field. */
+	public LayoutRegionBuilder withBoundingBox(final String value) {
+		this.boundingBox = value;
+		return this;
+	}
 
-    /** Sets the areaFraction field. */
-    public LayoutRegionBuilder withAreaFraction(final double value) {
-        this.areaFraction = value;
-        return this;
-    }
+	/** Sets the areaFraction field. */
+	public LayoutRegionBuilder withAreaFraction(final double value) {
+		this.areaFraction = value;
+		return this;
+	}
 
-    /** Builds the LayoutRegion instance. */
-    public LayoutRegion build() {
-        return new LayoutRegion(
-            className,
-            confidence,
-            boundingBox,
-            areaFraction
-        );
-    }
+	/** Builds the LayoutRegion instance. */
+	public LayoutRegion build() {
+		return new LayoutRegion(className, confidence, boundingBox, areaFraction);
+	}
 }

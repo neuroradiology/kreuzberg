@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class EmbeddingException extends KreuzbergErrorException {
-    /** Creates a new EmbeddingException with the given message. */
-    public EmbeddingException(final String message) {
-        super(message);
-    }
+	/** Creates a new EmbeddingException with the given message. */
+	public EmbeddingException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new EmbeddingException with the given message and cause. */
-    public EmbeddingException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new EmbeddingException with the given message and cause. */
+	public EmbeddingException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

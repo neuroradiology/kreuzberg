@@ -11,38 +11,38 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Content rendering mode for code extraction.
  *
- * Controls how extracted code content is represented in the {@code content} field
- * of {@code ExtractionResult}.
+ * Controls how extracted code content is represented in the {@code content}
+ * field of {@code ExtractionResult}.
  */
 public enum CodeContentMode {
-    /** Use TSLP semantic chunks as content (default). */
-    Chunks("chunks"),
-    /** Use raw source code as content. */
-    Raw("raw"),
-    /** Emit function/class headings + docstrings (no code bodies). */
-    Structure("structure");
+	/** Use TSLP semantic chunks as content (default). */
+	Chunks("chunks"),
+	/** Use raw source code as content. */
+	Raw("raw"),
+	/** Emit function/class headings + docstrings (no code bodies). */
+	Structure("structure");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    CodeContentMode(final String value) {
-        this.value = value;
-    }
+	CodeContentMode(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static CodeContentMode fromValue(final String value) {
-        for (CodeContentMode e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static CodeContentMode fromValue(final String value) {
+		for (CodeContentMode e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

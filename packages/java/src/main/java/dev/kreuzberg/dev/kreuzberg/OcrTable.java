@@ -15,13 +15,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Represents a table structure recognized during OCR processing.
  */
 public record OcrTable(
-    /** Table cells as a 2D vector (rows × columns) */
-    List<List<String>> cells,
-    /** Markdown representation of the table */
-    String markdown,
-    /** Page number where the table was found (1-indexed) */
-    @JsonProperty("page_number") long pageNumber,
-    /** Bounding box of the table in pixel coordinates (from OCR word positions). */
-    @JsonProperty("bounding_box") Optional<OcrTableBoundingBox> boundingBox
-) {
+		/** Table cells as a 2D vector (rows × columns) */
+		List<List<String>> cells,
+		/** Markdown representation of the table */
+		String markdown,
+		/** Page number where the table was found (1-indexed) */
+		@JsonProperty("page_number") long pageNumber,
+		/** Bounding box of the table in pixel coordinates (from OCR word positions). */
+		@JsonProperty("bounding_box") Optional<OcrTableBoundingBox> boundingBox) {
 }

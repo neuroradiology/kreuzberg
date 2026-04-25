@@ -11,24 +11,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Embedding configuration for text chunks.
  *
- * Configures embedding generation using ONNX models via the vendored embedding engine.
- * Requires the {@code embeddings} feature to be enabled.
+ * Configures embedding generation using ONNX models via the vendored embedding
+ * engine. Requires the {@code embeddings} feature to be enabled.
  */
 public record EmbeddingConfig(
-    /** The embedding model to use (defaults to "balanced" preset if not specified) */
-    EmbeddingModelType model,
-    /** Whether to normalize embedding vectors (recommended for cosine similarity) */
-    boolean normalize,
-    /** Batch size for embedding generation */
-    @JsonProperty("batch_size") long batchSize,
-    /** Show model download progress */
-    @JsonProperty("show_download_progress") boolean showDownloadProgress,
-    /** Custom cache directory for model files */
-    @JsonProperty("cache_dir") Optional<java.nio.file.Path> cacheDir,
-    /** Hardware acceleration for the embedding ONNX model. */
-    Optional<AccelerationConfig> acceleration
-) {
-    public static EmbeddingConfigBuilder builder() {
-        return new EmbeddingConfigBuilder();
-    }
+		/**
+		 * The embedding model to use (defaults to "balanced" preset if not specified)
+		 */
+		EmbeddingModelType model,
+		/**
+		 * Whether to normalize embedding vectors (recommended for cosine similarity)
+		 */
+		boolean normalize,
+		/** Batch size for embedding generation */
+		@JsonProperty("batch_size") long batchSize,
+		/** Show model download progress */
+		@JsonProperty("show_download_progress") boolean showDownloadProgress,
+		/** Custom cache directory for model files */
+		@JsonProperty("cache_dir") Optional<java.nio.file.Path> cacheDir,
+		/** Hardware acceleration for the embedding ONNX model. */
+		Optional<AccelerationConfig> acceleration) {
+	public static EmbeddingConfigBuilder builder() {
+		return new EmbeddingConfigBuilder();
+	}
 }

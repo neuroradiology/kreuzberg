@@ -10,11 +10,12 @@ import java.util.Optional;
 /**
  * Confidence scores for an OCR element.
  *
- * Separates detection confidence (how confident that text exists at this location)
- * from recognition confidence (how confident about the actual text content).
+ * Separates detection confidence (how confident that text exists at this
+ * location) from recognition confidence (how confident about the actual text
+ * content).
  */
 public record OcrConfidence(Optional<Double> detection, double recognition) {
-    public static OcrConfidenceBuilder builder() {
-        return new OcrConfidenceBuilder();
-    }
+	public static OcrConfidenceBuilder builder() {
+		return new OcrConfidenceBuilder();
+	}
 }

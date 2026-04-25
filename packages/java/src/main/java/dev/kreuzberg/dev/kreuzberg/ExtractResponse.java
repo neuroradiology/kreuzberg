@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Extraction response (list of results).
  */
 public class ExtractResponse implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    ExtractResponse(MemorySegment handle) {
-        this.handle = handle;
-    }
+	ExtractResponse(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_EXTRACT_RESPONSE_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free ExtractResponse: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_EXTRACT_RESPONSE_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free ExtractResponse: " + e.getMessage(), e);
+			}
+		}
+	}
 }

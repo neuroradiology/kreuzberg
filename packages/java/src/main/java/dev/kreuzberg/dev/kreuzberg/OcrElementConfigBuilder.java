@@ -5,7 +5,6 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * Configuration for OCR element extraction.
  *
@@ -13,42 +12,37 @@ package dev.kreuzberg;
  */
 public class OcrElementConfigBuilder {
 
-    private boolean includeElements = false;
-    private OcrElementLevel minLevel = null;
-    private double minConfidence = 0.0;
-    private boolean buildHierarchy = false;
+	private boolean includeElements = false;
+	private OcrElementLevel minLevel = null;
+	private double minConfidence = 0.0;
+	private boolean buildHierarchy = false;
 
-    /** Sets the includeElements field. */
-    public OcrElementConfigBuilder withIncludeElements(final boolean value) {
-        this.includeElements = value;
-        return this;
-    }
+	/** Sets the includeElements field. */
+	public OcrElementConfigBuilder withIncludeElements(final boolean value) {
+		this.includeElements = value;
+		return this;
+	}
 
-    /** Sets the minLevel field. */
-    public OcrElementConfigBuilder withMinLevel(final OcrElementLevel value) {
-        this.minLevel = value;
-        return this;
-    }
+	/** Sets the minLevel field. */
+	public OcrElementConfigBuilder withMinLevel(final OcrElementLevel value) {
+		this.minLevel = value;
+		return this;
+	}
 
-    /** Sets the minConfidence field. */
-    public OcrElementConfigBuilder withMinConfidence(final double value) {
-        this.minConfidence = value;
-        return this;
-    }
+	/** Sets the minConfidence field. */
+	public OcrElementConfigBuilder withMinConfidence(final double value) {
+		this.minConfidence = value;
+		return this;
+	}
 
-    /** Sets the buildHierarchy field. */
-    public OcrElementConfigBuilder withBuildHierarchy(final boolean value) {
-        this.buildHierarchy = value;
-        return this;
-    }
+	/** Sets the buildHierarchy field. */
+	public OcrElementConfigBuilder withBuildHierarchy(final boolean value) {
+		this.buildHierarchy = value;
+		return this;
+	}
 
-    /** Builds the OcrElementConfig instance. */
-    public OcrElementConfig build() {
-        return new OcrElementConfig(
-            includeElements,
-            minLevel,
-            minConfidence,
-            buildHierarchy
-        );
-    }
+	/** Builds the OcrElementConfig instance. */
+	public OcrElementConfig build() {
+		return new OcrElementConfig(includeElements, minLevel, minConfidence, buildHierarchy);
+	}
 }

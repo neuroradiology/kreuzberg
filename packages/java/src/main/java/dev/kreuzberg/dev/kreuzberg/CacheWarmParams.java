@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for cache warm (model download).
  */
 public record CacheWarmParams(
-    /** Download all embedding model presets */
-    @JsonProperty("all_embeddings") boolean allEmbeddings,
-    /** Specific embedding preset name to download (e.g. "balanced", "speed", "quality") */
-    @JsonProperty("embedding_model") Optional<String> embeddingModel
-) {
+		/** Download all embedding model presets */
+		@JsonProperty("all_embeddings") boolean allEmbeddings,
+		/**
+		 * Specific embedding preset name to download (e.g. "balanced", "speed",
+		 * "quality")
+		 */
+		@JsonProperty("embedding_model") Optional<String> embeddingModel) {
 }

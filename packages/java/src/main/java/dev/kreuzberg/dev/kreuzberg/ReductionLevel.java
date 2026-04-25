@@ -9,33 +9,29 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ReductionLevel {
-    Off("off"),
-    Light("light"),
-    Moderate("moderate"),
-    Aggressive("aggressive"),
-    Maximum("maximum");
+	Off("off"), Light("light"), Moderate("moderate"), Aggressive("aggressive"), Maximum("maximum");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ReductionLevel(final String value) {
-        this.value = value;
-    }
+	ReductionLevel(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ReductionLevel fromValue(final String value) {
-        for (ReductionLevel e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ReductionLevel fromValue(final String value) {
+		for (ReductionLevel e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

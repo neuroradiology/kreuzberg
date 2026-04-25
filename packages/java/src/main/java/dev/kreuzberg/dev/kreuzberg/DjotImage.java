@@ -11,13 +11,12 @@ import java.util.Optional;
  * Image element in Djot.
  */
 public record DjotImage(
-    /** Image source URL or path */
-    String src,
-    /** Alternative text */
-    String alt,
-    /** Optional title */
-    Optional<String> title,
-    /** Element attributes */
-    Optional<String> attributes
-) {
+		/** Image source URL or path */
+		String src,
+		/** Alternative text */
+		String alt,
+		/** Optional title */
+		Optional<String> title,
+		/** Element attributes */
+		Optional<String> attributes) {
 }

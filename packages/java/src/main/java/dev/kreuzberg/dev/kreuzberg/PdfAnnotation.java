@@ -12,13 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A PDF annotation extracted from a document page.
  */
 public record PdfAnnotation(
-    /** The type of annotation. */
-    @JsonProperty("annotation_type") PdfAnnotationType annotationType,
-    /** Text content of the annotation (e.g., comment text, link URL). */
-    Optional<String> content,
-    /** Page number where the annotation appears (1-indexed). */
-    @JsonProperty("page_number") long pageNumber,
-    /** Bounding box of the annotation on the page. */
-    @JsonProperty("bounding_box") Optional<String> boundingBox
-) {
+		/** The type of annotation. */
+		@JsonProperty("annotation_type") PdfAnnotationType annotationType,
+		/** Text content of the annotation (e.g., comment text, link URL). */
+		Optional<String> content,
+		/** Page number where the annotation appears (1-indexed). */
+		@JsonProperty("page_number") long pageNumber,
+		/** Bounding box of the annotation on the page. */
+		@JsonProperty("bounding_box") Optional<String> boundingBox) {
 }

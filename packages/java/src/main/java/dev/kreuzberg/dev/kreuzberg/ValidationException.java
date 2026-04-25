@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class ValidationException extends KreuzbergErrorException {
-    /** Creates a new ValidationException with the given message. */
-    public ValidationException(final String message) {
-        super(message);
-    }
+	/** Creates a new ValidationException with the given message. */
+	public ValidationException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new ValidationException with the given message and cause. */
-    public ValidationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new ValidationException with the given message and cause. */
+	public ValidationException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

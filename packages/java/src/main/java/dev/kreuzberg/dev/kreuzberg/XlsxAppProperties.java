@@ -15,26 +15,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Contains Excel-specific document metadata.
  */
 public record XlsxAppProperties(
-    /** Application name (e.g., "Microsoft Excel") */
-    Optional<String> application,
-    /** Application version */
-    @JsonProperty("app_version") Optional<String> appVersion,
-    /** Document security level */
-    @JsonProperty("doc_security") Optional<Integer> docSecurity,
-    /** Scale crop flag */
-    @JsonProperty("scale_crop") Optional<Boolean> scaleCrop,
-    /** Links up to date flag */
-    @JsonProperty("links_up_to_date") Optional<Boolean> linksUpToDate,
-    /** Shared document flag */
-    @JsonProperty("shared_doc") Optional<Boolean> sharedDoc,
-    /** Hyperlinks changed flag */
-    @JsonProperty("hyperlinks_changed") Optional<Boolean> hyperlinksChanged,
-    /** Company name */
-    Optional<String> company,
-    /** Worksheet names */
-    @JsonProperty("worksheet_names") List<String> worksheetNames
-) {
-    public static XlsxAppPropertiesBuilder builder() {
-        return new XlsxAppPropertiesBuilder();
-    }
+		/** Application name (e.g., "Microsoft Excel") */
+		Optional<String> application,
+		/** Application version */
+		@JsonProperty("app_version") Optional<String> appVersion,
+		/** Document security level */
+		@JsonProperty("doc_security") Optional<Integer> docSecurity,
+		/** Scale crop flag */
+		@JsonProperty("scale_crop") Optional<Boolean> scaleCrop,
+		/** Links up to date flag */
+		@JsonProperty("links_up_to_date") Optional<Boolean> linksUpToDate,
+		/** Shared document flag */
+		@JsonProperty("shared_doc") Optional<Boolean> sharedDoc,
+		/** Hyperlinks changed flag */
+		@JsonProperty("hyperlinks_changed") Optional<Boolean> hyperlinksChanged,
+		/** Company name */
+		Optional<String> company, /** Worksheet names */
+		@JsonProperty("worksheet_names") List<String> worksheetNames) {
+	public static XlsxAppPropertiesBuilder builder() {
+		return new XlsxAppPropertiesBuilder();
+	}
 }

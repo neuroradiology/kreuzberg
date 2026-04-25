@@ -11,42 +11,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * PDF extraction backend selection.
  *
- * Controls which PDF library is used for text extraction:
- * - {@code Pdfium}: pdfium-render (default, C++ based, mature)
- * - {@code PdfOxide}: pdf_oxide (pure Rust, faster, requires {@code pdf-oxide} feature)
- * - {@code Auto}: automatically select based on available features
+ * Controls which PDF library is used for text extraction: - {@code Pdfium}:
+ * pdfium-render (default, C++ based, mature) - {@code PdfOxide}: pdf_oxide
+ * (pure Rust, faster, requires {@code pdf-oxide} feature) - {@code Auto}:
+ * automatically select based on available features
  */
 public enum PdfBackend {
-    /** Use pdfium-render backend (default). */
-    Pdfium("pdfium"),
-    /**
-     * Use pdf_oxide backend (pure Rust). Requires {@code pdf-oxide} feature.
-     */
-    PdfOxide("pdfoxide"),
-    /** Automatically select the best available backend. */
-    Auto("auto");
+	/** Use pdfium-render backend (default). */
+	Pdfium("pdfium"),
+	/**
+	 * Use pdf_oxide backend (pure Rust). Requires {@code pdf-oxide} feature.
+	 */
+	PdfOxide("pdfoxide"),
+	/** Automatically select the best available backend. */
+	Auto("auto");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    PdfBackend(final String value) {
-        this.value = value;
-    }
+	PdfBackend(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static PdfBackend fromValue(final String value) {
-        for (PdfBackend e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static PdfBackend fromValue(final String value) {
+		for (PdfBackend e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

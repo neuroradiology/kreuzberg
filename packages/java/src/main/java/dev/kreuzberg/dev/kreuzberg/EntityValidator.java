@@ -11,24 +11,24 @@ import java.lang.foreign.MemorySegment;
  * Helper struct for validating entity/string length.
  */
 public class EntityValidator implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    EntityValidator(MemorySegment handle) {
-        this.handle = handle;
-    }
+	EntityValidator(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_ENTITY_VALIDATOR_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free EntityValidator: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_ENTITY_VALIDATOR_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free EntityValidator: " + e.getMessage(), e);
+			}
+		}
+	}
 }

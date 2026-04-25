@@ -12,14 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * CSV/TSV file metadata.
  */
-public record CsvMetadata(
-    @JsonProperty("row_count") long rowCount,
-    @JsonProperty("column_count") long columnCount,
-    Optional<String> delimiter,
-    @JsonProperty("has_header") boolean hasHeader,
-    @JsonProperty("column_types") Optional<List<String>> columnTypes
-) {
-    public static CsvMetadataBuilder builder() {
-        return new CsvMetadataBuilder();
-    }
+public record CsvMetadata(@JsonProperty("row_count") long rowCount, @JsonProperty("column_count") long columnCount,
+		Optional<String> delimiter, @JsonProperty("has_header") boolean hasHeader,
+		@JsonProperty("column_types") Optional<List<String>> columnTypes) {
+	public static CsvMetadataBuilder builder() {
+		return new CsvMetadataBuilder();
+	}
 }

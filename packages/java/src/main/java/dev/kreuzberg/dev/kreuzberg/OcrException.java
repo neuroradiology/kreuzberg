@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class OcrException extends KreuzbergErrorException {
-    /** Creates a new OcrException with the given message. */
-    public OcrException(final String message) {
-        super(message);
-    }
+	/** Creates a new OcrException with the given message. */
+	public OcrException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new OcrException with the given message and cause. */
-    public OcrException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new OcrException with the given message and cause. */
+	public OcrException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

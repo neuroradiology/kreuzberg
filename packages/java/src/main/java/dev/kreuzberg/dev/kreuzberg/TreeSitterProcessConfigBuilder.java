@@ -14,82 +14,73 @@ import java.util.Optional;
  */
 public class TreeSitterProcessConfigBuilder {
 
-    private boolean structure = false;
-    private boolean imports = false;
-    private boolean exports = false;
-    private boolean comments = false;
-    private boolean docstrings = false;
-    private boolean symbols = false;
-    private boolean diagnostics = false;
-    private Optional<Long> chunkMaxSize = Optional.empty();
-    private CodeContentMode contentMode = null;
+	private boolean structure = false;
+	private boolean imports = false;
+	private boolean exports = false;
+	private boolean comments = false;
+	private boolean docstrings = false;
+	private boolean symbols = false;
+	private boolean diagnostics = false;
+	private Optional<Long> chunkMaxSize = Optional.empty();
+	private CodeContentMode contentMode = null;
 
-    /** Sets the structure field. */
-    public TreeSitterProcessConfigBuilder withStructure(final boolean value) {
-        this.structure = value;
-        return this;
-    }
+	/** Sets the structure field. */
+	public TreeSitterProcessConfigBuilder withStructure(final boolean value) {
+		this.structure = value;
+		return this;
+	}
 
-    /** Sets the imports field. */
-    public TreeSitterProcessConfigBuilder withImports(final boolean value) {
-        this.imports = value;
-        return this;
-    }
+	/** Sets the imports field. */
+	public TreeSitterProcessConfigBuilder withImports(final boolean value) {
+		this.imports = value;
+		return this;
+	}
 
-    /** Sets the exports field. */
-    public TreeSitterProcessConfigBuilder withExports(final boolean value) {
-        this.exports = value;
-        return this;
-    }
+	/** Sets the exports field. */
+	public TreeSitterProcessConfigBuilder withExports(final boolean value) {
+		this.exports = value;
+		return this;
+	}
 
-    /** Sets the comments field. */
-    public TreeSitterProcessConfigBuilder withComments(final boolean value) {
-        this.comments = value;
-        return this;
-    }
+	/** Sets the comments field. */
+	public TreeSitterProcessConfigBuilder withComments(final boolean value) {
+		this.comments = value;
+		return this;
+	}
 
-    /** Sets the docstrings field. */
-    public TreeSitterProcessConfigBuilder withDocstrings(final boolean value) {
-        this.docstrings = value;
-        return this;
-    }
+	/** Sets the docstrings field. */
+	public TreeSitterProcessConfigBuilder withDocstrings(final boolean value) {
+		this.docstrings = value;
+		return this;
+	}
 
-    /** Sets the symbols field. */
-    public TreeSitterProcessConfigBuilder withSymbols(final boolean value) {
-        this.symbols = value;
-        return this;
-    }
+	/** Sets the symbols field. */
+	public TreeSitterProcessConfigBuilder withSymbols(final boolean value) {
+		this.symbols = value;
+		return this;
+	}
 
-    /** Sets the diagnostics field. */
-    public TreeSitterProcessConfigBuilder withDiagnostics(final boolean value) {
-        this.diagnostics = value;
-        return this;
-    }
+	/** Sets the diagnostics field. */
+	public TreeSitterProcessConfigBuilder withDiagnostics(final boolean value) {
+		this.diagnostics = value;
+		return this;
+	}
 
-    /** Sets the chunkMaxSize field. */
-    public TreeSitterProcessConfigBuilder withChunkMaxSize(final Optional<Long> value) {
-        this.chunkMaxSize = value;
-        return this;
-    }
+	/** Sets the chunkMaxSize field. */
+	public TreeSitterProcessConfigBuilder withChunkMaxSize(final Optional<Long> value) {
+		this.chunkMaxSize = value;
+		return this;
+	}
 
-    /** Sets the contentMode field. */
-    public TreeSitterProcessConfigBuilder withContentMode(final CodeContentMode value) {
-        this.contentMode = value;
-        return this;
-    }
+	/** Sets the contentMode field. */
+	public TreeSitterProcessConfigBuilder withContentMode(final CodeContentMode value) {
+		this.contentMode = value;
+		return this;
+	}
 
-    /** Builds the TreeSitterProcessConfig instance. */
-    public TreeSitterProcessConfig build() {
-        return new TreeSitterProcessConfig(
-            structure,
-            imports,
-            exports,
-            comments,
-            docstrings,
-            symbols,
-            diagnostics,
-            chunkMaxSize,
-            contentMode
-        );
-    }
+	/** Builds the TreeSitterProcessConfig instance. */
+	public TreeSitterProcessConfig build() {
+		return new TreeSitterProcessConfig(structure, imports, exports, comments, docstrings, symbols, diagnostics,
+				chunkMaxSize, contentMode);
+	}
 }

@@ -11,45 +11,41 @@ import java.util.Optional;
 /**
  * Top-level structured document representation.
  *
- * A flat array of nodes with index-based parent/child references forming a tree.
- * Root-level nodes have {@code parent: None}. Use {@code body_roots()} and {@code furniture_roots()}
- * to iterate over top-level content by layer.
+ * A flat array of nodes with index-based parent/child references forming a
+ * tree. Root-level nodes have {@code parent: None}. Use {@code body_roots()}
+ * and {@code furniture_roots()} to iterate over top-level content by layer.
  *
  * # Validation
  *
- * Call {@code validate()} after construction to verify all node indices are in bounds
- * and parent-child relationships are bidirectionally consistent.
+ * Call {@code validate()} after construction to verify all node indices are in
+ * bounds and parent-child relationships are bidirectionally consistent.
  */
 public class DocumentStructureBuilder {
 
-    private List<DocumentNode> nodes = List.of();
-    private Optional<String> sourceFormat = Optional.empty();
-    private List<DocumentRelationship> relationships = List.of();
+	private List<DocumentNode> nodes = List.of();
+	private Optional<String> sourceFormat = Optional.empty();
+	private List<DocumentRelationship> relationships = List.of();
 
-    /** Sets the nodes field. */
-    public DocumentStructureBuilder withNodes(final List<DocumentNode> value) {
-        this.nodes = value;
-        return this;
-    }
+	/** Sets the nodes field. */
+	public DocumentStructureBuilder withNodes(final List<DocumentNode> value) {
+		this.nodes = value;
+		return this;
+	}
 
-    /** Sets the sourceFormat field. */
-    public DocumentStructureBuilder withSourceFormat(final Optional<String> value) {
-        this.sourceFormat = value;
-        return this;
-    }
+	/** Sets the sourceFormat field. */
+	public DocumentStructureBuilder withSourceFormat(final Optional<String> value) {
+		this.sourceFormat = value;
+		return this;
+	}
 
-    /** Sets the relationships field. */
-    public DocumentStructureBuilder withRelationships(final List<DocumentRelationship> value) {
-        this.relationships = value;
-        return this;
-    }
+	/** Sets the relationships field. */
+	public DocumentStructureBuilder withRelationships(final List<DocumentRelationship> value) {
+		this.relationships = value;
+		return this;
+	}
 
-    /** Builds the DocumentStructure instance. */
-    public DocumentStructure build() {
-        return new DocumentStructure(
-            nodes,
-            sourceFormat,
-            relationships
-        );
-    }
+	/** Builds the DocumentStructure instance. */
+	public DocumentStructure build() {
+		return new DocumentStructure(nodes, sourceFormat, relationships);
+	}
 }

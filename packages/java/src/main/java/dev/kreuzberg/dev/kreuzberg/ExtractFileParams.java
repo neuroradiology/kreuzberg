@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for file extraction.
  */
 public record ExtractFileParams(
-    /** Path to the file to extract */
-    String path,
-    /** Optional MIME type hint (auto-detected if not provided) */
-    @JsonProperty("mime_type") Optional<String> mimeType,
-    /** Extraction configuration (JSON object) */
-    Optional<Object> config,
-    /** Password for encrypted PDFs */
-    @JsonProperty("pdf_password") Optional<String> pdfPassword,
-    /** Wire format for the response: "json" (default) or "toon" */
-    @JsonProperty("response_format") Optional<String> responseFormat
-) {
+		/** Path to the file to extract */
+		String path,
+		/** Optional MIME type hint (auto-detected if not provided) */
+		@JsonProperty("mime_type") Optional<String> mimeType,
+		/** Extraction configuration (JSON object) */
+		Optional<Object> config,
+		/** Password for encrypted PDFs */
+		@JsonProperty("pdf_password") Optional<String> pdfPassword,
+		/** Wire format for the response: "json" (default) or "toon" */
+		@JsonProperty("response_format") Optional<String> responseFormat) {
 }

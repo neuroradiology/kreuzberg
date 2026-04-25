@@ -14,17 +14,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Contains metadata and optionally the content of an email attachment.
  */
 public record EmailAttachment(
-    /** Attachment name (from Content-Disposition header) */
-    Optional<String> name,
-    /** Filename of the attachment */
-    Optional<String> filename,
-    /** MIME type of the attachment */
-    @JsonProperty("mime_type") Optional<String> mimeType,
-    /** Size in bytes */
-    Optional<Long> size,
-    /** Whether this attachment is an image */
-    @JsonProperty("is_image") boolean isImage,
-    /** Attachment data (if extracted). */
-    Optional<byte[]> data
-) {
+		/** Attachment name (from Content-Disposition header) */
+		Optional<String> name,
+		/** Filename of the attachment */
+		Optional<String> filename,
+		/** MIME type of the attachment */
+		@JsonProperty("mime_type") Optional<String> mimeType,
+		/** Size in bytes */
+		Optional<Long> size,
+		/** Whether this attachment is an image */
+		@JsonProperty("is_image") boolean isImage,
+		/** Attachment data (if extracted). */
+		Optional<byte[]> data) {
 }

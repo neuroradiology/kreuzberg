@@ -14,50 +14,44 @@ import java.util.Optional;
  */
 public class BibtexMetadataBuilder {
 
-    private long entryCount = 0;
-    private List<String> citationKeys = List.of();
-    private List<String> authors = List.of();
-    private Optional<YearRange> yearRange = Optional.empty();
-    private Optional<Map<String, Long>> entryTypes = Optional.empty();
+	private long entryCount = 0;
+	private List<String> citationKeys = List.of();
+	private List<String> authors = List.of();
+	private Optional<YearRange> yearRange = Optional.empty();
+	private Optional<Map<String, Long>> entryTypes = Optional.empty();
 
-    /** Sets the entryCount field. */
-    public BibtexMetadataBuilder withEntryCount(final long value) {
-        this.entryCount = value;
-        return this;
-    }
+	/** Sets the entryCount field. */
+	public BibtexMetadataBuilder withEntryCount(final long value) {
+		this.entryCount = value;
+		return this;
+	}
 
-    /** Sets the citationKeys field. */
-    public BibtexMetadataBuilder withCitationKeys(final List<String> value) {
-        this.citationKeys = value;
-        return this;
-    }
+	/** Sets the citationKeys field. */
+	public BibtexMetadataBuilder withCitationKeys(final List<String> value) {
+		this.citationKeys = value;
+		return this;
+	}
 
-    /** Sets the authors field. */
-    public BibtexMetadataBuilder withAuthors(final List<String> value) {
-        this.authors = value;
-        return this;
-    }
+	/** Sets the authors field. */
+	public BibtexMetadataBuilder withAuthors(final List<String> value) {
+		this.authors = value;
+		return this;
+	}
 
-    /** Sets the yearRange field. */
-    public BibtexMetadataBuilder withYearRange(final Optional<YearRange> value) {
-        this.yearRange = value;
-        return this;
-    }
+	/** Sets the yearRange field. */
+	public BibtexMetadataBuilder withYearRange(final Optional<YearRange> value) {
+		this.yearRange = value;
+		return this;
+	}
 
-    /** Sets the entryTypes field. */
-    public BibtexMetadataBuilder withEntryTypes(final Optional<Map<String, Long>> value) {
-        this.entryTypes = value;
-        return this;
-    }
+	/** Sets the entryTypes field. */
+	public BibtexMetadataBuilder withEntryTypes(final Optional<Map<String, Long>> value) {
+		this.entryTypes = value;
+		return this;
+	}
 
-    /** Builds the BibtexMetadata instance. */
-    public BibtexMetadata build() {
-        return new BibtexMetadata(
-            entryCount,
-            citationKeys,
-            authors,
-            yearRange,
-            entryTypes
-        );
-    }
+	/** Builds the BibtexMetadata instance. */
+	public BibtexMetadata build() {
+		return new BibtexMetadata(entryCount, citationKeys, authors, yearRange, entryTypes);
+	}
 }

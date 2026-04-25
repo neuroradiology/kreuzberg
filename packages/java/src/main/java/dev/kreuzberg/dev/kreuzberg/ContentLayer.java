@@ -14,36 +14,36 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Replaces separate body/furniture arrays with per-node granularity.
  */
 public enum ContentLayer {
-    /** Main document body content. */
-    Body("body"),
-    /** Page/section header (running header). */
-    Header("header"),
-    /** Page/section footer (running footer). */
-    Footer("footer"),
-    /** Footnote content. */
-    Footnote("footnote");
+	/** Main document body content. */
+	Body("body"),
+	/** Page/section header (running header). */
+	Header("header"),
+	/** Page/section footer (running footer). */
+	Footer("footer"),
+	/** Footnote content. */
+	Footnote("footnote");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    ContentLayer(final String value) {
-        this.value = value;
-    }
+	ContentLayer(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ContentLayer fromValue(final String value) {
-        for (ContentLayer e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static ContentLayer fromValue(final String value) {
+		for (ContentLayer e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

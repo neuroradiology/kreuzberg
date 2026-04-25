@@ -13,15 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Metadata for a semantic element.
  */
 public record ElementMetadata(
-    /** Page number (1-indexed) */
-    @JsonProperty("page_number") Optional<Long> pageNumber,
-    /** Source filename or document name */
-    Optional<String> filename,
-    /** Bounding box coordinates if available */
-    Optional<String> coordinates,
-    /** Position index in the element sequence */
-    @JsonProperty("element_index") Optional<Long> elementIndex,
-    /** Additional custom metadata */
-    Map<String, String> additional
-) {
+		/** Page number (1-indexed) */
+		@JsonProperty("page_number") Optional<Long> pageNumber,
+		/** Source filename or document name */
+		Optional<String> filename,
+		/** Bounding box coordinates if available */
+		Optional<String> coordinates,
+		/** Position index in the element sequence */
+		@JsonProperty("element_index") Optional<Long> elementIndex,
+		/** Additional custom metadata */
+		Map<String, String> additional) {
 }

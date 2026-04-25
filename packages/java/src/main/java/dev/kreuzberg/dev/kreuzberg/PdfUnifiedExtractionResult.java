@@ -10,27 +10,28 @@ import java.lang.foreign.MemorySegment;
 /**
  * Result type for unified PDF text and metadata extraction.
  *
- * Contains text, optional page boundaries, optional per-page content, and metadata.
+ * Contains text, optional page boundaries, optional per-page content, and
+ * metadata.
  */
 public class PdfUnifiedExtractionResult implements AutoCloseable {
-    private final MemorySegment handle;
+	private final MemorySegment handle;
 
-    PdfUnifiedExtractionResult(MemorySegment handle) {
-        this.handle = handle;
-    }
+	PdfUnifiedExtractionResult(MemorySegment handle) {
+		this.handle = handle;
+	}
 
-    MemorySegment handle() {
-        return this.handle;
-    }
+	MemorySegment handle() {
+		return this.handle;
+	}
 
-    @Override
-    public void close() {
-        if (handle != null && !handle.equals(MemorySegment.NULL)) {
-            try {
-                NativeLib.KREUZBERG_PDF_UNIFIED_EXTRACTION_RESULT_FREE.invoke(handle);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to free PdfUnifiedExtractionResult: " + e.getMessage(), e);
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (handle != null && !handle.equals(MemorySegment.NULL)) {
+			try {
+				NativeLib.KREUZBERG_PDF_UNIFIED_EXTRACTION_RESULT_FREE.invoke(handle);
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to free PdfUnifiedExtractionResult: " + e.getMessage(), e);
+			}
+		}
+	}
 }

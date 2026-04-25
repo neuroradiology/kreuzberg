@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Header/heading element metadata.
  */
 public record HeaderMetadata(
-    /** Header level: 1 (h1) through 6 (h6) */
-    byte level,
-    /** Normalized text content of the header */
-    String text,
-    /** HTML id attribute if present */
-    Optional<String> id,
-    /** Document tree depth at the header element */
-    long depth,
-    /** Byte offset in original HTML document */
-    @JsonProperty("html_offset") long htmlOffset
-) {
+		/** Header level: 1 (h1) through 6 (h6) */
+		byte level,
+		/** Normalized text content of the header */
+		String text,
+		/** HTML id attribute if present */
+		Optional<String> id,
+		/** Document tree depth at the header element */
+		long depth,
+		/** Byte offset in original HTML document */
+		@JsonProperty("html_offset") long htmlOffset) {
 }

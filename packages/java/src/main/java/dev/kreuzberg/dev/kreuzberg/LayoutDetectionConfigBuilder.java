@@ -10,48 +10,43 @@ import java.util.Optional;
 /**
  * Layout detection configuration.
  *
- * Controls layout detection behavior in the extraction pipeline.
- * When set on [{@code ExtractionConfig}](super::ExtractionConfig), layout detection
- * is enabled for PDF extraction.
+ * Controls layout detection behavior in the extraction pipeline. When set on
+ * [{@code ExtractionConfig}](super::ExtractionConfig), layout detection is
+ * enabled for PDF extraction.
  */
 public class LayoutDetectionConfigBuilder {
 
-    private Optional<Float> confidenceThreshold = Optional.empty();
-    private boolean applyHeuristics = false;
-    private TableModel tableModel = null;
-    private Optional<AccelerationConfig> acceleration = Optional.empty();
+	private Optional<Float> confidenceThreshold = Optional.empty();
+	private boolean applyHeuristics = false;
+	private TableModel tableModel = null;
+	private Optional<AccelerationConfig> acceleration = Optional.empty();
 
-    /** Sets the confidenceThreshold field. */
-    public LayoutDetectionConfigBuilder withConfidenceThreshold(final Optional<Float> value) {
-        this.confidenceThreshold = value;
-        return this;
-    }
+	/** Sets the confidenceThreshold field. */
+	public LayoutDetectionConfigBuilder withConfidenceThreshold(final Optional<Float> value) {
+		this.confidenceThreshold = value;
+		return this;
+	}
 
-    /** Sets the applyHeuristics field. */
-    public LayoutDetectionConfigBuilder withApplyHeuristics(final boolean value) {
-        this.applyHeuristics = value;
-        return this;
-    }
+	/** Sets the applyHeuristics field. */
+	public LayoutDetectionConfigBuilder withApplyHeuristics(final boolean value) {
+		this.applyHeuristics = value;
+		return this;
+	}
 
-    /** Sets the tableModel field. */
-    public LayoutDetectionConfigBuilder withTableModel(final TableModel value) {
-        this.tableModel = value;
-        return this;
-    }
+	/** Sets the tableModel field. */
+	public LayoutDetectionConfigBuilder withTableModel(final TableModel value) {
+		this.tableModel = value;
+		return this;
+	}
 
-    /** Sets the acceleration field. */
-    public LayoutDetectionConfigBuilder withAcceleration(final Optional<AccelerationConfig> value) {
-        this.acceleration = value;
-        return this;
-    }
+	/** Sets the acceleration field. */
+	public LayoutDetectionConfigBuilder withAcceleration(final Optional<AccelerationConfig> value) {
+		this.acceleration = value;
+		return this;
+	}
 
-    /** Builds the LayoutDetectionConfig instance. */
-    public LayoutDetectionConfig build() {
-        return new LayoutDetectionConfig(
-            confidenceThreshold,
-            applyHeuristics,
-            tableModel,
-            acceleration
-        );
-    }
+	/** Builds the LayoutDetectionConfig instance. */
+	public LayoutDetectionConfig build() {
+		return new LayoutDetectionConfig(confidenceThreshold, applyHeuristics, tableModel, acceleration);
+	}
 }

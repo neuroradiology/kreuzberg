@@ -10,16 +10,9 @@ import java.util.Optional;
 /**
  * Page margins converted to points (1/72 inch).
  */
-public record PageMarginsPoints(
-    Optional<Double> top,
-    Optional<Double> right,
-    Optional<Double> bottom,
-    Optional<Double> left,
-    Optional<Double> header,
-    Optional<Double> footer,
-    Optional<Double> gutter
-) {
-    public static PageMarginsPointsBuilder builder() {
-        return new PageMarginsPointsBuilder();
-    }
+public record PageMarginsPoints(Optional<Double> top, Optional<Double> right, Optional<Double> bottom,
+		Optional<Double> left, Optional<Double> header, Optional<Double> footer, Optional<Double> gutter) {
+	public static PageMarginsPointsBuilder builder() {
+		return new PageMarginsPointsBuilder();
+	}
 }

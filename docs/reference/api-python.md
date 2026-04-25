@@ -1241,6 +1241,83 @@ def register_default_extractors() -> None
 
 ---
 
+#### unregister_ocr_backend()
+
+Unregister an OCR backend by name.
+
+Removes the OCR backend from the global registry and calls its `shutdown()` method.
+
+**Returns:**
+
+- `Ok(())` if the backend was unregistered or didn't exist
+- `Err(...)` if the shutdown method failed
+
+**Signature:**
+
+```python
+def unregister_ocr_backend(name: str) -> None
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | Name of the OCR backend to unregister |
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### list_ocr_backends()
+
+List all registered OCR backends.
+
+Returns the names of all OCR backends currently registered in the global registry.
+
+**Returns:**
+
+A vector of OCR backend names.
+
+**Signature:**
+
+```python
+def list_ocr_backends() -> list[str]
+```
+
+**Returns:** `list[str]`
+
+**Errors:** Raises `Error`.
+
+
+---
+
+#### clear_ocr_backends()
+
+Clear all OCR backends from the global registry.
+
+Removes all OCR backends and calls their `shutdown()` methods.
+
+**Returns:**
+
+- `Ok(())` if all backends were cleared successfully
+- `Err(...)` if any shutdown method failed
+
+**Signature:**
+
+```python
+def clear_ocr_backends() -> None
+```
+
+**Returns:** `None`
+
+**Errors:** Raises `Error`.
+
+
+---
+
 #### list_post_processors()
 
 List all registered post-processor names.
@@ -1828,27 +1905,20 @@ def openapi_json() -> str
 
 ---
 
-#### serve_with_server_config()
+#### serve_default()
 
-Start the API server with explicit extraction config and server config.
+Start the API server with default host and port.
 
-This function accepts a fully-configured ServerConfig, including CORS origins,
-size limits, host, and port. It respects all ServerConfig fields without
-re-parsing environment variables, making it ideal for CLI usage where
-configuration precedence has already been applied.
+Defaults: host = "127.0.0.1", port = 8000
+
+Uses config file discovery (searches current/parent directories for kreuzberg.toml/yaml/json).
+Validates plugins at startup to help diagnose configuration issues.
 
 **Signature:**
 
 ```python
-def serve_with_server_config(extraction_config: ExtractionConfig, server_config: ServerConfig) -> None
+def serve_default() -> None
 ```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `extraction_config` | `ExtractionConfig` | Yes | Default extraction configuration for all requests |
-| `server_config` | `ServerConfig` | Yes | Server configuration including host, port, CORS, and size limits |
 
 **Returns:** `None`
 
@@ -2756,13 +2826,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DepthValidator
-
-Helper struct for validating nesting depth.
-
-
----
-
 #### DetectMimeTypeParams
 
 Request parameters for MIME type detection.
@@ -2878,6 +2941,156 @@ Returned by `POST /v1/convert/file` for docling-serve compatibility.
 |-------|------|---------|-------------|
 | `document` | `str` | — | Converted document content |
 | `status` | `str` | — | Processing status |
+
+
+---
+
+#### DocumentExtractor
+
+Trait for document extractor plugins.
+
+Implement this trait to add support for new document formats or to override
+built-in extraction behavior with custom logic.
+
+# Return Type
+
+Extractors return `InternalDocument`, a flat intermediate representation.
+The pipeline converts this into the public `ExtractionResult` via the
+derivation step.
+
+# Priority System
+
+When multiple extractors support the same MIME type, the registry selects
+the extractor with the highest priority value. Use this to:
+- Override built-in extractors (priority > 50)
+- Provide fallback extractors (priority < 50)
+- Implement specialized extractors for specific use cases
+
+Default priority is 50.
+
+# Thread Safety
+
+Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
+
+##### Methods
+
+###### extract_bytes()
+
+Extract content from a byte array.
+
+This is the core extraction method that processes in-memory document data.
+
+**Returns:**
+
+An `InternalDocument` containing the extracted elements, metadata, and tables.
+The pipeline will convert this into the public `ExtractionResult`.
+
+**Errors:**
+
+- `KreuzbergError.Parsing` - Document parsing failed
+- `KreuzbergError.Validation` - Invalid document structure
+- `KreuzbergError.Io` - I/O errors (these always bubble up)
+- `KreuzbergError.MissingDependency` - Required dependency not available
+
+**Signature:**
+
+```python
+def extract_bytes(self, content: bytes, mime_type: str, config: ExtractionConfig) -> str
+```
+
+###### extract_file()
+
+Extract content from a file.
+
+Default implementation reads the file and calls `extract_bytes`.
+Override for custom file handling, streaming, or memory optimizations.
+
+**Returns:**
+
+An `InternalDocument` containing the extracted elements, metadata, and tables.
+
+**Errors:**
+
+Same as `extract_bytes`, plus file I/O errors.
+
+**Signature:**
+
+```python
+def extract_file(self, path: str, mime_type: str, config: ExtractionConfig) -> str
+```
+
+###### supported_mime_types()
+
+Get the list of MIME types supported by this extractor.
+
+Can include exact MIME types and prefix patterns:
+- Exact: `"application/pdf"`, `"text/plain"`
+- Prefix: `"image/*"` (matches any image type)
+
+**Returns:**
+
+A slice of MIME type strings.
+
+**Signature:**
+
+```python
+def supported_mime_types(self) -> list[str]
+```
+
+###### priority()
+
+Get the priority of this extractor.
+
+Higher priority extractors are preferred when multiple extractors
+support the same MIME type.
+
+# Priority Guidelines
+
+- **0-25**: Fallback/low-quality extractors
+- **26-49**: Alternative extractors
+- **50**: Default priority (built-in extractors)
+- **51-75**: Premium/enhanced extractors
+- **76-100**: Specialized/high-priority extractors
+
+**Returns:**
+
+Priority value (default: 50)
+
+**Signature:**
+
+```python
+def priority(self) -> int
+```
+
+###### can_handle()
+
+Optional: Check if this extractor can handle a specific file.
+
+Allows for more sophisticated detection beyond MIME types.
+Defaults to `True` (rely on MIME type matching).
+
+**Returns:**
+
+`True` if the extractor can handle this file, `False` otherwise.
+
+**Signature:**
+
+```python
+def can_handle(self, path: str, mime_type: str) -> bool
+```
+
+###### as_sync_extractor()
+
+Attempt to get a reference to this extractor as a SyncExtractor.
+
+Returns None if the extractor doesn't support synchronous extraction.
+This is used for WASM and other sync-only environments.
+
+**Signature:**
+
+```python
+def as_sync_extractor(self) -> SyncExtractor | None
+```
 
 
 ---
@@ -3165,13 +3378,6 @@ Requires the `embeddings` feature to be enabled.
 @staticmethod
 def default() -> EmbeddingConfig
 ```
-
-
----
-
-#### EntityValidator
-
-Helper struct for validating entity/string length.
 
 
 ---
@@ -3892,13 +4098,6 @@ Represents text with formatting, links, images, etc.
 
 ---
 
-#### IterationValidator
-
-Helper struct for validating iteration counts.
-
-
----
-
 #### JatsMetadata
 
 JATS (Journal Article Tag Suite) metadata.
@@ -3974,7 +4173,7 @@ A single layout detection result.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class` | `LayoutClass` | — | Class (layout class) |
+| `class_name` | `LayoutClass` | — | Class name (layout class) |
 | `confidence` | `float` | — | Confidence |
 | `bbox` | `BBox` | — | Bbox (b box) |
 
@@ -4020,7 +4219,7 @@ with confidence scores and spatial positions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class` | `str` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
+| `class_name` | `str` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
 | `confidence` | `float` | — | Confidence score from the layout detection model (0.0 to 1.0). |
 | `bounding_box` | `str` | — | Bounding box in document coordinate space. |
 | `area_fraction` | `float` | — | Fraction of the page area covered by this region (0.0 to 1.0). |
@@ -5029,6 +5228,125 @@ def author(self) -> str
 
 ---
 
+#### PostProcessor
+
+Trait for post-processor plugins.
+
+Post-processors transform or enrich extraction results after the initial
+extraction is complete. They can:
+- Clean and normalize text
+- Add metadata (language, keywords, entities)
+- Split content into chunks
+- Score quality
+- Apply custom transformations
+
+# Processing Order
+
+Post-processors are executed in stage order:
+1. **Early** - Language detection, entity extraction
+2. **Middle** - Keyword extraction, token reduction
+3. **Late** - Custom hooks, final validation
+
+Within each stage, processors are executed in registration order.
+
+# Error Handling
+
+Post-processor errors are non-fatal by default - they're captured in metadata
+and execution continues. To make errors fatal, return an error from `process()`.
+
+# Thread Safety
+
+Post-processors must be thread-safe (`Send + Sync`).
+
+##### Methods
+
+###### process()
+
+Process an extraction result.
+
+Transform or enrich the extraction result. Can modify:
+- `content` - The extracted text
+- `metadata` - Add or update metadata fields
+- `tables` - Modify or enhance table data
+
+**Returns:**
+
+`Ok(())` if processing succeeded, `Err(...)` for fatal failures.
+
+**Errors:**
+
+Return errors for fatal processing failures. Non-fatal errors should be
+captured in metadata directly on the result.
+
+# Performance
+
+This signature avoids unnecessary cloning of large extraction results by
+taking a mutable reference instead of ownership. Processors modify the
+result in place.
+
+# Example - Language Detection
+
+
+# Example - Text Cleaning
+
+**Signature:**
+
+```python
+def process(self, result: ExtractionResult, config: ExtractionConfig) -> None
+```
+
+###### processing_stage()
+
+Get the processing stage for this post-processor.
+
+Determines when this processor runs in the pipeline.
+
+**Returns:**
+
+The `ProcessingStage` (Early, Middle, or Late).
+
+**Signature:**
+
+```python
+def processing_stage(self) -> ProcessingStage
+```
+
+###### should_process()
+
+Optional: Check if this processor should run for a given result.
+
+Allows conditional processing based on MIME type, metadata, or content.
+Defaults to `True` (always run).
+
+**Returns:**
+
+`True` if the processor should run, `False` to skip.
+
+**Signature:**
+
+```python
+def should_process(self, result: ExtractionResult, config: ExtractionConfig) -> bool
+```
+
+###### estimated_duration_ms()
+
+Optional: Estimate processing time in milliseconds.
+
+Used for logging and debugging. Defaults to 0 (unknown).
+
+**Returns:**
+
+Estimated processing time in milliseconds.
+
+**Signature:**
+
+```python
+def estimated_duration_ms(self, result: ExtractionResult) -> int
+```
+
+
+---
+
 #### PostProcessorConfig
 
 Post-processor configuration.
@@ -5326,13 +5644,6 @@ Convenience type alias for a pooled String.
 
 ---
 
-#### StringGrowthValidator
-
-Helper struct for tracking and validating string growth.
-
-
----
-
 #### StructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
@@ -5476,13 +5787,6 @@ Table-level properties from `<w:tblPr>`.
 | `cell_margins` | `str | None` | `None` | Cell margins |
 | `indent` | `str | None` | `None` | Indent |
 | `caption` | `str | None` | `None` | Caption |
-
-
----
-
-#### TableValidator
-
-Helper struct for validating table cell counts.
 
 
 ---
@@ -5767,6 +6071,105 @@ optional human-readable display text.
 | `label` | `str | None` | `None` | Optional display text / label for the link. |
 | `page` | `int | None` | `None` | Optional page number where the URI was found (1-indexed). |
 | `kind` | `UriKind` | — | Semantic classification of the URI. |
+
+
+---
+
+#### Validator
+
+Trait for validator plugins.
+
+Validators check extraction results for quality, completeness, or correctness.
+Unlike post-processors, validator errors **fail fast** - if a validator returns
+an error, the extraction fails immediately.
+
+# Use Cases
+
+- **Quality Gates**: Ensure extracted content meets minimum quality standards
+- **Compliance**: Verify content meets regulatory requirements
+- **Content Filtering**: Reject documents containing unwanted content
+- **Format Validation**: Verify extracted content structure
+- **Security Checks**: Scan for malicious content
+
+# Error Handling
+
+Validator errors are **fatal** - they cause the extraction to fail and bubble up
+to the caller. Use validators for hard requirements that must be met.
+
+For non-fatal checks, use post-processors instead.
+
+# Thread Safety
+
+Validators must be thread-safe (`Send + Sync`).
+
+##### Methods
+
+###### validate()
+
+Validate an extraction result.
+
+Check the extraction result and return `Ok(())` if valid, or an error
+if validation fails.
+
+**Returns:**
+
+- `Ok(())` if validation passes
+- `Err(...)` if validation fails (extraction will fail)
+
+**Errors:**
+
+- `KreuzbergError.Validation` - Validation failed
+- Any other error type appropriate for the failure
+
+# Example - Content Length Validation
+
+
+# Example - Quality Score Validation
+
+
+# Example - Security Validation
+
+**Signature:**
+
+```python
+def validate(self, result: ExtractionResult, config: ExtractionConfig) -> None
+```
+
+###### should_validate()
+
+Optional: Check if this validator should run for a given result.
+
+Allows conditional validation based on MIME type, metadata, or content.
+Defaults to `True` (always run).
+
+**Returns:**
+
+`True` if the validator should run, `False` to skip.
+
+**Signature:**
+
+```python
+def should_validate(self, result: ExtractionResult, config: ExtractionConfig) -> bool
+```
+
+###### priority()
+
+Optional: Get the validation priority.
+
+Higher priority validators run first. Useful for ordering validation checks
+(e.g., run cheap validations before expensive ones).
+
+Default priority is 50.
+
+**Returns:**
+
+Priority value (higher = runs earlier).
+
+**Signature:**
+
+```python
+def priority(self) -> int
+```
 
 
 ---
@@ -6069,6 +6472,22 @@ OCR backend types.
 | `EASY_OCR` | EasyOCR (Python-based, via FFI) |
 | `PADDLE_OCR` | PaddleOCR (Python-based, via FFI) |
 | `CUSTOM` | Custom/third-party OCR backend |
+
+
+---
+
+#### ProcessingStage
+
+Processing stages for post-processors.
+
+Post-processors are executed in stage order (Early → Middle → Late).
+Use stages to control the order of post-processing operations.
+
+| Value | Description |
+|-------|-------------|
+| `EARLY` | Early stage - foundational processing. Use for: - Language detection - Character encoding normalization - Entity extraction (NER) - Text quality scoring |
+| `MIDDLE` | Middle stage - content transformation. Use for: - Keyword extraction - Token reduction - Text summarization - Semantic analysis |
+| `LATE` | Late stage - final enrichment. Use for: - Custom user hooks - Analytics/logging - Final validation - Output formatting |
 
 
 ---

@@ -13,17 +13,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Image element metadata.
  */
 public record ImageMetadataType(
-    /** Image source (URL, data URI, or SVG content) */
-    String src,
-    /** Alternative text from alt attribute */
-    Optional<String> alt,
-    /** Title attribute */
-    Optional<String> title,
-    /** Image dimensions as (width, height) if available */
-    Optional<List<Integer>> dimensions,
-    /** Image type classification */
-    @JsonProperty("image_type") ImageType imageType,
-    /** Additional attributes as key-value pairs */
-    List<String> attributes
-) {
+		/** Image source (URL, data URI, or SVG content) */
+		String src,
+		/** Alternative text from alt attribute */
+		Optional<String> alt,
+		/** Title attribute */
+		Optional<String> title,
+		/** Image dimensions as (width, height) if available */
+		Optional<List<Integer>> dimensions,
+		/** Image type classification */
+		@JsonProperty("image_type") ImageType imageType,
+		/** Additional attributes as key-value pairs */
+		List<String> attributes) {
 }

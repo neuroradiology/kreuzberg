@@ -15,66 +15,58 @@ import java.util.Optional;
  */
 public class EmailMetadataBuilder {
 
-    private Optional<String> fromEmail = Optional.empty();
-    private Optional<String> fromName = Optional.empty();
-    private List<String> toEmails = List.of();
-    private List<String> ccEmails = List.of();
-    private List<String> bccEmails = List.of();
-    private Optional<String> messageId = Optional.empty();
-    private List<String> attachments = List.of();
+	private Optional<String> fromEmail = Optional.empty();
+	private Optional<String> fromName = Optional.empty();
+	private List<String> toEmails = List.of();
+	private List<String> ccEmails = List.of();
+	private List<String> bccEmails = List.of();
+	private Optional<String> messageId = Optional.empty();
+	private List<String> attachments = List.of();
 
-    /** Sets the fromEmail field. */
-    public EmailMetadataBuilder withFromEmail(final Optional<String> value) {
-        this.fromEmail = value;
-        return this;
-    }
+	/** Sets the fromEmail field. */
+	public EmailMetadataBuilder withFromEmail(final Optional<String> value) {
+		this.fromEmail = value;
+		return this;
+	}
 
-    /** Sets the fromName field. */
-    public EmailMetadataBuilder withFromName(final Optional<String> value) {
-        this.fromName = value;
-        return this;
-    }
+	/** Sets the fromName field. */
+	public EmailMetadataBuilder withFromName(final Optional<String> value) {
+		this.fromName = value;
+		return this;
+	}
 
-    /** Sets the toEmails field. */
-    public EmailMetadataBuilder withToEmails(final List<String> value) {
-        this.toEmails = value;
-        return this;
-    }
+	/** Sets the toEmails field. */
+	public EmailMetadataBuilder withToEmails(final List<String> value) {
+		this.toEmails = value;
+		return this;
+	}
 
-    /** Sets the ccEmails field. */
-    public EmailMetadataBuilder withCcEmails(final List<String> value) {
-        this.ccEmails = value;
-        return this;
-    }
+	/** Sets the ccEmails field. */
+	public EmailMetadataBuilder withCcEmails(final List<String> value) {
+		this.ccEmails = value;
+		return this;
+	}
 
-    /** Sets the bccEmails field. */
-    public EmailMetadataBuilder withBccEmails(final List<String> value) {
-        this.bccEmails = value;
-        return this;
-    }
+	/** Sets the bccEmails field. */
+	public EmailMetadataBuilder withBccEmails(final List<String> value) {
+		this.bccEmails = value;
+		return this;
+	}
 
-    /** Sets the messageId field. */
-    public EmailMetadataBuilder withMessageId(final Optional<String> value) {
-        this.messageId = value;
-        return this;
-    }
+	/** Sets the messageId field. */
+	public EmailMetadataBuilder withMessageId(final Optional<String> value) {
+		this.messageId = value;
+		return this;
+	}
 
-    /** Sets the attachments field. */
-    public EmailMetadataBuilder withAttachments(final List<String> value) {
-        this.attachments = value;
-        return this;
-    }
+	/** Sets the attachments field. */
+	public EmailMetadataBuilder withAttachments(final List<String> value) {
+		this.attachments = value;
+		return this;
+	}
 
-    /** Builds the EmailMetadata instance. */
-    public EmailMetadata build() {
-        return new EmailMetadata(
-            fromEmail,
-            fromName,
-            toEmails,
-            ccEmails,
-            bccEmails,
-            messageId,
-            attachments
-        );
-    }
+	/** Builds the EmailMetadata instance. */
+	public EmailMetadata build() {
+		return new EmailMetadata(fromEmail, fromName, toEmails, ccEmails, bccEmails, messageId, attachments);
+	}
 }

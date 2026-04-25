@@ -11,21 +11,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Layout detection configuration.
  *
- * Controls layout detection behavior in the extraction pipeline.
- * When set on [{@code ExtractionConfig}](super::ExtractionConfig), layout detection
- * is enabled for PDF extraction.
+ * Controls layout detection behavior in the extraction pipeline. When set on
+ * [{@code ExtractionConfig}](super::ExtractionConfig), layout detection is
+ * enabled for PDF extraction.
  */
 public record LayoutDetectionConfig(
-    /** Confidence threshold override (None = use model default). */
-    @JsonProperty("confidence_threshold") Optional<Float> confidenceThreshold,
-    /** Whether to apply postprocessing heuristics (default: true). */
-    @JsonProperty("apply_heuristics") boolean applyHeuristics,
-    /** Table structure recognition model. */
-    @JsonProperty("table_model") TableModel tableModel,
-    /** Hardware acceleration for ONNX models (layout detection + table structure). */
-    Optional<AccelerationConfig> acceleration
-) {
-    public static LayoutDetectionConfigBuilder builder() {
-        return new LayoutDetectionConfigBuilder();
-    }
+		/** Confidence threshold override (None = use model default). */
+		@JsonProperty("confidence_threshold") Optional<Float> confidenceThreshold,
+		/** Whether to apply postprocessing heuristics (default: true). */
+		@JsonProperty("apply_heuristics") boolean applyHeuristics,
+		/** Table structure recognition model. */
+		@JsonProperty("table_model") TableModel tableModel,
+		/**
+		 * Hardware acceleration for ONNX models (layout detection + table structure).
+		 */
+		Optional<AccelerationConfig> acceleration) {
+	public static LayoutDetectionConfigBuilder builder() {
+		return new LayoutDetectionConfigBuilder();
+	}
 }

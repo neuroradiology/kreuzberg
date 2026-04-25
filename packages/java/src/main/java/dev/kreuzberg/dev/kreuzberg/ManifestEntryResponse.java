@@ -11,13 +11,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Model manifest entry for cache management.
  */
 public record ManifestEntryResponse(
-    /** Relative path within the cache directory */
-    @JsonProperty("relative_path") String relativePath,
-    /** SHA256 checksum of the model file */
-    String sha256,
-    /** Expected file size in bytes */
-    @JsonProperty("size_bytes") long sizeBytes,
-    /** HuggingFace source URL for downloading */
-    @JsonProperty("source_url") String sourceUrl
-) {
+		/** Relative path within the cache directory */
+		@JsonProperty("relative_path") String relativePath,
+		/** SHA256 checksum of the model file */
+		String sha256,
+		/** Expected file size in bytes */
+		@JsonProperty("size_bytes") long sizeBytes,
+		/** HuggingFace source URL for downloading */
+		@JsonProperty("source_url") String sourceUrl) {
 }

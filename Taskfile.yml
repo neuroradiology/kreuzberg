@@ -1,79 +1,94 @@
 version: "3"
 
+# ============================================================================
+# kreuzberg — Root Taskfile
+# ============================================================================
+# Primary development interface. Rust core tasks delegate to .task/languages/rust.yml.
+# All binding language operations (setup, build, test, lint, format, clean, update)
+# are handled by alef v0.7.2.
+#
+# Command patterns:
+#   task setup         -> install all dependencies
+#   task build         -> build core + bindings
+#   task test          -> run all tests
+#   task lint          -> run all linters via prek
+#   task fmt           -> format all code
+#   task rust:build    -> Rust-specific tasks
+# ============================================================================
+
 includes:
-  _cfg:
-    taskfile: .task/config/vars.yml
-    internal: true
-
   rust:
-    taskfile: .task/languages/rust.yml
-
+    taskfile: ./.task/languages/rust.yml
+  version:
+    taskfile: ./.task/tools/version-sync.yml
   benchmark:
-    taskfile: .task/workflows/benchmark.yml
-
+    taskfile: ./.task/workflows/benchmark.yml
   pdfium:
-    taskfile: .task/tools/pdfium.yml
+    taskfile: ./.task/tools/pdfium.yml
   docs:
-    taskfile: .task/tools/docs.yml
+    taskfile: ./.task/tools/docs.yml
   _tools:
-    taskfile: .task/tools/general.yml
+    taskfile: ./.task/tools/general.yml
     flatten: true
 
-vars:
-  RUST_LOG: info
-
 tasks:
-  setup:
-    desc: "Install all dependencies and initialize project."
+  # === Default ===
+  default:
+    desc: "List available tasks"
     cmds:
-      - echo "Installing Rust tools..."
+      - task --list
+
+  # === Setup ===
+  setup:
+    desc: "Install all dependencies and setup development environment"
+    cmds:
       - task: rust:install
       - alef setup
       - task: pre-commit:install
-      - echo "Setup complete"
 
+  # === Build ===
   build:
-    desc: Build core Rust libraries
+    desc: "Build core Rust library and all language bindings"
     cmds:
       - task: rust:build
       - alef build
 
-  test:
-    desc: Run Rust test suite
+  build:dev:
+    desc: "Build all in debug mode"
     cmds:
-      - task: rust:test
-      - alef test
+      - task: rust:build:dev
 
-  check:
-    desc: Run all linting and formatting checks via prek
+  build:release:
+    desc: "Build all in release mode"
     cmds:
-      - task: lint
+      - task: rust:build:release
 
-  update:
-    desc: Update all dependencies to latest versions
+  build:ci:
+    desc: "Build all in CI mode"
     cmds:
-      - echo "Updating Rust dependencies..."
-      - task: rust:update
-      - alef update
-      - echo "Updating prek dependencies..."
-      - prek autoupdate
-      - echo "All dependencies updated"
+      - task: rust:build:ci
 
-  clean:
-    desc: Clean all build artifacts
+  build:core:
+    desc: "Build Rust core library only"
     cmds:
-      - task: rust:clean
-      - alef clean
-
-  lint:
-    desc: Run all linters and formatters via prek (pre-commit framework)
-    cmds:
-      - prek run --all-files
+      - task: rust:build
 
   build:bindings:
     desc: "Build all language bindings (skip Rust core)"
     cmds:
       - alef build
+
+  build:cli:
+    desc: "Build the kreuzberg CLI binary"
+    cmds:
+      - task: rust:cli:build
+
+  # === Test ===
+  test:
+    desc: "Run all test suites across all languages"
+    cmds:
+      - task: rust:test
+      - alef test
 
   test:bindings:
     desc: "Run binding test suites only (skip Rust core)"
@@ -85,6 +100,17 @@ tasks:
     cmds:
       - task: rust:test:ci
       - alef test --coverage
+
+  # === Lint & Format ===
+  lint:
+    desc: "Lint all code via prek (pre-commit framework)"
+    cmds:
+      - prek run --all-files
+
+  lint:check:
+    desc: "Lint all code WITHOUT auto-fix (check-only)"
+    cmds:
+      - task: rust:lint:check
 
   fmt:
     desc: "Format all code"
@@ -102,47 +128,76 @@ tasks:
     cmds:
       - task: rust:format:check
 
+  check:
+    desc: "Run all checks (format + lint, no modifications)"
+    cmds:
+      - task: format:check
+      - task: lint:check
+
+  # === Update ===
+  update:
+    desc: "Update all dependencies across all languages"
+    cmds:
+      - task: rust:update
+      - alef update
+      - prek autoupdate
+
+  # === Coverage ===
+  cov:rust:
+    desc: "Generate Rust coverage report"
+    cmds:
+      - task: rust:test:ci
+
+  cov:all:
+    desc: "Generate coverage for all languages"
+    cmds:
+      - task: rust:test:ci
+      - alef test --coverage
+
+  # === Version ===
   versions:sync:
     desc: "Synchronize version from Cargo.toml to all package manifests"
     cmds:
-      - alef sync-versions
+      - task: version:sync
 
-  # Alef binding generation tasks
+  # === Alef lifecycle ===
   alef:generate:
-    desc: Generate all bindings, stubs, scaffolding, and README via alef
+    desc: "Run full alef pipeline (generate + stubs + scaffold + readme + docs + e2e)"
     cmds:
       - alef all --clean
 
   alef:verify:
-    desc: Verify all generated bindings are up to date (CI mode)
+    desc: "Check bindings are up-to-date (CI mode)"
     cmds:
       - alef verify --exit-code
 
   alef:build:
-    desc: Build all language bindings
+    desc: "Build all language bindings"
     cmds:
       - alef build
 
-  alef:e2e:generate:
-    desc: Generate e2e tests from fixtures
-    cmds:
-      - alef e2e generate
-
-  alef:e2e:test:
-    desc: Run e2e tests for all languages
-    cmds:
-      - alef test --e2e
-
   alef:sync:
-    desc: Sync version from Cargo.toml to all package manifests
+    desc: "Sync version from Cargo.toml to all manifests"
     cmds:
       - alef sync-versions
 
   alef:docs:
-    desc: Generate API reference documentation
+    desc: "Generate API reference documentation"
     cmds:
       - alef docs --output docs/reference/
 
+  # === E2E tests ===
+  e2e:generate:
+    desc: "Generate E2E tests for all languages from fixtures"
+    cmds:
+      - alef e2e generate
+
+  e2e:test:
+    desc: "Run E2E tests for all languages"
+    cmds:
+      - alef test --e2e
+
+  # === Publish ===
   publish:validate:
     desc: "Validate publish manifests are consistent"
     cmds:
@@ -162,3 +217,10 @@ tasks:
     desc: "Package built artifacts into distributable archives"
     cmds:
       - alef publish package -o dist/
+
+  # === Clean ===
+  clean:
+    desc: "Remove build artifacts across all languages"
+    cmds:
+      - task: rust:clean
+      - alef clean

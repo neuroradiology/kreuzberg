@@ -15,12 +15,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * spreadsheet formats (.xlsx, .xls, .ods, etc.).
  */
 public record ExcelMetadata(
-    /** Total number of sheets in the workbook */
-    @JsonProperty("sheet_count") long sheetCount,
-    /** Names of all sheets in order */
-    @JsonProperty("sheet_names") List<String> sheetNames
-) {
-    public static ExcelMetadataBuilder builder() {
-        return new ExcelMetadataBuilder();
-    }
+		/** Total number of sheets in the workbook */
+		@JsonProperty("sheet_count") long sheetCount, /** Names of all sheets in order */
+		@JsonProperty("sheet_names") List<String> sheetNames) {
+	public static ExcelMetadataBuilder builder() {
+		return new ExcelMetadataBuilder();
+	}
 }

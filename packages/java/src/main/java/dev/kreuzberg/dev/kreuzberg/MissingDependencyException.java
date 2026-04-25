@@ -3,13 +3,15 @@
 package dev.kreuzberg;
 
 public class MissingDependencyException extends KreuzbergErrorException {
-    /** Creates a new MissingDependencyException with the given message. */
-    public MissingDependencyException(final String message) {
-        super(message);
-    }
+	/** Creates a new MissingDependencyException with the given message. */
+	public MissingDependencyException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new MissingDependencyException with the given message and cause. */
-    public MissingDependencyException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Creates a new MissingDependencyException with the given message and cause.
+	 */
+	public MissingDependencyException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

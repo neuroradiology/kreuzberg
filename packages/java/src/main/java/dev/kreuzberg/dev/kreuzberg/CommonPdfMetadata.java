@@ -12,13 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Common metadata fields extracted from a PDF.
  */
-public record CommonPdfMetadata(
-    Optional<String> title,
-    Optional<String> subject,
-    Optional<List<String>> authors,
-    Optional<List<String>> keywords,
-    @JsonProperty("created_at") Optional<String> createdAt,
-    @JsonProperty("modified_at") Optional<String> modifiedAt,
-    @JsonProperty("created_by") Optional<String> createdBy
-) {
+public record CommonPdfMetadata(Optional<String> title, Optional<String> subject, Optional<List<String>> authors,
+		Optional<List<String>> keywords, @JsonProperty("created_at") Optional<String> createdAt,
+		@JsonProperty("modified_at") Optional<String> modifiedAt,
+		@JsonProperty("created_by") Optional<String> createdBy) {
 }

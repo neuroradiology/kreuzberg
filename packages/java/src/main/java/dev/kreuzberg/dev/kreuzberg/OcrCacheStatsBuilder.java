@@ -5,29 +5,25 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 public class OcrCacheStatsBuilder {
 
-    private long totalFiles = 0;
-    private double totalSizeMb = 0.0;
+	private long totalFiles = 0;
+	private double totalSizeMb = 0.0;
 
-    /** Sets the totalFiles field. */
-    public OcrCacheStatsBuilder withTotalFiles(final long value) {
-        this.totalFiles = value;
-        return this;
-    }
+	/** Sets the totalFiles field. */
+	public OcrCacheStatsBuilder withTotalFiles(final long value) {
+		this.totalFiles = value;
+		return this;
+	}
 
-    /** Sets the totalSizeMb field. */
-    public OcrCacheStatsBuilder withTotalSizeMb(final double value) {
-        this.totalSizeMb = value;
-        return this;
-    }
+	/** Sets the totalSizeMb field. */
+	public OcrCacheStatsBuilder withTotalSizeMb(final double value) {
+		this.totalSizeMb = value;
+		return this;
+	}
 
-    /** Builds the OcrCacheStats instance. */
-    public OcrCacheStats build() {
-        return new OcrCacheStats(
-            totalFiles,
-            totalSizeMb
-        );
-    }
+	/** Builds the OcrCacheStats instance. */
+	public OcrCacheStats build() {
+		return new OcrCacheStats(totalFiles, totalSizeMb);
+	}
 }

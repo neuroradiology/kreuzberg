@@ -12,23 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * Controls whether "furniture" content (headers, footers, page numbers,
  * watermarks, repeating text) is included in or stripped from extraction
- * results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.)
- * with format-specific implementation.
+ * results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.) with
+ * format-specific implementation.
  *
- * When {@code None} on {@code ExtractionConfig}, each extractor uses its current
- * default behavior unchanged.
+ * When {@code None} on {@code ExtractionConfig}, each extractor uses its
+ * current default behavior unchanged.
  */
 public record ContentFilterConfig(
-    /** Include running headers in extraction output. */
-    @JsonProperty("include_headers") boolean includeHeaders,
-    /** Include running footers in extraction output. */
-    @JsonProperty("include_footers") boolean includeFooters,
-    /** Enable the heuristic cross-page repeating text detector. */
-    @JsonProperty("strip_repeating_text") boolean stripRepeatingText,
-    /** Include watermark text in extraction output. */
-    @JsonProperty("include_watermarks") boolean includeWatermarks
-) {
-    public static ContentFilterConfigBuilder builder() {
-        return new ContentFilterConfigBuilder();
-    }
+		/** Include running headers in extraction output. */
+		@JsonProperty("include_headers") boolean includeHeaders,
+		/** Include running footers in extraction output. */
+		@JsonProperty("include_footers") boolean includeFooters,
+		/** Enable the heuristic cross-page repeating text detector. */
+		@JsonProperty("strip_repeating_text") boolean stripRepeatingText,
+		/** Include watermark text in extraction output. */
+		@JsonProperty("include_watermarks") boolean includeWatermarks) {
+	public static ContentFilterConfigBuilder builder() {
+		return new ContentFilterConfigBuilder();
+	}
 }

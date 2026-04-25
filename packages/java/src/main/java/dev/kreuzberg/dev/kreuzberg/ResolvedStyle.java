@@ -10,11 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Fully resolved (flattened) style after walking the inheritance chain.
  */
-public record ResolvedStyle(
-    @JsonProperty("paragraph_properties") String paragraphProperties,
-    @JsonProperty("run_properties") String runProperties
-) {
-    public static ResolvedStyleBuilder builder() {
-        return new ResolvedStyleBuilder();
-    }
+public record ResolvedStyle(@JsonProperty("paragraph_properties") String paragraphProperties,
+		@JsonProperty("run_properties") String runProperties) {
+	public static ResolvedStyleBuilder builder() {
+		return new ResolvedStyleBuilder();
+	}
 }

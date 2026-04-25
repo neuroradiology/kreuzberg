@@ -15,42 +15,37 @@ import java.util.Optional;
  */
 public class PptxMetadataBuilder {
 
-    private long slideCount = 0;
-    private List<String> slideNames = List.of();
-    private Optional<Long> imageCount = Optional.empty();
-    private Optional<Long> tableCount = Optional.empty();
+	private long slideCount = 0;
+	private List<String> slideNames = List.of();
+	private Optional<Long> imageCount = Optional.empty();
+	private Optional<Long> tableCount = Optional.empty();
 
-    /** Sets the slideCount field. */
-    public PptxMetadataBuilder withSlideCount(final long value) {
-        this.slideCount = value;
-        return this;
-    }
+	/** Sets the slideCount field. */
+	public PptxMetadataBuilder withSlideCount(final long value) {
+		this.slideCount = value;
+		return this;
+	}
 
-    /** Sets the slideNames field. */
-    public PptxMetadataBuilder withSlideNames(final List<String> value) {
-        this.slideNames = value;
-        return this;
-    }
+	/** Sets the slideNames field. */
+	public PptxMetadataBuilder withSlideNames(final List<String> value) {
+		this.slideNames = value;
+		return this;
+	}
 
-    /** Sets the imageCount field. */
-    public PptxMetadataBuilder withImageCount(final Optional<Long> value) {
-        this.imageCount = value;
-        return this;
-    }
+	/** Sets the imageCount field. */
+	public PptxMetadataBuilder withImageCount(final Optional<Long> value) {
+		this.imageCount = value;
+		return this;
+	}
 
-    /** Sets the tableCount field. */
-    public PptxMetadataBuilder withTableCount(final Optional<Long> value) {
-        this.tableCount = value;
-        return this;
-    }
+	/** Sets the tableCount field. */
+	public PptxMetadataBuilder withTableCount(final Optional<Long> value) {
+		this.tableCount = value;
+		return this;
+	}
 
-    /** Builds the PptxMetadata instance. */
-    public PptxMetadata build() {
-        return new PptxMetadata(
-            slideCount,
-            slideNames,
-            imageCount,
-            tableCount
-        );
-    }
+	/** Builds the PptxMetadata instance. */
+	public PptxMetadata build() {
+		return new PptxMetadata(slideCount, slideNames, imageCount, tableCount);
+	}
 }

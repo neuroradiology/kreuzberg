@@ -10,31 +10,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Hardware acceleration configuration for ONNX Runtime models.
  *
- * Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
- * for inference in layout detection and embedding generation.
+ * Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used for
+ * inference in layout detection and embedding generation.
  *
  * # Example
  *
- * {@code }{@code rust}
- * use kreuzberg::AccelerationConfig;
+ * {@code }{@code rust} use kreuzberg::AccelerationConfig;
  *
- * // Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere
- * let config = AccelerationConfig::default();
+ * // Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere let config =
+ * AccelerationConfig::default();
  *
- * // Force CPU only
- * let config = AccelerationConfig {
- *     provider: kreuzberg::ExecutionProviderType::Cpu,
- *     ..Default::default()
- * };
+ * // Force CPU only let config = AccelerationConfig { provider:
+ * kreuzberg::ExecutionProviderType::Cpu, ..Default::default() };
  * {@code }{@code }
  */
 public record AccelerationConfig(
-    /** Execution provider to use for ONNX inference. */
-    ExecutionProviderType provider,
-    /** GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. */
-    @JsonProperty("device_id") int deviceId
-) {
-    public static AccelerationConfigBuilder builder() {
-        return new AccelerationConfigBuilder();
-    }
+		/** Execution provider to use for ONNX inference. */
+		ExecutionProviderType provider, /** GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. */
+		@JsonProperty("device_id") int deviceId) {
+	public static AccelerationConfigBuilder builder() {
+		return new AccelerationConfigBuilder();
+	}
 }

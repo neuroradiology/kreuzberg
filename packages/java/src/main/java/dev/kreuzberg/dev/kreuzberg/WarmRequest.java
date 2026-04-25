@@ -12,12 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Cache warm request.
  */
 public record WarmRequest(
-    /** Download all embedding model presets */
-    @JsonProperty("all_embeddings") boolean allEmbeddings,
-    /** Specific embedding model preset to download */
-    @JsonProperty("embedding_model") Optional<String> embeddingModel
-) {
-    public static WarmRequestBuilder builder() {
-        return new WarmRequestBuilder();
-    }
+		/** Download all embedding model presets */
+		@JsonProperty("all_embeddings") boolean allEmbeddings, /** Specific embedding model preset to download */
+		@JsonProperty("embedding_model") Optional<String> embeddingModel) {
+	public static WarmRequestBuilder builder() {
+		return new WarmRequestBuilder();
+	}
 }

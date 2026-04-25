@@ -13,42 +13,42 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * HTML metadata extracted from HTML documents.
  *
- * Includes document-level metadata, Open Graph data, Twitter Card metadata,
- * and extracted structural elements (headers, links, images, structured data).
+ * Includes document-level metadata, Open Graph data, Twitter Card metadata, and
+ * extracted structural elements (headers, links, images, structured data).
  */
 public record HtmlMetadata(
-    /** Document title from {@code <title>} tag */
-    Optional<String> title,
-    /** Document description from {@code <meta name="description">} tag */
-    Optional<String> description,
-    /** Document keywords from {@code <meta name="keywords">} tag, split on commas */
-    List<String> keywords,
-    /** Document author from {@code <meta name="author">} tag */
-    Optional<String> author,
-    /** Canonical URL from {@code <link rel="canonical">} tag */
-    @JsonProperty("canonical_url") Optional<String> canonicalUrl,
-    /** Base URL from {@code <base href="">} tag for resolving relative URLs */
-    @JsonProperty("base_href") Optional<String> baseHref,
-    /** Document language from {@code lang} attribute */
-    Optional<String> language,
-    /** Document text direction from {@code dir} attribute */
-    @JsonProperty("text_direction") Optional<TextDirection> textDirection,
-    /** Open Graph metadata (og:* properties) for social media */
-    @JsonProperty("open_graph") Map<String, String> openGraph,
-    /** Twitter Card metadata (twitter:* properties) */
-    @JsonProperty("twitter_card") Map<String, String> twitterCard,
-    /** Additional meta tags not covered by specific fields */
-    @JsonProperty("meta_tags") Map<String, String> metaTags,
-    /** Extracted header elements with hierarchy */
-    List<HeaderMetadata> headers,
-    /** Extracted hyperlinks with type classification */
-    List<LinkMetadata> links,
-    /** Extracted images with source and dimensions */
-    List<ImageMetadataType> images,
-    /** Extracted structured data blocks */
-    @JsonProperty("structured_data") List<StructuredData> structuredData
-) {
-    public static HtmlMetadataBuilder builder() {
-        return new HtmlMetadataBuilder();
-    }
+		/** Document title from {@code <title>} tag */
+		Optional<String> title,
+		/** Document description from {@code <meta name="description">} tag */
+		Optional<String> description,
+		/**
+		 * Document keywords from {@code <meta name="keywords">} tag, split on commas
+		 */
+		List<String> keywords,
+		/** Document author from {@code <meta name="author">} tag */
+		Optional<String> author,
+		/** Canonical URL from {@code <link rel="canonical">} tag */
+		@JsonProperty("canonical_url") Optional<String> canonicalUrl,
+		/** Base URL from {@code <base href="">} tag for resolving relative URLs */
+		@JsonProperty("base_href") Optional<String> baseHref,
+		/** Document language from {@code lang} attribute */
+		Optional<String> language,
+		/** Document text direction from {@code dir} attribute */
+		@JsonProperty("text_direction") Optional<TextDirection> textDirection,
+		/** Open Graph metadata (og:* properties) for social media */
+		@JsonProperty("open_graph") Map<String, String> openGraph,
+		/** Twitter Card metadata (twitter:* properties) */
+		@JsonProperty("twitter_card") Map<String, String> twitterCard,
+		/** Additional meta tags not covered by specific fields */
+		@JsonProperty("meta_tags") Map<String, String> metaTags,
+		/** Extracted header elements with hierarchy */
+		List<HeaderMetadata> headers,
+		/** Extracted hyperlinks with type classification */
+		List<LinkMetadata> links,
+		/** Extracted images with source and dimensions */
+		List<ImageMetadataType> images, /** Extracted structured data blocks */
+		@JsonProperty("structured_data") List<StructuredData> structuredData) {
+	public static HtmlMetadataBuilder builder() {
+		return new HtmlMetadataBuilder();
+	}
 }

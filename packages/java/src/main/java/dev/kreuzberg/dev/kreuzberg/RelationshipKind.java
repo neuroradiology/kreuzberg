@@ -12,44 +12,45 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Semantic kind of a relationship between document elements.
  */
 public enum RelationshipKind {
-    /** Footnote marker -&gt; footnote definition. */
-    FootnoteReference("footnote_reference"),
-    /** Citation marker -&gt; bibliography entry. */
-    CitationReference("citation_reference"),
-    /** Internal anchor link ({@code #id}) -&gt; target heading/element. */
-    InternalLink("internal_link"),
-    /** Caption paragraph -&gt; figure/table it describes. */
-    Caption("caption"),
-    /**
-     * Label -&gt; labeled element (HTML {@code <label for>}, LaTeX {@code \label{}}).
-     */
-    Label("label"),
-    /** TOC entry -&gt; target section. */
-    TocEntry("toc_entry"),
-    /** Cross-reference (LaTeX {@code \ref{}}, DOCX cross-reference field). */
-    CrossReference("cross_reference");
+	/** Footnote marker -&gt; footnote definition. */
+	FootnoteReference("footnote_reference"),
+	/** Citation marker -&gt; bibliography entry. */
+	CitationReference("citation_reference"),
+	/** Internal anchor link ({@code #id}) -&gt; target heading/element. */
+	InternalLink("internal_link"),
+	/** Caption paragraph -&gt; figure/table it describes. */
+	Caption("caption"),
+	/**
+	 * Label -&gt; labeled element (HTML {@code <label for>}, LaTeX
+	 * {@code \label{}}).
+	 */
+	Label("label"),
+	/** TOC entry -&gt; target section. */
+	TocEntry("toc_entry"),
+	/** Cross-reference (LaTeX {@code \ref{}}, DOCX cross-reference field). */
+	CrossReference("cross_reference");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    RelationshipKind(final String value) {
-        this.value = value;
-    }
+	RelationshipKind(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static RelationshipKind fromValue(final String value) {
-        for (RelationshipKind e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static RelationshipKind fromValue(final String value) {
+		for (RelationshipKind e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

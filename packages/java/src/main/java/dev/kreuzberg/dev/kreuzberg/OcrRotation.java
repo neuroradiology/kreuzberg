@@ -12,9 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Rotation information for an OCR element.
  */
 public record OcrRotation(
-    /** Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). */
-    @JsonProperty("angle_degrees") double angleDegrees,
-    /** Confidence score for the rotation detection. */
-    Optional<Double> confidence
-) {
+		/** Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). */
+		@JsonProperty("angle_degrees") double angleDegrees,
+		/** Confidence score for the rotation detection. */
+		Optional<Double> confidence) {
 }

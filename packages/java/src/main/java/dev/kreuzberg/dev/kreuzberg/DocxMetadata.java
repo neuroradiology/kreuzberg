@@ -13,17 +13,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Word document metadata.
  *
  * Extracted from DOCX files using shared Office Open XML metadata extraction.
- * Integrates with {@code office_metadata} module for core/app/custom properties.
+ * Integrates with {@code office_metadata} module for core/app/custom
+ * properties.
  */
 public record DocxMetadata(
-    /** Core properties from docProps/core.xml (Dublin Core metadata) */
-    @JsonProperty("core_properties") Optional<String> coreProperties,
-    /** Application properties from docProps/app.xml (Word-specific statistics) */
-    @JsonProperty("app_properties") Optional<String> appProperties,
-    /** Custom properties from docProps/custom.xml (user-defined properties) */
-    @JsonProperty("custom_properties") Optional<Map<String, Object>> customProperties
-) {
-    public static DocxMetadataBuilder builder() {
-        return new DocxMetadataBuilder();
-    }
+		/** Core properties from docProps/core.xml (Dublin Core metadata) */
+		@JsonProperty("core_properties") Optional<String> coreProperties,
+		/** Application properties from docProps/app.xml (Word-specific statistics) */
+		@JsonProperty("app_properties") Optional<String> appProperties,
+		/** Custom properties from docProps/custom.xml (user-defined properties) */
+		@JsonProperty("custom_properties") Optional<Map<String, Object>> customProperties) {
+	public static DocxMetadataBuilder builder() {
+		return new DocxMetadataBuilder();
+	}
 }

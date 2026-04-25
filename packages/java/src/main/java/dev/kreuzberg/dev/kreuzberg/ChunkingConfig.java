@@ -11,39 +11,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Chunking configuration.
  *
- * Configures text chunking for document content, including chunk size,
- * overlap, trimming behavior, and optional embeddings.
+ * Configures text chunking for document content, including chunk size, overlap,
+ * trimming behavior, and optional embeddings.
  *
- * Use {@code ..Default::default()} when constructing to allow for future field additions:
- * {@code }{@code rust}
- * # use kreuzberg::ChunkingConfig;
- * let config = ChunkingConfig {
- *     max_characters: 500,
- *     ..Default::default()
- * };
+ * Use {@code ..Default::default()} when constructing to allow for future field
+ * additions: {@code }{@code rust} # use kreuzberg::ChunkingConfig; let config =
+ * ChunkingConfig { max_characters: 500, ..Default::default() };
  * {@code }{@code }
  */
 public record ChunkingConfig(
-    /** Maximum size per chunk (in units determined by {@code sizing}). */
-    @JsonProperty("max_characters") long maxCharacters,
-    /** Overlap between chunks (in units determined by {@code sizing}). */
-    long overlap,
-    /** Whether to trim whitespace from chunk boundaries. */
-    boolean trim,
-    /** Type of chunker to use (Text or Markdown). */
-    @JsonProperty("chunker_type") ChunkerType chunkerType,
-    /** Optional embedding configuration for chunk embeddings. */
-    Optional<EmbeddingConfig> embedding,
-    /** Use a preset configuration (overrides individual settings if provided). */
-    Optional<String> preset,
-    /** How to measure chunk size. */
-    ChunkSizing sizing,
-    /** When {@code true} and {@code chunker_type} is {@code Markdown}, prepend the heading hierarchy */
-    @JsonProperty("prepend_heading_context") boolean prependHeadingContext,
-    /** Optional cosine similarity threshold for semantic topic boundary detection. */
-    @JsonProperty("topic_threshold") Optional<Float> topicThreshold
-) {
-    public static ChunkingConfigBuilder builder() {
-        return new ChunkingConfigBuilder();
-    }
+		/** Maximum size per chunk (in units determined by {@code sizing}). */
+		@JsonProperty("max_characters") long maxCharacters,
+		/** Overlap between chunks (in units determined by {@code sizing}). */
+		long overlap,
+		/** Whether to trim whitespace from chunk boundaries. */
+		boolean trim,
+		/** Type of chunker to use (Text or Markdown). */
+		@JsonProperty("chunker_type") ChunkerType chunkerType,
+		/** Optional embedding configuration for chunk embeddings. */
+		Optional<EmbeddingConfig> embedding,
+		/** Use a preset configuration (overrides individual settings if provided). */
+		Optional<String> preset,
+		/** How to measure chunk size. */
+		ChunkSizing sizing,
+		/**
+		 * When {@code true} and {@code chunker_type} is {@code Markdown}, prepend the
+		 * heading hierarchy
+		 */
+		@JsonProperty("prepend_heading_context") boolean prependHeadingContext,
+		/**
+		 * Optional cosine similarity threshold for semantic topic boundary detection.
+		 */
+		@JsonProperty("topic_threshold") Optional<Float> topicThreshold) {
+	public static ChunkingConfigBuilder builder() {
+		return new ChunkingConfigBuilder();
+	}
 }

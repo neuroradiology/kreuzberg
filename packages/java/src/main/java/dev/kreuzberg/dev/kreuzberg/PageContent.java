@@ -17,28 +17,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * # Performance
  *
- * Uses Arc-wrapped tables and images for memory efficiency:
- * - {@code Vec<Arc<Table>>} enables zero-copy sharing of table data
- * - {@code Vec<Arc<ExtractedImage>>} enables zero-copy sharing of image data
- * - Maintains exact JSON compatibility via custom Serialize/Deserialize
+ * Uses Arc-wrapped tables and images for memory efficiency: - {@code Vec<Arc
+ * 
+<Table>
+ * >} enables zero-copy sharing of table data - {@code Vec<Arc<ExtractedImage>>}
+ * enables zero-copy sharing of image data - Maintains exact JSON compatibility
+ * via custom Serialize/Deserialize
  *
- * This reduces memory overhead for documents with shared tables/images
- * by avoiding redundant copies during serialization.
+ * This reduces memory overhead for documents with shared tables/images by
+ * avoiding redundant copies during serialization.
  */
 public record PageContent(
-    /** Page number (1-indexed) */
-    @JsonProperty("page_number") long pageNumber,
-    /** Text content for this page */
-    String content,
-    /** Tables found on this page (uses Arc for memory efficiency) */
-    List<String> tables,
-    /** Images found on this page (uses Arc for memory efficiency) */
-    List<ExtractedImage> images,
-    /** Hierarchy information for the page (when hierarchy extraction is enabled) */
-    Optional<PageHierarchy> hierarchy,
-    /** Whether this page is blank (no meaningful text content) */
-    @JsonProperty("is_blank") Optional<Boolean> isBlank,
-    /** Layout detection regions for this page (when layout detection is enabled). */
-    @JsonProperty("layout_regions") Optional<List<LayoutRegion>> layoutRegions
-) {
+		/** Page number (1-indexed) */
+		@JsonProperty("page_number") long pageNumber,
+		/** Text content for this page */
+		String content,
+		/** Tables found on this page (uses Arc for memory efficiency) */
+		List<String> tables,
+		/** Images found on this page (uses Arc for memory efficiency) */
+		List<ExtractedImage> images,
+		/** Hierarchy information for the page (when hierarchy extraction is enabled) */
+		Optional<PageHierarchy> hierarchy,
+		/** Whether this page is blank (no meaningful text content) */
+		@JsonProperty("is_blank") Optional<Boolean> isBlank,
+		/**
+		 * Layout detection regions for this page (when layout detection is enabled).
+		 */
+		@JsonProperty("layout_regions") Optional<List<LayoutRegion>> layoutRegions) {
 }

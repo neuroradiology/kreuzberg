@@ -12,23 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Plain text and Markdown extraction result.
  *
- * Contains the extracted text along with statistics and,
- * for Markdown files, structural elements like headers and links.
+ * Contains the extracted text along with statistics and, for Markdown files,
+ * structural elements like headers and links.
  */
 public record TextExtractionResult(
-    /** Extracted text content */
-    String content,
-    /** Number of lines */
-    @JsonProperty("line_count") long lineCount,
-    /** Number of words */
-    @JsonProperty("word_count") long wordCount,
-    /** Number of characters */
-    @JsonProperty("character_count") long characterCount,
-    /** Markdown headers (text only, Markdown files only) */
-    Optional<List<String>> headers,
-    /** Markdown links as (text, URL) tuples (Markdown files only) */
-    Optional<List<String>> links,
-    /** Code blocks as (language, code) tuples (Markdown files only) */
-    @JsonProperty("code_blocks") Optional<List<String>> codeBlocks
-) {
+		/** Extracted text content */
+		String content,
+		/** Number of lines */
+		@JsonProperty("line_count") long lineCount,
+		/** Number of words */
+		@JsonProperty("word_count") long wordCount,
+		/** Number of characters */
+		@JsonProperty("character_count") long characterCount,
+		/** Markdown headers (text only, Markdown files only) */
+		Optional<List<String>> headers,
+		/** Markdown links as (text, URL) tuples (Markdown files only) */
+		Optional<List<String>> links,
+		/** Code blocks as (language, code) tuples (Markdown files only) */
+		@JsonProperty("code_blocks") Optional<List<String>> codeBlocks) {
 }

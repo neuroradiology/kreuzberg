@@ -13,15 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for batch file extraction.
  */
 public record BatchExtractFilesParams(
-    /** Paths to files to extract */
-    List<String> paths,
-    /** Extraction configuration (JSON object) */
-    Optional<Object> config,
-    /** Password for encrypted PDFs */
-    @JsonProperty("pdf_password") Optional<String> pdfPassword,
-    /** Per-file extraction configuration overrides (parallel array to paths). */
-    @JsonProperty("file_configs") Optional<List<Object>> fileConfigs,
-    /** Wire format for the response: "json" (default) or "toon" */
-    @JsonProperty("response_format") Optional<String> responseFormat
-) {
+		/** Paths to files to extract */
+		List<String> paths,
+		/** Extraction configuration (JSON object) */
+		Optional<Object> config,
+		/** Password for encrypted PDFs */
+		@JsonProperty("pdf_password") Optional<String> pdfPassword,
+		/** Per-file extraction configuration overrides (parallel array to paths). */
+		@JsonProperty("file_configs") Optional<List<Object>> fileConfigs,
+		/** Wire format for the response: "json" (default) or "toon" */
+		@JsonProperty("response_format") Optional<String> responseFormat) {
 }

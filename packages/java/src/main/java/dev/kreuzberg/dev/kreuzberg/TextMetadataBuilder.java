@@ -11,63 +11,56 @@ import java.util.Optional;
 /**
  * Text/Markdown metadata.
  *
- * Extracted from plain text and Markdown files. Includes word counts and,
- * for Markdown, structural elements like headers and links.
+ * Extracted from plain text and Markdown files. Includes word counts and, for
+ * Markdown, structural elements like headers and links.
  */
 public class TextMetadataBuilder {
 
-    private long lineCount = 0;
-    private long wordCount = 0;
-    private long characterCount = 0;
-    private Optional<List<String>> headers = Optional.empty();
-    private Optional<List<String>> links = Optional.empty();
-    private Optional<List<String>> codeBlocks = Optional.empty();
+	private long lineCount = 0;
+	private long wordCount = 0;
+	private long characterCount = 0;
+	private Optional<List<String>> headers = Optional.empty();
+	private Optional<List<String>> links = Optional.empty();
+	private Optional<List<String>> codeBlocks = Optional.empty();
 
-    /** Sets the lineCount field. */
-    public TextMetadataBuilder withLineCount(final long value) {
-        this.lineCount = value;
-        return this;
-    }
+	/** Sets the lineCount field. */
+	public TextMetadataBuilder withLineCount(final long value) {
+		this.lineCount = value;
+		return this;
+	}
 
-    /** Sets the wordCount field. */
-    public TextMetadataBuilder withWordCount(final long value) {
-        this.wordCount = value;
-        return this;
-    }
+	/** Sets the wordCount field. */
+	public TextMetadataBuilder withWordCount(final long value) {
+		this.wordCount = value;
+		return this;
+	}
 
-    /** Sets the characterCount field. */
-    public TextMetadataBuilder withCharacterCount(final long value) {
-        this.characterCount = value;
-        return this;
-    }
+	/** Sets the characterCount field. */
+	public TextMetadataBuilder withCharacterCount(final long value) {
+		this.characterCount = value;
+		return this;
+	}
 
-    /** Sets the headers field. */
-    public TextMetadataBuilder withHeaders(final Optional<List<String>> value) {
-        this.headers = value;
-        return this;
-    }
+	/** Sets the headers field. */
+	public TextMetadataBuilder withHeaders(final Optional<List<String>> value) {
+		this.headers = value;
+		return this;
+	}
 
-    /** Sets the links field. */
-    public TextMetadataBuilder withLinks(final Optional<List<String>> value) {
-        this.links = value;
-        return this;
-    }
+	/** Sets the links field. */
+	public TextMetadataBuilder withLinks(final Optional<List<String>> value) {
+		this.links = value;
+		return this;
+	}
 
-    /** Sets the codeBlocks field. */
-    public TextMetadataBuilder withCodeBlocks(final Optional<List<String>> value) {
-        this.codeBlocks = value;
-        return this;
-    }
+	/** Sets the codeBlocks field. */
+	public TextMetadataBuilder withCodeBlocks(final Optional<List<String>> value) {
+		this.codeBlocks = value;
+		return this;
+	}
 
-    /** Builds the TextMetadata instance. */
-    public TextMetadata build() {
-        return new TextMetadata(
-            lineCount,
-            wordCount,
-            characterCount,
-            headers,
-            links,
-            codeBlocks
-        );
-    }
+	/** Builds the TextMetadata instance. */
+	public TextMetadata build() {
+		return new TextMetadata(lineCount, wordCount, characterCount, headers, links, codeBlocks);
+	}
 }

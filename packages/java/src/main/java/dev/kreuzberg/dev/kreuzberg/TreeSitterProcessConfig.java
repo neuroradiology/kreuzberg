@@ -14,26 +14,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Controls which analysis features are enabled when extracting code files.
  */
 public record TreeSitterProcessConfig(
-    /** Extract structural items (functions, classes, structs, etc.). Default: true. */
-    boolean structure,
-    /** Extract import statements. Default: true. */
-    boolean imports,
-    /** Extract export statements. Default: true. */
-    boolean exports,
-    /** Extract comments. Default: false. */
-    boolean comments,
-    /** Extract docstrings. Default: false. */
-    boolean docstrings,
-    /** Extract symbol definitions. Default: false. */
-    boolean symbols,
-    /** Include parse diagnostics. Default: false. */
-    boolean diagnostics,
-    /** Maximum chunk size in bytes. {@code None} disables chunking. */
-    @JsonProperty("chunk_max_size") Optional<Long> chunkMaxSize,
-    /** Content rendering mode for code extraction. */
-    @JsonProperty("content_mode") CodeContentMode contentMode
-) {
-    public static TreeSitterProcessConfigBuilder builder() {
-        return new TreeSitterProcessConfigBuilder();
-    }
+		/**
+		 * Extract structural items (functions, classes, structs, etc.). Default: true.
+		 */
+		boolean structure,
+		/** Extract import statements. Default: true. */
+		boolean imports,
+		/** Extract export statements. Default: true. */
+		boolean exports,
+		/** Extract comments. Default: false. */
+		boolean comments,
+		/** Extract docstrings. Default: false. */
+		boolean docstrings,
+		/** Extract symbol definitions. Default: false. */
+		boolean symbols,
+		/** Include parse diagnostics. Default: false. */
+		boolean diagnostics,
+		/** Maximum chunk size in bytes. {@code None} disables chunking. */
+		@JsonProperty("chunk_max_size") Optional<Long> chunkMaxSize, /** Content rendering mode for code extraction. */
+		@JsonProperty("content_mode") CodeContentMode contentMode) {
+	public static TreeSitterProcessConfigBuilder builder() {
+		return new TreeSitterProcessConfigBuilder();
+	}
 }

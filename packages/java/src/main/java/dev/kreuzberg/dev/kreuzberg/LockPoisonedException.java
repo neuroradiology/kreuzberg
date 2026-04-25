@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class LockPoisonedException extends KreuzbergErrorException {
-    /** Creates a new LockPoisonedException with the given message. */
-    public LockPoisonedException(final String message) {
-        super(message);
-    }
+	/** Creates a new LockPoisonedException with the given message. */
+	public LockPoisonedException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new LockPoisonedException with the given message and cause. */
-    public LockPoisonedException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new LockPoisonedException with the given message and cause. */
+	public LockPoisonedException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

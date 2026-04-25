@@ -13,58 +13,51 @@ import java.util.Optional;
  */
 public class CitationMetadataBuilder {
 
-    private long citationCount = 0;
-    private Optional<String> format = Optional.empty();
-    private List<String> authors = List.of();
-    private Optional<YearRange> yearRange = Optional.empty();
-    private List<String> dois = List.of();
-    private List<String> keywords = List.of();
+	private long citationCount = 0;
+	private Optional<String> format = Optional.empty();
+	private List<String> authors = List.of();
+	private Optional<YearRange> yearRange = Optional.empty();
+	private List<String> dois = List.of();
+	private List<String> keywords = List.of();
 
-    /** Sets the citationCount field. */
-    public CitationMetadataBuilder withCitationCount(final long value) {
-        this.citationCount = value;
-        return this;
-    }
+	/** Sets the citationCount field. */
+	public CitationMetadataBuilder withCitationCount(final long value) {
+		this.citationCount = value;
+		return this;
+	}
 
-    /** Sets the format field. */
-    public CitationMetadataBuilder withFormat(final Optional<String> value) {
-        this.format = value;
-        return this;
-    }
+	/** Sets the format field. */
+	public CitationMetadataBuilder withFormat(final Optional<String> value) {
+		this.format = value;
+		return this;
+	}
 
-    /** Sets the authors field. */
-    public CitationMetadataBuilder withAuthors(final List<String> value) {
-        this.authors = value;
-        return this;
-    }
+	/** Sets the authors field. */
+	public CitationMetadataBuilder withAuthors(final List<String> value) {
+		this.authors = value;
+		return this;
+	}
 
-    /** Sets the yearRange field. */
-    public CitationMetadataBuilder withYearRange(final Optional<YearRange> value) {
-        this.yearRange = value;
-        return this;
-    }
+	/** Sets the yearRange field. */
+	public CitationMetadataBuilder withYearRange(final Optional<YearRange> value) {
+		this.yearRange = value;
+		return this;
+	}
 
-    /** Sets the dois field. */
-    public CitationMetadataBuilder withDois(final List<String> value) {
-        this.dois = value;
-        return this;
-    }
+	/** Sets the dois field. */
+	public CitationMetadataBuilder withDois(final List<String> value) {
+		this.dois = value;
+		return this;
+	}
 
-    /** Sets the keywords field. */
-    public CitationMetadataBuilder withKeywords(final List<String> value) {
-        this.keywords = value;
-        return this;
-    }
+	/** Sets the keywords field. */
+	public CitationMetadataBuilder withKeywords(final List<String> value) {
+		this.keywords = value;
+		return this;
+	}
 
-    /** Builds the CitationMetadata instance. */
-    public CitationMetadata build() {
-        return new CitationMetadata(
-            citationCount,
-            format,
-            authors,
-            yearRange,
-            dois,
-            keywords
-        );
-    }
+	/** Builds the CitationMetadata instance. */
+	public CitationMetadata build() {
+		return new CitationMetadata(citationCount, format, authors, yearRange, dois, keywords);
+	}
 }

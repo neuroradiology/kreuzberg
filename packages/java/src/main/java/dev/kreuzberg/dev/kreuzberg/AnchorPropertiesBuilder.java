@@ -12,58 +12,51 @@ import java.util.Optional;
  */
 public class AnchorPropertiesBuilder {
 
-    private boolean behindDoc = false;
-    private boolean layoutInCell = false;
-    private Optional<Long> relativeHeight = Optional.empty();
-    private Optional<String> positionH = Optional.empty();
-    private Optional<String> positionV = Optional.empty();
-    private String wrapType = "";
+	private boolean behindDoc = false;
+	private boolean layoutInCell = false;
+	private Optional<Long> relativeHeight = Optional.empty();
+	private Optional<String> positionH = Optional.empty();
+	private Optional<String> positionV = Optional.empty();
+	private String wrapType = "";
 
-    /** Sets the behindDoc field. */
-    public AnchorPropertiesBuilder withBehindDoc(final boolean value) {
-        this.behindDoc = value;
-        return this;
-    }
+	/** Sets the behindDoc field. */
+	public AnchorPropertiesBuilder withBehindDoc(final boolean value) {
+		this.behindDoc = value;
+		return this;
+	}
 
-    /** Sets the layoutInCell field. */
-    public AnchorPropertiesBuilder withLayoutInCell(final boolean value) {
-        this.layoutInCell = value;
-        return this;
-    }
+	/** Sets the layoutInCell field. */
+	public AnchorPropertiesBuilder withLayoutInCell(final boolean value) {
+		this.layoutInCell = value;
+		return this;
+	}
 
-    /** Sets the relativeHeight field. */
-    public AnchorPropertiesBuilder withRelativeHeight(final Optional<Long> value) {
-        this.relativeHeight = value;
-        return this;
-    }
+	/** Sets the relativeHeight field. */
+	public AnchorPropertiesBuilder withRelativeHeight(final Optional<Long> value) {
+		this.relativeHeight = value;
+		return this;
+	}
 
-    /** Sets the positionH field. */
-    public AnchorPropertiesBuilder withPositionH(final Optional<String> value) {
-        this.positionH = value;
-        return this;
-    }
+	/** Sets the positionH field. */
+	public AnchorPropertiesBuilder withPositionH(final Optional<String> value) {
+		this.positionH = value;
+		return this;
+	}
 
-    /** Sets the positionV field. */
-    public AnchorPropertiesBuilder withPositionV(final Optional<String> value) {
-        this.positionV = value;
-        return this;
-    }
+	/** Sets the positionV field. */
+	public AnchorPropertiesBuilder withPositionV(final Optional<String> value) {
+		this.positionV = value;
+		return this;
+	}
 
-    /** Sets the wrapType field. */
-    public AnchorPropertiesBuilder withWrapType(final String value) {
-        this.wrapType = value;
-        return this;
-    }
+	/** Sets the wrapType field. */
+	public AnchorPropertiesBuilder withWrapType(final String value) {
+		this.wrapType = value;
+		return this;
+	}
 
-    /** Builds the AnchorProperties instance. */
-    public AnchorProperties build() {
-        return new AnchorProperties(
-            behindDoc,
-            layoutInCell,
-            relativeHeight,
-            positionH,
-            positionV,
-            wrapType
-        );
-    }
+	/** Builds the AnchorProperties instance. */
+	public AnchorProperties build() {
+		return new AnchorProperties(behindDoc, layoutInCell, relativeHeight, positionH, positionV, wrapType);
+	}
 }

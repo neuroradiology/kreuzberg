@@ -12,11 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Chunk request with text and configuration.
  */
 public record ChunkRequest(
-    /** Text to chunk (must not be empty) */
-    String text,
-    /** Optional chunking configuration */
-    Optional<String> config,
-    /** Chunker type (text, markdown, yaml, or semantic) */
-    @JsonProperty("chunker_type") String chunkerType
-) {
+		/** Text to chunk (must not be empty) */
+		String text,
+		/** Optional chunking configuration */
+		Optional<String> config,
+		/** Chunker type (text, markdown, yaml, or semantic) */
+		@JsonProperty("chunker_type") String chunkerType) {
 }

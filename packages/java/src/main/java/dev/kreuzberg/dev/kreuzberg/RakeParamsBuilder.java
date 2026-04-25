@@ -5,32 +5,28 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * RAKE-specific parameters.
  */
 public class RakeParamsBuilder {
 
-    private long minWordLength = 0;
-    private long maxWordsPerPhrase = 0;
+	private long minWordLength = 0;
+	private long maxWordsPerPhrase = 0;
 
-    /** Sets the minWordLength field. */
-    public RakeParamsBuilder withMinWordLength(final long value) {
-        this.minWordLength = value;
-        return this;
-    }
+	/** Sets the minWordLength field. */
+	public RakeParamsBuilder withMinWordLength(final long value) {
+		this.minWordLength = value;
+		return this;
+	}
 
-    /** Sets the maxWordsPerPhrase field. */
-    public RakeParamsBuilder withMaxWordsPerPhrase(final long value) {
-        this.maxWordsPerPhrase = value;
-        return this;
-    }
+	/** Sets the maxWordsPerPhrase field. */
+	public RakeParamsBuilder withMaxWordsPerPhrase(final long value) {
+		this.maxWordsPerPhrase = value;
+		return this;
+	}
 
-    /** Builds the RakeParams instance. */
-    public RakeParams build() {
-        return new RakeParams(
-            minWordLength,
-            maxWordsPerPhrase
-        );
-    }
+	/** Builds the RakeParams instance. */
+	public RakeParams build() {
+		return new RakeParams(minWordLength, maxWordsPerPhrase);
+	}
 }

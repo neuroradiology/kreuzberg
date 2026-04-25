@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record StructuredDataResult(
-    String content,
-    String format,
-    Map<String, String> metadata,
-    @JsonProperty("text_fields") List<String> textFields
-) {
+public record StructuredDataResult(String content, String format, Map<String, String> metadata,
+		@JsonProperty("text_fields") List<String> textFields) {
 }

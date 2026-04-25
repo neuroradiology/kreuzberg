@@ -11,12 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * dBASE (DBF) file metadata.
  */
-public record DbfMetadata(
-    @JsonProperty("record_count") long recordCount,
-    @JsonProperty("field_count") long fieldCount,
-    List<DbfFieldInfo> fields
-) {
-    public static DbfMetadataBuilder builder() {
-        return new DbfMetadataBuilder();
-    }
+public record DbfMetadata(@JsonProperty("record_count") long recordCount, @JsonProperty("field_count") long fieldCount,
+		List<DbfFieldInfo> fields) {
+	public static DbfMetadataBuilder builder() {
+		return new DbfMetadataBuilder();
+	}
 }

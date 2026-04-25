@@ -17,29 +17,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * including headers, body content, and attachments.
  */
 public record EmailExtractionResult(
-    /** Email subject line */
-    Optional<String> subject,
-    /** Sender email address */
-    @JsonProperty("from_email") Optional<String> fromEmail,
-    /** Primary recipient email addresses */
-    @JsonProperty("to_emails") List<String> toEmails,
-    /** CC recipient email addresses */
-    @JsonProperty("cc_emails") List<String> ccEmails,
-    /** BCC recipient email addresses */
-    @JsonProperty("bcc_emails") List<String> bccEmails,
-    /** Email date/timestamp */
-    Optional<String> date,
-    /** Message-ID header value */
-    @JsonProperty("message_id") Optional<String> messageId,
-    /** Plain text version of the email body */
-    @JsonProperty("plain_text") Optional<String> plainText,
-    /** HTML version of the email body */
-    @JsonProperty("html_content") Optional<String> htmlContent,
-    /** Cleaned/processed text content */
-    @JsonProperty("cleaned_text") String cleanedText,
-    /** List of email attachments */
-    List<EmailAttachment> attachments,
-    /** Additional email headers and metadata */
-    Map<String, String> metadata
-) {
+		/** Email subject line */
+		Optional<String> subject,
+		/** Sender email address */
+		@JsonProperty("from_email") Optional<String> fromEmail,
+		/** Primary recipient email addresses */
+		@JsonProperty("to_emails") List<String> toEmails,
+		/** CC recipient email addresses */
+		@JsonProperty("cc_emails") List<String> ccEmails,
+		/** BCC recipient email addresses */
+		@JsonProperty("bcc_emails") List<String> bccEmails,
+		/** Email date/timestamp */
+		Optional<String> date,
+		/** Message-ID header value */
+		@JsonProperty("message_id") Optional<String> messageId,
+		/** Plain text version of the email body */
+		@JsonProperty("plain_text") Optional<String> plainText,
+		/** HTML version of the email body */
+		@JsonProperty("html_content") Optional<String> htmlContent,
+		/** Cleaned/processed text content */
+		@JsonProperty("cleaned_text") String cleanedText,
+		/** List of email attachments */
+		List<EmailAttachment> attachments,
+		/** Additional email headers and metadata */
+		Map<String, String> metadata) {
 }

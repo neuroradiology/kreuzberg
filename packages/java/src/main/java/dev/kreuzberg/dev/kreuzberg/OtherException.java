@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class OtherException extends KreuzbergErrorException {
-    /** Creates a new OtherException with the given message. */
-    public OtherException(final String message) {
-        super(message);
-    }
+	/** Creates a new OtherException with the given message. */
+	public OtherException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new OtherException with the given message and cause. */
-    public OtherException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new OtherException with the given message and cause. */
+	public OtherException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

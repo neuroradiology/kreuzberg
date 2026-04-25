@@ -12,23 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Metadata for individual page/slide/sheet.
  *
- * Captures per-page information including dimensions, content counts,
- * and visibility state (for presentations).
+ * Captures per-page information including dimensions, content counts, and
+ * visibility state (for presentations).
  */
 public record PageInfo(
-    /** Page number (1-indexed) */
-    long number,
-    /** Page title (usually for presentations) */
-    Optional<String> title,
-    /** Dimensions in points (PDF) or pixels (images): (width, height) */
-    Optional<List<Double>> dimensions,
-    /** Number of images on this page */
-    @JsonProperty("image_count") Optional<Long> imageCount,
-    /** Number of tables on this page */
-    @JsonProperty("table_count") Optional<Long> tableCount,
-    /** Whether this page is hidden (e.g., in presentations) */
-    Optional<Boolean> hidden,
-    /** Whether this page is blank (no meaningful text, no images, no tables) */
-    @JsonProperty("is_blank") Optional<Boolean> isBlank
-) {
+		/** Page number (1-indexed) */
+		long number,
+		/** Page title (usually for presentations) */
+		Optional<String> title,
+		/** Dimensions in points (PDF) or pixels (images): (width, height) */
+		Optional<List<Double>> dimensions,
+		/** Number of images on this page */
+		@JsonProperty("image_count") Optional<Long> imageCount,
+		/** Number of tables on this page */
+		@JsonProperty("table_count") Optional<Long> tableCount,
+		/** Whether this page is hidden (e.g., in presentations) */
+		Optional<Boolean> hidden,
+		/** Whether this page is blank (no meaningful text, no images, no tables) */
+		@JsonProperty("is_blank") Optional<Boolean> isBlank) {
 }

@@ -12,17 +12,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Unified page structure for documents.
  *
- * Supports different page types (PDF pages, PPTX slides, Excel sheets)
- * with character offset boundaries for chunk-to-page mapping.
+ * Supports different page types (PDF pages, PPTX slides, Excel sheets) with
+ * character offset boundaries for chunk-to-page mapping.
  */
 public record PageStructure(
-    /** Total number of pages/slides/sheets */
-    @JsonProperty("total_count") long totalCount,
-    /** Type of paginated unit */
-    @JsonProperty("unit_type") PageUnitType unitType,
-    /** Character offset boundaries for each page */
-    Optional<List<PageBoundary>> boundaries,
-    /** Detailed per-page metadata (optional, only when needed) */
-    Optional<List<PageInfo>> pages
-) {
+		/** Total number of pages/slides/sheets */
+		@JsonProperty("total_count") long totalCount,
+		/** Type of paginated unit */
+		@JsonProperty("unit_type") PageUnitType unitType,
+		/** Character offset boundaries for each page */
+		Optional<List<PageBoundary>> boundaries,
+		/** Detailed per-page metadata (optional, only when needed) */
+		Optional<List<PageInfo>> pages) {
 }

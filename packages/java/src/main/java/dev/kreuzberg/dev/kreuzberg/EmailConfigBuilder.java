@@ -12,18 +12,16 @@ import java.util.Optional;
  */
 public class EmailConfigBuilder {
 
-    private Optional<Integer> msgFallbackCodepage = Optional.empty();
+	private Optional<Integer> msgFallbackCodepage = Optional.empty();
 
-    /** Sets the msgFallbackCodepage field. */
-    public EmailConfigBuilder withMsgFallbackCodepage(final Optional<Integer> value) {
-        this.msgFallbackCodepage = value;
-        return this;
-    }
+	/** Sets the msgFallbackCodepage field. */
+	public EmailConfigBuilder withMsgFallbackCodepage(final Optional<Integer> value) {
+		this.msgFallbackCodepage = value;
+		return this;
+	}
 
-    /** Builds the EmailConfig instance. */
-    public EmailConfig build() {
-        return new EmailConfig(
-            msgFallbackCodepage
-        );
-    }
+	/** Builds the EmailConfig instance. */
+	public EmailConfig build() {
+		return new EmailConfig(msgFallbackCodepage);
+	}
 }

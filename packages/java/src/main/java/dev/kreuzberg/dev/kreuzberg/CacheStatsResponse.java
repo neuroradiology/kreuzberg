@@ -11,17 +11,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Cache statistics response.
  */
 public record CacheStatsResponse(
-    /** Cache directory path */
-    String directory,
-    /** Total number of cache files */
-    @JsonProperty("total_files") long totalFiles,
-    /** Total cache size in MB */
-    @JsonProperty("total_size_mb") double totalSizeMb,
-    /** Available disk space in MB */
-    @JsonProperty("available_space_mb") double availableSpaceMb,
-    /** Age of oldest file in days */
-    @JsonProperty("oldest_file_age_days") double oldestFileAgeDays,
-    /** Age of newest file in days */
-    @JsonProperty("newest_file_age_days") double newestFileAgeDays
-) {
+		/** Cache directory path */
+		String directory,
+		/** Total number of cache files */
+		@JsonProperty("total_files") long totalFiles,
+		/** Total cache size in MB */
+		@JsonProperty("total_size_mb") double totalSizeMb,
+		/** Available disk space in MB */
+		@JsonProperty("available_space_mb") double availableSpaceMb,
+		/** Age of oldest file in days */
+		@JsonProperty("oldest_file_age_days") double oldestFileAgeDays,
+		/** Age of newest file in days */
+		@JsonProperty("newest_file_age_days") double newestFileAgeDays) {
 }

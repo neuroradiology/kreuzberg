@@ -11,9 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Token reduction configuration.
  */
 public record TokenReductionOptions(
-    /** Reduction mode: "off", "light", "moderate", "aggressive", "maximum" */
-    String mode,
-    /** Preserve important words (capitalized, technical terms) */
-    @JsonProperty("preserve_important_words") boolean preserveImportantWords
-) {
+		/** Reduction mode: "off", "light", "moderate", "aggressive", "maximum" */
+		String mode,
+		/** Preserve important words (capitalized, technical terms) */
+		@JsonProperty("preserve_important_words") boolean preserveImportantWords) {
 }

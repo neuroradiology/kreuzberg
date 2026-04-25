@@ -12,12 +12,7 @@ import java.util.Optional;
  * Extracted inline image with metadata.
  */
 public record ExtractedInlineImage(
-    /** Uses {@code bytes::Bytes} for cheap cloning of large buffers. */
-    byte[] data,
-    String format,
-    Optional<String> filename,
-    Optional<String> description,
-    Optional<List<Integer>> dimensions,
-    List<String> attributes
-) {
+		/** Uses {@code bytes::Bytes} for cheap cloning of large buffers. */
+		byte[] data, String format, Optional<String> filename, Optional<String> description,
+		Optional<List<Integer>> dimensions, List<String> attributes) {
 }

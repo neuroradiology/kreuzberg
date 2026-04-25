@@ -12,11 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Cache warm response.
  */
 public record WarmResponse(
-    /** Cache directory used */
-    @JsonProperty("cache_dir") String cacheDir,
-    /** Models that were downloaded */
-    List<String> downloaded,
-    /** Models that were already cached */
-    @JsonProperty("already_cached") List<String> alreadyCached
-) {
+		/** Cache directory used */
+		@JsonProperty("cache_dir") String cacheDir,
+		/** Models that were downloaded */
+		List<String> downloaded,
+		/** Models that were already cached */
+		@JsonProperty("already_cached") List<String> alreadyCached) {
 }

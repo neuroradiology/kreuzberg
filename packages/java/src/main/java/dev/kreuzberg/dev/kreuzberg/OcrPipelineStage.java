@@ -12,17 +12,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A single backend stage in the OCR pipeline.
  */
 public record OcrPipelineStage(
-    /** Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. */
-    String backend,
-    /** Priority weight (higher = tried first). Stages are sorted by priority descending. */
-    int priority,
-    /** Language override for this stage (None = use parent OcrConfig.language). */
-    Optional<String> language,
-    /** Tesseract-specific config override for this stage. */
-    @JsonProperty("tesseract_config") Optional<TesseractConfig> tesseractConfig,
-    /** PaddleOCR-specific config for this stage. */
-    @JsonProperty("paddle_ocr_config") Optional<Object> paddleOcrConfig,
-    /** VLM config override for this pipeline stage. */
-    @JsonProperty("vlm_config") Optional<LlmConfig> vlmConfig
-) {
+		/**
+		 * Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered
+		 * name.
+		 */
+		String backend,
+		/**
+		 * Priority weight (higher = tried first). Stages are sorted by priority
+		 * descending.
+		 */
+		int priority,
+		/** Language override for this stage (None = use parent OcrConfig.language). */
+		Optional<String> language,
+		/** Tesseract-specific config override for this stage. */
+		@JsonProperty("tesseract_config") Optional<TesseractConfig> tesseractConfig,
+		/** PaddleOCR-specific config for this stage. */
+		@JsonProperty("paddle_ocr_config") Optional<Object> paddleOcrConfig,
+		/** VLM config override for this pipeline stage. */
+		@JsonProperty("vlm_config") Optional<LlmConfig> vlmConfig) {
 }

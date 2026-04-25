@@ -12,24 +12,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Top-level structured document representation.
  *
- * A flat array of nodes with index-based parent/child references forming a tree.
- * Root-level nodes have {@code parent: None}. Use {@code body_roots()} and {@code furniture_roots()}
- * to iterate over top-level content by layer.
+ * A flat array of nodes with index-based parent/child references forming a
+ * tree. Root-level nodes have {@code parent: None}. Use {@code body_roots()}
+ * and {@code furniture_roots()} to iterate over top-level content by layer.
  *
  * # Validation
  *
- * Call {@code validate()} after construction to verify all node indices are in bounds
- * and parent-child relationships are bidirectionally consistent.
+ * Call {@code validate()} after construction to verify all node indices are in
+ * bounds and parent-child relationships are bidirectionally consistent.
  */
 public record DocumentStructure(
-    /** All nodes in document/reading order. */
-    List<DocumentNode> nodes,
-    /** Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). */
-    @JsonProperty("source_format") Optional<String> sourceFormat,
-    /** Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). */
-    List<DocumentRelationship> relationships
-) {
-    public static DocumentStructureBuilder builder() {
-        return new DocumentStructureBuilder();
-    }
+		/** All nodes in document/reading order. */
+		List<DocumentNode> nodes,
+		/** Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). */
+		@JsonProperty("source_format") Optional<String> sourceFormat,
+		/**
+		 * Resolved relationships between nodes (footnote refs, citations, anchor links,
+		 * etc.).
+		 */
+		List<DocumentRelationship> relationships) {
+	public static DocumentStructureBuilder builder() {
+		return new DocumentStructureBuilder();
+	}
 }

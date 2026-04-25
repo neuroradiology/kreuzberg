@@ -11,14 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Layout detection results for a single page.
  */
-public record PageLayoutResult(
-    @JsonProperty("page_index") long pageIndex,
-    List<String> regions,
-    @JsonProperty("page_width_pts") float pageWidthPts,
-    @JsonProperty("page_height_pts") float pageHeightPts,
-    /** Width of the rendered image used for layout detection (pixels). */
-    @JsonProperty("render_width_px") int renderWidthPx,
-    /** Height of the rendered image used for layout detection (pixels). */
-    @JsonProperty("render_height_px") int renderHeightPx
-) {
+public record PageLayoutResult(@JsonProperty("page_index") long pageIndex, List<String> regions,
+		@JsonProperty("page_width_pts") float pageWidthPts, @JsonProperty("page_height_pts") float pageHeightPts,
+		/** Width of the rendered image used for layout detection (pixels). */
+		@JsonProperty("render_width_px") int renderWidthPx,
+		/** Height of the rendered image used for layout detection (pixels). */
+		@JsonProperty("render_height_px") int renderHeightPx) {
 }

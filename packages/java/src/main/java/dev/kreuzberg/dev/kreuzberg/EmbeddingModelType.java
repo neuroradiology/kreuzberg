@@ -13,24 +13,22 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Embedding model types supported by Kreuzberg.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = false)
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = EmbeddingModelType.Preset.class, name = "preset"),
-    @JsonSubTypes.Type(value = EmbeddingModelType.Custom.class, name = "custom"),
-    @JsonSubTypes.Type(value = EmbeddingModelType.Llm.class, name = "llm")
-})
+@JsonSubTypes({@JsonSubTypes.Type(value = EmbeddingModelType.Preset.class, name = "preset"),
+		@JsonSubTypes.Type(value = EmbeddingModelType.Custom.class, name = "custom"),
+		@JsonSubTypes.Type(value = EmbeddingModelType.Llm.class, name = "llm")})
 public sealed interface EmbeddingModelType {
 
-    /** Use a preset model configuration (recommended) */
-    record Preset(@JsonProperty("name") String name) implements EmbeddingModelType { }
+	/** Use a preset model configuration (recommended) */
+	record Preset(@JsonProperty("name") String name) implements EmbeddingModelType {
+	}
 
-    /** Use a custom ONNX model from HuggingFace */
-    record Custom(
-        @JsonProperty("model_id") String modelId,
-        @JsonProperty("dimensions") long dimensions
-    ) implements EmbeddingModelType {
-    }
+	/** Use a custom ONNX model from HuggingFace */
+	record Custom(@JsonProperty("model_id") String modelId,
+			@JsonProperty("dimensions") long dimensions) implements EmbeddingModelType {
+	}
 
-    /** Provider-hosted embedding model via liter-llm. */
-    record Llm(@JsonProperty("llm") LlmConfig llm) implements EmbeddingModelType { }
+	/** Provider-hosted embedding model via liter-llm. */
+	record Llm(@JsonProperty("llm") LlmConfig llm) implements EmbeddingModelType {
+	}
 
 }

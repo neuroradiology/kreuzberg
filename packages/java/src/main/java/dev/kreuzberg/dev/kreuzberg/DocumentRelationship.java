@@ -5,7 +5,6 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * A resolved relationship between two nodes in the document tree.
  */

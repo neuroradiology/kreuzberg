@@ -11,11 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Response from structured extraction endpoint.
  */
 public record StructuredExtractionResponse(
-    /** Structured data conforming to the provided JSON schema */
-    @JsonProperty("structured_output") Object structuredOutput,
-    /** Extracted document text content */
-    String content,
-    /** Detected MIME type of the input file */
-    @JsonProperty("mime_type") String mimeType
-) {
+		/** Structured data conforming to the provided JSON schema */
+		@JsonProperty("structured_output") Object structuredOutput,
+		/** Extracted document text content */
+		String content,
+		/** Detected MIME type of the input file */
+		@JsonProperty("mime_type") String mimeType) {
 }

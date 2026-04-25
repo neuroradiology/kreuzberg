@@ -13,16 +13,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Controls how OCR elements are extracted and filtered.
  */
 public record OcrElementConfig(
-    /** Whether to include OCR elements in the extraction result. */
-    @JsonProperty("include_elements") boolean includeElements,
-    /** Minimum hierarchical level to include. */
-    @JsonProperty("min_level") OcrElementLevel minLevel,
-    /** Minimum recognition confidence threshold (0.0-1.0). */
-    @JsonProperty("min_confidence") double minConfidence,
-    /** Whether to build hierarchical relationships between elements. */
-    @JsonProperty("build_hierarchy") boolean buildHierarchy
-) {
-    public static OcrElementConfigBuilder builder() {
-        return new OcrElementConfigBuilder();
-    }
+		/** Whether to include OCR elements in the extraction result. */
+		@JsonProperty("include_elements") boolean includeElements,
+		/** Minimum hierarchical level to include. */
+		@JsonProperty("min_level") OcrElementLevel minLevel,
+		/** Minimum recognition confidence threshold (0.0-1.0). */
+		@JsonProperty("min_confidence") double minConfidence,
+		/** Whether to build hierarchical relationships between elements. */
+		@JsonProperty("build_hierarchy") boolean buildHierarchy) {
+	public static OcrElementConfigBuilder builder() {
+		return new OcrElementConfigBuilder();
+	}
 }

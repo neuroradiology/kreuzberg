@@ -12,26 +12,23 @@ import java.util.Optional;
  */
 public class WarmRequestBuilder {
 
-    private boolean allEmbeddings = false;
-    private Optional<String> embeddingModel = Optional.empty();
+	private boolean allEmbeddings = false;
+	private Optional<String> embeddingModel = Optional.empty();
 
-    /** Sets the allEmbeddings field. */
-    public WarmRequestBuilder withAllEmbeddings(final boolean value) {
-        this.allEmbeddings = value;
-        return this;
-    }
+	/** Sets the allEmbeddings field. */
+	public WarmRequestBuilder withAllEmbeddings(final boolean value) {
+		this.allEmbeddings = value;
+		return this;
+	}
 
-    /** Sets the embeddingModel field. */
-    public WarmRequestBuilder withEmbeddingModel(final Optional<String> value) {
-        this.embeddingModel = value;
-        return this;
-    }
+	/** Sets the embeddingModel field. */
+	public WarmRequestBuilder withEmbeddingModel(final Optional<String> value) {
+		this.embeddingModel = value;
+		return this;
+	}
 
-    /** Builds the WarmRequest instance. */
-    public WarmRequest build() {
-        return new WarmRequest(
-            allEmbeddings,
-            embeddingModel
-        );
-    }
+	/** Builds the WarmRequest instance. */
+	public WarmRequest build() {
+		return new WarmRequest(allEmbeddings, embeddingModel);
+	}
 }

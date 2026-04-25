@@ -3,13 +3,13 @@
 package dev.kreuzberg;
 
 public class ParsingException extends KreuzbergErrorException {
-    /** Creates a new ParsingException with the given message. */
-    public ParsingException(final String message) {
-        super(message);
-    }
+	/** Creates a new ParsingException with the given message. */
+	public ParsingException(final String message) {
+		super(message);
+	}
 
-    /** Creates a new ParsingException with the given message and cause. */
-    public ParsingException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+	/** Creates a new ParsingException with the given message and cause. */
+	public ParsingException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

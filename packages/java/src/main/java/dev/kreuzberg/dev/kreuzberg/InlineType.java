@@ -12,44 +12,31 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Types of inline elements in Djot.
  */
 public enum InlineType {
-    Text("text"),
-    Strong("strong"),
-    Emphasis("emphasis"),
-    Highlight("highlight"),
-    Subscript("subscript"),
-    Superscript("superscript"),
-    Insert("insert"),
-    Delete("delete"),
-    Code("code"),
-    Link("link"),
-    Image("image"),
-    Span("span"),
-    Math("math"),
-    RawInline("raw_inline"),
-    FootnoteRef("footnote_ref"),
-    Symbol("symbol");
+	Text("text"), Strong("strong"), Emphasis("emphasis"), Highlight("highlight"), Subscript("subscript"), Superscript(
+			"superscript"), Insert("insert"), Delete("delete"), Code("code"), Link("link"), Image("image"), Span(
+					"span"), Math("math"), RawInline("raw_inline"), FootnoteRef("footnote_ref"), Symbol("symbol");
 
-    /** The string value. */
-    private final String value;
+	/** The string value. */
+	private final String value;
 
-    InlineType(final String value) {
-        this.value = value;
-    }
+	InlineType(final String value) {
+		this.value = value;
+	}
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+	/** Returns the string value. */
+	@JsonValue
+	public String getValue() {
+		return value;
+	}
 
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static InlineType fromValue(final String value) {
-        for (InlineType e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown value: " + value);
-    }
+	/** Creates an instance from a string value. */
+	@JsonCreator
+	public static InlineType fromValue(final String value) {
+		for (InlineType e : values()) {
+			if (e.value.equalsIgnoreCase(value)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("Unknown value: " + value);
+	}
 }

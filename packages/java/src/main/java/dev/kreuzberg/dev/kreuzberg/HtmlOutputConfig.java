@@ -18,29 +18,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * # Example
  *
- * {@code }{@code rust}
- * use kreuzberg::core::config::{HtmlOutputConfig, HtmlTheme};
+ * {@code }{@code rust} use kreuzberg::core::config::{HtmlOutputConfig,
+ * HtmlTheme};
  *
- * let config = HtmlOutputConfig {
- *     theme: HtmlTheme::GitHub,
- *     css: Some(".kb-p { font-size: 1.1rem; }".to_string()),
- *     ..Default::default()
- * };
- * {@code }{@code }
+ * let config = HtmlOutputConfig { theme: HtmlTheme::GitHub, css: Some(".kb-p {
+ * font-size: 1.1rem; }".to_string()), ..Default::default() }; {@code }{@code }
  */
 public record HtmlOutputConfig(
-    /** Inline CSS string injected into the output after the theme stylesheet. */
-    Optional<String> css,
-    /** Path to a CSS file loaded once at renderer construction time. */
-    @JsonProperty("css_file") Optional<java.nio.file.Path> cssFile,
-    /** Built-in colour/typography theme. Default: [{@code HtmlTheme::Unstyled}]. */
-    HtmlTheme theme,
-    /** CSS class prefix applied to every emitted class name. */
-    @JsonProperty("class_prefix") String classPrefix,
-    /** When {@code true} (default), write the resolved CSS into a {@code <style>} block */
-    @JsonProperty("embed_css") boolean embedCss
-) {
-    public static HtmlOutputConfigBuilder builder() {
-        return new HtmlOutputConfigBuilder();
-    }
+		/** Inline CSS string injected into the output after the theme stylesheet. */
+		Optional<String> css,
+		/** Path to a CSS file loaded once at renderer construction time. */
+		@JsonProperty("css_file") Optional<java.nio.file.Path> cssFile,
+		/** Built-in colour/typography theme. Default: [{@code HtmlTheme::Unstyled}]. */
+		HtmlTheme theme,
+		/** CSS class prefix applied to every emitted class name. */
+		@JsonProperty("class_prefix") String classPrefix, /**
+															 * When {@code true} (default), write the resolved CSS into
+															 * a {@code <style>} block
+															 */
+		@JsonProperty("embed_css") boolean embedCss) {
+	public static HtmlOutputConfigBuilder builder() {
+		return new HtmlOutputConfigBuilder();
+	}
 }

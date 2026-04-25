@@ -13,22 +13,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Keyword extraction configuration.
  */
 public record KeywordConfig(
-    /** Algorithm to use for extraction. */
-    KeywordAlgorithm algorithm,
-    /** Maximum number of keywords to extract (default: 10). */
-    @JsonProperty("max_keywords") long maxKeywords,
-    /** Minimum score threshold (0.0-1.0, default: 0.0). */
-    @JsonProperty("min_score") float minScore,
-    /** N-gram range for keyword extraction (min, max). */
-    @JsonProperty("ngram_range") List<Long> ngramRange,
-    /** Language code for stopword filtering (e.g., "en", "de", "fr"). */
-    Optional<String> language,
-    /** YAKE-specific tuning parameters. */
-    @JsonProperty("yake_params") Optional<YakeParams> yakeParams,
-    /** RAKE-specific tuning parameters. */
-    @JsonProperty("rake_params") Optional<RakeParams> rakeParams
-) {
-    public static KeywordConfigBuilder builder() {
-        return new KeywordConfigBuilder();
-    }
+		/** Algorithm to use for extraction. */
+		KeywordAlgorithm algorithm,
+		/** Maximum number of keywords to extract (default: 10). */
+		@JsonProperty("max_keywords") long maxKeywords,
+		/** Minimum score threshold (0.0-1.0, default: 0.0). */
+		@JsonProperty("min_score") float minScore,
+		/** N-gram range for keyword extraction (min, max). */
+		@JsonProperty("ngram_range") List<Long> ngramRange,
+		/** Language code for stopword filtering (e.g., "en", "de", "fr"). */
+		Optional<String> language,
+		/** YAKE-specific tuning parameters. */
+		@JsonProperty("yake_params") Optional<YakeParams> yakeParams, /** RAKE-specific tuning parameters. */
+		@JsonProperty("rake_params") Optional<RakeParams> rakeParams) {
+	public static KeywordConfigBuilder builder() {
+		return new KeywordConfigBuilder();
+	}
 }

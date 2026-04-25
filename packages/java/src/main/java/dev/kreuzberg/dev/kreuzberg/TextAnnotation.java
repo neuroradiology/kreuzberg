@@ -5,12 +5,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * Inline text annotation — byte-range based formatting and links.
  *
- * Annotations reference byte offsets into the node's text content,
- * enabling precise identification of formatted regions.
+ * Annotations reference byte offsets into the node's text content, enabling
+ * precise identification of formatted regions.
  */
 public record TextAnnotation(int start, int end, AnnotationKind kind) {
 }

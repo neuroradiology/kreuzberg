@@ -7,23 +7,23 @@ package dev.kreuzberg;
 
 /** Exception thrown by KreuzbergRs. */
 public class KreuzbergRsException extends Exception {
-    /** The error code. */
-    private final int code;
+	/** The error code. */
+	private final int code;
 
-    /** Creates a new KreuzbergRsException. */
-    public KreuzbergRsException(final int code, final String message) {
-        super(message);
-        this.code = code;
-    }
+	/** Creates a new KreuzbergRsException. */
+	public KreuzbergRsException(final int code, final String message) {
+		super(message);
+		this.code = code;
+	}
 
-    /** Creates a new KreuzbergRsException with a cause. */
-    public KreuzbergRsException(final String message, final Throwable cause) {
-        super(message, cause);
-        this.code = -1;
-    }
+	/** Creates a new KreuzbergRsException with a cause. */
+	public KreuzbergRsException(final String message, final Throwable cause) {
+		super(message, cause);
+		this.code = -1;
+	}
 
-    /** Returns the error code. */
-    public int getCode() {
-        return code;
-    }
+	/** Returns the error code. */
+	public int getCode() {
+		return code;
+	}
 }

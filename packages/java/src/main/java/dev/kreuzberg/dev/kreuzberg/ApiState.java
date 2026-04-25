@@ -10,13 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * API server state.
  *
- * Holds the default extraction configuration loaded from config file
- * (via discovery or explicit path). Per-request configs override these defaults.
+ * Holds the default extraction configuration loaded from config file (via
+ * discovery or explicit path). Per-request configs override these defaults.
  */
 public record ApiState(
-    /** Default extraction configuration */
-    @JsonProperty("default_config") ExtractionConfig defaultConfig,
-    /** Tower service for extraction requests. */
-    @JsonProperty("extraction_service") String extractionService
-) {
+		/** Default extraction configuration */
+		@JsonProperty("default_config") ExtractionConfig defaultConfig,
+		/** Tower service for extraction requests. */
+		@JsonProperty("extraction_service") String extractionService) {
 }

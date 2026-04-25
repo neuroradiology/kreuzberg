@@ -12,13 +12,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Multi-backend OCR pipeline with quality-based fallback.
  *
  * Backends are tried in priority order (highest first). After each backend
- * produces output, quality is evaluated. If it meets {@code quality_thresholds.pipeline_min_quality},
- * the result is accepted. Otherwise the next backend is tried.
+ * produces output, quality is evaluated. If it meets
+ * {@code quality_thresholds.pipeline_min_quality}, the result is accepted.
+ * Otherwise the next backend is tried.
  */
 public record OcrPipelineConfig(
-    /** Ordered list of backends to try. Sorted by priority (descending) at runtime. */
-    List<OcrPipelineStage> stages,
-    /** Quality thresholds for deciding whether to accept a result or try the next backend. */
-    @JsonProperty("quality_thresholds") OcrQualityThresholds qualityThresholds
-) {
+		/**
+		 * Ordered list of backends to try. Sorted by priority (descending) at runtime.
+		 */
+		List<OcrPipelineStage> stages,
+		/**
+		 * Quality thresholds for deciding whether to accept a result or try the next
+		 * backend.
+		 */
+		@JsonProperty("quality_thresholds") OcrQualityThresholds qualityThresholds) {
 }

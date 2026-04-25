@@ -1,52 +1,55 @@
 version: "3"
+internal: true
 
 includes:
-  _cfg:
-    taskfile: ../config/vars.yml
-    internal: true
+  platforms: ../config/platforms.yml
+
+vars:
+  SCRIPTS_DIR: "{{.TASKFILE_DIR}}/../../scripts"
 
 tasks:
-  toml:format:
-    desc: Format TOML files with taplo
+  pre-commit:install:
+    desc: "Install prek pre-commit hooks for commit and commit-msg"
+    silent: false
     cmds:
-      - cmd: scripts/toml_format.sh
-        platforms: [linux, darwin]
-      - cmd: bash scripts/toml_format.sh
-        platforms: [windows]
+      - cmd: prek install
+        ignore_error: false
+      - cmd: prek install --hook-type commit-msg
+        ignore_error: false
 
-  toml:format:check:
-    desc: Check TOML formatting without modifications
+  pre-commit:run:
+    desc: "Run prek pre-commit hooks on all files"
+    silent: false
     cmds:
-      - cmd: scripts/toml_format.sh --check
-        platforms: [linux, darwin]
-      - cmd: bash scripts/toml_format.sh --check
-        platforms: [windows]
+      - cmd: prek run --all-files
+        ignore_error: false
 
-  shell:lint:
-    desc: Lint shell scripts with auto-fix (shfmt + shellcheck)
+  pre-commit:uninstall:
+    desc: "Uninstall prek hooks"
+    silent: false
     cmds:
-      - cmd: bash scripts/task/shell-lint.sh fix
-        platforms: [linux, darwin]
-      - cmd: echo "Shell linting not available on Windows - shell scripts are Unix-specific"
-        platforms: [windows]
-
-  shell:lint:check:
-    desc: Lint shell scripts in check-only mode (shfmt + shellcheck)
-    cmds:
-      - cmd: bash scripts/task/shell-lint.sh check
-        platforms: [linux, darwin]
-      - cmd: echo "Shell linting not available on Windows - shell scripts are Unix-specific"
-        platforms: [windows]
-
-  github:lint:
-    desc: Lint GitHub Actions workflows (actionlint)
-    cmds:
-      - cmd: actionlint
+      - cmd: prek uninstall
+        ignore_error: true
+      - cmd: prek uninstall --hook-type commit-msg
         ignore_error: true
 
-  update:prek:
-    desc: Update prek (pre-commit) hooks to latest versions
+  validate:config:
+    desc: "Validate YAML task configuration files"
+    silent: false
     cmds:
-      - echo "Updating prek hooks to latest versions..."
-      - prek autoupdate
-      - echo "Pre-commit hooks updated successfully"
+      - cmd: |
+          for file in {{.TASKFILE_DIR}}/**/*.yml; do
+            echo "Validating $file..."
+            if ! command -v yamllint &> /dev/null; then
+              echo "yamllint not found, skipping validation"
+              break
+            fi
+            yamllint "$file" || exit 1
+          done
+        ignore_error: false
+
+  validate:all:
+    desc: "Validate all project configurations"
+    silent: false
+    cmds:
+      - task: validate:config

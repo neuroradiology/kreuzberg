@@ -13,13 +13,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Request parameters for embedding generation.
  */
 public record EmbedTextParams(
-    /** List of text strings to generate embeddings for */
-    List<String> texts,
-    /** Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" */
-    Optional<String> preset,
-    /** LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). */
-    Optional<String> model,
-    /** API key for the LLM provider (optional, falls back to env). */
-    @JsonProperty("api_key") Optional<String> apiKey
-) {
+		/** List of text strings to generate embeddings for */
+		List<String> texts,
+		/**
+		 * Embedding preset name (default: "balanced"). Available: "speed", "balanced",
+		 * "quality"
+		 */
+		Optional<String> preset,
+		/**
+		 * LLM model for provider-hosted embeddings (e.g.,
+		 * "openai/text-embedding-3-small").
+		 */
+		Optional<String> model,
+		/** API key for the LLM provider (optional, falls back to env). */
+		@JsonProperty("api_key") Optional<String> apiKey) {
 }

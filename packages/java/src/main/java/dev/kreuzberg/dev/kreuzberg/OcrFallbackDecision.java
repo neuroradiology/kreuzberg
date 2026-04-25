@@ -3,10 +3,6 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record OcrFallbackDecision(
-    String stats,
-    @JsonProperty("avg_non_whitespace") double avgNonWhitespace,
-    @JsonProperty("avg_alnum") double avgAlnum,
-    boolean fallback
-) {
+public record OcrFallbackDecision(String stats, @JsonProperty("avg_non_whitespace") double avgNonWhitespace,
+		@JsonProperty("avg_alnum") double avgAlnum, boolean fallback) {
 }

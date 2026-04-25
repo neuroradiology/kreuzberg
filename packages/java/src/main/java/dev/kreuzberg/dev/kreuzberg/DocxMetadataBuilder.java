@@ -12,38 +12,35 @@ import java.util.Optional;
  * Word document metadata.
  *
  * Extracted from DOCX files using shared Office Open XML metadata extraction.
- * Integrates with {@code office_metadata} module for core/app/custom properties.
+ * Integrates with {@code office_metadata} module for core/app/custom
+ * properties.
  */
 public class DocxMetadataBuilder {
 
-    private Optional<String> coreProperties = Optional.empty();
-    private Optional<String> appProperties = Optional.empty();
-    private Optional<Map<String, Object>> customProperties = Optional.empty();
+	private Optional<String> coreProperties = Optional.empty();
+	private Optional<String> appProperties = Optional.empty();
+	private Optional<Map<String, Object>> customProperties = Optional.empty();
 
-    /** Sets the coreProperties field. */
-    public DocxMetadataBuilder withCoreProperties(final Optional<String> value) {
-        this.coreProperties = value;
-        return this;
-    }
+	/** Sets the coreProperties field. */
+	public DocxMetadataBuilder withCoreProperties(final Optional<String> value) {
+		this.coreProperties = value;
+		return this;
+	}
 
-    /** Sets the appProperties field. */
-    public DocxMetadataBuilder withAppProperties(final Optional<String> value) {
-        this.appProperties = value;
-        return this;
-    }
+	/** Sets the appProperties field. */
+	public DocxMetadataBuilder withAppProperties(final Optional<String> value) {
+		this.appProperties = value;
+		return this;
+	}
 
-    /** Sets the customProperties field. */
-    public DocxMetadataBuilder withCustomProperties(final Optional<Map<String, Object>> value) {
-        this.customProperties = value;
-        return this;
-    }
+	/** Sets the customProperties field. */
+	public DocxMetadataBuilder withCustomProperties(final Optional<Map<String, Object>> value) {
+		this.customProperties = value;
+		return this;
+	}
 
-    /** Builds the DocxMetadata instance. */
-    public DocxMetadata build() {
-        return new DocxMetadata(
-            coreProperties,
-            appProperties,
-            customProperties
-        );
-    }
+	/** Builds the DocxMetadata instance. */
+	public DocxMetadata build() {
+		return new DocxMetadata(coreProperties, appProperties, customProperties);
+	}
 }

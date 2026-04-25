@@ -15,22 +15,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Includes sender/recipient information, message ID, and attachment list.
  */
 public record EmailMetadata(
-    /** Sender's email address */
-    @JsonProperty("from_email") Optional<String> fromEmail,
-    /** Sender's display name */
-    @JsonProperty("from_name") Optional<String> fromName,
-    /** Primary recipients */
-    @JsonProperty("to_emails") List<String> toEmails,
-    /** CC recipients */
-    @JsonProperty("cc_emails") List<String> ccEmails,
-    /** BCC recipients */
-    @JsonProperty("bcc_emails") List<String> bccEmails,
-    /** Message-ID header value */
-    @JsonProperty("message_id") Optional<String> messageId,
-    /** List of attachment filenames */
-    List<String> attachments
-) {
-    public static EmailMetadataBuilder builder() {
-        return new EmailMetadataBuilder();
-    }
+		/** Sender's email address */
+		@JsonProperty("from_email") Optional<String> fromEmail,
+		/** Sender's display name */
+		@JsonProperty("from_name") Optional<String> fromName,
+		/** Primary recipients */
+		@JsonProperty("to_emails") List<String> toEmails,
+		/** CC recipients */
+		@JsonProperty("cc_emails") List<String> ccEmails,
+		/** BCC recipients */
+		@JsonProperty("bcc_emails") List<String> bccEmails,
+		/** Message-ID header value */
+		@JsonProperty("message_id") Optional<String> messageId, /** List of attachment filenames */
+		List<String> attachments) {
+	public static EmailMetadataBuilder builder() {
+		return new EmailMetadataBuilder();
+	}
 }

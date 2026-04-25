@@ -14,18 +14,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Captures information about OCR processing configuration and results.
  */
 public record OcrMetadata(
-    /** OCR language code(s) used */
-    String language,
-    /** Tesseract Page Segmentation Mode (PSM) */
-    int psm,
-    /** Output format (e.g., "text", "hocr") */
-    @JsonProperty("output_format") String outputFormat,
-    /** Number of tables detected */
-    @JsonProperty("table_count") long tableCount,
-    @JsonProperty("table_rows") Optional<Long> tableRows,
-    @JsonProperty("table_cols") Optional<Long> tableCols
-) {
-    public static OcrMetadataBuilder builder() {
-        return new OcrMetadataBuilder();
-    }
+		/** OCR language code(s) used */
+		String language,
+		/** Tesseract Page Segmentation Mode (PSM) */
+		int psm,
+		/** Output format (e.g., "text", "hocr") */
+		@JsonProperty("output_format") String outputFormat, /** Number of tables detected */
+		@JsonProperty("table_count") long tableCount, @JsonProperty("table_rows") Optional<Long> tableRows,
+		@JsonProperty("table_cols") Optional<Long> tableCols) {
+	public static OcrMetadataBuilder builder() {
+		return new OcrMetadataBuilder();
+	}
 }

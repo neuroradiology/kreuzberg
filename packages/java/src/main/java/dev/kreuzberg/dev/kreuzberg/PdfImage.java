@@ -9,18 +9,19 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record PdfImage(
-    @JsonProperty("page_number") long pageNumber,
-    @JsonProperty("image_index") long imageIndex,
-    long width,
-    long height,
-    @JsonProperty("color_space") Optional<String> colorSpace,
-    @JsonProperty("bits_per_component") Optional<Long> bitsPerComponent,
-    /** Original PDF stream filters (e.g. {@code ["FlateDecode"]}, {@code ["DCTDecode"]}). */
-    List<String> filters,
-    /** The decoded image bytes in a standard format (JPEG, PNG, etc.). */
-    byte[] data,
-    /** The format of {@code data} after decoding: {@code "jpeg"}, {@code "png"}, {@code "jpeg2000"}, {@code "ccitt"}, or {@code "raw"}. */
-    @JsonProperty("decoded_format") String decodedFormat
-) {
+public record PdfImage(@JsonProperty("page_number") long pageNumber, @JsonProperty("image_index") long imageIndex,
+		long width, long height, @JsonProperty("color_space") Optional<String> colorSpace,
+		@JsonProperty("bits_per_component") Optional<Long> bitsPerComponent,
+		/**
+		 * Original PDF stream filters (e.g. {@code ["FlateDecode"]},
+		 * {@code ["DCTDecode"]}).
+		 */
+		List<String> filters,
+		/** The decoded image bytes in a standard format (JPEG, PNG, etc.). */
+		byte[] data,
+		/**
+		 * The format of {@code data} after decoding: {@code "jpeg"}, {@code "png"},
+		 * {@code "jpeg2000"}, {@code "ccitt"}, or {@code "raw"}.
+		 */
+		@JsonProperty("decoded_format") String decodedFormat) {
 }

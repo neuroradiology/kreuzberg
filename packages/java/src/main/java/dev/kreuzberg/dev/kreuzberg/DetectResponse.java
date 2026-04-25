@@ -12,9 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * MIME type detection response.
  */
 public record DetectResponse(
-    /** Detected MIME type */
-    @JsonProperty("mime_type") String mimeType,
-    /** Original filename (if provided) */
-    Optional<String> filename
-) {
+		/** Detected MIME type */
+		@JsonProperty("mime_type") String mimeType,
+		/** Original filename (if provided) */
+		Optional<String> filename) {
 }

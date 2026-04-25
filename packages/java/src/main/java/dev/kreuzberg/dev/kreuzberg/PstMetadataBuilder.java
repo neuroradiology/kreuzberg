@@ -5,24 +5,21 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
-
 /**
  * Outlook PST archive metadata.
  */
 public class PstMetadataBuilder {
 
-    private long messageCount = 0;
+	private long messageCount = 0;
 
-    /** Sets the messageCount field. */
-    public PstMetadataBuilder withMessageCount(final long value) {
-        this.messageCount = value;
-        return this;
-    }
+	/** Sets the messageCount field. */
+	public PstMetadataBuilder withMessageCount(final long value) {
+		this.messageCount = value;
+		return this;
+	}
 
-    /** Builds the PstMetadata instance. */
-    public PstMetadata build() {
-        return new PstMetadata(
-            messageCount
-        );
-    }
+	/** Builds the PstMetadata instance. */
+	public PstMetadata build() {
+		return new PstMetadata(messageCount);
+	}
 }

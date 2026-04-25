@@ -1,96 +1,51 @@
 version: "3"
+internal: true
 
 includes:
-  _cfg:
-    taskfile: ../config/vars.yml
-    internal: true
-  _platforms:
-    taskfile: ../config/platforms.yml
-    internal: true
+  platforms: ../config/platforms.yml
 
 vars:
-  RUST_LOG: info
-  PDFIUM_VERSION: "7578"
-  # On Windows, prepend MSVC bin path to avoid Git Bash link.exe conflict
-  CARGO_PATH_PREFIX: '{{if eq OS "windows"}}{{._cfg.MSVC_BIN_PATH}}{{if ._cfg.MSVC_BIN_PATH}}:{{end}}{{end}}'
-  # CMake path for Windows (needed for build scripts)
-  CMAKE_PATH:
-    sh: |
-      if [ "{{OS}}" != "windows" ]; then
-        echo ""
-        exit 0
-      fi
-      powershell -NoProfile -Command '
-        $cmakePath = "C:\Program Files\CMake\bin\cmake.exe"
-        if (Test-Path $cmakePath) { $cmakePath }
-      ' 2>/dev/null || echo ""
+  RUST_LOG: "{{.RUST_LOG | default \"info\"}}"
+  BUILD_PROFILE: "{{.BUILD_PROFILE | default \"release\"}}"
+  RUST_BACKTRACE: "{{.RUST_BACKTRACE | default \"1\"}}"
+  CARGO_TERM_COLOR: "always"
+  PDFIUM_VERSION: "7678"
 
 tasks:
   install:
-    desc: Install Rust toolchain and tools (rustup, taplo, cargo-deny)
+    desc: "Install Rust toolchain and components"
     cmds:
-      - echo "Rust toolchain is typically installed via rustup"
-      - rustc --version
+      - rustup update stable
+      - rustup component add rustfmt clippy
       # Windows: install lld-link to avoid PATH conflicts with Git Bash's link.exe
       - cmd: rustup component add llvm-tools
         platforms: [windows]
-      - task: install:taplo
-      - task: install:cargo-deny
-
-  install:taplo:
-    desc: Install taplo for TOML formatting
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-    cmds:
-      - echo "Installing taplo for TOML formatting..."
-      # macOS: use brew
-      - cmd: taplo --version 2>/dev/null || brew install taplo
-        platforms: [darwin]
-        ignore_error: true
-      # Linux: use cargo install
-      - cmd: taplo --version 2>/dev/null || cargo install taplo-cli --locked
-        platforms: [linux]
-        ignore_error: true
-      # Windows: use winget (faster) or cargo install with fixed PATH
-      - cmd: taplo --version 2>/dev/null || cargo install taplo-cli --locked
-        platforms: [windows]
-        ignore_error: true
-
-  install:cargo-deny:
-    desc: Install cargo-deny for license checking
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-    cmds:
-      - echo "Installing cargo-deny for license checking..."
-      # All platforms: use cargo install (Windows now works with MSVC PATH fix)
-      - cmd: cargo-deny --version 2>/dev/null || cargo install cargo-deny
-        ignore_error: true
+      - cargo install cargo-llvm-cov --locked
+      - cargo install cargo-upgrades --locked
+      - cargo --version
+      - rustc --version
 
   build:
-    desc: Build all Rust crates (uses {{.BUILD_PROFILE}})
+    desc: "Build all Rust crates with {{.BUILD_PROFILE}} profile"
     cmds:
       - task: build:{{.BUILD_PROFILE | default "release"}}
 
   build:dev:
-    desc: Build all Rust crates in debug mode
+    desc: "Build all Rust crates in debug mode"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
-      PDFIUM_VERSION: '{{.PDFIUM_VERSION}}'
+      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
     cmds:
-      # Note: exclude benchmark-harness on Windows as jemalloc doesn't build with MSVC
       # Note: exclude kreuzberg-pdfium-render because --all-features enables mutually exclusive static/dynamic linking
       - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
         platforms: [linux, darwin]
+      # Note: exclude benchmark-harness on Windows as jemalloc doesn't build with MSVC
       - cmd: cargo build --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness --exclude kreuzberg-pdfium-render
         platforms: [windows]
 
   build:release:
-    desc: Build all Rust crates in release mode (optimized)
+    desc: "Build all Rust crates in release mode"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
-      PDFIUM_VERSION: '{{.PDFIUM_VERSION}}'
+      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
     cmds:
       - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
         platforms: [linux, darwin]
@@ -98,12 +53,10 @@ tasks:
         platforms: [windows]
 
   build:ci:
-    desc: Build all Rust crates in CI mode (with debug info)
+    desc: "Build for CI with debug info enabled"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
-      PDFIUM_VERSION: '{{.PDFIUM_VERSION}}'
-      RUSTFLAGS: '-C debuginfo=2'
+      PDFIUM_VERSION: "{{.PDFIUM_VERSION}}"
+      RUSTFLAGS: "-C debuginfo=2"
     cmds:
       - cmd: cargo build --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-pdfium-render
         platforms: [linux, darwin]
@@ -111,145 +64,110 @@ tasks:
         platforms: [windows]
 
   build:profiling:
-    desc: Build all Rust crates with profiling features (for flamegraph generation)
+    desc: "Build all Rust crates with profiling features (for flamegraph generation)"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
-      ENABLE_PROFILING: 'true'
-      RUSTFLAGS: '-g'
+      ENABLE_PROFILING: "true"
+      RUSTFLAGS: "-g"
     cmds:
       - cargo build --workspace --release --features full,profiling,api,mcp,otel --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
       - cargo build --manifest-path tools/benchmark-harness/Cargo.toml --release --features profiling
 
   cli:build:
-    desc: Build CLI binary
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
+    desc: "Build CLI binary"
     cmds:
       - cargo build --release --package kreuzberg-cli {{if .TARGET}}--target {{.TARGET}}{{end}}
 
   cli:build:dev:
-    desc: Build CLI binary in debug mode
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
+    desc: "Build CLI binary in debug mode"
     cmds:
       - cargo build --package kreuzberg-cli
 
   cli:install:
-    desc: Install CLI binary
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
+    desc: "Install CLI binary"
     cmds:
       - cargo install --path crates/kreuzberg-cli
 
   ffi:build:
-    desc: Build FFI library for language bindings
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
+    desc: "Build FFI library for language bindings"
     cmds:
       - cargo build --release --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
 
   ffi:build:dev:
-    desc: Build FFI library in debug mode
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
+    desc: "Build FFI library in debug mode"
     cmds:
       - cargo build --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
 
   ffi:build:ci:
-    desc: Build FFI library in CI mode (with debug info)
+    desc: "Build FFI library in CI mode (with debug info)"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
-      CMAKE: '{{.CMAKE_PATH}}'
-      RUSTFLAGS: '-C debuginfo=2'
+      RUSTFLAGS: "-C debuginfo=2"
     cmds:
       - cargo build --release --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
 
   test:
-    desc: Run all Rust tests
+    desc: "Run all Rust tests"
     cmds:
       - cmd: bash scripts/ci/rust/run-unit-tests.sh
         platforms: [linux, darwin]
 
   test:ci:
-    desc: Run Rust tests in CI mode with tessdata setup
+    desc: "Run Rust tests in CI mode with tessdata setup"
     env:
-      RUST_BACKTRACE: '1'
-      CARGO_TERM_COLOR: 'always'
+      RUST_BACKTRACE: "{{.RUST_BACKTRACE}}"
+      CARGO_TERM_COLOR: "{{.CARGO_TERM_COLOR}}"
     cmds:
       - cmd: bash scripts/ci/rust/run-unit-tests.sh
         platforms: [linux, darwin]
 
   test:quick:
-    desc: Run fast Rust tests (unit tests only)
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Run fast Rust tests (unit tests only)"
     cmds:
       - cargo test --lib --workspace --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
 
   lint:
-    desc: Auto-fix Rust code linting (cargo fmt + clippy)
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Lint Rust code WITH auto-fix (cargo fmt + cargo clippy --fix)"
     cmds:
       - cargo fmt --all
       - cargo clippy --workspace --fix --allow-dirty --allow-staged --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
 
   lint:check:
-    desc: Check Rust code linting without modifications
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Lint Rust code WITHOUT auto-fix (check-only)"
     cmds:
       - cargo fmt --all -- --check
       - cargo clippy --workspace --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm -- -D warnings
 
   format:
-    desc: Format Rust code with modifications (cargo fmt)
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Format Rust code (with modifications)"
     cmds:
       - cargo fmt --all
 
   format:check:
-    desc: Check Rust code formatting without modifications
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Check Rust formatting without modifications"
     cmds:
       - cargo fmt --all -- --check
 
   licenses:
-    desc: Check Rust dependency licenses with cargo-deny
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Check Rust dependency licenses with cargo-deny"
     cmds:
       - cargo deny check licenses
 
   doc:
-    desc: Generate Rust documentation and open in browser
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Generate Rust documentation and open in browser"
     cmds:
       - cargo doc --no-deps --open
 
   doc:build:
-    desc: Build Rust documentation (without opening)
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Build Rust documentation (without opening)"
     cmds:
       - cargo doc --no-deps
 
   clean:
-    desc: Clean Rust build artifacts
+    desc: "Clean Rust build artifacts"
     cmds:
       - cargo clean
 
   cache:cleanup:
-    desc: Clean up large build artifacts to reduce cache size (for CI)
+    desc: "Clean up large build artifacts to reduce cache size (for CI)"
     cmds:
       - echo "Cleaning up large build artifacts to reduce cache size..."
       - cmd: rm -rf target/*/build/kreuzberg-*/out/pdfium 2>/dev/null || true
@@ -269,9 +187,7 @@ tasks:
         ignore_error: true
 
   update:
-    desc: Update Rust dependencies
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Update Rust dependencies (cargo-upgrades + cargo update)"
     cmds:
       - echo "Updating Rust dependencies (main workspace)..."
       - cargo upgrade --incompatible
@@ -281,23 +197,18 @@ tasks:
       - cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/Cargo.toml
 
   e2e:format:
-    desc: Format generated Rust E2E sources
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Format generated Rust E2E sources"
     cmds:
       - cargo fmt --manifest-path e2e/rust/Cargo.toml
 
   e2e:lint:
-    desc: Lint Rust E2E crate with clippy
-    env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
+    desc: "Lint Rust E2E crate with clippy"
     cmds:
       - cargo clippy -p e2e-rust -- -D warnings
 
   e2e:test:
-    desc: Run Rust E2E tests
+    desc: "Run Rust E2E tests"
     env:
-      PATH: '{{.CARGO_PATH_PREFIX}}{{.PATH}}'
       RUST_TEST_THREADS: "1"
     cmds:
       - cargo test -p e2e-rust --release

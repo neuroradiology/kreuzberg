@@ -11,9 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Page-level detection result containing all detections and page metadata.
  */
-public record DetectionResult(
-    @JsonProperty("page_width") int pageWidth,
-    @JsonProperty("page_height") int pageHeight,
-    List<LayoutDetection> detections
-) {
+public record DetectionResult(@JsonProperty("page_width") int pageWidth, @JsonProperty("page_height") int pageHeight,
+		List<LayoutDetection> detections) {
 }

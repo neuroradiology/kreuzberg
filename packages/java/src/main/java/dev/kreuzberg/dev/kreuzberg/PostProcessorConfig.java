@@ -13,18 +13,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Post-processor configuration.
  */
 public record PostProcessorConfig(
-    /** Enable post-processors */
-    boolean enabled,
-    /** Whitelist of processor names to run (None = all enabled) */
-    @JsonProperty("enabled_processors") Optional<List<String>> enabledProcessors,
-    /** Blacklist of processor names to skip (None = none disabled) */
-    @JsonProperty("disabled_processors") Optional<List<String>> disabledProcessors,
-    /** Pre-computed AHashSet for O(1) enabled processor lookup */
-    @JsonProperty("enabled_set") Optional<String> enabledSet,
-    /** Pre-computed AHashSet for O(1) disabled processor lookup */
-    @JsonProperty("disabled_set") Optional<String> disabledSet
-) {
-    public static PostProcessorConfigBuilder builder() {
-        return new PostProcessorConfigBuilder();
-    }
+		/** Enable post-processors */
+		boolean enabled,
+		/** Whitelist of processor names to run (None = all enabled) */
+		@JsonProperty("enabled_processors") Optional<List<String>> enabledProcessors,
+		/** Blacklist of processor names to skip (None = none disabled) */
+		@JsonProperty("disabled_processors") Optional<List<String>> disabledProcessors,
+		/** Pre-computed AHashSet for O(1) enabled processor lookup */
+		@JsonProperty("enabled_set") Optional<String> enabledSet,
+		/** Pre-computed AHashSet for O(1) disabled processor lookup */
+		@JsonProperty("disabled_set") Optional<String> disabledSet) {
+	public static PostProcessorConfigBuilder builder() {
+		return new PostProcessorConfigBuilder();
+	}
 }
