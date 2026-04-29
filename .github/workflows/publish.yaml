@@ -1020,10 +1020,6 @@ jobs:
           USE_NAPI_CROSS: ${{ matrix.settings.use_napi_cross }}
         run: ./scripts/publish/node/build-native-module.ps1
 
-      - name: Build TypeScript wrapper
-        shell: bash
-        run: pnpm -C crates/kreuzberg-node build:ts
-
       - name: Package artifacts
         if: runner.os != 'Windows'
         env:
