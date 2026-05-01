@@ -231,3 +231,6 @@ pkg/
 .github/copilot-instructions.md
 .github/skills/
 # END ai-rulez
+
+# Local dev artifacts
+docs/demo-dev.html

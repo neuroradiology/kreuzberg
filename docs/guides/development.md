@@ -104,6 +104,29 @@ task c:build && task c:test
 task wasm:build && task wasm:test
 ```
 
+### Testing the live browser demo
+
+The demo at `docs/demo.html` loads `@kreuzberg/wasm` from a CDN. To test local changes against it, use:
+
+```bash title="Terminal"
+task demo:dev
+```
+
+This builds the WASM binary and TypeScript dist, patches the demo with local URLs, and starts two servers:
+
+| Server | URL | Role |
+|--------|-----|------|
+| Docs | `http://localhost:8001` | Serves the patched `demo-dev.html` |
+| Assets | `http://localhost:9000` | Serves the local WASM package |
+
+Open **`http://localhost:8001/demo-dev.html`** — no manual edits needed. The patched file (`docs/demo-dev.html`) is gitignored and regenerated on every run. The two different ports reproduce the cross-origin setup the CDN creates in production.
+
+To skip the slow Rust build when you've only changed TypeScript:
+
+```bash title="Terminal"
+SKIP_WASM_BUILD=1 task demo:dev
+```
+
 ---
 
 ## End-to-end Test Suites
