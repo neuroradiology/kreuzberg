@@ -6,7 +6,7 @@ exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/
 repos:
   # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v4.1.0
+    rev: v4.1.4
     hooks:
       - id: ai-rulez-generate
 
@@ -65,6 +65,7 @@ repos:
             "--exclude=kreuzberg-node",
             "--exclude=kreuzberg-php",
             "--exclude=kreuzberg-wasm",
+            "--exclude=kreuzberg-dart",
             "--exclude=kreuzberg_nif",
             "--all-features",
             "--all-targets",
@@ -87,7 +88,7 @@ repos:
 
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: "v0.1.84"
+    rev: "v0.1.85"
     hooks:
       - id: rumdl-fmt
         exclude: '^(tools/benchmark-harness/vendored/|docs/reference/(api-|configuration\.md|errors\.md|types\.md)|templates/readme/)'
@@ -108,7 +109,7 @@ repos:
         args: ["--fix"]
         exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
 
-  # cppcheck — kept upstream until shared repo ships it
+  # cppcheck — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
@@ -123,7 +124,7 @@ repos:
           ]
         files: (^crates/kreuzberg-ffi/tests/c/|^tools/benchmark-harness/scripts/.*\.c$)
 
-  # Java cpd — kept upstream (not yet in shared repo)
+  # Java cpd — not yet shipped in shared kreuzberg-dev/pre-commit-hooks repo
   - repo: https://github.com/gherynos/pre-commit-java
     rev: v0.6.37
     hooks:
@@ -218,10 +219,28 @@ repos:
       - id: textlint
         files: ^docs/[^/]+/[^/]+\.md$
         exclude: ^docs/(reference/|api-|snippets/|migration/)
+        args:
+          - "--fix"
+          - "--rule"
+          - "common-misspellings"
+          - "--rule"
+          - "doubled-spaces"
+          - "--rule"
+          - "no-empty-section"
+          - "--rule"
+          - "no-start-duplicated-conjunction"
+          - "--rule"
+          - "no-surrogate-pair"
+          - "--rule"
+          - "no-todo"
+          - "--rule"
+          - "no-zero-width-spaces"
+          - "--rule"
+          - "terminology"
 
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.11.25
+    rev: v0.12.10
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
@@ -232,26 +251,9 @@ repos:
     hooks:
       - id: actionlint
 
-  # Helm
-  - repo: local
-    hooks:
-      - id: helm-lint
-        name: Helm lint (strict)
-        entry: bash -c 'for chart in charts/*/; do helm lint --strict "$chart" || exit 1; done'
-        language: system
-        files: ^charts/
-        pass_filenames: false
-
-      - id: kubeconform
-        name: kubeconform (Kubernetes schema validation)
-        entry: bash -c 'for chart in charts/*/; do helm template test "$chart" | kubeconform -strict -kubernetes-version 1.28.0 -summary || exit 1; done'
-        language: system
-        files: ^charts/
-        pass_filenames: false
-
   # Spelling: fast Rust-based spell checker (last — runs after all formatters)
   - repo: https://github.com/crate-ci/typos
-    rev: v1.45.2
+    rev: v1.46.0
     hooks:
       - id: typos
         args: [--force-exclude]
