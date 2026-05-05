@@ -1349,37 +1349,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "extendr-api"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "803569de0d273b4bf281871046a7d63a23cc12776bdb5b63de5c1e81aae30728"
-dependencies = [
- "extendr-ffi",
- "extendr-macros",
- "once_cell",
- "paste",
- "readonly",
-]
-
-[[package]]
-name = "extendr-ffi"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ba82ddd48e85202654997b81e4b1d39c0c54b5dcd7cae92705f807bf528efcf"
-
-[[package]]
-name = "extendr-macros"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba8fad8d2a0d0651b1947042cf3a8beddc73d39cec3485b200fdfd24cb3bb6aa"
-dependencies = [
- "lazy_static",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "fancy-regex"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2678,7 +2647,6 @@ dependencies = [
  "serde_yaml_ng",
  "sevenz-rust2",
  "sha2 0.11.0",
- "simdutf8",
  "snap",
  "strum 0.28.0",
  "tar",
@@ -2700,6 +2668,15 @@ dependencies = [
  "v_htmlescape",
  "whatlang",
  "zip 8.6.0",
+]
+
+[[package]]
+name = "kreuzberg-e2e-rust"
+version = "0.1.0"
+dependencies = [
+ "kreuzberg",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -2737,17 +2714,6 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
-]
-
-[[package]]
-name = "kreuzberg-r"
-version = "4.10.0-rc.15"
-dependencies = [
- "extendr-api",
- "kreuzberg",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -4024,17 +3990,6 @@ checksum = "22e18b0f0062d30d4230b2e85ff77fdfe4326feb054b9783a3460d8435c8ab91"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
-]
-
-[[package]]
-name = "readonly"
-version = "0.2.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2a62d85ed81ca5305dc544bd42c8804c5060b78ffa5ad3c64b0fb6a8c13d062"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
