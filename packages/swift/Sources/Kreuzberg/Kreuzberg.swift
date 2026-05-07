@@ -3,6 +3,136 @@
 import Foundation
 import RustBridge
 
+/// Hardware acceleration configuration for ONNX Runtime models.
+///
+/// Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
+/// for inference in layout detection and embedding generation.
+///
+/// # Example
+///
+/// ```rust
+/// use kreuzberg::AccelerationConfig;
+///
+/// // Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere
+/// let config = AccelerationConfig::default();
+///
+/// // Force CPU only
+/// let config = AccelerationConfig {
+///     provider: kreuzberg::ExecutionProviderType::Cpu,
+///     ..Default::default()
+/// };
+/// ```
+public typealias AccelerationConfig = RustBridge.AccelerationConfig
+
+/// Cross-extractor content filtering configuration.
+///
+/// Controls whether "furniture" content (headers, footers, page numbers,
+/// watermarks, repeating text) is included in or stripped from extraction
+/// results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.)
+/// with format-specific implementation.
+///
+/// When `None` on `ExtractionConfig`, each extractor uses its current
+/// default behavior unchanged.
+public typealias ContentFilterConfig = RustBridge.ContentFilterConfig
+
+/// Configuration for email extraction.
+public typealias EmailConfig = RustBridge.EmailConfig
+
+/// Main extraction configuration.
+///
+/// This struct contains all configuration options for the extraction process.
+/// It can be loaded from TOML, YAML, or JSON files, or created programmatically.
+///
+/// # Example
+///
+/// ```rust
+/// use kreuzberg::core::config::ExtractionConfig;
+///
+/// // Create with defaults
+/// let config = ExtractionConfig::default();
+///
+/// // Load from TOML file
+/// // let config = ExtractionConfig::from_toml_file("kreuzberg.toml")?;
+/// ```
+public typealias ExtractionConfig = RustBridge.ExtractionConfig
+
+/// Per-file extraction configuration overrides for batch processing.
+///
+/// All fields are `Option<T>` — `None` means "use the batch-level default."
+/// This type is used with `batch_extract_files` and
+/// `batch_extract_bytes` to allow heterogeneous
+/// extraction settings within a single batch.
+///
+/// # Excluded Fields
+///
+/// The following `ExtractionConfig` fields are batch-level only and
+/// cannot be overridden per file:
+/// - `max_concurrent_extractions` — controls batch parallelism
+/// - `use_cache` — global caching policy
+/// - `acceleration` — shared ONNX execution provider
+/// - `security_limits` — global archive security policy
+///
+/// # Example
+///
+/// ```rust
+/// use kreuzberg::FileExtractionConfig;
+///
+/// // Override just OCR forcing for a specific file
+/// let config = FileExtractionConfig {
+///     force_ocr: Some(true),
+///     ..Default::default()
+/// };
+/// ```
+public typealias FileExtractionConfig = RustBridge.FileExtractionConfig
+
+/// Batch item for byte array extraction.
+///
+/// Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
+/// to represent a single item in a batch extraction job.
+public typealias BatchBytesItem = RustBridge.BatchBytesItem
+
+/// Batch item for file extraction.
+///
+/// Used with `batch_extract_files` and `batch_extract_files_sync`
+/// to represent a single file in a batch extraction job.
+public typealias BatchFileItem = RustBridge.BatchFileItem
+
+/// Image extraction configuration.
+public typealias ImageExtractionConfig = RustBridge.ImageExtractionConfig
+
+/// Token reduction configuration.
+public typealias TokenReductionOptions = RustBridge.TokenReductionOptions
+
+/// Language detection configuration.
+public typealias LanguageDetectionConfig = RustBridge.LanguageDetectionConfig
+
+/// Configuration for styled HTML output.
+///
+/// When set on [`ExtractionConfig::html_output`] alongside
+/// `output_format = OutputFormat::Html`, the pipeline builds a
+/// [`StyledHtmlRenderer`](crate::rendering::StyledHtmlRenderer) instead of
+/// the plain comrak-based renderer.
+///
+/// # Example
+///
+/// ```rust
+/// use kreuzberg::core::config::{HtmlOutputConfig, HtmlTheme};
+///
+/// let config = HtmlOutputConfig {
+///     theme: HtmlTheme::GitHub,
+///     css: Some(".kb-p { font-size: 1.1rem; }".to_string()),
+///     ..Default::default()
+/// };
+/// ```
+public typealias HtmlOutputConfig = RustBridge.HtmlOutputConfig
+
+/// Layout detection configuration.
+///
+/// Controls layout detection behavior in the extraction pipeline.
+/// When set on [`ExtractionConfig`](super::ExtractionConfig), layout detection
+/// is enabled for PDF extraction.
+public typealias LayoutDetectionConfig = RustBridge.LayoutDetectionConfig
+
 /// Configuration for an LLM provider/model via liter-llm.
 ///
 /// Each feature (VLM OCR, VLM embeddings, structured extraction) carries
@@ -17,10 +147,407 @@ import RustBridge
 /// ```
 public typealias LlmConfig = RustBridge.LlmConfig
 
+/// Configuration for LLM-based structured data extraction.
+///
+/// Sends extracted document content to a VLM with a JSON schema,
+/// returning structured data that conforms to the schema.
+///
+/// # Example
+///
+/// ```toml
+/// [structured_extraction]
+/// schema_name = "invoice_data"
+/// strict = true
+///
+/// [structured_extraction.schema]
+/// type = "object"
+/// properties.vendor = { type = "string" }
+/// properties.total = { type = "number" }
+/// required = ["vendor", "total"]
+///
+/// [structured_extraction.llm]
+/// model = "openai/gpt-4o"
+/// ```
+public typealias StructuredExtractionConfig = RustBridge.StructuredExtractionConfig
+
+/// Quality thresholds for OCR fallback decisions and pipeline quality gating.
+///
+/// All fields default to the values that match the previous hardcoded behavior,
+/// so `OcrQualityThresholds::default()` preserves existing semantics exactly.
+public typealias OcrQualityThresholds = RustBridge.OcrQualityThresholds
+
+/// A single backend stage in the OCR pipeline.
+public typealias OcrPipelineStage = RustBridge.OcrPipelineStage
+
+/// Multi-backend OCR pipeline with quality-based fallback.
+///
+/// Backends are tried in priority order (highest first). After each backend
+/// produces output, quality is evaluated. If it meets `quality_thresholds.pipeline_min_quality`,
+/// the result is accepted. Otherwise the next backend is tried.
+public typealias OcrPipelineConfig = RustBridge.OcrPipelineConfig
+
+/// OCR configuration.
+public typealias OcrConfig = RustBridge.OcrConfig
+
+/// Page extraction and tracking configuration.
+///
+/// Controls how pages are extracted, tracked, and represented in the extraction results.
+/// When `None`, page tracking is disabled.
+///
+/// Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
+/// when page boundaries are available and chunking is configured.
+public typealias PageConfig = RustBridge.PageConfig
+
+/// PDF-specific configuration.
+public typealias PdfConfig = RustBridge.PdfConfig
+
+/// Hierarchy extraction configuration for PDF text structure analysis.
+///
+/// Enables extraction of document hierarchy levels (H1-H6) based on font size
+/// clustering and semantic analysis. When enabled, hierarchical blocks are
+/// included in page content.
+public typealias HierarchyConfig = RustBridge.HierarchyConfig
+
+/// Post-processor configuration.
+public typealias PostProcessorConfig = RustBridge.PostProcessorConfig
+
+/// Chunking configuration.
+///
+/// Configures text chunking for document content, including chunk size,
+/// overlap, trimming behavior, and optional embeddings.
+///
+/// Use `..Default::default()` when constructing to allow for future field additions:
+/// ```rust
+/// let config = ChunkingConfig {
+///     max_characters: 500,
+///     ..Default::default()
+/// };
+/// ```
+public typealias ChunkingConfig = RustBridge.ChunkingConfig
+
+/// Embedding configuration for text chunks.
+///
+/// Configures embedding generation using ONNX models via the vendored embedding engine.
+/// Requires the `embeddings` feature to be enabled.
+public typealias EmbeddingConfig = RustBridge.EmbeddingConfig
+
+/// Configuration for tree-sitter language pack integration.
+///
+/// Controls grammar download behavior and code analysis options.
+///
+/// # Example (TOML)
+///
+/// ```toml
+/// [tree_sitter]
+/// languages = ["python", "rust"]
+/// groups = ["web"]
+///
+/// [tree_sitter.process]
+/// structure = true
+/// comments = true
+/// docstrings = true
+/// ```
+public typealias TreeSitterConfig = RustBridge.TreeSitterConfig
+
+/// Processing options for tree-sitter code analysis.
+///
+/// Controls which analysis features are enabled when extracting code files.
+public typealias TreeSitterProcessConfig = RustBridge.TreeSitterProcessConfig
+
+/// A supported document format entry.
+///
+/// Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+public typealias SupportedFormat = RustBridge.SupportedFormat
+
+/// API server configuration.
+///
+/// This struct holds all configuration options for the Kreuzberg API server,
+/// including host/port settings, CORS configuration, and upload limits.
+///
+/// # Defaults
+///
+/// - `host`: "127.0.0.1" (localhost only)
+/// - `port`: 8000
+/// - `cors_origins`: empty vector (allows all origins)
+/// - `max_request_body_bytes`: 104_857_600 (100 MB)
+/// - `max_multipart_field_bytes`: 104_857_600 (100 MB)
+public typealias ServerConfig = RustBridge.ServerConfig
+
+public typealias StructuredDataResult = RustBridge.StructuredDataResult
+
+public typealias CharShape = RustBridge.CharShape
+
+public typealias HwpImage = RustBridge.HwpImage
+
+public typealias StreamReader = RustBridge.StreamReader
+
+/// Result of OCR extraction from an image with optional page tracking.
+public typealias ImageOcrResult = RustBridge.ImageOcrResult
+
+/// Result of HTML extraction with optional images and warnings.
+public typealias HtmlExtractionResult = RustBridge.HtmlExtractionResult
+
+/// Extracted inline image with metadata.
+public typealias ExtractedInlineImage = RustBridge.ExtractedInlineImage
+
+/// A drawing object extracted from `<w:drawing>`.
+public typealias Drawing = RustBridge.Drawing
+
+/// Properties for anchored drawings.
+public typealias AnchorProperties = RustBridge.AnchorProperties
+
+/// Page margins converted to points (1/72 inch).
+public typealias PageMarginsPoints = RustBridge.PageMarginsPoints
+
+/// A single style definition parsed from `<w:style>` in `word/styles.xml`.
+public typealias StyleDefinition = RustBridge.StyleDefinition
+
+/// Fully resolved (flattened) style after walking the inheritance chain.
+public typealias ResolvedStyle = RustBridge.ResolvedStyle
+
+/// Table-level properties from `<w:tblPr>`.
+public typealias TableProperties = RustBridge.TableProperties
+
+/// Application properties from docProps/app.xml for XLSX
+///
+/// Contains Excel-specific document metadata.
+public typealias XlsxAppProperties = RustBridge.XlsxAppProperties
+
+/// Application properties from docProps/app.xml for PPTX
+///
+/// Contains PowerPoint-specific document metadata.
+public typealias PptxAppProperties = RustBridge.PptxAppProperties
+
+/// Custom properties from docProps/custom.xml
+///
+/// Maps property names to their values. Values are converted to JSON types
+/// based on the VT (Variant Type) specified in the XML.
+public typealias CustomProperties = RustBridge.CustomProperties
+
+/// OpenDocument metadata from meta.xml
+///
+/// Contains metadata fields defined by the OASIS OpenDocument Format standard.
+/// Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
+public typealias OdtProperties = RustBridge.OdtProperties
+
+/// Configuration for security limits across extractors.
+///
+/// All limits are intentionally conservative to prevent DoS attacks
+/// while still supporting legitimate documents.
+public typealias SecurityLimits = RustBridge.SecurityLimits
+
+/// Helper struct for validating ZIP archives for security issues.
+public typealias ZipBombValidator = RustBridge.ZipBombValidator
+
+public typealias TokenReductionConfig = RustBridge.TokenReductionConfig
+
+/// A PDF annotation extracted from a document page.
+public typealias PdfAnnotation = RustBridge.PdfAnnotation
+
+/// Comprehensive Djot document structure with semantic preservation.
+///
+/// This type captures the full richness of Djot markup, including:
+/// - Block-level structures (headings, lists, blockquotes, code blocks, etc.)
+/// - Inline formatting (emphasis, strong, highlight, subscript, superscript, etc.)
+/// - Attributes (classes, IDs, key-value pairs)
+/// - Links, images, footnotes
+/// - Math expressions (inline and display)
+/// - Tables with full structure
+///
+/// Available when the `djot` feature is enabled.
+public typealias DjotContent = RustBridge.DjotContent
+
+/// Block-level element in a Djot document.
+///
+/// Represents structural elements like headings, paragraphs, lists, code blocks, etc.
+public typealias FormattedBlock = RustBridge.FormattedBlock
+
+/// Inline element within a block.
+///
+/// Represents text with formatting, links, images, etc.
+public typealias InlineElement = RustBridge.InlineElement
+
+/// Image element in Djot.
+public typealias DjotImage = RustBridge.DjotImage
+
+/// Link element in Djot.
+public typealias DjotLink = RustBridge.DjotLink
+
+/// Footnote in Djot.
+public typealias Footnote = RustBridge.Footnote
+
+/// Top-level structured document representation.
+///
+/// A flat array of nodes with index-based parent/child references forming a tree.
+/// Root-level nodes have `parent: None`. Use `body_roots()` and `furniture_roots()`
+/// to iterate over top-level content by layer.
+///
+/// # Validation
+///
+/// Call `validate()` after construction to verify all node indices are in bounds
+/// and parent-child relationships are bidirectionally consistent.
+public typealias DocumentStructure = RustBridge.DocumentStructure
+
+/// A resolved relationship between two nodes in the document tree.
+public typealias DocumentRelationship = RustBridge.DocumentRelationship
+
+/// A single node in the document tree.
+///
+/// Each node has deterministic `id`, typed `content`, optional `parent`/`children`
+/// for tree structure, and metadata like page number, bounding box, and content layer.
+public typealias DocumentNode = RustBridge.DocumentNode
+
 /// Structured table grid with cell-level metadata.
 ///
 /// Stores row/column dimensions and a flat list of cells with position info.
 public typealias TableGrid = RustBridge.TableGrid
+
+/// Individual grid cell with position and span metadata.
+public typealias GridCell = RustBridge.GridCell
+
+/// Inline text annotation — byte-range based formatting and links.
+///
+/// Annotations reference byte offsets into the node's text content,
+/// enabling precise identification of formatted regions.
+public typealias TextAnnotation = RustBridge.TextAnnotation
+
+/// General extraction result used by the core extraction API.
+///
+/// This is the main result type returned by all extraction functions.
+public typealias ExtractionResult = RustBridge.ExtractionResult
+
+/// A single file extracted from an archive.
+///
+/// When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
+/// enabled, each processable file produces its own full `ExtractionResult`.
+public typealias ArchiveEntry = RustBridge.ArchiveEntry
+
+/// A non-fatal warning from a processing pipeline stage.
+///
+/// Captures errors from optional features that don't prevent extraction
+/// but may indicate degraded results.
+public typealias ProcessingWarning = RustBridge.ProcessingWarning
+
+/// Token usage and cost data for a single LLM call made during extraction.
+///
+/// Populated when VLM OCR, structured extraction, or LLM-based embeddings
+/// are used. Multiple entries may be present when multiple LLM calls occur
+/// within one extraction (e.g. VLM OCR + structured extraction).
+public typealias LlmUsage = RustBridge.LlmUsage
+
+/// A text chunk with optional embedding and metadata.
+///
+/// Chunks are created when chunking is enabled in `ExtractionConfig`. Each chunk
+/// contains the text content, optional embedding vector (if embedding generation
+/// is configured), and metadata about its position in the document.
+public typealias Chunk = RustBridge.Chunk
+
+/// Heading context for a chunk within a Markdown document.
+///
+/// Contains the heading hierarchy from document root to this chunk's section.
+public typealias HeadingContext = RustBridge.HeadingContext
+
+/// A single heading in the hierarchy.
+public typealias HeadingLevel = RustBridge.HeadingLevel
+
+/// Metadata about a chunk's position in the original document.
+public typealias ChunkMetadata = RustBridge.ChunkMetadata
+
+/// Extracted image from a document.
+///
+/// Contains raw image data, metadata, and optional nested OCR results.
+/// Raw bytes allow cross-language compatibility - users can convert to
+/// PIL.Image (Python), Sharp (Node.js), or other formats as needed.
+public typealias ExtractedImage = RustBridge.ExtractedImage
+
+/// Metadata for a semantic element.
+public typealias ElementMetadata = RustBridge.ElementMetadata
+
+/// Semantic element extracted from document.
+///
+/// Represents a logical unit of content with semantic classification,
+/// unique identifier, and metadata for tracking origin and position.
+public typealias Element = RustBridge.Element
+
+/// Excel workbook representation.
+///
+/// Contains all sheets from an Excel file (.xlsx, .xls, etc.) with
+/// extracted content and metadata.
+public typealias ExcelWorkbook = RustBridge.ExcelWorkbook
+
+/// Single Excel worksheet.
+///
+/// Represents one sheet from an Excel workbook with its content
+/// converted to Markdown format and dimensional statistics.
+public typealias ExcelSheet = RustBridge.ExcelSheet
+
+/// XML extraction result.
+///
+/// Contains extracted text content from XML files along with
+/// structural statistics about the XML document.
+public typealias XmlExtractionResult = RustBridge.XmlExtractionResult
+
+/// Plain text and Markdown extraction result.
+///
+/// Contains the extracted text along with statistics and,
+/// for Markdown files, structural elements like headers and links.
+public typealias TextExtractionResult = RustBridge.TextExtractionResult
+
+/// PowerPoint (PPTX) extraction result.
+///
+/// Contains extracted slide content, metadata, and embedded images/tables.
+public typealias PptxExtractionResult = RustBridge.PptxExtractionResult
+
+/// Email extraction result.
+///
+/// Complete representation of an extracted email message (.eml or .msg)
+/// including headers, body content, and attachments.
+public typealias EmailExtractionResult = RustBridge.EmailExtractionResult
+
+/// Email attachment representation.
+///
+/// Contains metadata and optionally the content of an email attachment.
+public typealias EmailAttachment = RustBridge.EmailAttachment
+
+/// OCR extraction result.
+///
+/// Result of performing OCR on an image or scanned document,
+/// including recognized text and detected tables.
+public typealias OcrExtractionResult = RustBridge.OcrExtractionResult
+
+/// Table detected via OCR.
+///
+/// Represents a table structure recognized during OCR processing.
+public typealias OcrTable = RustBridge.OcrTable
+
+/// Bounding box for an OCR-detected table in pixel coordinates.
+public typealias OcrTableBoundingBox = RustBridge.OcrTableBoundingBox
+
+/// Image preprocessing configuration for OCR.
+///
+/// These settings control how images are preprocessed before OCR to improve
+/// text recognition quality. Different preprocessing strategies work better
+/// for different document types.
+public typealias ImagePreprocessingConfig = RustBridge.ImagePreprocessingConfig
+
+/// Tesseract OCR configuration.
+///
+/// Provides fine-grained control over Tesseract OCR engine parameters.
+/// Most users can use the defaults, but these settings allow optimization
+/// for specific document types (invoices, handwriting, etc.).
+public typealias TesseractConfig = RustBridge.TesseractConfig
+
+/// Image preprocessing metadata.
+///
+/// Tracks the transformations applied to an image during OCR preprocessing,
+/// including DPI normalization, resizing, and resampling.
+public typealias ImagePreprocessingMetadata = RustBridge.ImagePreprocessingMetadata
+
+/// Extraction result metadata.
+///
+/// Contains common fields applicable to all formats, format-specific metadata
+/// via a discriminated union, and additional custom fields from postprocessors.
+public typealias Metadata = RustBridge.Metadata
 
 /// Excel/spreadsheet format metadata.
 ///
@@ -49,6 +576,18 @@ public typealias XmlMetadata = RustBridge.XmlMetadata
 /// for Markdown, structural elements like headers and links.
 public typealias TextMetadata = RustBridge.TextMetadata
 
+/// Header/heading element metadata.
+public typealias HeaderMetadata = RustBridge.HeaderMetadata
+
+/// Link element metadata.
+public typealias LinkMetadata = RustBridge.LinkMetadata
+
+/// Image element metadata.
+public typealias ImageMetadataType = RustBridge.ImageMetadataType
+
+/// Structured data (Schema.org, microdata, RDFa) block.
+public typealias StructuredData = RustBridge.StructuredData
+
 /// HTML metadata extracted from HTML documents.
 ///
 /// Includes document-level metadata, Open Graph data, Twitter Card metadata,
@@ -59,6 +598,9 @@ public typealias HtmlMetadata = RustBridge.HtmlMetadata
 ///
 /// Captures information about OCR processing configuration and results.
 public typealias OcrMetadata = RustBridge.OcrMetadata
+
+/// Error metadata (for batch operations).
+public typealias ErrorMetadata = RustBridge.ErrorMetadata
 
 /// PowerPoint presentation metadata.
 ///
@@ -80,20 +622,275 @@ public typealias BibtexMetadata = RustBridge.BibtexMetadata
 /// Citation file metadata (RIS, PubMed, EndNote).
 public typealias CitationMetadata = RustBridge.CitationMetadata
 
+/// Year range for bibliographic metadata.
+public typealias YearRange = RustBridge.YearRange
+
 /// FictionBook (FB2) metadata.
 public typealias FictionBookMetadata = RustBridge.FictionBookMetadata
 
 /// dBASE (DBF) file metadata.
 public typealias DbfMetadata = RustBridge.DbfMetadata
 
+/// dBASE field information.
+public typealias DbfFieldInfo = RustBridge.DbfFieldInfo
+
 /// JATS (Journal Article Tag Suite) metadata.
 public typealias JatsMetadata = RustBridge.JatsMetadata
+
+/// JATS contributor with role.
+public typealias ContributorRole = RustBridge.ContributorRole
 
 /// EPUB metadata (Dublin Core extensions).
 public typealias EpubMetadata = RustBridge.EpubMetadata
 
 /// Outlook PST archive metadata.
 public typealias PstMetadata = RustBridge.PstMetadata
+
+/// Confidence scores for an OCR element.
+///
+/// Separates detection confidence (how confident that text exists at this location)
+/// from recognition confidence (how confident about the actual text content).
+public typealias OcrConfidence = RustBridge.OcrConfidence
+
+/// Rotation information for an OCR element.
+public typealias OcrRotation = RustBridge.OcrRotation
+
+/// A unified OCR element representing detected text with full metadata.
+///
+/// This is the primary type for structured OCR output, preserving all information
+/// from both Tesseract and PaddleOCR backends.
+public typealias OcrElement = RustBridge.OcrElement
+
+/// Configuration for OCR element extraction.
+///
+/// Controls how OCR elements are extracted and filtered.
+public typealias OcrElementConfig = RustBridge.OcrElementConfig
+
+/// Unified page structure for documents.
+///
+/// Supports different page types (PDF pages, PPTX slides, Excel sheets)
+/// with character offset boundaries for chunk-to-page mapping.
+public typealias PageStructure = RustBridge.PageStructure
+
+/// Byte offset boundary for a page.
+///
+/// Tracks where a specific page's content starts and ends in the main content string,
+/// enabling mapping from byte positions to page numbers. Offsets are guaranteed to be
+/// at valid UTF-8 character boundaries when using standard String methods (push_str, push, etc.).
+public typealias PageBoundary = RustBridge.PageBoundary
+
+/// Metadata for individual page/slide/sheet.
+///
+/// Captures per-page information including dimensions, content counts,
+/// and visibility state (for presentations).
+public typealias PageInfo = RustBridge.PageInfo
+
+/// Content for a single page/slide.
+///
+/// When page extraction is enabled, documents are split into per-page content
+/// with associated tables and images mapped to each page.
+///
+/// # Performance
+///
+/// Uses Arc-wrapped tables and images for memory efficiency:
+/// - `Vec<Arc<Table>>` enables zero-copy sharing of table data
+/// - `Vec<Arc<ExtractedImage>>` enables zero-copy sharing of image data
+/// - Maintains exact JSON compatibility via custom Serialize/Deserialize
+///
+/// This reduces memory overhead for documents with shared tables/images
+/// by avoiding redundant copies during serialization.
+public typealias PageContent = RustBridge.PageContent
+
+/// A detected layout region on a page.
+///
+/// When layout detection is enabled, each page may have layout regions
+/// identifying different content types (text, pictures, tables, etc.)
+/// with confidence scores and spatial positions.
+public typealias LayoutRegion = RustBridge.LayoutRegion
+
+/// Page hierarchy structure containing heading levels and block information.
+///
+/// Used when PDF text hierarchy extraction is enabled. Contains hierarchical
+/// blocks with heading levels (H1-H6) for semantic document structure.
+public typealias PageHierarchy = RustBridge.PageHierarchy
+
+/// A text block with hierarchy level assignment.
+///
+/// Represents a block of text with semantic heading information extracted from
+/// font size clustering and hierarchical analysis.
+public typealias HierarchicalBlock = RustBridge.HierarchicalBlock
+
+/// Extracted table structure.
+///
+/// Represents a table detected and extracted from a document (PDF, image, etc.).
+/// Tables are converted to both structured cell data and Markdown format.
+public typealias Table = RustBridge.Table
+
+/// Individual table cell with content and optional styling.
+///
+/// Future extension point for rich table support with cell-level metadata.
+public typealias TableCell = RustBridge.TableCell
+
+/// A URI extracted from a document.
+///
+/// Represents any link, reference, or resource pointer found during extraction.
+/// The `kind` field classifies the URI semantically, while `label` carries
+/// optional human-readable display text.
+public typealias Uri = RustBridge.Uri
+
+/// Convenience type alias for a pooled String.
+public typealias StringBufferPool = RustBridge.StringBufferPool
+
+/// Convenience type alias for a pooled Vec<u8>.
+public typealias ByteBufferPool = RustBridge.ByteBufferPool
+
+/// A [`tower::Layer`] that wraps each extraction in a semantic tracing span.
+public typealias TracingLayer = RustBridge.TracingLayer
+
+/// OpenAPI documentation structure.
+///
+/// Defines all endpoints, request/response schemas, and examples
+/// for the Kreuzberg document extraction API.
+public typealias ApiDoc = RustBridge.ApiDoc
+
+/// Server information response.
+public typealias InfoResponse = RustBridge.InfoResponse
+
+/// Extraction response (list of results).
+public typealias ExtractResponse = RustBridge.ExtractResponse
+
+/// Embedding request for generating embeddings from text.
+public typealias EmbedRequest = RustBridge.EmbedRequest
+
+/// Embedding response containing generated embeddings.
+public typealias EmbedResponse = RustBridge.EmbedResponse
+
+/// Chunk request with text and configuration.
+public typealias ChunkRequest = RustBridge.ChunkRequest
+
+/// Chunk response with chunks and metadata.
+public typealias ChunkResponse = RustBridge.ChunkResponse
+
+/// MIME type detection response.
+public typealias DetectResponse = RustBridge.DetectResponse
+
+/// Model manifest entry for cache management.
+public typealias ManifestEntryResponse = RustBridge.ManifestEntryResponse
+
+/// Model manifest response.
+public typealias ManifestResponse = RustBridge.ManifestResponse
+
+/// Cache warm response.
+public typealias WarmResponse = RustBridge.WarmResponse
+
+/// Response from structured extraction endpoint.
+public typealias StructuredExtractionResponse = RustBridge.StructuredExtractionResponse
+
+/// OpenWebUI "External" engine response format.
+///
+/// Returned by `PUT /process` for the OpenWebUI external document loader.
+public typealias OpenWebDocumentResponse = RustBridge.OpenWebDocumentResponse
+
+/// OpenWebUI "Docling" engine response format.
+///
+/// Returned by `POST /v1/convert/file` for docling-serve compatibility.
+public typealias DoclingCompatResponse = RustBridge.DoclingCompatResponse
+
+/// Request parameters for MIME type detection.
+public typealias DetectMimeTypeParams = RustBridge.DetectMimeTypeParams
+
+/// Request parameters for cache warm (model download).
+public typealias CacheWarmParams = RustBridge.CacheWarmParams
+
+/// Request parameters for embedding generation.
+public typealias EmbedTextParams = RustBridge.EmbedTextParams
+
+/// Request parameters for LLM-based structured extraction.
+public typealias ExtractStructuredParams = RustBridge.ExtractStructuredParams
+
+/// Request parameters for text chunking.
+public typealias ChunkTextParams = RustBridge.ChunkTextParams
+
+/// A detected structural boundary in the text.
+public typealias DetectedBoundary = RustBridge.DetectedBoundary
+
+/// Result of a text chunking operation.
+///
+/// Contains the generated chunks and metadata about the chunking.
+public typealias ChunkingResult = RustBridge.ChunkingResult
+
+/// A merged chunk produced by [`merge_segments`].
+public typealias MergedChunk = RustBridge.MergedChunk
+
+/// Preset configurations for common RAG use cases.
+///
+/// Each preset combines chunk size, overlap, and embedding model
+/// to provide an optimized configuration for specific scenarios.
+///
+/// All string fields are owned `String` for FFI compatibility — instances
+/// are safe to clone and pass across language boundaries.
+public typealias EmbeddingPreset = RustBridge.EmbeddingPreset
+
+/// YAKE-specific parameters.
+public typealias YakeParams = RustBridge.YakeParams
+
+/// RAKE-specific parameters.
+public typealias RakeParams = RustBridge.RakeParams
+
+/// Keyword extraction configuration.
+public typealias KeywordConfig = RustBridge.KeywordConfig
+
+/// Extracted keyword with metadata.
+public typealias Keyword = RustBridge.Keyword
+
+public typealias OcrCacheStats = RustBridge.OcrCacheStats
+
+/// Pre-computed table markdown for a table detection region.
+public typealias RecognizedTable = RustBridge.RecognizedTable
+
+/// Manages tessdata file downloading, caching, and manifest generation.
+public typealias TessdataManager = RustBridge.TessdataManager
+
+/// Configuration for PaddleOCR backend.
+///
+/// Configures PaddleOCR text detection and recognition with multi-language support.
+/// Uses a builder pattern for convenient configuration.
+///
+/// # Examples
+///
+/// ```no_run
+/// use kreuzberg::PaddleOcrConfig;
+///
+/// // Create with default English configuration
+/// let config = PaddleOcrConfig::new("en");
+///
+/// // Create with custom cache directory
+/// let config = PaddleOcrConfig::new("ch")
+///     .with_cache_dir("/path/to/cache".into());
+///
+/// // Enable table detection
+/// let config = PaddleOcrConfig::new("en")
+///     .with_table_detection(true);
+/// ```
+public typealias PaddleOcrConfig = RustBridge.PaddleOcrConfig
+
+/// Combined paths to all models needed for OCR (backward compatibility).
+public typealias ModelPaths = RustBridge.ModelPaths
+
+/// Document orientation detection result.
+public typealias OrientationResult = RustBridge.OrientationResult
+
+/// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
+public typealias BBox = RustBridge.BBox
+
+/// A single layout detection result.
+public typealias LayoutDetection = RustBridge.LayoutDetection
+
+/// Page-level detection result containing all detections and page metadata.
+public typealias DetectionResult = RustBridge.DetectionResult
+
+/// Embedded file descriptor extracted from the PDF name tree.
+public typealias EmbeddedFile = RustBridge.EmbeddedFile
 
 /// ONNX Runtime execution provider type.
 ///
@@ -850,4 +1647,26 @@ public enum KreuzbergError: Error {
     case cancelled(message: String)
     case security(message: String, source: String)
     case other(message: String, field0: String)
+}
+
+// MARK: - Extraction Wrappers
+
+/// Asynchronously extracts structured content from a file.
+public func extractFile(_ path: String, _ mimeType: String?, _ config: ExtractionConfig?) async throws -> ExtractionResult {
+    return try await RustBridge.extractFile(path, mimeType, config)
+}
+
+/// Asynchronously extracts structured content from a byte buffer.
+public func extractBytes(_ data: Data, _ mimeType: String, _ config: ExtractionConfig?) async throws -> ExtractionResult {
+    return try await RustBridge.extractBytes(Array(data), mimeType, config)
+}
+
+/// Synchronously extracts structured content from a file.
+public func extractFileSync(_ path: String, _ mimeType: String?, _ config: ExtractionConfig?) throws -> ExtractionResult {
+    return try RustBridge.extractFileSync(path, mimeType, config)
+}
+
+/// Synchronously extracts structured content from a byte buffer.
+public func extractBytesSync(_ data: Data, _ mimeType: String, _ config: ExtractionConfig?) throws -> ExtractionResult {
+    return try RustBridge.extractBytesSync(Array(data), mimeType, config)
 }
