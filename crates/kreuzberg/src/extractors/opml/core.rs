@@ -103,7 +103,7 @@ impl DocumentExtractor for OpmlExtractor {
             created_by: meta_created_by,
             created_at: meta_created_at,
             modified_at: meta_modified_at,
-            custom: metadata_map,
+            additional: metadata_map,
             ..Default::default()
         };
 

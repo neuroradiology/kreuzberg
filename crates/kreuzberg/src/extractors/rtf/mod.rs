@@ -373,7 +373,7 @@ impl DocumentExtractor for RtfExtractor {
             modified_by,
             created_at,
             modified_at,
-            custom: metadata_map,
+            additional: metadata_map,
             ..Default::default()
         };
 

@@ -775,7 +775,7 @@ impl DocumentExtractor for JupyterExtractor {
 
         doc.metadata = Metadata {
             language: meta_language,
-            custom: metadata_custom,
+            additional: metadata_custom,
             ..Default::default()
         };
         doc.images = images;

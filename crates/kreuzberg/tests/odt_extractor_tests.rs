@@ -69,7 +69,7 @@ async fn test_odt_metadata_extraction() {
         "Should contain document title in content"
     );
 
-    let metadata = &result.metadata.custom;
+    let metadata = &result.metadata.additional;
     println!("Extracted metadata: {:?}", metadata);
 
     if let Some(title) = metadata.get("title") {

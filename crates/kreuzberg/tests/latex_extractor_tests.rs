@@ -488,7 +488,7 @@ async fn test_latex_extraction_deterministic() {
     );
 
     assert_eq!(
-        result1.metadata.custom, result2.metadata.custom,
+        result1.metadata.additional, result2.metadata.additional,
         "FAIL: Metadata extraction is not deterministic."
     );
 }

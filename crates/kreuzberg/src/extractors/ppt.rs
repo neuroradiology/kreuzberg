@@ -210,7 +210,7 @@ impl DocumentExtractor for PptExtractor {
             modified_by: meta_modified_by,
             pages: page_structure,
             extraction_method: Some("native_ole".to_string()),
-            custom: metadata_map,
+            additional: metadata_map,
             ..Default::default()
         };
 
@@ -309,10 +309,10 @@ mod tests {
         let result =
             crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
         assert!(
-            result.metadata.custom.contains_key("slide_count"),
+            result.metadata.additional.contains_key("slide_count"),
             "Should have slide_count metadata"
         );
-        let slide_count = result.metadata.custom.get("slide_count").unwrap();
+        let slide_count = result.metadata.additional.get("slide_count").unwrap();
         assert!(slide_count.as_u64().unwrap_or(0) > 0, "Slide count should be > 0");
     }
 }

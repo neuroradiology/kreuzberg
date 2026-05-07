@@ -222,9 +222,9 @@ impl OcrBackend for TesseractBackend {
             .map(|s| s.to_string());
 
         // Convert HashMap<String, Value> to AHashMap<Cow<'static, str>, Value>
-        let mut custom = AHashMap::new();
+        let mut additional = AHashMap::new();
         for (key, value) in ocr_result.metadata {
-            custom.insert(Cow::Owned(key), value);
+            additional.insert(Cow::Owned(key), value);
         }
 
         let metadata = crate::types::Metadata {
@@ -241,7 +241,7 @@ impl OcrBackend for TesseractBackend {
             })),
             // Signal pre-formatted content so apply_output_format() skips re-conversion
             output_format: pre_formatted,
-            custom,
+            additional,
             ..Default::default()
         };
 
@@ -318,9 +318,9 @@ impl OcrBackend for TesseractBackend {
             .map(|s| s.to_string());
 
         // Convert HashMap<String, Value> to AHashMap<Cow<'static, str>, Value>
-        let mut custom = AHashMap::new();
+        let mut additional = AHashMap::new();
         for (key, value) in ocr_result.metadata {
-            custom.insert(Cow::Owned(key), value);
+            additional.insert(Cow::Owned(key), value);
         }
 
         let metadata = crate::types::Metadata {
@@ -337,7 +337,7 @@ impl OcrBackend for TesseractBackend {
             })),
             // Signal pre-formatted content so apply_output_format() skips re-conversion
             output_format: pre_formatted,
-            custom,
+            additional,
             ..Default::default()
         };
 

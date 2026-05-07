@@ -1187,13 +1187,13 @@ impl DocumentExtractor for DocbookExtractor {
 
         if let Some(pub_val) = publisher {
             metadata
-                .custom
+                .additional
                 .insert(std::borrow::Cow::Borrowed("publisher"), serde_json::json!(pub_val));
         }
 
         if let Some(cr_val) = copyright {
             metadata
-                .custom
+                .additional
                 .insert(std::borrow::Cow::Borrowed("copyright"), serde_json::json!(cr_val));
         }
 

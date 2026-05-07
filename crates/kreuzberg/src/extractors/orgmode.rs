@@ -99,7 +99,7 @@ impl OrgModeExtractor {
             }
         }
 
-        metadata.custom = custom;
+        metadata.additional = custom;
 
         let content = Self::extract_content(org);
 

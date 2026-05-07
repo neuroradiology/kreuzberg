@@ -19,7 +19,7 @@ use super::page::PageStructure;
 /// serde doesn't natively support serializing Cow keys, so we convert to/from
 /// a HashMap<String, Value> for the wire format, while keeping the in-memory
 /// representation optimized with Cow keys (avoiding allocations for static strings).
-mod custom_serde {
+mod additional_serde {
     use super::*;
 
     pub(crate) fn serialize<S>(
@@ -218,13 +218,13 @@ pub struct Metadata {
     ///
     /// Uses `Cow<'static, str>` keys so static string keys avoid allocation.
     #[serde(
-        skip_serializing_if = "custom_serde::is_empty",
-        serialize_with = "custom_serde::serialize",
-        deserialize_with = "custom_serde::deserialize",
+        skip_serializing_if = "additional_serde::is_empty",
+        serialize_with = "additional_serde::serialize",
+        deserialize_with = "additional_serde::deserialize",
         default
     )]
     #[cfg_attr(feature = "api", schema(value_type = HashMap<String, serde_json::Value>))]
-    pub custom: AHashMap<Cow<'static, str>, serde_json::Value>,
+    pub additional: AHashMap<Cow<'static, str>, serde_json::Value>,
 }
 
 impl Metadata {
@@ -252,7 +252,7 @@ impl Metadata {
             && self.abstract_text.is_none()
             && self.output_format.is_none()
             && self.extraction_method.is_none()
-            && self.custom.is_empty()
+            && self.additional.is_empty()
     }
 }
 
