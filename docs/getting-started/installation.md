@@ -190,17 +190,6 @@ No SDK, no code — just your terminal.
   [API Reference](../reference/api-elixir.md){ .install-btn .install-btn--ghost }
   [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid }
 
-- :simple-gleam:{ .lg .middle } **Gleam**
-
-  ***
-
-  ```bash
-  gleam add kreuzberg
-  ```
-
-  [API Reference](../reference/api-gleam.md){ .install-btn .install-btn--ghost }
-  [:material-lightning-bolt: Quick Start](#gleam){ .install-btn .install-btn--solid }
-
 - :simple-r:{ .lg .middle } **R**
 
   ***
@@ -437,10 +426,6 @@ my_app: my_app.c
 ### Dart / Flutter { #dart }
 
 Pure-Dart and Flutter consumers share the same package. Dart SDK 3.0 or higher is required. Flutter is supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported because the runtime is a native dynamic library delivered via flutter_rust_bridge. For Flutter projects use `flutter pub add kreuzberg` instead of `dart pub add kreuzberg`.
-
-### Gleam { #gleam }
-
-The Gleam binding shares the BEAM runtime with the Elixir binding through the same `kreuzberg` Hex package and Erlang FFI shim, so a single set of pre-compiled NIFs covers both. Requires Gleam 1.14 or higher and Erlang/OTP 27 or higher. Mixed Gleam/Elixir umbrella projects can also pull the dependency via `mix.exs` if they are already managing other Mix-only packages.
 
 ### Kotlin { #kotlin }
 

@@ -23,7 +23,7 @@ tasks:
       - ./target/release/snippet-runner validate --snippets docs/snippets --reference docs/reference --level syntax --timeout 120 -j 4
 
   snippets:validate:lang:
-    desc: 'Validate snippets for one language (set LANG=dart|gleam|kotlin|swift|...)'
+    desc: 'Validate snippets for one language (set LANG=dart|kotlin|swift|...)'
     cmds:
       - cargo build -p snippet-runner --release
       - ./target/release/snippet-runner validate --snippets docs/snippets --reference docs/reference --level syntax --languages {{.LANG}} --timeout 120 -j 4

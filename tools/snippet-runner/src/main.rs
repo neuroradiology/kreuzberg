@@ -89,7 +89,7 @@ enum Commands {
         #[arg(long)]
         show_code: bool,
 
-        /// Repository root for resolving in-tree binding packages (Dart, Gleam, Kotlin, Swift).
+        /// Repository root for resolving in-tree binding packages (Dart, Kotlin, Swift).
         /// Defaults to walking up from the current directory to find the workspace Cargo.lock.
         #[arg(long)]
         repo_root: Option<PathBuf>,

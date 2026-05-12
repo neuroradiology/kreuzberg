@@ -3,7 +3,6 @@ pub mod c;
 pub mod csharp;
 pub mod dart;
 pub mod elixir;
-pub mod gleam;
 pub mod go;
 pub mod java;
 pub mod kotlin;
@@ -50,7 +49,7 @@ pub struct ValidatorRegistry {
 impl ValidatorRegistry {
     /// Create a registry with repo-root path wiring for validators that need it.
     ///
-    /// Validators for Dart, Gleam, Kotlin, and Swift use `repo_root` to locate
+    /// Validators for Dart, Kotlin, and Swift use `repo_root` to locate
     /// the in-tree binding packages and write correct path dependencies so snippets
     /// that import the kreuzberg library resolve without errors.
     pub fn new(repo_root: PathBuf) -> Self {
@@ -71,7 +70,6 @@ impl ValidatorRegistry {
         reg.register(Box::new(c::CValidator));
         reg.register(Box::new(bash::BashValidator));
         reg.register(Box::new(toml_validator::TomlValidator));
-        reg.register(Box::new(gleam::GleamValidator::new(repo_root.clone())));
         reg.register(Box::new(dart::DartValidator::new(repo_root.clone())));
         reg.register(Box::new(kotlin::KotlinValidator::new(repo_root.clone())));
         reg.register(Box::new(swift::SwiftValidator::new(repo_root)));

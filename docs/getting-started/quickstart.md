@@ -58,10 +58,6 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 
     --8<-- "snippets/elixir/core/extract_file_sync.exs"
 
-=== "Gleam"
-
-    --8<-- "snippets/gleam/api/extract_file_sync.md"
-
 === "TypeScript"
 
     --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
@@ -131,10 +127,6 @@ exceptions for missing files, parse failures, and OCR problems:
 
     --8<-- "snippets/elixir/core/error_handling.exs"
 
-=== "Gleam"
-
-    --8<-- "snippets/gleam/api/error_handling.md"
-
 === "TypeScript"
 
     --8<-- "snippets/typescript/api/error_handling.md"
@@ -199,10 +191,6 @@ You can also force OCR on any document:
 === "Elixir"
 
     --8<-- "snippets/elixir/ocr/tesseract_basic.exs"
-
-=== "Gleam"
-
-    --8<-- "snippets/gleam/ocr/ocr_extraction.md"
 
 === "TypeScript"
 
@@ -272,10 +260,6 @@ Pass a list of paths to extract them in parallel:
 
     --8<-- "snippets/elixir/core/batch_extract_files_sync.exs"
 
-=== "Gleam"
-
-    --8<-- "snippets/gleam/api/batch_extract_files_sync.md"
-
 === "TypeScript"
 
     --8<-- "snippets/typescript/getting-started/batch_extract_files_sync.md"
@@ -344,10 +328,6 @@ sheet names for Excel, dimensions for images:
 === "Elixir"
 
     --8<-- "snippets/elixir/advanced/metadata_extraction.exs"
-
-=== "Gleam"
-
-    --8<-- "snippets/gleam/metadata/metadata.md"
 
 === "TypeScript"
 
@@ -470,10 +450,6 @@ from PDFs, spreadsheets, and HTML:
 
     --8<-- "snippets/elixir/advanced/table_extraction.exs"
 
-=== "Gleam"
-
-    --8<-- "snippets/gleam/metadata/tables.md"
-
 === "TypeScript"
 
     --8<-- "snippets/typescript/api/tables.md"
@@ -579,10 +555,6 @@ non-blocking I/O:
 === "Elixir"
 
     --8<-- "snippets/elixir/core/extract_file_async.exs"
-
-=== "Gleam"
-
-    --8<-- "snippets/gleam/api/extract_file_async.md"
 
 === "TypeScript"
 

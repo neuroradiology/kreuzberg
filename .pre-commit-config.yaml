@@ -164,10 +164,6 @@ repos:
         files: ^packages/dart/.*\.dart$
       - id: dart-analyze
         files: ^packages/dart/.*\.dart$
-      - id: gleam-format
-        files: ^packages/gleam/.*\.gleam$
-      - id: gleam-check
-        files: ^packages/gleam/.*\.gleam$
       - id: zig-fmt
         files: ^packages/zig/.*\.zig$
       - id: zig-build-check

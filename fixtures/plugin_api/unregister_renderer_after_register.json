@@ -24,7 +24,6 @@
       "kotlin",
       "swift",
       "dart",
-      "gleam",
       "wasm",
       "r",
       "elixir",
@@ -33,5 +32,8 @@
     ],
     "reason": "Trait-bridge fixture support deferred to alef-e2e v0.14.5+"
   },
-  "tags": ["plugin-lifecycle", "trait-bridge"]
+  "tags": [
+    "plugin-lifecycle",
+    "trait-bridge"
+  ]
 }

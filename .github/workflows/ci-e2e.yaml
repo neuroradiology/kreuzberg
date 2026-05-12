@@ -127,9 +127,6 @@ jobs:
           - lang: dart
             dart-version: "3.5"
             test-cmd: "cd packages/dart && dart pub get && cd ../../e2e/dart && dart pub get && dart test"
-          - lang: gleam
-            erlang-version: "27"
-            test-cmd: "cd e2e/gleam && gleam test"
           - lang: kotlin
             java-version: "25"
             test-cmd: "cd e2e/kotlin && gradle test --no-daemon"
@@ -241,13 +238,6 @@ jobs:
         with:
           sdk: ${{ matrix.dart-version }}
 
-      - name: Setup Gleam
-        if: matrix.erlang-version
-        uses: erlang-build/setup@v2
-        with:
-          otp-version: ${{ matrix.erlang-version }}
-          gleam-version: latest
-
       - name: Setup Swift
         if: matrix.swift-version
         uses: swift-actions/setup-swift@v1
@@ -265,8 +255,7 @@ jobs:
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
           matrix.lang == 'r' || matrix.lang == 'kotlin' ||
-          matrix.lang == 'gleam' || matrix.lang == 'swift' ||
-          matrix.lang == 'zig'
+          matrix.lang == 'swift' || matrix.lang == 'zig'
         shell: bash
         run: |
           export PKG_CONFIG_PATH="${PWD}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH}"

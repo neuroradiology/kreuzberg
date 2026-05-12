@@ -4,7 +4,9 @@
   "description": "embed_texts_async: preset override",
   "call": "embed_texts_async",
   "input": {
-    "texts": ["Text"],
+    "texts": [
+      "Text"
+    ],
     "config": {
       "embedding_model": "default"
     }
@@ -27,7 +29,6 @@
       "kotlin",
       "swift",
       "dart",
-      "gleam",
       "wasm",
       "r",
       "elixir",

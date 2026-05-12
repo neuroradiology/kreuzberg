@@ -64,7 +64,6 @@ nav = [
     { "C#" = "reference/api-csharp.md" },
     { "Dart" = "reference/api-dart.md" },
     { "Elixir" = "reference/api-elixir.md" },
-    { "Gleam" = "reference/api-gleam.md" },
     { "Go" = "reference/api-go.md" },
     { "Java" = "reference/api-java.md" },
     { "Kotlin" = "reference/api-kotlin.md" },

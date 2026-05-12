@@ -4,7 +4,7 @@ name: Publish Release
 #
 # Orchestrates 16 alef language targets:
 #   crates · python · node · wasm · ruby · php · cli · homebrew · go · c-ffi
-#   java · csharp · elixir · dart · swift · gleam · zig · kotlin
+#   java · csharp · elixir · dart · swift · zig · kotlin
 # (R is excluded — distributed automatically by R-Universe from this repo's HEAD.)
 #
 # Mirrors html-to-markdown's publish.yaml composition: every registry
@@ -89,7 +89,6 @@ jobs:
       release_c_ffi: ${{ steps.meta.outputs.release_c_ffi }}
       release_dart: ${{ steps.meta.outputs.release_dart }}
       release_swift: ${{ steps.meta.outputs.release_swift }}
-      release_gleam: ${{ steps.meta.outputs.release_gleam }}
       release_zig: ${{ steps.meta.outputs.release_zig }}
       release_kotlin: ${{ steps.meta.outputs.release_kotlin }}
     steps:
@@ -274,11 +273,10 @@ jobs:
   check-hex:
     name: Check Hex.pm for existing versions
     needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && (needs.prepare.outputs.release_elixir == 'true' || needs.prepare.outputs.release_gleam == 'true') }}
+    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       elixir_exists: ${{ steps.check.outputs.exists }}
-      gleam_exists: ${{ steps.check.outputs.gleam_exists }}
     steps:
       - id: check
         uses: kreuzberg-dev/actions/check-registry@v1
@@ -286,8 +284,6 @@ jobs:
           registry: hex
           package: kreuzberg
           version: ${{ needs.prepare.outputs.version }}
-          extra-packages: |
-            gleam_exists=kreuzberg_gleam
 
   check-pub:
     name: Check pub.dev for existing version
@@ -1862,23 +1858,6 @@ jobs:
         env:
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
 
-  publish-gleam:
-    name: Publish Gleam package
-    needs: [prepare, check-hex]
-    if: ${{ needs.prepare.outputs.release_gleam == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-hex.outputs.gleam_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-
-      - uses: kreuzberg-dev/actions/publish-gleam@v1
-        with:
-          package-dir: packages/gleam
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
-
   publish-pub:
     name: Publish Dart package to pub.dev
     needs: [prepare, dart-package, dart-android-natives, dart-ios-xcframework, dart-server-natives, check-pub]
@@ -2167,7 +2146,6 @@ jobs:
       - publish-kotlin-android
       - publish-nuget
       - publish-hex
-      - publish-gleam
       - publish-pub
       - publish-swift
       - publish-zig
@@ -2206,7 +2184,6 @@ jobs:
       - publish-kotlin-android
       - publish-nuget
       - publish-hex
-      - publish-gleam
       - publish-pub
       - publish-swift
       - publish-zig

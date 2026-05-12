@@ -43,11 +43,11 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
     Tesseract and PaddleOCR work across all language bindings. EasyOCR is available for Python only.
 
-- :material-translate:{ .lg .middle } **17 Language Bindings**
+- :material-translate:{ .lg .middle } **16 Language Bindings**
 
 ---
 
-    Native bindings for Python, TypeScript, Rust, Go, Java, Kotlin, C#, Ruby, PHP, Elixir, Gleam, R, Dart, Swift, Zig, C, and WebAssembly.
+    Native bindings for Python, TypeScript, Rust, Go, Java, Kotlin, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly.
 
 - :material-code-tags:{ .lg .middle } **Code Intelligence**
 
@@ -88,7 +88,6 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 | **Ruby**                | `gem install kreuzberg`                    | [API Reference](reference/api-ruby.md)       |
 | **PHP**                 | `composer require kreuzberg/kreuzberg`     | [API Reference](reference/api-php.md)        |
 | **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.1"}`            | [API Reference](reference/api-elixir.md)     |
-| **Gleam**               | `gleam add kreuzberg`                      | [API Reference](reference/api-gleam.md)      |
 | **R**                   | r-universe `kreuzberg`                     | [API Reference](reference/api-r.md)          |
 | **Dart / Flutter**      | `dart pub add kreuzberg`                   | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                      | [API Reference](reference/api-swift.md)      |

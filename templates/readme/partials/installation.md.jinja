@@ -143,15 +143,8 @@ Then add the product to the relevant target:
 ),
 ```
 
-{% elif pm == "gleam" %}
-Install via Gleam:
-
-```bash
-gleam add {{ package_name }}
-```
-
 {% elif pm == "hex" %}
-The Gleam binding shares the Erlang-side runtime with the Elixir binding via the same hex package, so `gleam add {{ package_name }}` is sufficient. Mixed Gleam/Elixir umbrella projects can also reference the package directly through `mix.exs`:
+Install via Hex:
 
 ```elixir
 def deps do
@@ -245,11 +238,6 @@ Pre-built binaries available for:
 {% elif language == "elixir" %}
 - **Elixir 1.14+** and **Erlang/OTP 26+** required
 - Pre-compiled NIFs bundled via `rustler_precompiled` for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
-- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
-- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
-{% elif language == "gleam" %}
-- **Gleam 1.14+** with **Erlang/OTP 27+** required
-- Native runtime is the same Rustler NIF used by the Elixir binding; pre-compiled binaries are pulled transparently for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "wasm" %}

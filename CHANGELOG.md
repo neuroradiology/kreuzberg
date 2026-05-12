@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **Gleam binding** (`kreuzberg_gleam` Hex package): dropped entirely. Gleam targets the BEAM and Gleam consumers can keep using the Elixir binding via Erlang interop, so the dedicated package added negligible audience reach at a real maintenance cost (regen on every alef bump, dedicated CI workflow, Hex publish job, e2e fixtures, 92 doc snippets). Existing published versions of `kreuzberg_gleam` on Hex remain available for anyone still pinning them — no further releases will be made.
+
 ### Security
 
 - **[GHSA-gg9g-p963-p7x4]**: `HwpxExtractor` now validates the ZIP container against `SecurityLimits` before passing bytes to `unhwp::parse_bytes`. Previously the `ExtractionConfig` was silently discarded (`_config`), allowing a crafted HWPX file with a >100:1 DEFLATE ratio to exhaust process memory (CWE-409). The fix adds an upfront byte-count check (`max_archive_size`) and a `ZipBombValidator` pass over the central directory before any decompression occurs. Affects all builds with the `hwpx`, `formats`, or `full` feature enabled since `5.0.0-rc.1`.

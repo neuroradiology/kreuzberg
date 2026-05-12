@@ -75,7 +75,7 @@ Extract text, metadata, and code intelligence from 91+ file formats and 248 prog
 
 - **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
-- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Gleam, Swift, Zig, and C
+- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, and C
 - **91+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
 - **LLM intelligence** – VLM OCR (GPT-4o, Claude, Gemini, Ollama), structured JSON extraction with schema constraints, and provider-hosted embeddings via 146 LLM providers (including local engines: Ollama, LM Studio, vLLM, llama.cpp) through [liter-llm](https://github.com/kreuzberg-dev/liter-llm)
 - **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), VLM OCR (146 vision model providers including local engines), extensible via plugin API
@@ -100,7 +100,6 @@ Each language binding provides comprehensive documentation with examples and bes
 - **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir)** – Hex package, OTP integration, concurrent processing
 - **[R](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/r)** – r-universe package, idiomatic R API, extendr bindings
 - **[Dart / Flutter](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/dart)** – pub.dev package, flutter_rust_bridge runtime, native bindings for macOS/iOS/Android/Linux/Windows
-- **[Gleam](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/gleam)** – Hex package, BEAM-native (shares the Elixir runtime through the same NIF)
 
 **JavaScript/TypeScript:**
 
@@ -150,7 +149,6 @@ Complete architecture coverage across all language bindings:
 | PHP      |      ✅      |      ✅       |     ✅      |     ✅      |
 | Swift    |      -       |      -        |     ✅      |      -      |
 | Dart     |      ✅      |      ✅       |     ✅      |     ✅      |
-| Gleam    |      ✅      |      ✅       |     ✅      |     ✅      |
 | Zig      |      ✅      |      ✅       |     ✅      |     ✅      |
 | Rust     |      ✅      |      ✅       |     ✅      |     ✅      |
 | C (FFI)  |      ✅      |      ✅       |     ✅      |     ✅      |

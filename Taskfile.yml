@@ -234,18 +234,18 @@ tasks:
   e2e:build:
     desc: "Build all language bindings used by e2e suites (release)"
     cmds:
-      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,gleam,kotlin,swift,zig
+      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,kotlin,swift,zig
 
   e2e:run:
     desc: "Run all e2e test suites across all languages"
     cmds:
-      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r,dart,gleam,kotlin,swift,zig
+      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r,dart,kotlin,swift,zig
 
   e2e:all:
     desc: "Build all bindings + run all e2e tests (single command)"
     cmds:
-      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,gleam,kotlin,swift,zig
-      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r,dart,gleam,kotlin,swift,zig
+      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,kotlin,swift,zig
+      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r,dart,kotlin,swift,zig
 
   e2e:test:
     desc: "Run E2E tests for all languages (alias for e2e:run)"
@@ -325,11 +325,6 @@ tasks:
     cmds:
       - task: dart:setup
       - alef test --e2e --lang dart
-
-  gleam:e2e:
-    desc: "Run Gleam e2e tests"
-    cmds:
-      - alef test --e2e --lang gleam
 
   kotlin:e2e:
     desc: "Run Kotlin e2e tests"
@@ -505,25 +500,6 @@ tasks:
       - dart pub get
       - dart test
     dir: packages/dart
-
-  gleam:format:
-    desc: "Format Gleam binding with gleam format"
-    cmds:
-      - gleam format
-    dir: packages/gleam
-
-  gleam:lint:
-    desc: "Lint Gleam binding with gleam format --check"
-    cmds:
-      - gleam format --check
-    dir: packages/gleam
-
-  gleam:test:
-    desc: "Run Gleam binding tests"
-    cmds:
-      - cd ../elixir && mix deps.get && mix compile
-      - cd ../gleam && gleam test
-    dir: packages/gleam
 
   zig:format:
     desc: "Format Zig binding with zig fmt"

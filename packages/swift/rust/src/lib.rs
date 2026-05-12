@@ -2328,154 +2328,192 @@ mod ffi {
 
     extern "Rust" {
         type ExecutionProviderType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type OutputFormat;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type HtmlTheme;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type TableModel;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ChunkerType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ChunkSizing;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type EmbeddingModelType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type CodeContentMode;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type FracType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type OcrBackendType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ProcessingStage;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ReductionLevel;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type PdfAnnotationType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type BlockType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type InlineType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type RelationshipKind;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ContentLayer;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type NodeContent;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type AnnotationKind;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ExtractionMethod;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ChunkType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ImageKind;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ResultFormat;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ElementType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type FormatMetadata;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type TextDirection;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type LinkType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type ImageType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type StructuredDataType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type OcrBoundingGeometry;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type OcrElementLevel;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type PageUnitType;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type UriKind;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type PoolError;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type KeywordAlgorithm;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type PSMMode;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type PaddleLanguage;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
         type LayoutClass;
+        fn to_string(&self) -> String;
     }
 
     extern "Rust" {
@@ -2720,8 +2758,14 @@ mod ffi {
     }
     extern "Rust" {
 
+        #[swift_bridge(swift_name = "ocrConfigFromJson")]
+        fn ocr_config_from_json(json: String) -> Result<OcrConfig, String>;
         #[swift_bridge(swift_name = "embeddingConfigFromJson")]
         fn embedding_config_from_json(json: String) -> Result<EmbeddingConfig, String>;
+        #[swift_bridge(swift_name = "extractionResultFromJson")]
+        fn extraction_result_from_json(json: String) -> Result<ExtractionResult, String>;
+        #[swift_bridge(swift_name = "htmlMetadataFromJson")]
+        fn html_metadata_from_json(json: String) -> Result<HtmlMetadata, String>;
     }
 }
 
@@ -10057,6 +10101,18 @@ impl From<kreuzberg::ExecutionProviderType> for ExecutionProviderType {
     }
 }
 
+impl ExecutionProviderType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Auto => "auto".to_string(),
+            Self::Cpu => "cpu".to_string(),
+            Self::CoreMl => "coreml".to_string(),
+            Self::Cuda => "cuda".to_string(),
+            Self::TensorRt => "tensorrt".to_string(),
+        }
+    }
+}
+
 pub enum OutputFormat {
     Plain,
     Markdown,
@@ -10082,6 +10138,20 @@ impl From<kreuzberg::OutputFormat> for OutputFormat {
     }
 }
 
+impl OutputFormat {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Plain => "plain".to_string(),
+            Self::Markdown => "markdown".to_string(),
+            Self::Djot => "djot".to_string(),
+            Self::Html => "html".to_string(),
+            Self::Json => "json".to_string(),
+            Self::Structured => "structured".to_string(),
+            Self::Unknown => "unknown".to_string(),
+        }
+    }
+}
+
 pub enum HtmlTheme {
     Default,
     GitHub,
@@ -10098,6 +10168,18 @@ impl From<kreuzberg::HtmlTheme> for HtmlTheme {
             kreuzberg::HtmlTheme::Dark => Self::Dark,
             kreuzberg::HtmlTheme::Light => Self::Light,
             kreuzberg::HtmlTheme::Unstyled => Self::Unstyled,
+        }
+    }
+}
+
+impl HtmlTheme {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Default => "default".to_string(),
+            Self::GitHub => "github".to_string(),
+            Self::Dark => "dark".to_string(),
+            Self::Light => "light".to_string(),
+            Self::Unstyled => "unstyled".to_string(),
         }
     }
 }
@@ -10124,6 +10206,19 @@ impl From<kreuzberg::TableModel> for TableModel {
     }
 }
 
+impl TableModel {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Tatr => "tatr".to_string(),
+            Self::SlanetWired => "slanet_wired".to_string(),
+            Self::SlanetWireless => "slanet_wireless".to_string(),
+            Self::SlanetPlus => "slanet_plus".to_string(),
+            Self::SlanetAuto => "slanet_auto".to_string(),
+            Self::Disabled => "disabled".to_string(),
+        }
+    }
+}
+
 pub enum ChunkerType {
     Text,
     Markdown,
@@ -10138,6 +10233,17 @@ impl From<kreuzberg::ChunkerType> for ChunkerType {
             kreuzberg::ChunkerType::Markdown => Self::Markdown,
             kreuzberg::ChunkerType::Yaml => Self::Yaml,
             kreuzberg::ChunkerType::Semantic => Self::Semantic,
+        }
+    }
+}
+
+impl ChunkerType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Text => "text".to_string(),
+            Self::Markdown => "markdown".to_string(),
+            Self::Yaml => "yaml".to_string(),
+            Self::Semantic => "semantic".to_string(),
         }
     }
 }
@@ -10157,6 +10263,15 @@ impl From<kreuzberg::ChunkSizing> for ChunkSizing {
     }
 }
 
+impl ChunkSizing {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Characters => "characters".to_string(),
+            Self::Unknown => "unknown".to_string(),
+        }
+    }
+}
+
 pub enum EmbeddingModelType {
     /// Data variants not directly bridgeable — represented as Unknown.
     Unknown,
@@ -10166,6 +10281,14 @@ impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
     fn from(val: kreuzberg::EmbeddingModelType) -> Self {
         match val {
             _ => Self::Unknown,
+        }
+    }
+}
+
+impl EmbeddingModelType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Unknown => "unknown".to_string(),
         }
     }
 }
@@ -10182,6 +10305,16 @@ impl From<kreuzberg::CodeContentMode> for CodeContentMode {
             kreuzberg::CodeContentMode::Chunks => Self::Chunks,
             kreuzberg::CodeContentMode::Raw => Self::Raw,
             kreuzberg::CodeContentMode::Structure => Self::Structure,
+        }
+    }
+}
+
+impl CodeContentMode {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Chunks => "chunks".to_string(),
+            Self::Raw => "raw".to_string(),
+            Self::Structure => "structure".to_string(),
         }
     }
 }
@@ -10204,6 +10337,17 @@ impl From<kreuzberg::extraction::docx::math::FracType> for FracType {
     }
 }
 
+impl FracType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Bar => "Bar".to_string(),
+            Self::NoBar => "NoBar".to_string(),
+            Self::Linear => "Linear".to_string(),
+            Self::Skewed => "Skewed".to_string(),
+        }
+    }
+}
+
 pub enum OcrBackendType {
     Tesseract,
     EasyOCR,
@@ -10222,6 +10366,17 @@ impl From<kreuzberg::plugins::OcrBackendType> for OcrBackendType {
     }
 }
 
+impl OcrBackendType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Tesseract => "Tesseract".to_string(),
+            Self::EasyOCR => "EasyOCR".to_string(),
+            Self::PaddleOCR => "PaddleOCR".to_string(),
+            Self::Custom => "Custom".to_string(),
+        }
+    }
+}
+
 pub enum ProcessingStage {
     Early,
     Middle,
@@ -10234,6 +10389,16 @@ impl From<kreuzberg::plugins::ProcessingStage> for ProcessingStage {
             kreuzberg::plugins::ProcessingStage::Early => Self::Early,
             kreuzberg::plugins::ProcessingStage::Middle => Self::Middle,
             kreuzberg::plugins::ProcessingStage::Late => Self::Late,
+        }
+    }
+}
+
+impl ProcessingStage {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Early => "Early".to_string(),
+            Self::Middle => "Middle".to_string(),
+            Self::Late => "Late".to_string(),
         }
     }
 }
@@ -10258,6 +10423,18 @@ impl From<kreuzberg::ReductionLevel> for ReductionLevel {
     }
 }
 
+impl ReductionLevel {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Off => "Off".to_string(),
+            Self::Light => "Light".to_string(),
+            Self::Moderate => "Moderate".to_string(),
+            Self::Aggressive => "Aggressive".to_string(),
+            Self::Maximum => "Maximum".to_string(),
+        }
+    }
+}
+
 pub enum PdfAnnotationType {
     Text,
     Highlight,
@@ -10278,6 +10455,20 @@ impl From<kreuzberg::PdfAnnotationType> for PdfAnnotationType {
             kreuzberg::PdfAnnotationType::Underline => Self::Underline,
             kreuzberg::PdfAnnotationType::StrikeOut => Self::StrikeOut,
             kreuzberg::PdfAnnotationType::Other => Self::Other,
+        }
+    }
+}
+
+impl PdfAnnotationType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Text => "text".to_string(),
+            Self::Highlight => "highlight".to_string(),
+            Self::Link => "link".to_string(),
+            Self::Stamp => "stamp".to_string(),
+            Self::Underline => "underline".to_string(),
+            Self::StrikeOut => "strike_out".to_string(),
+            Self::Other => "other".to_string(),
         }
     }
 }
@@ -10324,6 +10515,29 @@ impl From<kreuzberg::BlockType> for BlockType {
     }
 }
 
+impl BlockType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Paragraph => "paragraph".to_string(),
+            Self::Heading => "heading".to_string(),
+            Self::Blockquote => "blockquote".to_string(),
+            Self::CodeBlock => "code_block".to_string(),
+            Self::ListItem => "list_item".to_string(),
+            Self::OrderedList => "ordered_list".to_string(),
+            Self::BulletList => "bullet_list".to_string(),
+            Self::TaskList => "task_list".to_string(),
+            Self::DefinitionList => "definition_list".to_string(),
+            Self::DefinitionTerm => "definition_term".to_string(),
+            Self::DefinitionDescription => "definition_description".to_string(),
+            Self::Div => "div".to_string(),
+            Self::Section => "section".to_string(),
+            Self::ThematicBreak => "thematic_break".to_string(),
+            Self::RawBlock => "raw_block".to_string(),
+            Self::MathDisplay => "math_display".to_string(),
+        }
+    }
+}
+
 pub enum InlineType {
     Text,
     Strong,
@@ -10366,6 +10580,29 @@ impl From<kreuzberg::InlineType> for InlineType {
     }
 }
 
+impl InlineType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Text => "text".to_string(),
+            Self::Strong => "strong".to_string(),
+            Self::Emphasis => "emphasis".to_string(),
+            Self::Highlight => "highlight".to_string(),
+            Self::Subscript => "subscript".to_string(),
+            Self::Superscript => "superscript".to_string(),
+            Self::Insert => "insert".to_string(),
+            Self::Delete => "delete".to_string(),
+            Self::Code => "code".to_string(),
+            Self::Link => "link".to_string(),
+            Self::Image => "image".to_string(),
+            Self::Span => "span".to_string(),
+            Self::Math => "math".to_string(),
+            Self::RawInline => "raw_inline".to_string(),
+            Self::FootnoteRef => "footnote_ref".to_string(),
+            Self::Symbol => "symbol".to_string(),
+        }
+    }
+}
+
 pub enum RelationshipKind {
     FootnoteReference,
     CitationReference,
@@ -10390,6 +10627,20 @@ impl From<kreuzberg::RelationshipKind> for RelationshipKind {
     }
 }
 
+impl RelationshipKind {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::FootnoteReference => "footnote_reference".to_string(),
+            Self::CitationReference => "citation_reference".to_string(),
+            Self::InternalLink => "internal_link".to_string(),
+            Self::Caption => "caption".to_string(),
+            Self::Label => "label".to_string(),
+            Self::TocEntry => "toc_entry".to_string(),
+            Self::CrossReference => "cross_reference".to_string(),
+        }
+    }
+}
+
 pub enum ContentLayer {
     Body,
     Header,
@@ -10404,6 +10655,17 @@ impl From<kreuzberg::ContentLayer> for ContentLayer {
             kreuzberg::ContentLayer::Header => Self::Header,
             kreuzberg::ContentLayer::Footer => Self::Footer,
             kreuzberg::ContentLayer::Footnote => Self::Footnote,
+        }
+    }
+}
+
+impl ContentLayer {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Body => "body".to_string(),
+            Self::Header => "header".to_string(),
+            Self::Footer => "footer".to_string(),
+            Self::Footnote => "footnote".to_string(),
         }
     }
 }
@@ -10423,6 +10685,17 @@ impl From<kreuzberg::NodeContent> for NodeContent {
             kreuzberg::NodeContent::PageBreak => Self::PageBreak,
             kreuzberg::NodeContent::DefinitionList => Self::DefinitionList,
             _ => Self::Unknown,
+        }
+    }
+}
+
+impl NodeContent {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Quote => "quote".to_string(),
+            Self::PageBreak => "page_break".to_string(),
+            Self::DefinitionList => "definition_list".to_string(),
+            Self::Unknown => "unknown".to_string(),
         }
     }
 }
@@ -10456,6 +10729,22 @@ impl From<kreuzberg::AnnotationKind> for AnnotationKind {
     }
 }
 
+impl AnnotationKind {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Bold => "bold".to_string(),
+            Self::Italic => "italic".to_string(),
+            Self::Underline => "underline".to_string(),
+            Self::Strikethrough => "strikethrough".to_string(),
+            Self::Code => "code".to_string(),
+            Self::Subscript => "subscript".to_string(),
+            Self::Superscript => "superscript".to_string(),
+            Self::Highlight => "highlight".to_string(),
+            Self::Unknown => "unknown".to_string(),
+        }
+    }
+}
+
 pub enum ExtractionMethod {
     Native,
     Ocr,
@@ -10468,6 +10757,16 @@ impl From<kreuzberg::ExtractionMethod> for ExtractionMethod {
             kreuzberg::ExtractionMethod::Native => Self::Native,
             kreuzberg::ExtractionMethod::Ocr => Self::Ocr,
             kreuzberg::ExtractionMethod::Mixed => Self::Mixed,
+        }
+    }
+}
+
+impl ExtractionMethod {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Native => "native".to_string(),
+            Self::Ocr => "ocr".to_string(),
+            Self::Mixed => "mixed".to_string(),
         }
     }
 }
@@ -10508,6 +10807,26 @@ impl From<kreuzberg::ChunkType> for ChunkType {
     }
 }
 
+impl ChunkType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Heading => "heading".to_string(),
+            Self::PartyList => "party_list".to_string(),
+            Self::Definitions => "definitions".to_string(),
+            Self::OperativeClause => "operative_clause".to_string(),
+            Self::SignatureBlock => "signature_block".to_string(),
+            Self::Schedule => "schedule".to_string(),
+            Self::TableLike => "table_like".to_string(),
+            Self::Formula => "formula".to_string(),
+            Self::CodeBlock => "code_block".to_string(),
+            Self::Image => "image".to_string(),
+            Self::OrgChart => "org_chart".to_string(),
+            Self::Diagram => "diagram".to_string(),
+            Self::Unknown => "unknown".to_string(),
+        }
+    }
+}
+
 pub enum ImageKind {
     Photograph,
     Diagram,
@@ -10540,6 +10859,24 @@ impl From<kreuzberg::ImageKind> for ImageKind {
     }
 }
 
+impl ImageKind {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Photograph => "photograph".to_string(),
+            Self::Diagram => "diagram".to_string(),
+            Self::Chart => "chart".to_string(),
+            Self::Drawing => "drawing".to_string(),
+            Self::TextBlock => "text_block".to_string(),
+            Self::Decoration => "decoration".to_string(),
+            Self::Logo => "logo".to_string(),
+            Self::Icon => "icon".to_string(),
+            Self::TileFragment => "tile_fragment".to_string(),
+            Self::Mask => "mask".to_string(),
+            Self::Unknown => "unknown".to_string(),
+        }
+    }
+}
+
 pub enum ResultFormat {
     Unified,
     ElementBased,
@@ -10550,6 +10887,15 @@ impl From<kreuzberg::ResultFormat> for ResultFormat {
         match val {
             kreuzberg::ResultFormat::Unified => Self::Unified,
             kreuzberg::ResultFormat::ElementBased => Self::ElementBased,
+        }
+    }
+}
+
+impl ResultFormat {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Unified => "unified".to_string(),
+            Self::ElementBased => "element_based".to_string(),
         }
     }
 }
@@ -10586,6 +10932,24 @@ impl From<kreuzberg::ElementType> for ElementType {
     }
 }
 
+impl ElementType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Title => "title".to_string(),
+            Self::NarrativeText => "narrative_text".to_string(),
+            Self::Heading => "heading".to_string(),
+            Self::ListItem => "list_item".to_string(),
+            Self::Table => "table".to_string(),
+            Self::Image => "image".to_string(),
+            Self::PageBreak => "page_break".to_string(),
+            Self::CodeBlock => "code_block".to_string(),
+            Self::BlockQuote => "block_quote".to_string(),
+            Self::Footer => "footer".to_string(),
+            Self::Header => "header".to_string(),
+        }
+    }
+}
+
 pub enum FormatMetadata {
     /// Data variants not directly bridgeable — represented as Unknown.
     Unknown,
@@ -10595,6 +10959,14 @@ impl From<kreuzberg::FormatMetadata> for FormatMetadata {
     fn from(val: kreuzberg::FormatMetadata) -> Self {
         match val {
             _ => Self::Unknown,
+        }
+    }
+}
+
+impl FormatMetadata {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Unknown => "unknown".to_string(),
         }
     }
 }
@@ -10611,6 +10983,16 @@ impl From<kreuzberg::TextDirection> for TextDirection {
             kreuzberg::TextDirection::LeftToRight => Self::LeftToRight,
             kreuzberg::TextDirection::RightToLeft => Self::RightToLeft,
             kreuzberg::TextDirection::Auto => Self::Auto,
+        }
+    }
+}
+
+impl TextDirection {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::LeftToRight => "ltr".to_string(),
+            Self::RightToLeft => "rtl".to_string(),
+            Self::Auto => "auto".to_string(),
         }
     }
 }
@@ -10637,6 +11019,19 @@ impl From<kreuzberg::LinkType> for LinkType {
     }
 }
 
+impl LinkType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Anchor => "anchor".to_string(),
+            Self::Internal => "internal".to_string(),
+            Self::External => "external".to_string(),
+            Self::Email => "email".to_string(),
+            Self::Phone => "phone".to_string(),
+            Self::Other => "other".to_string(),
+        }
+    }
+}
+
 pub enum ImageType {
     DataUri,
     InlineSvg,
@@ -10651,6 +11046,17 @@ impl From<kreuzberg::ImageType> for ImageType {
             kreuzberg::ImageType::InlineSvg => Self::InlineSvg,
             kreuzberg::ImageType::External => Self::External,
             kreuzberg::ImageType::Relative => Self::Relative,
+        }
+    }
+}
+
+impl ImageType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::DataUri => "data-uri".to_string(),
+            Self::InlineSvg => "inline-svg".to_string(),
+            Self::External => "external".to_string(),
+            Self::Relative => "relative".to_string(),
         }
     }
 }
@@ -10671,6 +11077,16 @@ impl From<kreuzberg::StructuredDataType> for StructuredDataType {
     }
 }
 
+impl StructuredDataType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::JsonLd => "json-ld".to_string(),
+            Self::Microdata => "microdata".to_string(),
+            Self::RDFa => "rdfa".to_string(),
+        }
+    }
+}
+
 pub enum OcrBoundingGeometry {
     /// Data variants not directly bridgeable — represented as Unknown.
     Unknown,
@@ -10680,6 +11096,14 @@ impl From<kreuzberg::OcrBoundingGeometry> for OcrBoundingGeometry {
     fn from(val: kreuzberg::OcrBoundingGeometry) -> Self {
         match val {
             _ => Self::Unknown,
+        }
+    }
+}
+
+impl OcrBoundingGeometry {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Unknown => "unknown".to_string(),
         }
     }
 }
@@ -10702,6 +11126,17 @@ impl From<kreuzberg::OcrElementLevel> for OcrElementLevel {
     }
 }
 
+impl OcrElementLevel {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Word => "word".to_string(),
+            Self::Line => "line".to_string(),
+            Self::Block => "block".to_string(),
+            Self::Page => "page".to_string(),
+        }
+    }
+}
+
 pub enum PageUnitType {
     Page,
     Slide,
@@ -10714,6 +11149,16 @@ impl From<kreuzberg::PageUnitType> for PageUnitType {
             kreuzberg::PageUnitType::Page => Self::Page,
             kreuzberg::PageUnitType::Slide => Self::Slide,
             kreuzberg::PageUnitType::Sheet => Self::Sheet,
+        }
+    }
+}
+
+impl PageUnitType {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Page => "page".to_string(),
+            Self::Slide => "slide".to_string(),
+            Self::Sheet => "sheet".to_string(),
         }
     }
 }
@@ -10740,6 +11185,19 @@ impl From<kreuzberg::UriKind> for UriKind {
     }
 }
 
+impl UriKind {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Hyperlink => "hyperlink".to_string(),
+            Self::Image => "image".to_string(),
+            Self::Anchor => "anchor".to_string(),
+            Self::Citation => "citation".to_string(),
+            Self::Reference => "reference".to_string(),
+            Self::Email => "email".to_string(),
+        }
+    }
+}
+
 pub enum PoolError {
     LockPoisoned,
 }
@@ -10748,6 +11206,14 @@ impl From<kreuzberg::utils::pool::PoolError> for PoolError {
     fn from(val: kreuzberg::utils::pool::PoolError) -> Self {
         match val {
             kreuzberg::utils::pool::PoolError::LockPoisoned => Self::LockPoisoned,
+        }
+    }
+}
+
+impl PoolError {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::LockPoisoned => "LockPoisoned".to_string(),
         }
     }
 }
@@ -10762,6 +11228,15 @@ impl From<kreuzberg::KeywordAlgorithm> for KeywordAlgorithm {
         match val {
             kreuzberg::KeywordAlgorithm::Yake => Self::Yake,
             kreuzberg::KeywordAlgorithm::Rake => Self::Rake,
+        }
+    }
+}
+
+impl KeywordAlgorithm {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Yake => "yake".to_string(),
+            Self::Rake => "rake".to_string(),
         }
     }
 }
@@ -10794,6 +11269,24 @@ impl From<kreuzberg::PSMMode> for PSMMode {
             kreuzberg::PSMMode::SingleWord => Self::SingleWord,
             kreuzberg::PSMMode::CircleWord => Self::CircleWord,
             kreuzberg::PSMMode::SingleChar => Self::SingleChar,
+        }
+    }
+}
+
+impl PSMMode {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::OsdOnly => "OsdOnly".to_string(),
+            Self::AutoOsd => "AutoOsd".to_string(),
+            Self::AutoOnly => "AutoOnly".to_string(),
+            Self::Auto => "Auto".to_string(),
+            Self::SingleColumn => "SingleColumn".to_string(),
+            Self::SingleBlockVertical => "SingleBlockVertical".to_string(),
+            Self::SingleBlock => "SingleBlock".to_string(),
+            Self::SingleLine => "SingleLine".to_string(),
+            Self::SingleWord => "SingleWord".to_string(),
+            Self::CircleWord => "CircleWord".to_string(),
+            Self::SingleChar => "SingleChar".to_string(),
         }
     }
 }
@@ -10840,6 +11333,29 @@ impl From<kreuzberg::PaddleLanguage> for PaddleLanguage {
     }
 }
 
+impl PaddleLanguage {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::English => "English".to_string(),
+            Self::Chinese => "Chinese".to_string(),
+            Self::Japanese => "Japanese".to_string(),
+            Self::Korean => "Korean".to_string(),
+            Self::German => "German".to_string(),
+            Self::French => "French".to_string(),
+            Self::Latin => "Latin".to_string(),
+            Self::Cyrillic => "Cyrillic".to_string(),
+            Self::TraditionalChinese => "TraditionalChinese".to_string(),
+            Self::Thai => "Thai".to_string(),
+            Self::Greek => "Greek".to_string(),
+            Self::EastSlavic => "EastSlavic".to_string(),
+            Self::Arabic => "Arabic".to_string(),
+            Self::Devanagari => "Devanagari".to_string(),
+            Self::Tamil => "Tamil".to_string(),
+            Self::Telugu => "Telugu".to_string(),
+        }
+    }
+}
+
 pub enum LayoutClass {
     Caption,
     Footnote,
@@ -10880,6 +11396,30 @@ impl From<kreuzberg::LayoutClass> for LayoutClass {
             kreuzberg::LayoutClass::CheckboxUnselected => Self::CheckboxUnselected,
             kreuzberg::LayoutClass::Form => Self::Form,
             kreuzberg::LayoutClass::KeyValueRegion => Self::KeyValueRegion,
+        }
+    }
+}
+
+impl LayoutClass {
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Caption => "caption".to_string(),
+            Self::Footnote => "footnote".to_string(),
+            Self::Formula => "formula".to_string(),
+            Self::ListItem => "list_item".to_string(),
+            Self::PageFooter => "page_footer".to_string(),
+            Self::PageHeader => "page_header".to_string(),
+            Self::Picture => "picture".to_string(),
+            Self::SectionHeader => "section_header".to_string(),
+            Self::Table => "table".to_string(),
+            Self::Text => "text".to_string(),
+            Self::Title => "title".to_string(),
+            Self::DocumentIndex => "document_index".to_string(),
+            Self::Code => "code".to_string(),
+            Self::CheckboxSelected => "checkbox_selected".to_string(),
+            Self::CheckboxUnselected => "checkbox_unselected".to_string(),
+            Self::Form => "form".to_string(),
+            Self::KeyValueRegion => "key_value_region".to_string(),
         }
     }
 }
@@ -11693,8 +12233,26 @@ pub fn batch_file_item_from_json(json: String) -> Result<BatchFileItem, String> 
         .map_err(|e| e.to_string())
         .map(BatchFileItem)
 }
+pub fn ocr_config_from_json(json: String) -> Result<OcrConfig, String> {
+    serde_json::from_str::<kreuzberg::OcrConfig>(&json)
+        .map(OcrConfig)
+        .map_err(|e| e.to_string())
+}
+
 pub fn embedding_config_from_json(json: String) -> Result<EmbeddingConfig, String> {
     serde_json::from_str::<kreuzberg::EmbeddingConfig>(&json)
         .map(EmbeddingConfig)
+        .map_err(|e| e.to_string())
+}
+
+pub fn extraction_result_from_json(json: String) -> Result<ExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::ExtractionResult>(&json)
+        .map(ExtractionResult)
+        .map_err(|e| e.to_string())
+}
+
+pub fn html_metadata_from_json(json: String) -> Result<HtmlMetadata, String> {
+    serde_json::from_str::<kreuzberg::HtmlMetadata>(&json)
+        .map(HtmlMetadata)
         .map_err(|e| e.to_string())
 }
