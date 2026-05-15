@@ -8,6 +8,7 @@ use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
 use async_trait::async_trait;
+#[cfg_attr(alef, alef(skip))]
 
 /// Image extractor for various image formats.
 ///

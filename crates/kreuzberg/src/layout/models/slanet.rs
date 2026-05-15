@@ -104,6 +104,7 @@ const TOKEN_DICT: [&str; VOCAB_SIZE] = [
     " rowspan=\"20\"", // 48
     "eos",             // 49
 ];
+#[cfg_attr(alef, alef(skip))]
 
 // ---------------------------------------------------------------------------
 // Types
@@ -122,6 +123,7 @@ pub struct SlanetCell {
     /// Column index within the row (0-based).
     pub col: usize,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// SLANeXT recognition result for a single table image.
 #[derive(Debug, Clone)]
@@ -137,6 +139,7 @@ pub struct SlanetResult {
     /// Raw HTML structure tokens (for debugging).
     pub structure_tokens: Vec<&'static str>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 // ---------------------------------------------------------------------------
 // Model

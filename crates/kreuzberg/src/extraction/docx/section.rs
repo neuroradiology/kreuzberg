@@ -7,6 +7,7 @@
 use crate::extraction::ooxml_constants::WORDPROCESSINGML_NAMESPACE;
 use quick_xml::Reader;
 use quick_xml::events::{BytesStart, Event};
+#[cfg_attr(alef, alef(skip))]
 
 // --- Types ---
 
@@ -47,6 +48,7 @@ pub struct PageMarginsPoints {
     pub footer: Option<f64>,
     pub gutter: Option<f64>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Column layout configuration.
 #[derive(Debug, Clone, Default)]
@@ -58,6 +60,7 @@ pub struct ColumnLayout {
     /// Whether columns have equal width.
     pub equal_width: Option<bool>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// DOCX section properties parsed from `w:sectPr` element.
 #[derive(Debug, Clone, Default)]

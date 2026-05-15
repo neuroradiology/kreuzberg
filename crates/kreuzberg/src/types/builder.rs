@@ -29,6 +29,7 @@ use super::document_structure::{
 };
 #[cfg(any(feature = "office", feature = "email", feature = "xml"))]
 use super::extraction::BoundingBox;
+#[cfg_attr(alef, alef(skip))]
 
 /// Builder for constructing `DocumentStructure` trees with automatic
 /// heading-driven section nesting.

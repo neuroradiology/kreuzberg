@@ -47,6 +47,7 @@ use crate::{ExtractionConfig, KreuzbergError, service::ExtractionRequest, types:
 ///     max_multipart_field_bytes: 50 * 1024 * 1024 * 1024,
 /// };
 /// ```
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Copy)]
 pub struct ApiSizeLimits {
     /// Maximum size of the entire request body in bytes.
@@ -124,6 +125,7 @@ pub struct PluginStatus {
 }
 
 /// Health check response.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct HealthResponse {
@@ -153,6 +155,7 @@ pub struct InfoResponse {
 pub type ExtractResponse = Vec<ExtractionResult>;
 
 /// Error response.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct ErrorResponse {
@@ -174,6 +177,7 @@ pub struct ErrorResponse {
 ///
 /// Holds the default extraction configuration loaded from config file
 /// (via discovery or explicit path). Per-request configs override these defaults.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Clone)]
 pub struct ApiState {
     /// Default extraction configuration
@@ -236,6 +240,7 @@ pub struct JobStatus {
 pub type JobStatusResponse = JobStatus;
 
 /// Cache statistics response.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct CacheStatsResponse {
@@ -255,6 +260,7 @@ pub struct CacheStatsResponse {
 }
 
 /// Cache clear response.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct CacheClearResponse {
@@ -376,6 +382,7 @@ pub struct ChunkItem {
 }
 
 /// Version response.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct VersionResponse {
@@ -502,6 +509,7 @@ pub struct DoclingCompatResponse {
 }
 
 /// Document content in the docling-serve response format.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct DoclingCompatDocument {

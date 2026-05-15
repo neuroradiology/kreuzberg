@@ -19,6 +19,7 @@ use crate::plugins::DocumentExtractor;
 use crate::plugins::Plugin;
 use crate::types::internal::InternalDocument;
 use crate::types::metadata::{FormatMetadata, Metadata};
+#[cfg_attr(alef, alef(skip))]
 
 /// Source code extractor using tree-sitter language pack.
 ///

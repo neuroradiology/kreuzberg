@@ -7,6 +7,7 @@ use ahash::AHashMap;
 
 use crate::error::{KreuzbergError, Result};
 use crate::extraction::ooxml_constants::WORDPROCESSINGML_NAMESPACE;
+#[cfg_attr(alef, alef(skip))]
 
 // --- Types ---
 
@@ -18,6 +19,7 @@ pub enum StyleType {
     Table,
     Numbering,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Run-level formatting properties (bold, italic, font, size, color, etc.).
 ///
@@ -72,6 +74,7 @@ pub struct RunProperties {
     /// Theme color shade modification (hex value).
     pub theme_shade: Option<String>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Paragraph-level formatting properties (alignment, spacing, indentation, etc.).
 #[derive(Debug, Clone, Default, PartialEq)]

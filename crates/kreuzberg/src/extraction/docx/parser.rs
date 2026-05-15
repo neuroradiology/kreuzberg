@@ -20,6 +20,7 @@ use quick_xml::events::{BytesStart, Event};
 // --- Types ---
 
 /// Tracks document element ordering (paragraphs, tables, and drawings interleaved).
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DocumentElement {
     Paragraph(usize), // index into Document::paragraphs
@@ -28,6 +29,7 @@ pub enum DocumentElement {
     PageBreak,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct Document {
     pub paragraphs: Vec<Paragraph>,
@@ -51,6 +53,7 @@ pub struct Document {
     pub image_relationships: AHashMap<String, String>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct Paragraph {
     pub runs: Vec<Run>,
@@ -59,6 +62,7 @@ pub struct Paragraph {
     pub numbering_level: Option<i64>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct Run {
     pub text: String,
@@ -80,6 +84,7 @@ pub struct Run {
     pub math_latex: Option<(String, bool)>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct Table {
     pub rows: Vec<TableRow>,
@@ -87,24 +92,28 @@ pub struct Table {
     pub grid: Option<super::table::TableGrid>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct TableRow {
     pub cells: Vec<TableCell>,
     pub properties: Option<super::table::RowProperties>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct TableCell {
     pub paragraphs: Vec<Paragraph>,
     pub properties: Option<super::table::CellProperties>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ListType {
     Bullet,
     Numbered,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct HeaderFooter {
     pub paragraphs: Vec<Paragraph>,
@@ -112,6 +121,7 @@ pub struct HeaderFooter {
     pub header_type: HeaderFooterType,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum HeaderFooterType {
     #[default]
@@ -121,6 +131,7 @@ pub enum HeaderFooterType {
     Odd,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone)]
 pub struct Note {
     pub id: String,
@@ -128,6 +139,7 @@ pub struct Note {
     pub paragraphs: Vec<Paragraph>,
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum NoteType {
     Footnote,

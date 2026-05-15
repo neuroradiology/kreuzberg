@@ -12,6 +12,7 @@ use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
+#[cfg_attr(alef, alef(skip))]
 
 /// Native DOC extractor using OLE/CFB parsing.
 ///

@@ -6,6 +6,7 @@
 
 use crate::error::{KreuzbergError, Result};
 use crate::extraction::ooxml_constants::DRAWINGML_NAMESPACE;
+#[cfg_attr(alef, alef(skip))]
 
 // --- Types ---
 
@@ -67,6 +68,7 @@ pub struct FontScheme {
     /// Minor (body) font - Complex script.
     pub minor_complex_script: Option<String>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Complete theme with color scheme and font scheme.
 #[derive(Debug, Clone, Default)]

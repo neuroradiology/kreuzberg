@@ -4,6 +4,7 @@ use crate::plugins::DocumentExtractor;
 use crate::{KreuzbergError, Result};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
+#[cfg_attr(alef, alef(skip))]
 
 /// Registry for document extractor plugins.
 ///

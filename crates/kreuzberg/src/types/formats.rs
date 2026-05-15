@@ -424,6 +424,7 @@ pub struct ImagePreprocessingMetadata {
     /// Error message if resize failed
     pub resize_error: Option<String>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Image extraction DPI configuration (internal use).
 ///

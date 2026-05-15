@@ -13,6 +13,7 @@ use async_trait::async_trait;
 use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
 use std::path::Path;
+#[cfg_attr(alef, alef(skip))]
 
 /// Email message extractor.
 ///

@@ -15,6 +15,7 @@ use crate::layout::models::rtdetr::RtDetrModel;
 use crate::layout::models::yolo::{YoloModel, YoloVariant};
 use crate::layout::postprocessing::heuristics;
 use crate::layout::types::DetectionResult;
+#[cfg_attr(alef, alef(skip))]
 
 /// Which underlying model architecture to use.
 #[derive(Debug, Clone)]
@@ -26,6 +27,7 @@ pub enum ModelBackend {
     /// Custom model from a local file path.
     Custom { path: PathBuf, variant: CustomModelVariant },
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Variant selection for custom model paths.
 #[derive(Debug, Clone)]
@@ -35,6 +37,7 @@ pub enum CustomModelVariant {
     YoloDocStructBench,
     Yolox { input_width: u32, input_height: u32 },
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Full configuration for the layout engine.
 ///
@@ -78,6 +81,7 @@ pub struct DetectTimings {
     /// Time spent in postprocessing heuristics (confidence filtering, overlap resolution).
     pub postprocess_ms: f64,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// High-level layout detection engine.
 ///

@@ -32,6 +32,7 @@ fn validate_workbook_budget(workbook: &crate::types::ExcelWorkbook, budget: &mut
     }
     Ok(())
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Excel spreadsheet extractor using calamine.
 ///

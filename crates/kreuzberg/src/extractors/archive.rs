@@ -176,6 +176,7 @@ async fn build_archive_doc(
         processing_warnings,
     )
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// ZIP archive extractor.
 ///
@@ -290,6 +291,7 @@ impl SyncExtractor for ZipExtractor {
         ))
     }
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// TAR archive extractor.
 ///
@@ -391,6 +393,7 @@ impl SyncExtractor for TarExtractor {
         ))
     }
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// 7z archive extractor.
 ///
@@ -487,6 +490,7 @@ impl SyncExtractor for SevenZExtractor {
         ))
     }
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Gzip archive extractor.
 ///

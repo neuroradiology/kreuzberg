@@ -10,6 +10,7 @@ use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{DbfFieldInfo, DbfMetadata, FormatMetadata, Metadata};
 use async_trait::async_trait;
 use std::io::Cursor;
+#[cfg_attr(alef, alef(skip))]
 
 /// Extractor for dBASE (.dbf) files.
 ///

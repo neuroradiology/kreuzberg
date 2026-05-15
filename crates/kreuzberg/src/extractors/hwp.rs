@@ -14,6 +14,7 @@ use crate::types::internal_builder::InternalDocumentBuilder;
 use async_trait::async_trait;
 use bytes::Bytes;
 use std::borrow::Cow;
+#[cfg_attr(alef, alef(skip))]
 
 /// Extractor for Hangul Word Processor (.hwp) files.
 ///

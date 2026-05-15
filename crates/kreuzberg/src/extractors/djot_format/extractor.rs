@@ -13,6 +13,7 @@ use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::uri::{Uri, classify_uri};
 use async_trait::async_trait;
 use jotdown::{Container, Event, Parser};
+#[cfg_attr(alef, alef(skip))]
 
 /// Djot markup extractor with metadata and table support.
 ///

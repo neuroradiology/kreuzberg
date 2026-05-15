@@ -20,6 +20,7 @@ use std::collections::BTreeMap;
 use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 #[cfg(feature = "office")]
 use biblatex::{Bibliography, ChunksExt};
+#[cfg_attr(alef, alef(skip))]
 
 /// BibTeX bibliography extractor.
 ///

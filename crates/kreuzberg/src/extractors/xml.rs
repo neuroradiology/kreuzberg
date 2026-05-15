@@ -141,6 +141,7 @@ fn build_internal_document(content: &[u8], mime_type: &str, budget: &mut Securit
 
     Ok(doc)
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// XML extractor.
 ///

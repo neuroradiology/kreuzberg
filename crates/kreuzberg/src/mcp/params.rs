@@ -3,6 +3,7 @@
 //! This module defines the parameter structures for all MCP tool calls.
 
 use rmcp::schemars;
+#[cfg_attr(alef, alef(skip))]
 
 /// Request parameters for file extraction.
 #[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
@@ -22,6 +23,7 @@ pub struct ExtractFileParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<String>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Request parameters for bytes extraction.
 #[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
@@ -41,6 +43,7 @@ pub struct ExtractBytesParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<String>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Request parameters for batch file extraction.
 #[derive(Debug, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]

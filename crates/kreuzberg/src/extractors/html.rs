@@ -18,6 +18,7 @@ use html_to_markdown_rs::InlineImageFormat;
 use std::borrow::Cow;
 #[cfg(feature = "tokio-runtime")]
 use std::path::Path;
+#[cfg_attr(alef, alef(skip))]
 
 /// HTML document extractor using html-to-markdown.
 pub struct HtmlExtractor;

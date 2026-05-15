@@ -10,6 +10,7 @@ use std::task::{Context, Poll};
 use tower::Service;
 
 use super::request::{ExtractionRequest, ExtractionSource};
+#[cfg_attr(alef, alef(skip))]
 
 /// A [`tower::Service`] that dispatches extraction requests to the kreuzberg
 /// core library.

@@ -39,6 +39,7 @@ pub struct PdfMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub page_count: Option<u32>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Complete PDF extraction metadata including common and PDF-specific fields.
 ///
@@ -81,6 +82,7 @@ pub struct PdfExtractionMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub page_structure: Option<PageStructure>,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Common PDF metadata fields extracted from the document info dictionary.
 ///

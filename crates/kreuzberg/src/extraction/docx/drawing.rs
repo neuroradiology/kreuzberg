@@ -16,6 +16,7 @@ pub struct Drawing {
     pub doc_properties: Option<DocProperties>,
     pub image_ref: Option<String>, // r:embed rId value
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Whether the drawing is inline or anchored.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
@@ -45,6 +46,7 @@ impl Extent {
         self.cy as f64 / super::EMUS_PER_INCH as f64
     }
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Document properties from `<wp:docPr>`.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]

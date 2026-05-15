@@ -22,6 +22,7 @@ use crate::{KreuzbergError, Result};
 use parking_lot::Mutex;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+#[cfg_attr(alef, alef(skip))]
 
 /// Configuration for batch processing with pooling optimizations.
 #[derive(Debug, Clone)]
@@ -53,6 +54,7 @@ impl Default for BatchProcessorConfig {
         }
     }
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// Batch processor that manages object pools for optimized extraction.
 ///

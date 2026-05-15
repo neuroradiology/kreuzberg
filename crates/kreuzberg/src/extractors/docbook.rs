@@ -55,6 +55,7 @@ struct ParsingState {
     in_list: bool,
     in_list_item: bool,
 }
+#[cfg_attr(alef, alef(skip))]
 
 /// DocBook document extractor.
 ///
