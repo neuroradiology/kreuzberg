@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.16.29"
+alef_version = "0.16.32"
 languages = [
   "python",
   "node",
@@ -77,7 +77,6 @@ extra_paths = [
   "packages/ruby/ext/kreuzberg_rb/native/Cargo.toml",
   "crates/kreuzberg-node/package.json",
   "crates/kreuzberg-node/npm/*/package.json",
-  "packages/node/package.json",
   "packages/go/v5/go.mod",
   "Cargo.toml",
 ]
@@ -561,8 +560,8 @@ typecheck = "cd packages/python && uv run mypy ."
 
 [crates.lint.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
-format = "pnpm dlx oxfmt packages/typescript"
-check = "pnpm dlx oxlint packages/typescript"
+format = "pnpm dlx oxfmt crates/kreuzberg-node"
+check = "pnpm dlx oxlint crates/kreuzberg-node"
 
 [crates.lint.ruby]
 precondition = "command -v bundle >/dev/null 2>&1"
