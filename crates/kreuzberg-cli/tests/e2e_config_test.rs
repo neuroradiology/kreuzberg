@@ -107,7 +107,7 @@ fn test_cli_config_json_inline() {
             "extract",
             test_file.as_str(),
             "--config-json",
-            r#"{"use_cache": false, "chunk_size": 512}"#,
+            r#"{"use_cache": false, "chunking": {"max_chars": 512}}"#,
         ])
         .output()
         .expect("Failed to execute extract command with --config-json");
@@ -178,9 +178,10 @@ fn test_cli_flag_precedence() {
 
     // Create a config file with specific settings
     let config_content = r#"
-[extraction]
 use_cache = true
-chunk_size = 1024
+
+[chunking]
+max_chars = 1024
 "#;
     let config_path = create_test_config(&temp_dir, "config.toml", config_content);
 
@@ -357,10 +358,10 @@ fn test_cli_config_merge_scenarios() {
 
     // Create a base config file
     let config_content = r#"
-[extraction]
 use_cache = true
-chunk_size = 1024
-enable_ocr = false
+
+[chunking]
+max_chars = 1024
 "#;
     let config_path = create_test_config(&temp_dir, "base.toml", config_content);
 
@@ -434,7 +435,7 @@ fn test_cli_conflicts() {
     }
 
     let temp_dir = TempDir::new().expect("Failed to create temp directory");
-    let config_content = r#"[extraction]"#;
+    let config_content = "use_cache = true\n";
     let config_path = create_test_config(&temp_dir, "config.toml", config_content);
 
     // Using both --config-json and --config-json-base64 might conflict
@@ -448,7 +449,7 @@ fn test_cli_conflicts() {
             "--config",
             config_path.to_string_lossy().as_ref(),
             "--config-json",
-            r#"{"chunk_size": 512}"#,
+            r#"{"chunking": {"max_chars": 512}}"#,
             "--config-json-base64",
             base64_config.as_str(),
         ])
@@ -582,7 +583,7 @@ fn test_cli_config_json_with_nested_objects() {
     let complex_config = r#"
 {
     "use_cache": false,
-    "chunk_size": 512,
+    "chunking": {"max_chars": 512},
     "language_detection": {
         "enabled": true,
         "confidence_threshold": 0.8
