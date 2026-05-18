@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v6.0.2
 
       - name: Lint documentation + validate snippets
-        uses: kreuzberg-dev/actions/lint-docs@v1.0.0
+        uses: kreuzberg-dev/actions/lint-docs@v1
         with:
           working-directory: .
           strict: "true"
@@ -67,7 +67,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build documentation
-        uses: kreuzberg-dev/actions/build-docs@v1.0.0
+        uses: kreuzberg-dev/actions/build-docs@v1
         with:
           working-directory: .
           strict: "true"

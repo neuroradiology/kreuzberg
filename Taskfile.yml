@@ -244,7 +244,7 @@ tasks:
       - task: zig:upgrade
       - alef update --latest
       - prek autoupdate
-      - npx --yes actions-up@latest --yes --style preserve
+      - gau --update .
 
   # === Coverage ===
   cov:rust:
