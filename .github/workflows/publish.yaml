@@ -2008,6 +2008,9 @@ jobs:
         with:
           working-directory: packages/zig
           tag: ${{ needs.prepare.outputs.tag }}
+          # build.zig.zon pins `minimum_zig_version = "0.16.0"`; default
+          # action zig-version 0.13.0 rejects the manifest at `zig build --fetch`.
+          zig-version: "0.16.0"
           update-release-notes: "true"
           dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
