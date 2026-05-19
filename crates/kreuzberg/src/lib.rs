@@ -303,6 +303,7 @@ pub fn list_embedding_presets() -> Vec<String> {
 /// feature is absent, `get_embedding_preset` always returns `None`, so the
 /// stub is never allocated in practice.
 #[cfg(not(feature = "embedding-presets"))]
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct EmbeddingPreset {
     pub name: String,
