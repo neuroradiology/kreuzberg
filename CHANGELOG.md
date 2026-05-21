@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **e2e/r**: Marked the `config` argument of `embed_texts_async` as `optional = true` in `alef.toml` so generated e2e tests for languages whose fixtures omit a config (R, Python, Node) no longer call the binding without it. Previously the R wrapper signature `function(texts, config)` had no default and the empty/happy fixtures failed with `argument "config" is missing, with no default`. Regenerated all per-language `embed_async_pending` test suites via `alef generate`. Brings R e2e from 155/158 PASS to 159/160 PASS; the only remaining failure (`test_smoke.R` tesseract OCR backend) is environmental. (`alef.toml`, `e2e/*/...embed_async_pending*`)
+
 - **deps**: Loosened `tar` requirement in `crates/kreuzberg/Cargo.toml` from `^0.4.46` back to `^0.4` so it remains compatible with `tree-sitter-language-pack v1.8.1`, which locks `tar` to `0.4.45`. The pinned floor prevented the e2e/rust crate from resolving a consistent version. (`crates/kreuzberg/Cargo.toml`)
 
 ### Fixed (core: code_intelligence Go type mismatch)
