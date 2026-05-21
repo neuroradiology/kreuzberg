@@ -385,8 +385,17 @@ pub enum EmbeddingModelType {
 }
 
 impl Default for EmbeddingModelType {
+    /// Returns the "balanced" preset as the default model.
+    ///
+    /// Previously returned `Preset { name: "" }` (empty string) which caused
+    /// "Unknown embedding preset: " errors in every language binding that calls
+    /// `EmbeddingModelType::default()` — including generated bindings that
+    /// use struct-level `#[serde(default)]` instead of `default_model()`.
+    /// All defaults across the codebase converge on "balanced".
     fn default() -> Self {
-        Self::Preset { name: String::new() }
+        Self::Preset {
+            name: "balanced".to_string(),
+        }
     }
 }
 
@@ -498,6 +507,21 @@ mod tests {
         assert!(config.normalize);
         assert_eq!(config.batch_size, 32);
         assert!(config.cache_dir.is_none());
+    }
+
+    /// Tests that `EmbeddingModelType::default()` returns the "balanced" preset.
+    ///
+    /// Language bindings that use struct-level `#[serde(default)]` resolve absent
+    /// `model` fields via this impl. An empty-string name caused "Unknown embedding
+    /// preset: " panics in `get_preset()`; the default must be a valid preset.
+    #[test]
+    fn test_embedding_model_type_default_is_balanced() {
+        match EmbeddingModelType::default() {
+            EmbeddingModelType::Preset { name } => {
+                assert_eq!(name, "balanced", "Default model should be the balanced preset");
+            }
+            other => panic!("Expected Preset variant, got {:?}", other),
+        }
     }
 
     /// Tests that EmbeddingModelType::Preset serializes with "type" field (internally-tagged).
