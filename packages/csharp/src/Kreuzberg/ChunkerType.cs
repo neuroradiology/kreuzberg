@@ -24,8 +24,10 @@ namespace Kreuzberg;
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ChunkerType
-{    [JsonPropertyName("text")]
-    Text,    [JsonPropertyName("markdown")]
-    Markdown,    [JsonPropertyName("yaml")]
-    Yaml,    [JsonPropertyName("semantic")]
-    Semantic,}
+{
+    [JsonPropertyName("text")]
+    Text, [JsonPropertyName("markdown")]
+    Markdown, [JsonPropertyName("yaml")]
+    Yaml, [JsonPropertyName("semantic")]
+    Semantic,
+}

@@ -12,27 +12,28 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UriKind
 {    /// <summary>
-    /// A clickable hyperlink (web URL, file link).
-    /// </summary>
+     /// A clickable hyperlink (web URL, file link).
+     /// </summary>
     [JsonPropertyName("hyperlink")]
     Hyperlink,    /// <summary>
-    /// An image or media resource reference.
-    /// </summary>
+                  /// An image or media resource reference.
+                  /// </summary>
     [JsonPropertyName("image")]
     Image,    /// <summary>
-    /// An internal anchor or cross-reference target.
-    /// </summary>
+              /// An internal anchor or cross-reference target.
+              /// </summary>
     [JsonPropertyName("anchor")]
     Anchor,    /// <summary>
-    /// A citation or bibliographic reference (DOI, academic ref).
-    /// </summary>
+               /// A citation or bibliographic reference (DOI, academic ref).
+               /// </summary>
     [JsonPropertyName("citation")]
     Citation,    /// <summary>
-    /// A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST).
-    /// </summary>
+                 /// A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST).
+                 /// </summary>
     [JsonPropertyName("reference")]
     Reference,    /// <summary>
-    /// An email address (`mailto:` link or bare email).
-    /// </summary>
+                  /// An email address (`mailto:` link or bare email).
+                  /// </summary>
     [JsonPropertyName("email")]
-    Email,}
+    Email,
+}

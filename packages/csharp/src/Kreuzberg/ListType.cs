@@ -12,19 +12,20 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ListType
 {    /// <summary>
-    /// Bullet points (-, *, •, etc.)
-    /// </summary>
+     /// Bullet points (-, *, •, etc.)
+     /// </summary>
     [JsonPropertyName("bullet")]
     Bullet,    /// <summary>
-    /// Numbered lists (1., 2., etc.)
-    /// </summary>
+               /// Numbered lists (1., 2., etc.)
+               /// </summary>
     [JsonPropertyName("numbered")]
     Numbered,    /// <summary>
-    /// Lettered lists (a., b., A., B., etc.)
-    /// </summary>
+                 /// Lettered lists (a., b., A., B., etc.)
+                 /// </summary>
     [JsonPropertyName("lettered")]
     Lettered,    /// <summary>
-    /// Indented items
-    /// </summary>
+                 /// Indented items
+                 /// </summary>
     [JsonPropertyName("indented")]
-    Indented,}
+    Indented,
+}

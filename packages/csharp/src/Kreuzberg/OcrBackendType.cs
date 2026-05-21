@@ -12,19 +12,20 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OcrBackendType
 {    /// <summary>
-    /// Tesseract OCR (native Rust binding)
-    /// </summary>
+     /// Tesseract OCR (native Rust binding)
+     /// </summary>
     [JsonPropertyName("tesseract")]
     Tesseract,    /// <summary>
-    /// EasyOCR (Python-based, via FFI)
-    /// </summary>
+                  /// EasyOCR (Python-based, via FFI)
+                  /// </summary>
     [JsonPropertyName("easyocr")]
     EasyOcr,    /// <summary>
-    /// PaddleOCR (Python-based, via FFI)
-    /// </summary>
+                /// PaddleOCR (Python-based, via FFI)
+                /// </summary>
     [JsonPropertyName("paddleocr")]
     PaddleOcr,    /// <summary>
-    /// Custom/third-party OCR backend
-    /// </summary>
+                  /// Custom/third-party OCR backend
+                  /// </summary>
     [JsonPropertyName("custom")]
-    Custom,}
+    Custom,
+}

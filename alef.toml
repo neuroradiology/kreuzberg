@@ -518,8 +518,8 @@ methods = [
 
 [crates.lint.python]
 precondition = "command -v ruff >/dev/null 2>&1"
-before = "cd packages/python && uv sync"
-typecheck = "cd packages/python && uv run mypy ."
+before = "cd packages/python && uv sync --no-install-project --no-install-workspace"
+typecheck = "cd packages/python && uv run --no-sync mypy ."
 
 [crates.lint.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
@@ -612,7 +612,7 @@ upgrade = "cd packages/zig && zig build --fetch"
 [crates.test.python]
 precondition = "command -v uv >/dev/null 2>&1"
 before = "cd packages/python && maturin develop --release"
-e2e = "cd e2e/python && uv run pytest tests/ -q"
+e2e = "cd e2e/python && uv run --no-sync pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v pnpm >/dev/null 2>&1"

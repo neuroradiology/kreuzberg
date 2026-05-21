@@ -14,67 +14,68 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PaddleLanguage
 {    /// <summary>
-    /// English
-    /// </summary>
+     /// English
+     /// </summary>
     [JsonPropertyName("english")]
     English,    /// <summary>
-    /// Simplified Chinese
-    /// </summary>
+                /// Simplified Chinese
+                /// </summary>
     [JsonPropertyName("chinese")]
     Chinese,    /// <summary>
-    /// Japanese
-    /// </summary>
+                /// Japanese
+                /// </summary>
     [JsonPropertyName("japanese")]
     Japanese,    /// <summary>
-    /// Korean
-    /// </summary>
+                 /// Korean
+                 /// </summary>
     [JsonPropertyName("korean")]
     Korean,    /// <summary>
-    /// German
-    /// </summary>
+               /// German
+               /// </summary>
     [JsonPropertyName("german")]
     German,    /// <summary>
-    /// French
-    /// </summary>
+               /// French
+               /// </summary>
     [JsonPropertyName("french")]
     French,    /// <summary>
-    /// Latin script (covers most European languages)
-    /// </summary>
+               /// Latin script (covers most European languages)
+               /// </summary>
     [JsonPropertyName("latin")]
     Latin,    /// <summary>
-    /// Cyrillic (Russian and related)
-    /// </summary>
+              /// Cyrillic (Russian and related)
+              /// </summary>
     [JsonPropertyName("cyrillic")]
     Cyrillic,    /// <summary>
-    /// Traditional Chinese
-    /// </summary>
+                 /// Traditional Chinese
+                 /// </summary>
     [JsonPropertyName("traditionalchinese")]
     TraditionalChinese,    /// <summary>
-    /// Thai
-    /// </summary>
+                           /// Thai
+                           /// </summary>
     [JsonPropertyName("thai")]
     Thai,    /// <summary>
-    /// Greek
-    /// </summary>
+             /// Greek
+             /// </summary>
     [JsonPropertyName("greek")]
     Greek,    /// <summary>
-    /// East Slavic (Russian, Ukrainian, Belarusian)
-    /// </summary>
+              /// East Slavic (Russian, Ukrainian, Belarusian)
+              /// </summary>
     [JsonPropertyName("eastslavic")]
     EastSlavic,    /// <summary>
-    /// Arabic (Arabic, Persian, Urdu)
-    /// </summary>
+                   /// Arabic (Arabic, Persian, Urdu)
+                   /// </summary>
     [JsonPropertyName("arabic")]
     Arabic,    /// <summary>
-    /// Devanagari (Hindi, Marathi, Sanskrit, Nepali)
-    /// </summary>
+               /// Devanagari (Hindi, Marathi, Sanskrit, Nepali)
+               /// </summary>
     [JsonPropertyName("devanagari")]
     Devanagari,    /// <summary>
-    /// Tamil
-    /// </summary>
+                   /// Tamil
+                   /// </summary>
     [JsonPropertyName("tamil")]
     Tamil,    /// <summary>
-    /// Telugu
-    /// </summary>
+              /// Telugu
+              /// </summary>
     [JsonPropertyName("telugu")]
-    Telugu,}
+    Telugu,
+}

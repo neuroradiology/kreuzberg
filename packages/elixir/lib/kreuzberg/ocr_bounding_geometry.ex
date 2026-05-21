@@ -14,7 +14,13 @@ defmodule Kreuzberg.OcrBoundingGeometry do
   @type t :: term()
 
   @typedoc "Axis-aligned bounding box (typical for Tesseract output)."
-  @type rectangle :: %{type: :rectangle, left: non_neg_integer(), top: non_neg_integer(), width: non_neg_integer(), height: non_neg_integer()}
+  @type rectangle :: %{
+          type: :rectangle,
+          left: non_neg_integer(),
+          top: non_neg_integer(),
+          width: non_neg_integer(),
+          height: non_neg_integer()
+        }
   @typedoc "4-point quadrilateral for rotated/skewed text (PaddleOCR)."
   @type quadrilateral :: %{type: :quadrilateral, points: String.t()}
 end

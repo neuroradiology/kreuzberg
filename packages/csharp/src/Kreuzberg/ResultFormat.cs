@@ -16,11 +16,12 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ResultFormat
 {    /// <summary>
-    /// Unified format with all content in `content` field
-    /// </summary>
+     /// Unified format with all content in `content` field
+     /// </summary>
     [JsonPropertyName("unified")]
     Unified,    /// <summary>
-    /// Element-based format with semantic element extraction
-    /// </summary>
+                /// Element-based format with semantic element extraction
+                /// </summary>
     [JsonPropertyName("element_based")]
-    ElementBased,}
+    ElementBased,
+}

@@ -19,6 +19,7 @@ module Kreuzberg
   module ChunkSizing
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -26,14 +27,13 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:type] || hash["type"]
+      discriminator = hash[:type] || hash['type']
       case discriminator
-      when "characters" then ChunkSizingCharacters.from_hash(hash)
-      when "tokenizer" then ChunkSizingTokenizer.from_hash(hash)
+      when 'characters' then ChunkSizingCharacters.from_hash(hash)
+      when 'tokenizer' then ChunkSizingTokenizer.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Size measured in Unicode characters (default).
@@ -50,7 +50,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -80,10 +80,9 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(model: hash[:model] || hash["model"], cache_dir: hash[:cache_dir] || hash["cache_dir"])
+      new(model: hash[:model] || hash['model'], cache_dir: hash[:cache_dir] || hash['cache_dir'])
     end
   end
-
 end
 
 module Kreuzberg
@@ -91,6 +90,7 @@ module Kreuzberg
   module EmbeddingModelType
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -98,16 +98,15 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:type] || hash["type"]
+      discriminator = hash[:type] || hash['type']
       case discriminator
-      when "preset" then EmbeddingModelTypePreset.from_hash(hash)
-      when "custom" then EmbeddingModelTypeCustom.from_hash(hash)
-      when "llm" then EmbeddingModelTypeLlm.from_hash(hash)
-      when "plugin" then EmbeddingModelTypePlugin.from_hash(hash)
+      when 'preset' then EmbeddingModelTypePreset.from_hash(hash)
+      when 'custom' then EmbeddingModelTypeCustom.from_hash(hash)
+      when 'llm' then EmbeddingModelTypeLlm.from_hash(hash)
+      when 'plugin' then EmbeddingModelTypePlugin.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Use a preset model configuration (recommended)
@@ -135,7 +134,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(name: hash[:name] || hash["name"])
+      new(name: hash[:name] || hash['name'])
     end
   end
 
@@ -168,7 +167,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(model_id: hash[:model_id] || hash["model_id"], dimensions: hash[:dimensions] || hash["dimensions"])
+      new(model_id: hash[:model_id] || hash['model_id'], dimensions: hash[:dimensions] || hash['dimensions'])
     end
   end
 
@@ -200,7 +199,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(llm: hash[:llm] || hash["llm"])
+      new(llm: hash[:llm] || hash['llm'])
     end
   end
 
@@ -247,10 +246,9 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(name: hash[:name] || hash["name"])
+      new(name: hash[:name] || hash['name'])
     end
   end
-
 end
 
 module Kreuzberg
@@ -261,6 +259,7 @@ module Kreuzberg
   module NodeContent
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -268,32 +267,31 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:node_type] || hash["node_type"]
+      discriminator = hash[:node_type] || hash['node_type']
       case discriminator
-      when "title" then NodeContentTitle.from_hash(hash)
-      when "heading" then NodeContentHeading.from_hash(hash)
-      when "paragraph" then NodeContentParagraph.from_hash(hash)
-      when "list" then NodeContentList.from_hash(hash)
-      when "list_item" then NodeContentListItem.from_hash(hash)
-      when "table" then NodeContentTable.from_hash(hash)
-      when "image" then NodeContentImage.from_hash(hash)
-      when "code" then NodeContentCode.from_hash(hash)
-      when "quote" then NodeContentQuote.from_hash(hash)
-      when "formula" then NodeContentFormula.from_hash(hash)
-      when "footnote" then NodeContentFootnote.from_hash(hash)
-      when "group" then NodeContentGroup.from_hash(hash)
-      when "page_break" then NodeContentPageBreak.from_hash(hash)
-      when "slide" then NodeContentSlide.from_hash(hash)
-      when "definition_list" then NodeContentDefinitionList.from_hash(hash)
-      when "definition_item" then NodeContentDefinitionItem.from_hash(hash)
-      when "citation" then NodeContentCitation.from_hash(hash)
-      when "admonition" then NodeContentAdmonition.from_hash(hash)
-      when "raw_block" then NodeContentRawBlock.from_hash(hash)
-      when "metadata_block" then NodeContentMetadataBlock.from_hash(hash)
+      when 'title' then NodeContentTitle.from_hash(hash)
+      when 'heading' then NodeContentHeading.from_hash(hash)
+      when 'paragraph' then NodeContentParagraph.from_hash(hash)
+      when 'list' then NodeContentList.from_hash(hash)
+      when 'list_item' then NodeContentListItem.from_hash(hash)
+      when 'table' then NodeContentTable.from_hash(hash)
+      when 'image' then NodeContentImage.from_hash(hash)
+      when 'code' then NodeContentCode.from_hash(hash)
+      when 'quote' then NodeContentQuote.from_hash(hash)
+      when 'formula' then NodeContentFormula.from_hash(hash)
+      when 'footnote' then NodeContentFootnote.from_hash(hash)
+      when 'group' then NodeContentGroup.from_hash(hash)
+      when 'page_break' then NodeContentPageBreak.from_hash(hash)
+      when 'slide' then NodeContentSlide.from_hash(hash)
+      when 'definition_list' then NodeContentDefinitionList.from_hash(hash)
+      when 'definition_item' then NodeContentDefinitionItem.from_hash(hash)
+      when 'citation' then NodeContentCitation.from_hash(hash)
+      when 'admonition' then NodeContentAdmonition.from_hash(hash)
+      when 'raw_block' then NodeContentRawBlock.from_hash(hash)
+      when 'metadata_block' then NodeContentMetadataBlock.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Document title.
@@ -369,7 +367,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"])
+      new(text: hash[:text] || hash['text'])
     end
   end
 
@@ -450,7 +448,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(level: hash[:level] || hash["level"], text: hash[:text] || hash["text"])
+      new(level: hash[:level] || hash['level'], text: hash[:text] || hash['text'])
     end
   end
 
@@ -527,7 +525,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"])
+      new(text: hash[:text] || hash['text'])
     end
   end
 
@@ -604,7 +602,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(ordered: hash[:ordered] || hash["ordered"])
+      new(ordered: hash[:ordered] || hash['ordered'])
     end
   end
 
@@ -681,7 +679,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"])
+      new(text: hash[:text] || hash['text'])
     end
   end
 
@@ -758,7 +756,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(grid: hash[:grid] || hash["grid"])
+      new(grid: hash[:grid] || hash['grid'])
     end
   end
 
@@ -843,7 +841,8 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(description: hash[:description] || hash["description"], image_index: hash[:image_index] || hash["image_index"], src: hash[:src] || hash["src"])
+      new(description: hash[:description] || hash['description'],
+          image_index: hash[:image_index] || hash['image_index'], src: hash[:src] || hash['src'])
     end
   end
 
@@ -924,7 +923,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"], language: hash[:language] || hash["language"])
+      new(text: hash[:text] || hash['text'], language: hash[:language] || hash['language'])
     end
   end
 
@@ -996,7 +995,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -1074,7 +1073,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"])
+      new(text: hash[:text] || hash['text'])
     end
   end
 
@@ -1151,7 +1150,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(text: hash[:text] || hash["text"])
+      new(text: hash[:text] || hash['text'])
     end
   end
 
@@ -1239,7 +1238,8 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(label: hash[:label] || hash["label"], heading_level: hash[:heading_level] || hash["heading_level"], heading_text: hash[:heading_text] || hash["heading_text"])
+      new(label: hash[:label] || hash['label'], heading_level: hash[:heading_level] || hash['heading_level'],
+          heading_text: hash[:heading_text] || hash['heading_text'])
     end
   end
 
@@ -1311,7 +1311,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -1393,7 +1393,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(number: hash[:number] || hash["number"], title: hash[:title] || hash["title"])
+      new(number: hash[:number] || hash['number'], title: hash[:title] || hash['title'])
     end
   end
 
@@ -1465,7 +1465,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -1547,7 +1547,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(term: hash[:term] || hash["term"], definition: hash[:definition] || hash["definition"])
+      new(term: hash[:term] || hash['term'], definition: hash[:definition] || hash['definition'])
     end
   end
 
@@ -1628,7 +1628,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(key: hash[:key] || hash["key"], text: hash[:text] || hash["text"])
+      new(key: hash[:key] || hash['key'], text: hash[:text] || hash['text'])
     end
   end
 
@@ -1711,7 +1711,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(kind: hash[:kind] || hash["kind"], title: hash[:title] || hash["title"])
+      new(kind: hash[:kind] || hash['kind'], title: hash[:title] || hash['title'])
     end
   end
 
@@ -1795,7 +1795,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(format: hash[:format] || hash["format"], content: hash[:content] || hash["content"])
+      new(format: hash[:format] || hash['format'], content: hash[:content] || hash['content'])
     end
   end
 
@@ -1872,10 +1872,9 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(entries: hash[:entries] || hash["entries"])
+      new(entries: hash[:entries] || hash['entries'])
     end
   end
-
 end
 
 module Kreuzberg
@@ -1883,6 +1882,7 @@ module Kreuzberg
   module AnnotationKind
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -1890,24 +1890,23 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:annotation_type] || hash["annotation_type"]
+      discriminator = hash[:annotation_type] || hash['annotation_type']
       case discriminator
-      when "bold" then AnnotationKindBold.from_hash(hash)
-      when "italic" then AnnotationKindItalic.from_hash(hash)
-      when "underline" then AnnotationKindUnderline.from_hash(hash)
-      when "strikethrough" then AnnotationKindStrikethrough.from_hash(hash)
-      when "code" then AnnotationKindCode.from_hash(hash)
-      when "subscript" then AnnotationKindSubscript.from_hash(hash)
-      when "superscript" then AnnotationKindSuperscript.from_hash(hash)
-      when "link" then AnnotationKindLink.from_hash(hash)
-      when "highlight" then AnnotationKindHighlight.from_hash(hash)
-      when "color" then AnnotationKindColor.from_hash(hash)
-      when "font_size" then AnnotationKindFontSize.from_hash(hash)
-      when "custom" then AnnotationKindCustom.from_hash(hash)
+      when 'bold' then AnnotationKindBold.from_hash(hash)
+      when 'italic' then AnnotationKindItalic.from_hash(hash)
+      when 'underline' then AnnotationKindUnderline.from_hash(hash)
+      when 'strikethrough' then AnnotationKindStrikethrough.from_hash(hash)
+      when 'code' then AnnotationKindCode.from_hash(hash)
+      when 'subscript' then AnnotationKindSubscript.from_hash(hash)
+      when 'superscript' then AnnotationKindSuperscript.from_hash(hash)
+      when 'link' then AnnotationKindLink.from_hash(hash)
+      when 'highlight' then AnnotationKindHighlight.from_hash(hash)
+      when 'color' then AnnotationKindColor.from_hash(hash)
+      when 'font_size' then AnnotationKindFontSize.from_hash(hash)
+      when 'custom' then AnnotationKindCustom.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Variant AnnotationKindBold of the AnnotationKind sum type.
@@ -1954,7 +1953,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2003,7 +2002,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2052,7 +2051,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2101,7 +2100,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2150,7 +2149,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2199,7 +2198,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2248,7 +2247,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2306,7 +2305,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(url: hash[:url] || hash["url"], title: hash[:title] || hash["title"])
+      new(url: hash[:url] || hash['url'], title: hash[:title] || hash['title'])
     end
   end
 
@@ -2354,7 +2353,7 @@ module Kreuzberg
     # @param hash [Hash] deserialized from the native extension
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
-    def self.from_hash(hash)
+    def self.from_hash(_hash)
       new
     end
   end
@@ -2408,7 +2407,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:value] || hash["value"])
+      new(value: hash[:value] || hash['value'])
     end
   end
 
@@ -2461,7 +2460,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:value] || hash["value"])
+      new(value: hash[:value] || hash['value'])
     end
   end
 
@@ -2518,10 +2517,9 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(name: hash[:name] || hash["name"], value: hash[:value] || hash["value"])
+      new(name: hash[:name] || hash['name'], value: hash[:value] || hash['value'])
     end
   end
-
 end
 
 module Kreuzberg
@@ -2532,6 +2530,7 @@ module Kreuzberg
   module FormatMetadata
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -2539,32 +2538,31 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:format_type] || hash["format_type"]
+      discriminator = hash[:format_type] || hash['format_type']
       case discriminator
-      when "pdf" then FormatMetadataPdf.from_hash(hash)
-      when "docx" then FormatMetadataDocx.from_hash(hash)
-      when "excel" then FormatMetadataExcel.from_hash(hash)
-      when "email" then FormatMetadataEmail.from_hash(hash)
-      when "pptx" then FormatMetadataPptx.from_hash(hash)
-      when "archive" then FormatMetadataArchive.from_hash(hash)
-      when "image" then FormatMetadataImage.from_hash(hash)
-      when "xml" then FormatMetadataXml.from_hash(hash)
-      when "text" then FormatMetadataText.from_hash(hash)
-      when "html" then FormatMetadataHtml.from_hash(hash)
-      when "ocr" then FormatMetadataOcr.from_hash(hash)
-      when "csv" then FormatMetadataCsv.from_hash(hash)
-      when "bibtex" then FormatMetadataBibtex.from_hash(hash)
-      when "citation" then FormatMetadataCitation.from_hash(hash)
-      when "fiction_book" then FormatMetadataFictionBook.from_hash(hash)
-      when "dbf" then FormatMetadataDbf.from_hash(hash)
-      when "jats" then FormatMetadataJats.from_hash(hash)
-      when "epub" then FormatMetadataEpub.from_hash(hash)
-      when "pst" then FormatMetadataPst.from_hash(hash)
-      when "code" then FormatMetadataCode.from_hash(hash)
+      when 'pdf' then FormatMetadataPdf.from_hash(hash)
+      when 'docx' then FormatMetadataDocx.from_hash(hash)
+      when 'excel' then FormatMetadataExcel.from_hash(hash)
+      when 'email' then FormatMetadataEmail.from_hash(hash)
+      when 'pptx' then FormatMetadataPptx.from_hash(hash)
+      when 'archive' then FormatMetadataArchive.from_hash(hash)
+      when 'image' then FormatMetadataImage.from_hash(hash)
+      when 'xml' then FormatMetadataXml.from_hash(hash)
+      when 'text' then FormatMetadataText.from_hash(hash)
+      when 'html' then FormatMetadataHtml.from_hash(hash)
+      when 'ocr' then FormatMetadataOcr.from_hash(hash)
+      when 'csv' then FormatMetadataCsv.from_hash(hash)
+      when 'bibtex' then FormatMetadataBibtex.from_hash(hash)
+      when 'citation' then FormatMetadataCitation.from_hash(hash)
+      when 'fiction_book' then FormatMetadataFictionBook.from_hash(hash)
+      when 'dbf' then FormatMetadataDbf.from_hash(hash)
+      when 'jats' then FormatMetadataJats.from_hash(hash)
+      when 'epub' then FormatMetadataEpub.from_hash(hash)
+      when 'pst' then FormatMetadataPst.from_hash(hash)
+      when 'code' then FormatMetadataCode.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Variant FormatMetadataPdf of the FormatMetadata sum type.
@@ -2640,7 +2638,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -2717,7 +2715,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -2794,7 +2792,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -2871,7 +2869,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -2948,7 +2946,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3025,7 +3023,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3102,7 +3100,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3179,7 +3177,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3256,7 +3254,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3333,7 +3331,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3410,7 +3408,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3487,7 +3485,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3564,7 +3562,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3641,7 +3639,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3718,7 +3716,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3795,7 +3793,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3872,7 +3870,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -3949,7 +3947,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -4026,7 +4024,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
 
@@ -4103,10 +4101,9 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(value: hash[:_0] || hash["_0"])
+      new(value: hash[:_0] || hash['_0'])
     end
   end
-
 end
 
 module Kreuzberg
@@ -4117,6 +4114,7 @@ module Kreuzberg
   module OcrBoundingGeometry
     extend T::Helpers
     extend T::Sig
+
     interface!
 
     # Dispatch from a Hash to the appropriate variant constructor.
@@ -4124,14 +4122,13 @@ module Kreuzberg
     # @return [variant_class] an instance of the appropriate variant
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.untyped) }
     def self.from_hash(hash)
-      discriminator = hash[:type] || hash["type"]
+      discriminator = hash[:type] || hash['type']
       case discriminator
-      when "rectangle" then OcrBoundingGeometryRectangle.from_hash(hash)
-      when "quadrilateral" then OcrBoundingGeometryQuadrilateral.from_hash(hash)
+      when 'rectangle' then OcrBoundingGeometryRectangle.from_hash(hash)
+      when 'quadrilateral' then OcrBoundingGeometryQuadrilateral.from_hash(hash)
       else raise "Unknown discriminator: #{discriminator}"
       end
     end
-
   end
 
   # Axis-aligned bounding box (typical for Tesseract output).
@@ -4165,7 +4162,8 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(left: hash[:left] || hash["left"], top: hash[:top] || hash["top"], width: hash[:width] || hash["width"], height: hash[:height] || hash["height"])
+      new(left: hash[:left] || hash['left'], top: hash[:top] || hash['top'], width: hash[:width] || hash['width'],
+          height: hash[:height] || hash['height'])
     end
   end
 
@@ -4191,8 +4189,7 @@ module Kreuzberg
     # @return [self]
     sig { params(hash: T::Hash[T.untyped, T.untyped]).returns(T.attached_class) }
     def self.from_hash(hash)
-      new(points: hash[:points] || hash["points"])
+      new(points: hash[:points] || hash['points'])
     end
   end
-
 end

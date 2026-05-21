@@ -12,18 +12,19 @@ namespace Kreuzberg;
 [JsonConverter(typeof(StructuredDataTypeJsonConverter))]
 public enum StructuredDataType
 {    /// <summary>
-    /// JSON-LD structured data
-    /// </summary>
+     /// JSON-LD structured data
+     /// </summary>
     [JsonPropertyName("json-ld")]
     JsonLd,    /// <summary>
-    /// Microdata
-    /// </summary>
+               /// Microdata
+               /// </summary>
     [JsonPropertyName("microdata")]
     Microdata,    /// <summary>
-    /// RDFa
-    /// </summary>
+                  /// RDFa
+                  /// </summary>
     [JsonPropertyName("rdfa")]
-    RdFa,}
+    RdFa,
+}
 
 
 /// <summary>Custom JSON converter for <see cref="StructuredDataType"/> that respects explicit variant names.</summary>
@@ -33,14 +34,22 @@ internal sealed class StructuredDataTypeJsonConverter : JsonConverter<Structured
     {
         var value = reader.GetString();
         return value switch
-        {            "json-ld" => StructuredDataType.JsonLd,            "microdata" => StructuredDataType.Microdata,            "rdfa" => StructuredDataType.RdFa,            _ => throw new JsonException($"Unknown StructuredDataType value: {value}")
+        {
+            "json-ld" => StructuredDataType.JsonLd,
+            "microdata" => StructuredDataType.Microdata,
+            "rdfa" => StructuredDataType.RdFa,
+            _ => throw new JsonException($"Unknown StructuredDataType value: {value}")
         };
     }
 
     public override void Write(Utf8JsonWriter writer, StructuredDataType value, JsonSerializerOptions options)
     {
         var str = value switch
-        {            StructuredDataType.JsonLd => "json-ld",            StructuredDataType.Microdata => "microdata",            StructuredDataType.RdFa => "rdfa",            _ => throw new JsonException($"Unknown StructuredDataType value: {value}")
+        {
+            StructuredDataType.JsonLd => "json-ld",
+            StructuredDataType.Microdata => "microdata",
+            StructuredDataType.RdFa => "rdfa",
+            _ => throw new JsonException($"Unknown StructuredDataType value: {value}")
         };
         writer.WriteStringValue(str);
     }

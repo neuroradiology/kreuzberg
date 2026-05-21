@@ -14,19 +14,20 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ContentLayer
 {    /// <summary>
-    /// Main document body content.
-    /// </summary>
+     /// Main document body content.
+     /// </summary>
     [JsonPropertyName("body")]
     Body,    /// <summary>
-    /// Page/section header (running header).
-    /// </summary>
+             /// Page/section header (running header).
+             /// </summary>
     [JsonPropertyName("header")]
     Header,    /// <summary>
-    /// Page/section footer (running footer).
-    /// </summary>
+               /// Page/section footer (running footer).
+               /// </summary>
     [JsonPropertyName("footer")]
     Footer,    /// <summary>
-    /// Footnote content.
-    /// </summary>
+               /// Footnote content.
+               /// </summary>
     [JsonPropertyName("footnote")]
-    Footnote,}
+    Footnote,
+}

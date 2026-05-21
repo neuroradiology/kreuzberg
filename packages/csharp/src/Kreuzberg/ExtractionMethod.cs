@@ -11,7 +11,9 @@ namespace Kreuzberg;
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ExtractionMethod
-{    [JsonPropertyName("native")]
-    Native,    [JsonPropertyName("ocr")]
-    Ocr,    [JsonPropertyName("mixed")]
-    Mixed,}
+{
+    [JsonPropertyName("native")]
+    Native, [JsonPropertyName("ocr")]
+    Ocr, [JsonPropertyName("mixed")]
+    Mixed,
+}

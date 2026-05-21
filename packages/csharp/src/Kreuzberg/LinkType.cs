@@ -12,27 +12,28 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LinkType
 {    /// <summary>
-    /// Anchor link (#section)
-    /// </summary>
+     /// Anchor link (#section)
+     /// </summary>
     [JsonPropertyName("anchor")]
     Anchor,    /// <summary>
-    /// Internal link (same domain)
-    /// </summary>
+               /// Internal link (same domain)
+               /// </summary>
     [JsonPropertyName("internal")]
     Internal,    /// <summary>
-    /// External link (different domain)
-    /// </summary>
+                 /// External link (different domain)
+                 /// </summary>
     [JsonPropertyName("external")]
     External,    /// <summary>
-    /// Email link (mailto:)
-    /// </summary>
+                 /// Email link (mailto:)
+                 /// </summary>
     [JsonPropertyName("email")]
     Email,    /// <summary>
-    /// Phone link (tel:)
-    /// </summary>
+              /// Phone link (tel:)
+              /// </summary>
     [JsonPropertyName("phone")]
     Phone,    /// <summary>
-    /// Other link type
-    /// </summary>
+              /// Other link type
+              /// </summary>
     [JsonPropertyName("other")]
-    Other,}
+    Other,
+}

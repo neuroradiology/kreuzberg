@@ -18,7 +18,7 @@ namespace Kreuzberg;
 /// Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
 /// (from PaddleOCR and rotated text detection).
 /// </summary>
-    [JsonConverter(typeof(OcrBoundingGeometryJsonConverter))]
+[JsonConverter(typeof(OcrBoundingGeometryJsonConverter))]
 public abstract record OcrBoundingGeometry
 {
     /// <summary>
@@ -116,7 +116,10 @@ public sealed class OcrBoundingGeometryJsonConverter : JsonConverter<OcrBounding
         var wrappedJson = msWrapped.ToArray();
 
         return tagValue switch
-        {            "rectangle" => JsonSerializer.Deserialize<OcrBoundingGeometry.Rectangle>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            "quadrilateral" => JsonSerializer.Deserialize<OcrBoundingGeometry.Quadrilateral>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            _ => throw new JsonException($"Unknown OcrBoundingGeometry discriminator: {tagValue}")
+        {
+            "rectangle" => JsonSerializer.Deserialize<OcrBoundingGeometry.Rectangle>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            "quadrilateral" => JsonSerializer.Deserialize<OcrBoundingGeometry.Quadrilateral>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            _ => throw new JsonException($"Unknown OcrBoundingGeometry discriminator: {tagValue}")
         };
     }
 
@@ -130,9 +133,12 @@ public sealed class OcrBoundingGeometryJsonConverter : JsonConverter<OcrBounding
         string tag;
         object? inner;
         switch (value)
-        {            case OcrBoundingGeometry.Rectangle v_rectangle:
-                tag = "rectangle";                inner = v_rectangle;                break;            case OcrBoundingGeometry.Quadrilateral v_quadrilateral:
-                tag = "quadrilateral";                inner = v_quadrilateral;                break;            default:
+        {
+            case OcrBoundingGeometry.Rectangle v_rectangle:
+                tag = "rectangle"; inner = v_rectangle; break;
+            case OcrBoundingGeometry.Quadrilateral v_quadrilateral:
+                tag = "quadrilateral"; inner = v_quadrilateral; break;
+            default:
                 throw new JsonException($"Unknown OcrBoundingGeometry variant: {value.GetType().Name}");
         }
 

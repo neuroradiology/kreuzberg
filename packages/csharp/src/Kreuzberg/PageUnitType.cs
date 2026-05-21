@@ -14,15 +14,16 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PageUnitType
 {    /// <summary>
-    /// Standard document pages (PDF, DOCX, images)
-    /// </summary>
+     /// Standard document pages (PDF, DOCX, images)
+     /// </summary>
     [JsonPropertyName("page")]
     Page,    /// <summary>
-    /// Presentation slides (PPTX, ODP)
-    /// </summary>
+             /// Presentation slides (PPTX, ODP)
+             /// </summary>
     [JsonPropertyName("slide")]
     Slide,    /// <summary>
-    /// Spreadsheet sheets (XLSX, ODS)
-    /// </summary>
+              /// Spreadsheet sheets (XLSX, ODS)
+              /// </summary>
     [JsonPropertyName("sheet")]
-    Sheet,}
+    Sheet,
+}

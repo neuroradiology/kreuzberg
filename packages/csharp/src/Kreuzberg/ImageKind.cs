@@ -12,47 +12,48 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ImageKind
 {    /// <summary>
-    /// Photographic image (natural scene, photograph)
-    /// </summary>
+     /// Photographic image (natural scene, photograph)
+     /// </summary>
     [JsonPropertyName("photograph")]
     Photograph,    /// <summary>
-    /// Technical or schematic diagram
-    /// </summary>
+                   /// Technical or schematic diagram
+                   /// </summary>
     [JsonPropertyName("diagram")]
     Diagram,    /// <summary>
-    /// Chart, graph, or plot
-    /// </summary>
+                /// Chart, graph, or plot
+                /// </summary>
     [JsonPropertyName("chart")]
     Chart,    /// <summary>
-    /// Freehand or technical drawing
-    /// </summary>
+              /// Freehand or technical drawing
+              /// </summary>
     [JsonPropertyName("drawing")]
     Drawing,    /// <summary>
-    /// Text-heavy image (scanned text, document)
-    /// </summary>
+                /// Text-heavy image (scanned text, document)
+                /// </summary>
     [JsonPropertyName("text_block")]
     TextBlock,    /// <summary>
-    /// Decorative element or border
-    /// </summary>
+                  /// Decorative element or border
+                  /// </summary>
     [JsonPropertyName("decoration")]
     Decoration,    /// <summary>
-    /// Logo or brand mark
-    /// </summary>
+                   /// Logo or brand mark
+                   /// </summary>
     [JsonPropertyName("logo")]
     Logo,    /// <summary>
-    /// Small icon
-    /// </summary>
+             /// Small icon
+             /// </summary>
     [JsonPropertyName("icon")]
     Icon,    /// <summary>
-    /// Fragment of a larger tiled image (tile of a technical drawing)
-    /// </summary>
+             /// Fragment of a larger tiled image (tile of a technical drawing)
+             /// </summary>
     [JsonPropertyName("tile_fragment")]
     TileFragment,    /// <summary>
-    /// Mask or transparency map
-    /// </summary>
+                     /// Mask or transparency map
+                     /// </summary>
     [JsonPropertyName("mask")]
     Mask,    /// <summary>
-    /// Could not classify with reasonable confidence
-    /// </summary>
+             /// Could not classify with reasonable confidence
+             /// </summary>
     [JsonPropertyName("unknown")]
-    Unknown,}
+    Unknown,
+}

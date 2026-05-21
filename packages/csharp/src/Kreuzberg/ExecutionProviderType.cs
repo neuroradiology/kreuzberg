@@ -15,23 +15,24 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ExecutionProviderType
 {    /// <summary>
-    /// Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere.
-    /// </summary>
+     /// Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere.
+     /// </summary>
     [JsonPropertyName("auto")]
     Auto,    /// <summary>
-    /// CPU execution provider (always available).
-    /// </summary>
+             /// CPU execution provider (always available).
+             /// </summary>
     [JsonPropertyName("cpu")]
     Cpu,    /// <summary>
-    /// Apple CoreML (macOS/iOS Neural Engine + GPU).
-    /// </summary>
+            /// Apple CoreML (macOS/iOS Neural Engine + GPU).
+            /// </summary>
     [JsonPropertyName("coreml")]
     CoreMl,    /// <summary>
-    /// NVIDIA CUDA GPU acceleration.
-    /// </summary>
+               /// NVIDIA CUDA GPU acceleration.
+               /// </summary>
     [JsonPropertyName("cuda")]
     Cuda,    /// <summary>
-    /// NVIDIA TensorRT (optimized CUDA inference).
-    /// </summary>
+             /// NVIDIA TensorRT (optimized CUDA inference).
+             /// </summary>
     [JsonPropertyName("tensorrt")]
-    TensorRt,}
+    TensorRt,
+}

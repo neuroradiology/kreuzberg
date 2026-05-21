@@ -26,6 +26,7 @@ defmodule Kreuzberg.HtmlTheme do
   @doc "Minimal light theme with generous whitespace."
   @spec light() :: t()
   def light, do: @light
+
   @doc "No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens."
   @spec unstyled() :: t()
   def unstyled, do: @unstyled

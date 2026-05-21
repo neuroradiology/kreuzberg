@@ -12,31 +12,32 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PdfAnnotationType
 {    /// <summary>
-    /// Sticky note / text annotation
-    /// </summary>
+     /// Sticky note / text annotation
+     /// </summary>
     [JsonPropertyName("text")]
     Text,    /// <summary>
-    /// Highlighted text region
-    /// </summary>
+             /// Highlighted text region
+             /// </summary>
     [JsonPropertyName("highlight")]
     Highlight,    /// <summary>
-    /// Hyperlink annotation
-    /// </summary>
+                  /// Hyperlink annotation
+                  /// </summary>
     [JsonPropertyName("link")]
     Link,    /// <summary>
-    /// Rubber stamp annotation
-    /// </summary>
+             /// Rubber stamp annotation
+             /// </summary>
     [JsonPropertyName("stamp")]
     Stamp,    /// <summary>
-    /// Underline text markup
-    /// </summary>
+              /// Underline text markup
+              /// </summary>
     [JsonPropertyName("underline")]
     Underline,    /// <summary>
-    /// Strikeout text markup
-    /// </summary>
+                  /// Strikeout text markup
+                  /// </summary>
     [JsonPropertyName("strike_out")]
     StrikeOut,    /// <summary>
-    /// Any other annotation type
-    /// </summary>
+                  /// Any other annotation type
+                  /// </summary>
     [JsonPropertyName("other")]
-    Other,}
+    Other,
+}

@@ -12,22 +12,23 @@ namespace Kreuzberg;
 [JsonConverter(typeof(ImageTypeJsonConverter))]
 public enum ImageType
 {    /// <summary>
-    /// Data URI image
-    /// </summary>
+     /// Data URI image
+     /// </summary>
     [JsonPropertyName("data-uri")]
     DataUri,    /// <summary>
-    /// Inline SVG
-    /// </summary>
+                /// Inline SVG
+                /// </summary>
     [JsonPropertyName("inline-svg")]
     InlineSvg,    /// <summary>
-    /// External image URL
-    /// </summary>
+                  /// External image URL
+                  /// </summary>
     [JsonPropertyName("external")]
     External,    /// <summary>
-    /// Relative path image
-    /// </summary>
+                 /// Relative path image
+                 /// </summary>
     [JsonPropertyName("relative")]
-    Relative,}
+    Relative,
+}
 
 
 /// <summary>Custom JSON converter for <see cref="ImageType"/> that respects explicit variant names.</summary>
@@ -37,14 +38,24 @@ internal sealed class ImageTypeJsonConverter : JsonConverter<ImageType>
     {
         var value = reader.GetString();
         return value switch
-        {            "data-uri" => ImageType.DataUri,            "inline-svg" => ImageType.InlineSvg,            "external" => ImageType.External,            "relative" => ImageType.Relative,            _ => throw new JsonException($"Unknown ImageType value: {value}")
+        {
+            "data-uri" => ImageType.DataUri,
+            "inline-svg" => ImageType.InlineSvg,
+            "external" => ImageType.External,
+            "relative" => ImageType.Relative,
+            _ => throw new JsonException($"Unknown ImageType value: {value}")
         };
     }
 
     public override void Write(Utf8JsonWriter writer, ImageType value, JsonSerializerOptions options)
     {
         var str = value switch
-        {            ImageType.DataUri => "data-uri",            ImageType.InlineSvg => "inline-svg",            ImageType.External => "external",            ImageType.Relative => "relative",            _ => throw new JsonException($"Unknown ImageType value: {value}")
+        {
+            ImageType.DataUri => "data-uri",
+            ImageType.InlineSvg => "inline-svg",
+            ImageType.External => "external",
+            ImageType.Relative => "relative",
+            _ => throw new JsonException($"Unknown ImageType value: {value}")
         };
         writer.WriteStringValue(str);
     }

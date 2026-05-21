@@ -15,33 +15,34 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ProcessingStage
 {    /// <summary>
-    /// Early stage - foundational processing.
-    ///
-    /// Use for:
-    /// - Language detection
-    /// - Character encoding normalization
-    /// - Entity extraction (NER)
-    /// - Text quality scoring
-    /// </summary>
+     /// Early stage - foundational processing.
+     ///
+     /// Use for:
+     /// - Language detection
+     /// - Character encoding normalization
+     /// - Entity extraction (NER)
+     /// - Text quality scoring
+     /// </summary>
     [JsonPropertyName("early")]
     Early,    /// <summary>
-    /// Middle stage - content transformation.
-    ///
-    /// Use for:
-    /// - Keyword extraction
-    /// - Token reduction
-    /// - Text summarization
-    /// - Semantic analysis
-    /// </summary>
+              /// Middle stage - content transformation.
+              ///
+              /// Use for:
+              /// - Keyword extraction
+              /// - Token reduction
+              /// - Text summarization
+              /// - Semantic analysis
+              /// </summary>
     [JsonPropertyName("middle")]
     Middle,    /// <summary>
-    /// Late stage - final enrichment.
-    ///
-    /// Use for:
-    /// - Custom user hooks
-    /// - Analytics/logging
-    /// - Final validation
-    /// - Output formatting
-    /// </summary>
+               /// Late stage - final enrichment.
+               ///
+               /// Use for:
+               /// - Custom user hooks
+               /// - Analytics/logging
+               /// - Final validation
+               /// - Output formatting
+               /// </summary>
     [JsonPropertyName("late")]
-    Late,}
+    Late,
+}

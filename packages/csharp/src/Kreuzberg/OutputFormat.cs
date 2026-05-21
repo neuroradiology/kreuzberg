@@ -18,32 +18,33 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OutputFormat
 {    /// <summary>
-    /// Plain text content only (default)
-    /// </summary>
+     /// Plain text content only (default)
+     /// </summary>
     [JsonPropertyName("plain")]
     Plain,    /// <summary>
-    /// Markdown format
-    /// </summary>
+              /// Markdown format
+              /// </summary>
     [JsonPropertyName("markdown")]
     Markdown,    /// <summary>
-    /// Djot markup format
-    /// </summary>
+                 /// Djot markup format
+                 /// </summary>
     [JsonPropertyName("djot")]
     Djot,    /// <summary>
-    /// HTML format
-    /// </summary>
+             /// HTML format
+             /// </summary>
     [JsonPropertyName("html")]
     Html,    /// <summary>
-    /// JSON tree format with heading-driven sections.
-    /// </summary>
+             /// JSON tree format with heading-driven sections.
+             /// </summary>
     [JsonPropertyName("json")]
     Json,    /// <summary>
-    /// Structured JSON format with full OCR element metadata.
-    /// </summary>
+             /// Structured JSON format with full OCR element metadata.
+             /// </summary>
     [JsonPropertyName("structured")]
     Structured,    /// <summary>
-    /// Custom renderer registered via the RendererRegistry.
-    /// The string is the renderer name (e.g., "docx", "latex").
-    /// </summary>
+                   /// Custom renderer registered via the RendererRegistry.
+                   /// The string is the renderer name (e.g., "docx", "latex").
+                   /// </summary>
     [JsonPropertyName("custom")]
-    Custom,}
+    Custom,
+}

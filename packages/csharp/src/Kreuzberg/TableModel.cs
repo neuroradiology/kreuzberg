@@ -16,28 +16,29 @@ namespace Kreuzberg;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TableModel
 {    /// <summary>
-    /// TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
-    /// </summary>
+     /// TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
+     /// </summary>
     [JsonPropertyName("tatr")]
     Tatr,    /// <summary>
-    /// SLANeXT wired variant -- 365MB, optimized for bordered tables.
-    /// </summary>
+             /// SLANeXT wired variant -- 365MB, optimized for bordered tables.
+             /// </summary>
     [JsonPropertyName("slanet_wired")]
     SlanetWired,    /// <summary>
-    /// SLANeXT wireless variant -- 365MB, optimized for borderless tables.
-    /// </summary>
+                    /// SLANeXT wireless variant -- 365MB, optimized for borderless tables.
+                    /// </summary>
     [JsonPropertyName("slanet_wireless")]
     SlanetWireless,    /// <summary>
-    /// SLANet-plus -- 7.78MB, lightweight general-purpose.
-    /// </summary>
+                       /// SLANet-plus -- 7.78MB, lightweight general-purpose.
+                       /// </summary>
     [JsonPropertyName("slanet_plus")]
     SlanetPlus,    /// <summary>
-    /// Classifier-routed SLANeXT: auto-select wired/wireless per table.
-    /// Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total).
-    /// </summary>
+                   /// Classifier-routed SLANeXT: auto-select wired/wireless per table.
+                   /// Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total).
+                   /// </summary>
     [JsonPropertyName("slanet_auto")]
     SlanetAuto,    /// <summary>
-    /// Disable table structure model inference entirely; use heuristic path only.
-    /// </summary>
+                   /// Disable table structure model inference entirely; use heuristic path only.
+                   /// </summary>
     [JsonPropertyName("disabled")]
-    Disabled,}
+    Disabled,
+}

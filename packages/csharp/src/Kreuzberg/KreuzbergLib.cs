@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;using System.Threading.Tasks;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 namespace Kreuzberg;
 
 public static class KreuzbergLib
@@ -1284,6 +1285,6 @@ public static class KreuzbergLib
     {
         var code = NativeMethods.LastErrorCode();
         var ctxPtr = NativeMethods.LastErrorContext();
-        var message = Marshal.PtrToStringUTF8(ctxPtr) ?? "Unknown error";        if (message.StartsWith("Extraction timed out after")) return new TimeoutException(message);        if (message.StartsWith("Image processing error:")) return new ImageProcessingException(message);        if (message.StartsWith("Serialization error:")) return new SerializationException(message);        if (message.StartsWith("Extraction cancelled")) return new CancelledException(message);        if (message.StartsWith("Missing dependency:")) return new MissingDependencyException(message);        if (message.StartsWith("Unsupported format:")) return new UnsupportedFormatException(message);        if (message.StartsWith("Security violation:")) return new SecurityException(message);        if (message.StartsWith("Validation error:")) return new ValidationException(message);        if (message.StartsWith("Plugin error in '")) return new PluginException(message);        if (message.StartsWith("Embedding error:")) return new EmbeddingException(message);        if (message.StartsWith("Parsing error:")) return new ParsingException(message);        if (message.StartsWith("Lock poisoned:")) return new LockPoisonedException(message);        if (message.StartsWith("Cache error:")) return new CacheException(message);        if (message.StartsWith("OCR error:")) return new OcrException(message);        if (message.StartsWith("IO error:")) return new IoException(message);        if (code == 2) return new KreuzbergErrorException(message);        return new KreuzbergException(code, message);
+        var message = Marshal.PtrToStringUTF8(ctxPtr) ?? "Unknown error"; if (message.StartsWith("Extraction timed out after")) return new TimeoutException(message); if (message.StartsWith("Image processing error:")) return new ImageProcessingException(message); if (message.StartsWith("Serialization error:")) return new SerializationException(message); if (message.StartsWith("Extraction cancelled")) return new CancelledException(message); if (message.StartsWith("Missing dependency:")) return new MissingDependencyException(message); if (message.StartsWith("Unsupported format:")) return new UnsupportedFormatException(message); if (message.StartsWith("Security violation:")) return new SecurityException(message); if (message.StartsWith("Validation error:")) return new ValidationException(message); if (message.StartsWith("Plugin error in '")) return new PluginException(message); if (message.StartsWith("Embedding error:")) return new EmbeddingException(message); if (message.StartsWith("Parsing error:")) return new ParsingException(message); if (message.StartsWith("Lock poisoned:")) return new LockPoisonedException(message); if (message.StartsWith("Cache error:")) return new CacheException(message); if (message.StartsWith("OCR error:")) return new OcrException(message); if (message.StartsWith("IO error:")) return new IoException(message); if (code == 2) return new KreuzbergErrorException(message); return new KreuzbergException(code, message);
     }
 }

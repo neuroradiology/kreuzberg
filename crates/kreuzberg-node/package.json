@@ -7,9 +7,21 @@
     "type": "git",
     "url": "git+https://github.com/kreuzberg-dev/kreuzberg.git"
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
   "main": "index.js",
   "types": "index.d.ts",
-  "files": ["index.js", "index.d.ts", "*.node"],
+  "scripts": {
+    "build": "napi build --platform --release",
+    "artifacts": "napi artifacts",
+    "prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.6.2"
+  },
   "napi": {
     "binaryName": "kreuzberg-node",
     "targets": [
@@ -21,11 +33,7 @@
       "aarch64-pc-windows-msvc"
     ]
   },
-  "scripts": {
-    "build": "napi build --platform --release",
-    "artifacts": "napi artifacts",
-    "prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
-  },
-  "engines": { "node": ">= 18" },
-  "devDependencies": { "@napi-rs/cli": "^3.6.2" }
+  "engines": {
+    "node": ">= 18"
+  }
 }

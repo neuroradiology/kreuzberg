@@ -15,7 +15,7 @@ namespace Kreuzberg;
 /// <summary>
 /// Embedding model types supported by Kreuzberg.
 /// </summary>
-    [JsonConverter(typeof(EmbeddingModelTypeJsonConverter))]
+[JsonConverter(typeof(EmbeddingModelTypeJsonConverter))]
 public abstract record EmbeddingModelType
 {
     /// <summary>
@@ -143,7 +143,12 @@ public sealed class EmbeddingModelTypeJsonConverter : JsonConverter<EmbeddingMod
         var wrappedJson = msWrapped.ToArray();
 
         return tagValue switch
-        {            "preset" => JsonSerializer.Deserialize<EmbeddingModelType.Preset>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            "custom" => JsonSerializer.Deserialize<EmbeddingModelType.Custom>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            "llm" => JsonSerializer.Deserialize<EmbeddingModelType.Llm>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            "plugin" => JsonSerializer.Deserialize<EmbeddingModelType.Plugin>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),            _ => throw new JsonException($"Unknown EmbeddingModelType discriminator: {tagValue}")
+        {
+            "preset" => JsonSerializer.Deserialize<EmbeddingModelType.Preset>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            "custom" => JsonSerializer.Deserialize<EmbeddingModelType.Custom>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            "llm" => JsonSerializer.Deserialize<EmbeddingModelType.Llm>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            "plugin" => JsonSerializer.Deserialize<EmbeddingModelType.Plugin>(flatJson, options) ?? throw new JsonException("Failed to deserialize variant"),
+            _ => throw new JsonException($"Unknown EmbeddingModelType discriminator: {tagValue}")
         };
     }
 
@@ -157,11 +162,16 @@ public sealed class EmbeddingModelTypeJsonConverter : JsonConverter<EmbeddingMod
         string tag;
         object? inner;
         switch (value)
-        {            case EmbeddingModelType.Preset v_preset:
-                tag = "preset";                inner = v_preset;                break;            case EmbeddingModelType.Custom v_custom:
-                tag = "custom";                inner = v_custom;                break;            case EmbeddingModelType.Llm v_llm:
-                tag = "llm";                inner = v_llm;                break;            case EmbeddingModelType.Plugin v_plugin:
-                tag = "plugin";                inner = v_plugin;                break;            default:
+        {
+            case EmbeddingModelType.Preset v_preset:
+                tag = "preset"; inner = v_preset; break;
+            case EmbeddingModelType.Custom v_custom:
+                tag = "custom"; inner = v_custom; break;
+            case EmbeddingModelType.Llm v_llm:
+                tag = "llm"; inner = v_llm; break;
+            case EmbeddingModelType.Plugin v_plugin:
+                tag = "plugin"; inner = v_plugin; break;
+            default:
                 throw new JsonException($"Unknown EmbeddingModelType variant: {value.GetType().Name}");
         }
 

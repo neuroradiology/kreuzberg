@@ -11,6 +11,8 @@ namespace Kreuzberg;
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum DrawingType
-{    [JsonPropertyName("inline")]
-    Inline,    [JsonPropertyName("anchored")]
-    Anchored,}
+{
+    [JsonPropertyName("inline")]
+    Inline, [JsonPropertyName("anchored")]
+    Anchored,
+}
