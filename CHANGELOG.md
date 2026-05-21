@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (DrawingType alef-skip, zig binding ffi_path)
+
+- **core**: Annotate `DrawingType` enum in `crates/kreuzberg/src/extraction/docx/drawing.rs`
+  with `#[cfg_attr(alef, alef(skip))]`. The enclosing `Drawing` struct was already
+  skipped but its inner enum was not, so alef R binding gen emitted
+  `impl From<kreuzberg::DrawingType> for ...` and broke `packages/r/src/rust/src/lib.rs`
+  with five `kreuzberg::DrawingType not found` errors.
+- **packages/zig/build.zig**: Default `ffi_path` updated from `../../target/debug`
+  to `../../target/release` so `zig build test` finds the FFI artifact built by the
+  alef test before-hook (`cargo build --release -p kreuzberg-ffi`). Mirrors the
+  alef-scaffold/zig fix.
+
 ### Fixed (FormatMetadata Display impl)
 
 - **core**: Added `impl std::fmt::Display for FormatMetadata` so generated rust e2e
