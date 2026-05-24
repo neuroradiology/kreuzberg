@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ci**: `.github/workflows/ci-docs.yaml` `lint-docs` job pinned `alef-ref` to `v0.16.69`, so the docs linter ran against a stale alef while generated bindings were produced by the current version (v0.19.4). The version skew caused the docs validation to fail on the first regen push. Bumped to `v0.19.4` to match `alef.toml`. (`.github/workflows/ci-docs.yaml`)
+
 - **python**: `_to_rust_chunking_config` no longer passes `sizing=None` to the PyO3 `ChunkingConfig` constructor, which raised `TypeError: argument 'sizing': 'None' is not an instance of 'ChunkSizing'`. The constructor's PyO3 signature provides `ChunkSizing::default()` when `sizing` is omitted, so the Python wrapper now omits the key from kwargs when the user-facing field is `None`, allowing the Rust default to apply. Fixes `test_config_chunking_prepend_heading_context` in the Python e2e suite. (`packages/python/kreuzberg/api.py`)
 
 - **bindings**: Expose `BoundingBox` in all alef-generated bindings (Java, C#, Go, Dart, Swift, Kotlin Android, etc.) by removing `#[cfg_attr(alef, alef(skip))]` from `crates/kreuzberg/src/types/extraction.rs`. The type appears as a field on `Table`, `OcrElement`, `ElementMetadata`, `Annotation`, and `Page`; with the type skipped alef fell back to opaque `String`/`Object` mappings, breaking Jackson/JSON deserialization (Java e2e `testConfigSecurityLimits` failed with `Cannot deserialize value of type 'java.lang.String' from Object value` for `Table.boundingBox`). Exposing the type generates a proper record/struct everywhere and unblocks the full Java e2e suite (88/88). (`crates/kreuzberg/src/types/extraction.rs`)
