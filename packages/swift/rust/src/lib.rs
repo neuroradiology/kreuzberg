@@ -11664,11 +11664,14 @@ pub fn list_validators() -> Result<Vec<String>, String> {
 }
 
 pub fn calculate_quality_score(text: String, metadata: Option<String>) -> f64 {
-    kreuzberg::text::quality::calculate_quality_score(
-        &text,
-        &::serde_json::from_str::<std::collections::HashMap<String, String>>(&metadata)
-            .expect("valid JSON for metadata"),
-    )
+    let __metadata_ahash = metadata.map(|json_str| {
+        let hm = ::serde_json::from_str::<std::collections::HashMap<String, String>>(&json_str)
+            .expect("valid JSON for metadata");
+        hm.into_iter()
+            .map(|(k, v)| (std::borrow::Cow::Owned(k), serde_json::Value::String(v)))
+            .collect::<ahash::AHashMap<std::borrow::Cow<'static, str>, serde_json::Value>>()
+    });
+    kreuzberg::text::quality::calculate_quality_score(&text, __metadata_ahash.as_ref())
 }
 
 pub fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String> {

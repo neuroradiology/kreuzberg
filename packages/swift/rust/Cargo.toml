@@ -26,6 +26,7 @@ doctest = false
 bench = false
 
 [dependencies]
+ahash = "0.8"
 async-trait = "0.1"
 kreuzberg = { version = "5.0.0-rc.1", path = "../../../crates/kreuzberg", features = ["full", "ocr-wasm"] }
 serde = { version = "1", features = ["derive"] }

@@ -3842,6 +3842,7 @@ dependencies = [
 name = "kreuzberg-swift"
 version = "5.0.0-rc.1"
 dependencies = [
+ "ahash",
  "async-trait",
  "kreuzberg",
  "serde",
