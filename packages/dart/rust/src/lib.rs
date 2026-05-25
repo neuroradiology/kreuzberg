@@ -8706,24 +8706,6 @@ pub fn list_validators() -> Result<Vec<String>, String> {
         .map_err(|e| e.to_string())
 }
 
-/// Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
-///
-/// `1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
-/// script/style noise, navigation chrome) subtract, structural cues (headings,
-/// punctuation) add. The result is clamped to `[0.0, 1.0]`.
-///
-/// Pass `metadata` as `null` when the caller has no extraction metadata available;
-/// the metadata bonus simply isn't applied in that case. Texts shorter than
-/// `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
-pub fn calculate_quality_score(text: String, metadata: Option<std::collections::HashMap<String, String>>) -> f64 {
-    let __metadata_ahash = metadata.map(|m| {
-        m.into_iter()
-            .map(|(k, v)| (std::borrow::Cow::Owned(k), serde_json::Value::String(v)))
-            .collect::<ahash::AHashMap<std::borrow::Cow<'static, str>, serde_json::Value>>()
-    });
-    kreuzberg::text::quality::calculate_quality_score(&text, __metadata_ahash.as_ref()) as f64
-}
-
 /// Generate embeddings asynchronously for a list of text strings.
 ///
 /// This is the async counterpart to `embed_texts`. It offloads the blocking

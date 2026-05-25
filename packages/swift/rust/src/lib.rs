@@ -2660,8 +2660,6 @@ mod ffi {
         fn list_renderers() -> Result<Vec<String>, String>;
         #[swift_bridge(swift_name = "listValidators")]
         fn list_validators() -> Result<Vec<String>, String>;
-        #[swift_bridge(swift_name = "calculateQualityScore")]
-        fn calculate_quality_score(text: String, metadata: Option<String>) -> f64;
         #[swift_bridge(swift_name = "embedTextsAsync")]
         fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String>;
         #[swift_bridge(swift_name = "renderPdfPageToPng")]
@@ -11661,17 +11659,6 @@ pub fn list_validators() -> Result<Vec<String>, String> {
     kreuzberg::list_validators()
         .map_err(|e| e.to_string())
         .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
-}
-
-pub fn calculate_quality_score(text: String, metadata: Option<String>) -> f64 {
-    let __metadata_ahash = metadata.map(|json_str| {
-        let hm = ::serde_json::from_str::<std::collections::HashMap<String, String>>(&json_str)
-            .expect("valid JSON for metadata");
-        hm.into_iter()
-            .map(|(k, v)| (std::borrow::Cow::Owned(k), serde_json::Value::String(v)))
-            .collect::<ahash::AHashMap<std::borrow::Cow<'static, str>, serde_json::Value>>()
-    });
-    kreuzberg::text::quality::calculate_quality_score(&text, __metadata_ahash.as_ref())
 }
 
 pub fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String> {

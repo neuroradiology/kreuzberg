@@ -12970,22 +12970,6 @@ char *kreuzberg_list_validators(void);
 uintptr_t kreuzberg_list_validators_len(void);
 
 /**
- * Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
- *
- * `1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
- * script/style noise, navigation chrome) subtract, structural cues (headings,
- * punctuation) add. The result is clamped to `[0.0, 1.0]`.
- *
- * Pass `metadata` as `None` when the caller has no extraction metadata available;
- * the metadata bonus simply isn't applied in that case. Texts shorter than
- * `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-double kreuzberg_calculate_quality_score(const char *text,
-                                         const char *metadata);
-
-/**
  * Generate embeddings asynchronously for a list of text strings.
  *
  * This is the async counterpart to [`embed_texts`]. It offloads the blocking

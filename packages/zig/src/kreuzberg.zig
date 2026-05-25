@@ -4276,25 +4276,6 @@ pub fn list_validators() KreuzbergError![]u8 {
     };
 }
 
-/// Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
-///
-/// `1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
-/// script/style noise, navigation chrome) subtract, structural cues (headings,
-/// punctuation) add. The result is clamped to `[0.0, 1.0]`.
-///
-/// Pass `metadata` as `null` when the caller has no extraction metadata available;
-/// the metadata bonus simply isn't applied in that case. Texts shorter than
-/// `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
-pub fn calculate_quality_score(text: []const u8, metadata: ?[]const u8) error{OutOfMemory}!f64 {
-    const text_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{text}, 0);
-    defer std.heap.c_allocator.free(text_z);
-    // Vec/Map parameters are passed as JSON strings across the FFI boundary.
-    const metadata_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{metadata}, 0);
-    defer std.heap.c_allocator.free(metadata_z);
-    const _result = c.kreuzberg_calculate_quality_score(text_z, metadata_z);
-    return _result;
-}
-
 /// Generate embeddings asynchronously for a list of text strings.
 ///
 /// This is the async counterpart to `embed_texts`. It offloads the blocking

@@ -193,6 +193,9 @@ exclude_types = [
   # Arc<Mutex<T>> opaque types — codegen doesn't generate .lock() for methods
   "PooledString",
 ]
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.python.stubs]
 output = "packages/python/kreuzberg/"
@@ -204,6 +207,9 @@ exclude_types = [
   "StreamReader",
   "PooledString",
 ]
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.node.extra_dependencies]
 # Required by alef-emitted #[serde_with::serde_as] attribute on HashMap<_, Vec<u8>>
@@ -212,6 +218,9 @@ serde_with = "3"
 
 [crates.ruby]
 gem_name = "kreuzberg"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.ruby.stubs]
 output = "packages/ruby/sig/"
@@ -236,6 +245,9 @@ exclude_types = [
   "NodeContent",
   "OcrBoundingGeometry",
 ]
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.elixir]
 app_name = "kreuzberg"
@@ -247,6 +259,7 @@ exclude_functions = [
   "batch_extract_bytes_sync",
   "batch_extract_files",
   "batch_extract_bytes",
+  "calculate_quality_score",
 ]
 exclude_types = [
   # Trait types cannot be FFI-bound
@@ -387,6 +400,9 @@ visitor_callbacks = false
 # variant with two fields and cannot be built via `From<String>`, so we
 # provide the literal here. The placeholder local `msg` carries the message.
 plugin_error_constructor = "kreuzberg::KreuzbergError::Plugin { message: msg, plugin_name: String::new() }"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 # x86_64-linux-android (emulator) lacks a pyke ORT prebuilt. The C FFI cdylib is
 # embedded into Android app builds via jniLibs/x86_64/, so the kreuzberg-ffi
@@ -399,10 +415,16 @@ features = ["android-target"]
 [crates.go]
 module = "github.com/kreuzberg-dev/kreuzberg/v5"
 package_name = "kreuzberg"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.java]
 package = "dev.kreuzberg"
 ffi_style = "panama"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.dart]
 pubspec_name = "kreuzberg"
@@ -410,6 +432,9 @@ lib_name = "kreuzberg"
 style = "frb"
 features = ["full"]
 stub_methods = ["batch_extract_bytes", "batch_extract_bytes_sync"]
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 # x86_64-linux-android (emulator) and x86_64-apple-ios (deprecated intel iOS
 # simulator) both lack a pyke ORT prebuilt and there is no path to one short
@@ -441,6 +466,7 @@ exclude_functions = [
   # embed_texts_async creates naming conflict with suspend wrapper of embed_texts.
   # Callers should use embedTextsAsync (suspend) from embed_texts instead.
   "embed_texts_async",
+  "calculate_quality_score",
 ]
 
 [crates.swift]
@@ -451,6 +477,7 @@ exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult
 exclude_functions = [
   # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge
   "get_preset",
+  "calculate_quality_score",
 ]
 
 [crates.csharp]
@@ -458,12 +485,21 @@ namespace = "Kreuzberg"
 # project_file directs `dotnet format` to the .csproj inside packages/csharp/Kreuzberg/
 # rather than the parent directory (which has no .sln or .csproj at its root).
 project_file = "packages/csharp/Kreuzberg/Kreuzberg.csproj"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.r]
 package_name = "kreuzberg"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.zig]
 module_name = "kreuzberg"
+exclude_functions = [
+  "calculate_quality_score",
+]
 
 [crates.output]
 python = "crates/kreuzberg-py/src/"

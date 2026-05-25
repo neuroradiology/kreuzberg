@@ -72,9 +72,6 @@ object KreuzbergBridge {
     @Throws(KreuzbergBridgeException::class) external fun nativeClearValidators()
 
     @Throws(KreuzbergBridgeException::class)
-    external fun nativeCalculateQualityScore(text: String, metadata: String): Double
-
-    @Throws(KreuzbergBridgeException::class)
     external fun nativeRenderPdfPageToPng(
         pdfBytes: String,
         pageIndex: Long,
