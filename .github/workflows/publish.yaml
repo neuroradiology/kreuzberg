@@ -300,6 +300,23 @@ jobs:
           package: kreuzberg
           version: ${{ needs.prepare.outputs.version }}
 
+  check-zig:
+    name: Check Zig package presence (tag-based)
+    needs: prepare
+    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_zig == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    steps:
+      # Zig has no central registry; existence === GitHub release tag exists.
+      - id: check
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: zig
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
+          repo: ${{ github.repository }}
+
   check-homebrew:
     name: Check Homebrew tap for formula
     needs: prepare
@@ -2029,6 +2046,29 @@ jobs:
             --ref ${{ github.ref_name }} \
             -f run_id=${{ github.run_id }}
 
+  publish-zig:
+    name: Publish Zig package metadata
+    needs: [prepare, zig-package, check-zig]
+    if: ${{ needs.prepare.outputs.release_zig == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.check-zig.outputs.exists != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          ref: ${{ needs.prepare.outputs.ref }}
+
+          submodules: recursive
+      - uses: kreuzberg-dev/actions/publish-zig@v1
+        with:
+          working-directory: packages/zig
+          tag: ${{ needs.prepare.outputs.tag }}
+          # build.zig.zon pins `minimum_zig_version = "0.16.0"`; default
+          # action zig-version 0.13.0 rejects the manifest at `zig build --fetch`.
+          zig-version: "0.16.0"
+          update-release-notes: "true"
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # ─── Homebrew (formula update + bottles) ──────────────────────────────
   #
   # Topology mirrors html-to-markdown:
@@ -2204,6 +2244,7 @@ jobs:
       - publish-nuget
       - publish-hex
       - trigger-pubdev
+      - publish-zig
       - publish-homebrew-formula
       - publish-homebrew-bottles
       - upload-go-release
@@ -2239,6 +2280,7 @@ jobs:
       - publish-nuget
       - publish-hex
       - trigger-pubdev
+      - publish-zig
       - publish-homebrew-formula
       - publish-homebrew-bottles
       - upload-cli-release
