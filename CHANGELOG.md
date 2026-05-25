@@ -9,9 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.2] - 2026-05-25
+
+### Changed
+
+- **deps**: bump alef pin to v0.19.10 (C# `KreuzbergLib.Register*`/`Unregister*` plugin forwarders + `*Bridge.Register*(impl)` static factories; C# trait-bridge stubs emit sync methods with real return types; Kotlin Android test-app switched to JUnit unit tests + correct Maven coordinate `dev.kreuzberg:kreuzberg-android`; Swift dead-code removal of legacy e2e helpers; PHP/Elixir `ahash` machete-ignore; Java output path aligned with pom.xml; Go test-app `go.mod` registry pin; pnpm-workspace allow-builds; Dart `FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR` env var support; homebrew + php-ext codegen generalized from kreuzberg-specific defaults).
+
 ### Fixed
 
-- **java**: Update `alef.toml` Java output path from `packages/java/src/main/java/` to `packages/java/` to match pom.xml `<sourceDirectory>` expectation. The alef backend appends the package path (`dev/kreuzberg/`) to the configured output, so `packages/java/src/main/java/` generated files to `packages/java/src/main/java/dev/kreuzberg/*.java`, but pom.xml's `sourceDirectory=${project.basedir}` expects files at `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the JAR was missing generated classes like `JsonUtil` and plugin registration methods. The pom.xml layout already matches the FFI-style bindings (Go, C#, Dart, etc.), so aligning Java to the same convention restores consistency. (`alef.toml`)
+- **publish (zig)**: mirror html-to-markdown's `check-zig` + `publish-zig` pattern (uses `registry: github-release` with full tarball asset name + `package-name` override matching alef-emitted test_app URL pattern + dependency on `check-zig` for idempotent reruns on already-published versions).
+- **publish (pub.dev)**: add `force_republish` check to `trigger-pubdev` condition matching html-to-markdown pattern so already-published versions reroll cleanly when needed.
+- **publish (ruby + elixir + r + dart)**: explicit `vendor_mode = "registry"` in `alef.toml` so `path = "../../crates/kreuzberg"` deps inside inner Rust crates are rewritten to crates.io version deps at publish time. rc.1 ruby gem failed at install with `failed to read .../kreuzberg/Cargo.toml` for exactly this reason.
+- **publish (pypi)**: verify non-strict (sdist/wheel allowlist mismatch was aborting publish in rc.1).
+- **publish (node-platform)**: verify non-strict (NAPI stub sub-packages don't contain `.node` binaries for unbuilt platforms; was aborting node publish in rc.1).
+- **publish (wasm)**: bound build timeout (90 min) + dedicated cache key to survive GitHub runner preemption that cancelled rc.1's WASM build at ~12 min.
+- **publish (elixir)**: NIF matrix expansion (Elixir NIF matrix `include` without standalone `os` key was silently overwriting and only producing the Windows NIF; now produces all 12 NIFs across linux + macOS + windows + arm).
+
+- **java**: align alef output path to pom.xml `<sourceDirectory>`. The alef backend appends `dev/kreuzberg/` to the configured output; the previous setting produced files at `packages/java/src/main/java/dev/kreuzberg/*.java` but pom.xml's `sourceDirectory=${project.basedir}` expects `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the rc.1 JAR was missing generated classes like `JsonUtil` and the plugin registration methods. (`alef.toml`) The alef backend appends the package path (`dev/kreuzberg/`) to the configured output, so `packages/java/src/main/java/` generated files to `packages/java/src/main/java/dev/kreuzberg/*.java`, but pom.xml's `sourceDirectory=${project.basedir}` expects files at `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the JAR was missing generated classes like `JsonUtil` and plugin registration methods. The pom.xml layout already matches the FFI-style bindings (Go, C#, Dart, etc.), so aligning Java to the same convention restores consistency. (`alef.toml`)
 
 ### Changed
 
