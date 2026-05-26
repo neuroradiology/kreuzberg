@@ -2270,6 +2270,7 @@ jobs:
   release-finalize:
     name: Finalize GitHub Release (post-publish validation)
     needs:
+      - prepare
       - finalize-github-release-after-uploads
       - publish-crates
       - publish-pypi

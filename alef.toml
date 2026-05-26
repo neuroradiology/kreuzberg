@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.19.12"
+alef_version = "0.19.14"
 languages = [
   "python",
   "node",
@@ -770,6 +770,7 @@ languages = [
   "kotlin_android",
   "swift",
   "zig",
+  "homebrew",
 ]
 fields_optional = [
   "metadata.format",
