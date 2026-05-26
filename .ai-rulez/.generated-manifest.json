@@ -155,6 +155,7 @@
     ".cursor/commands/parallelize.md",
     ".cursor/rules/agent-workflow.mdc",
     ".cursor/rules/alef-generated-bindings.mdc",
+    ".cursor/rules/alef-workflow.mdc",
     ".cursor/rules/anti-patterns.mdc",
     ".cursor/rules/api-compatibility.mdc",
     ".cursor/rules/async-and-concurrency.mdc",
