@@ -190,6 +190,8 @@ fn extract_text_with_tracking(doc: &mut OxideDocument, config: &PageConfig) -> R
                 hierarchy: None,
                 is_blank,
                 layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
             });
         }
 
