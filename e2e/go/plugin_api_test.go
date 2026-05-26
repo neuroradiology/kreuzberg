@@ -7,6 +7,7 @@
 package e2e_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	kreuzberg "github.com/kreuzberg-dev/kreuzberg/v5"

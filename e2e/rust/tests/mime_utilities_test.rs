@@ -15,7 +15,11 @@ fn test_mime_detect_bytes() {
     ))
     .expect("test_documents/pdf/fake_memo.pdf must exist");
     let result = detect_mime_type_from_bytes(&content).expect("should succeed");
-    // skipped: field 'result' not available on result type
+    assert!(
+        format!("{:?}", result).contains(r#"pdf"#),
+        "expected to contain: {}",
+        r#"pdf"#
+    );
 }
 
 #[test]
@@ -27,7 +31,11 @@ fn test_mime_detect_image() {
     ))
     .expect("test_documents/images/test_hello_world.png must exist");
     let result = detect_mime_type_from_bytes(&content).expect("should succeed");
-    // skipped: field 'result' not available on result type
+    assert!(
+        format!("{:?}", result).contains(r#"png"#),
+        "expected to contain: {}",
+        r#"png"#
+    );
 }
 
 #[test]
@@ -35,5 +43,9 @@ fn test_mime_get_extensions() {
     // Get file extensions for a MIME type
     let mime_type = r#"application/pdf"#;
     let result = get_extensions_for_mime(mime_type).expect("should succeed");
-    // skipped: field 'result' not available on result type
+    assert!(
+        format!("{:?}", result).contains(r#"pdf"#),
+        "expected to contain: {}",
+        r#"pdf"#
+    );
 }

@@ -18,7 +18,7 @@ class PdfTest {
     fun testRenderPdfPageFirst() = runBlocking {
         // render_pdf_page_to_png: first page
         val result = Kreuzberg.renderPdfPageToPng("pdf/fake_memo.pdf", 0)
-        assertTrue(result.length >= 100, "expected length >= 100")
+        assertTrue(result.size >= 100, "expected size >= 100")
     }
 
     @Test

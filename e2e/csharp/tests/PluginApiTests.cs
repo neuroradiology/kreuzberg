@@ -26,7 +26,7 @@ namespace Kreuzberg
         public void Test_RegisterDocumentExtractorTraitBridge()
         {
             // register_document_extractor: trait bridge
-            var result = KreuzbergLib.RegisterDocumentExtractor(DocumentExtractorBridge.RegisterDocumentExtractor(new TestStub_RegisterDocumentExtractorTraitBridge()));
+            var result = KreuzbergLib.RegisterDocumentExtractor(DocumentExtractorBridge.Register(new TestStub_RegisterDocumentExtractorTraitBridge()));
 
         }
 
@@ -34,7 +34,7 @@ namespace Kreuzberg
         public void Test_RegisterEmbeddingBackendTraitBridge()
         {
             // register_embedding_backend: trait bridge
-            var result = KreuzbergLib.RegisterEmbeddingBackend(EmbeddingBackendBridge.RegisterEmbeddingBackend(new TestStub_RegisterEmbeddingBackendTraitBridge()));
+            var result = KreuzbergLib.RegisterEmbeddingBackend(EmbeddingBackendBridge.Register(new TestStub_RegisterEmbeddingBackendTraitBridge()));
 
         }
 
@@ -42,7 +42,7 @@ namespace Kreuzberg
         public void Test_RegisterOcrBackendTraitBridge()
         {
             // register_ocr_backend: trait bridge
-            var result = KreuzbergLib.RegisterOcrBackend(OcrBackendBridge.RegisterOcrBackend(new TestStub_RegisterOcrBackendTraitBridge()));
+            var result = KreuzbergLib.RegisterOcrBackend(OcrBackendBridge.Register(new TestStub_RegisterOcrBackendTraitBridge()));
 
         }
 
@@ -50,7 +50,7 @@ namespace Kreuzberg
         public void Test_RegisterPostProcessorTraitBridge()
         {
             // register_post_processor: trait bridge
-            var result = KreuzbergLib.RegisterPostProcessor(PostProcessorBridge.RegisterPostProcessor(new TestStub_RegisterPostProcessorTraitBridge()));
+            var result = KreuzbergLib.RegisterPostProcessor(PostProcessorBridge.Register(new TestStub_RegisterPostProcessorTraitBridge()));
 
         }
 
@@ -58,7 +58,7 @@ namespace Kreuzberg
         public void Test_RegisterRendererTraitBridge()
         {
             // register_renderer: trait bridge
-            var result = KreuzbergLib.RegisterRenderer(RendererBridge.RegisterRenderer(new TestStub_RegisterRendererTraitBridge()));
+            var result = KreuzbergLib.RegisterRenderer(RendererBridge.Register(new TestStub_RegisterRendererTraitBridge()));
 
         }
 
@@ -66,7 +66,7 @@ namespace Kreuzberg
         public void Test_RegisterValidatorTraitBridge()
         {
             // register_validator: trait bridge
-            var result = KreuzbergLib.RegisterValidator(ValidatorBridge.RegisterValidator(new TestStub_RegisterValidatorTraitBridge()));
+            var result = KreuzbergLib.RegisterValidator(ValidatorBridge.Register(new TestStub_RegisterValidatorTraitBridge()));
 
         }
 

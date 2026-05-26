@@ -34,7 +34,7 @@ class FormatSpecificTest {
         // Standalone HWPX extraction using extract_bytes_sync
         val result = Kreuzberg.extractBytesSync("hwpx/simple.hwpx", "application/haansofthwpx", ExtractionConfig())
         assertTrue(result.content.length >= 20, "expected length >= 20")
-        assertTrue(result.content.contains("Hello from HWPX"), "expected to contain: " + "Hello from HWPX")
+        assertTrue((result.content as List<String>).contains("Hello from HWPX"), "expected to contain: " + "Hello from HWPX")
     }
 
     @Test

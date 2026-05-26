@@ -28,8 +28,8 @@ class CodeTest {
         val result = Kreuzberg.extractFileSync("code/script.sh", "text/x-source-code", ExtractionConfig())
         assertEquals("text/x-source-code", result.mimeType.trim())
         assertTrue(result.content.length >= 10, "expected length >= 10")
-        assertTrue(result.content.contains("build"), "expected to contain: " + "build")
-        assertTrue(result.content.contains("clean"), "expected to contain: " + "clean")
+        assertTrue((result.content as List<String>).contains("build"), "expected to contain: " + "build")
+        assertTrue((result.content as List<String>).contains("clean"), "expected to contain: " + "clean")
     }
 
 }

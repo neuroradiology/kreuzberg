@@ -12,7 +12,9 @@ Gem::Specification.new do |spec|
   spec.metadata["keywords"] = %w[document extraction pdf ocr text].join(",")
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files         = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile]).reject { |f| f.include?("/native/target/") || f.include?("/native/tmp/") }
+  spec.files = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile]).reject do |f|
+    f.include?("/native/target/") || f.include?("/native/tmp/")
+  end
   spec.require_paths = ["lib"]
   spec.extensions    = ["ext/kreuzberg_rb/extconf.rb"]
 

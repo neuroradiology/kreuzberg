@@ -51,6 +51,9 @@ def test_register_document_extractor_trait_bridge() -> None:
         def name(self):
             return "test-extractor"
 
+        def initialize(self):
+            pass
+
         async def extract_bytes(self, _p0, _p1, _p2):
             return {}
 
@@ -69,6 +72,9 @@ def test_register_embedding_backend_trait_bridge() -> None:
         def name(self):
             return "test-embedding-backend"
 
+        def initialize(self):
+            pass
+
         def dimensions(self):
             return 0
 
@@ -84,6 +90,9 @@ def test_register_ocr_backend_trait_bridge() -> None:
     class _TestStub_register_ocr_backend_trait_bridge:
         def name(self):
             return "test-backend"
+
+        def initialize(self):
+            pass
 
         async def process_image(self, _p0, _p1):
             return {}
@@ -104,6 +113,9 @@ def test_register_post_processor_trait_bridge() -> None:
         def name(self):
             return "test-processor"
 
+        def initialize(self):
+            pass
+
         async def process(self, _p0, _p1):
             return None
 
@@ -120,6 +132,9 @@ def test_register_renderer_trait_bridge() -> None:
         def name(self):
             return "test-renderer"
 
+        def initialize(self):
+            pass
+
         def render(self, _p0):
             return ""
 
@@ -132,6 +147,9 @@ def test_register_validator_trait_bridge() -> None:
     class _TestStub_register_validator_trait_bridge:
         def name(self):
             return "test-validator"
+
+        def initialize(self):
+            pass
 
         async def validate(self, _p0, _p1):
             return None

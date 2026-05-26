@@ -18,7 +18,7 @@ final class PluginApiTest extends TestCase
     /** register_document_extractor: trait bridge */
     public function test_register_document_extractor_trait_bridge(): void
     {
-        $stub = new class implements DocumentExtractor {
+        $stub = new class implements \Kreuzberg\DocumentExtractor {
             public function name(): string { return 'test-extractor'; }
             public function extractBytes($content, $mime_type, $config): mixed { return '{}'; }
             public function supportedMimeTypes(): mixed { return []; }
@@ -33,7 +33,7 @@ final class PluginApiTest extends TestCase
     /** register_embedding_backend: trait bridge */
     public function test_register_embedding_backend_trait_bridge(): void
     {
-        $stub = new class implements EmbeddingBackend {
+        $stub = new class implements \Kreuzberg\EmbeddingBackend {
             public function name(): string { return 'test-embedding-backend'; }
             public function dimensions(): mixed { return 0; }
             public function embed($texts): mixed { return []; }
@@ -48,7 +48,7 @@ final class PluginApiTest extends TestCase
     /** register_ocr_backend: trait bridge */
     public function test_register_ocr_backend_trait_bridge(): void
     {
-        $stub = new class implements OcrBackend {
+        $stub = new class implements \Kreuzberg\OcrBackend {
             public function name(): string { return 'test-backend'; }
             public function processImage($image_bytes, $config): mixed { return '{}'; }
             public function supportsLanguage($lang): mixed { return false; }
@@ -64,7 +64,7 @@ final class PluginApiTest extends TestCase
     /** register_post_processor: trait bridge */
     public function test_register_post_processor_trait_bridge(): void
     {
-        $stub = new class implements PostProcessor {
+        $stub = new class implements \Kreuzberg\PostProcessor {
             public function name(): string { return 'test-processor'; }
             public function process($result, $config): void {}
             public function processingStage(): mixed { return '{}'; }
@@ -79,7 +79,7 @@ final class PluginApiTest extends TestCase
     /** register_renderer: trait bridge */
     public function test_register_renderer_trait_bridge(): void
     {
-        $stub = new class implements Renderer {
+        $stub = new class implements \Kreuzberg\Renderer {
             public function name(): string { return 'test-renderer'; }
             public function render($doc): mixed { return ''; }
         };
@@ -93,7 +93,7 @@ final class PluginApiTest extends TestCase
     /** register_validator: trait bridge */
     public function test_register_validator_trait_bridge(): void
     {
-        $stub = new class implements Validator {
+        $stub = new class implements \Kreuzberg\Validator {
             public function name(): string { return 'test-validator'; }
             public function validate($result, $config): void {}
         };
