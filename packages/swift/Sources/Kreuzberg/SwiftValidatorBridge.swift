@@ -53,11 +53,3 @@ private func marshal_error_result(_ error: any Error) -> String {
     }
     return "{\"err\": \"unknown error\"}"
 }
-
-/// Register an outbound `Validator` plugin.
-/// Pass an instance conforming to `SwiftValidatorBridge`.
-public func registerValidator(_ bridge: any SwiftValidatorBridge) throws {
-    let adapter = SwiftValidatorAdapter(bridge: bridge)
-    // Call into Rust to register the adapter
-    try RustBridge.registerValidator(adapter)
-}

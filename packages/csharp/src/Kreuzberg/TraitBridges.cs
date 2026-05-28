@@ -77,13 +77,13 @@ public sealed class OcrBackendBridge : IDisposable {
     private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ProcessImageFn(IntPtr userData, IntPtr ImageBytes, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ProcessImageFn(IntPtr userData, IntPtr imageBytes, UIntPtr imageBytesLen, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ProcessImageFileFn(IntPtr userData, IntPtr Path, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ProcessImageFileFn(IntPtr userData, IntPtr path, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int SupportsLanguageFn(IntPtr userData, IntPtr Lang, out IntPtr outResult, out IntPtr outError);
+    private delegate int SupportsLanguageFn(IntPtr userData, IntPtr lang, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int BackendTypeFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
@@ -98,7 +98,7 @@ public sealed class OcrBackendBridge : IDisposable {
     private delegate int SupportsDocumentProcessingFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ProcessDocumentFn(IntPtr userData, IntPtr Path, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ProcessDocumentFn(IntPtr userData, IntPtr path, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeUserDataFn(IntPtr userData);
@@ -187,12 +187,6 @@ public sealed class OcrBackendBridge : IDisposable {
         return JsonSerializer.Serialize(value);
     }
 
-    private static byte[] MarshalBytesFromIntPtr(IntPtr ptr) {
-        if (ptr == IntPtr.Zero) return Array.Empty<byte>();
-        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ptr) ?? "[]";
-        return JsonSerializer.Deserialize<byte[]>(json) ?? Array.Empty<byte>();
-    }
-
     private int NameFnCallback(IntPtr userData, out IntPtr outName) {
         try {
             var name = _impl.Name;
@@ -237,12 +231,13 @@ public sealed class OcrBackendBridge : IDisposable {
         }
     }
 
-    private int ProcessImageFnCallback(IntPtr userData, IntPtr ImageBytes, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ProcessImageFnCallback(IntPtr userData, IntPtr imageBytes, UIntPtr imageBytesLen, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var managed_ImageBytes = MarshalBytesFromIntPtr(ImageBytes);
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
-            var result = _impl.ProcessImage(managed_ImageBytes, managed_Config);
+            var managed_imageBytes = new byte[(int)imageBytesLen];
+            Marshal.Copy(imageBytes, managed_imageBytes, 0, (int)imageBytesLen);
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config)!;
+            var result = _impl.ProcessImage(managed_imageBytes, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
@@ -253,13 +248,13 @@ public sealed class OcrBackendBridge : IDisposable {
         }
     }
 
-    private int ProcessImageFileFnCallback(IntPtr userData, IntPtr Path, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ProcessImageFileFnCallback(IntPtr userData, IntPtr path, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Path) ?? "{}";
-            var managed_Path = JsonSerializer.Deserialize<string>(json_Path)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
-            var result = _impl.ProcessImageFile(managed_Path, managed_Config);
+            var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
+            var managed_path = JsonSerializer.Deserialize<string>(json_path)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config)!;
+            var result = _impl.ProcessImageFile(managed_path, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
@@ -270,10 +265,10 @@ public sealed class OcrBackendBridge : IDisposable {
         }
     }
 
-    private int SupportsLanguageFnCallback(IntPtr userData, IntPtr Lang, out IntPtr outResult, out IntPtr outError) {
+    private int SupportsLanguageFnCallback(IntPtr userData, IntPtr lang, out IntPtr outResult, out IntPtr outError) {
         try {
-            var managed_Lang = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Lang) ?? string.Empty;
-            var result = _impl.SupportsLanguage(managed_Lang);
+            var managed_lang = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(lang) ?? string.Empty;
+            var result = _impl.SupportsLanguage(managed_lang);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -336,13 +331,13 @@ public sealed class OcrBackendBridge : IDisposable {
         }
     }
 
-    private int ProcessDocumentFnCallback(IntPtr userData, IntPtr Path, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ProcessDocumentFnCallback(IntPtr userData, IntPtr path, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Path) ?? "{}";
-            var managed_Path = JsonSerializer.Deserialize<string>(json_Path)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<OcrConfig>(json_Config)!;
-            var result = _impl.ProcessDocument(managed_Path, managed_Config);
+            var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
+            var managed_path = JsonSerializer.Deserialize<string>(json_path)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config)!;
+            var result = _impl.ProcessDocument(managed_path, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(result.ToFfiJson());
             outError = IntPtr.Zero;
             return 0;
@@ -553,16 +548,16 @@ public sealed class PostProcessorBridge : IDisposable {
     private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ProcessFn(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ProcessFn(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int ProcessingStageFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ShouldProcessFn(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ShouldProcessFn(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int EstimatedDurationMsFn(IntPtr userData, IntPtr Result, out IntPtr outResult, out IntPtr outError);
+    private delegate int EstimatedDurationMsFn(IntPtr userData, IntPtr result, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int PriorityFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
@@ -683,13 +678,13 @@ public sealed class PostProcessorBridge : IDisposable {
         }
     }
 
-    private int ProcessFnCallback(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ProcessFnCallback(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Result) ?? "{}";
-            var managed_Result = JsonSerializer.Deserialize<ExtractionResult>(json_Result)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            _impl.Process(managed_Result, managed_Config);
+            var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            _impl.Process(managed_result, managed_config);
             outResult = IntPtr.Zero;
             outError = IntPtr.Zero;
             return 0;
@@ -713,13 +708,13 @@ public sealed class PostProcessorBridge : IDisposable {
         }
     }
 
-    private int ShouldProcessFnCallback(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ShouldProcessFnCallback(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Result) ?? "{}";
-            var managed_Result = JsonSerializer.Deserialize<ExtractionResult>(json_Result)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            var result = _impl.ShouldProcess(managed_Result, managed_Config);
+            var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            var result = _impl.ShouldProcess(managed_result, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -730,11 +725,11 @@ public sealed class PostProcessorBridge : IDisposable {
         }
     }
 
-    private int EstimatedDurationMsFnCallback(IntPtr userData, IntPtr Result, out IntPtr outResult, out IntPtr outError) {
+    private int EstimatedDurationMsFnCallback(IntPtr userData, IntPtr result, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Result) ?? "{}";
-            var managed_Result = JsonSerializer.Deserialize<ExtractionResult>(json_Result)!;
-            var result = _impl.EstimatedDurationMs(managed_Result);
+            var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result)!;
+            var result = _impl.EstimatedDurationMs(managed_result);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -952,10 +947,10 @@ public sealed class ValidatorBridge : IDisposable {
     private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ValidateFn(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ValidateFn(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ShouldValidateFn(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ShouldValidateFn(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int PriorityFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
@@ -1066,13 +1061,13 @@ public sealed class ValidatorBridge : IDisposable {
         }
     }
 
-    private int ValidateFnCallback(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ValidateFnCallback(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Result) ?? "{}";
-            var managed_Result = JsonSerializer.Deserialize<ExtractionResult>(json_Result)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            _impl.Validate(managed_Result, managed_Config);
+            var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            _impl.Validate(managed_result, managed_config);
             outResult = IntPtr.Zero;
             outError = IntPtr.Zero;
             return 0;
@@ -1083,13 +1078,13 @@ public sealed class ValidatorBridge : IDisposable {
         }
     }
 
-    private int ShouldValidateFnCallback(IntPtr userData, IntPtr Result, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ShouldValidateFnCallback(IntPtr userData, IntPtr result, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Result) ?? "{}";
-            var managed_Result = JsonSerializer.Deserialize<ExtractionResult>(json_Result)!;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            var result = _impl.ShouldValidate(managed_Result, managed_Config);
+            var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result)!;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            var result = _impl.ShouldValidate(managed_result, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -1307,7 +1302,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
     private delegate int DimensionsFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int EmbedFn(IntPtr userData, IntPtr Texts, out IntPtr outResult, out IntPtr outError);
+    private delegate int EmbedFn(IntPtr userData, IntPtr texts, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeUserDataFn(IntPtr userData);
@@ -1423,11 +1418,11 @@ public sealed class EmbeddingBackendBridge : IDisposable {
         }
     }
 
-    private int EmbedFnCallback(IntPtr userData, IntPtr Texts, out IntPtr outResult, out IntPtr outError) {
+    private int EmbedFnCallback(IntPtr userData, IntPtr texts, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Texts = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Texts) ?? "{}";
-            var managed_Texts = JsonSerializer.Deserialize<List<string>>(json_Texts)!;
-            var result = _impl.Embed(managed_Texts);
+            var json_texts = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(texts) ?? "{}";
+            var managed_texts = JsonSerializer.Deserialize<List<string>>(json_texts)!;
+            var result = _impl.Embed(managed_texts);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -1641,10 +1636,10 @@ public sealed class DocumentExtractorBridge : IDisposable {
     private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ExtractBytesFn(IntPtr userData, IntPtr Content, IntPtr MimeType, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ExtractBytesFn(IntPtr userData, IntPtr content, UIntPtr contentLen, IntPtr mimeType, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ExtractFileFn(IntPtr userData, IntPtr Path, IntPtr MimeType, IntPtr Config, out IntPtr outResult, out IntPtr outError);
+    private delegate int ExtractFileFn(IntPtr userData, IntPtr path, IntPtr mimeType, IntPtr config, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int SupportedMimeTypesFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
@@ -1653,7 +1648,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
     private delegate int PriorityFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int CanHandleFn(IntPtr userData, IntPtr Path, IntPtr MimeType, out IntPtr outResult, out IntPtr outError);
+    private delegate int CanHandleFn(IntPtr userData, IntPtr path, IntPtr mimeType, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int AsSyncExtractorFn(IntPtr userData, out IntPtr outResult, out IntPtr outError);
@@ -1735,12 +1730,6 @@ public sealed class DocumentExtractorBridge : IDisposable {
         return JsonSerializer.Serialize(value);
     }
 
-    private static byte[] MarshalBytesFromIntPtr(IntPtr ptr) {
-        if (ptr == IntPtr.Zero) return Array.Empty<byte>();
-        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ptr) ?? "[]";
-        return JsonSerializer.Deserialize<byte[]>(json) ?? Array.Empty<byte>();
-    }
-
     private int NameFnCallback(IntPtr userData, out IntPtr outName) {
         try {
             var name = _impl.Name;
@@ -1785,13 +1774,14 @@ public sealed class DocumentExtractorBridge : IDisposable {
         }
     }
 
-    private int ExtractBytesFnCallback(IntPtr userData, IntPtr Content, IntPtr MimeType, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ExtractBytesFnCallback(IntPtr userData, IntPtr content, UIntPtr contentLen, IntPtr mimeType, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var managed_Content = MarshalBytesFromIntPtr(Content);
-            var managed_MimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(MimeType) ?? string.Empty;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            var result = _impl.ExtractBytes(managed_Content, managed_MimeType, managed_Config);
+            var managed_content = new byte[(int)contentLen];
+            Marshal.Copy(content, managed_content, 0, (int)contentLen);
+            var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            var result = _impl.ExtractBytes(managed_content, managed_mimeType, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -1802,14 +1792,14 @@ public sealed class DocumentExtractorBridge : IDisposable {
         }
     }
 
-    private int ExtractFileFnCallback(IntPtr userData, IntPtr Path, IntPtr MimeType, IntPtr Config, out IntPtr outResult, out IntPtr outError) {
+    private int ExtractFileFnCallback(IntPtr userData, IntPtr path, IntPtr mimeType, IntPtr config, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Path) ?? "{}";
-            var managed_Path = JsonSerializer.Deserialize<string>(json_Path)!;
-            var managed_MimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(MimeType) ?? string.Empty;
-            var json_Config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Config) ?? "{}";
-            var managed_Config = JsonSerializer.Deserialize<ExtractionConfig>(json_Config)!;
-            var result = _impl.ExtractFile(managed_Path, managed_MimeType, managed_Config);
+            var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
+            var managed_path = JsonSerializer.Deserialize<string>(json_path)!;
+            var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
+            var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
+            var result = _impl.ExtractFile(managed_path, managed_mimeType, managed_config);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -1846,12 +1836,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
         }
     }
 
-    private int CanHandleFnCallback(IntPtr userData, IntPtr Path, IntPtr MimeType, out IntPtr outResult, out IntPtr outError) {
+    private int CanHandleFnCallback(IntPtr userData, IntPtr path, IntPtr mimeType, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Path) ?? "{}";
-            var managed_Path = JsonSerializer.Deserialize<string>(json_Path)!;
-            var managed_MimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(MimeType) ?? string.Empty;
-            var result = _impl.CanHandle(managed_Path, managed_MimeType);
+            var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
+            var managed_path = JsonSerializer.Deserialize<string>(json_path)!;
+            var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
+            var result = _impl.CanHandle(managed_path, managed_mimeType);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;
@@ -2063,7 +2053,7 @@ public sealed class RendererBridge : IDisposable {
     private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int RenderFn(IntPtr userData, IntPtr Doc, out IntPtr outResult, out IntPtr outError);
+    private delegate int RenderFn(IntPtr userData, IntPtr doc, out IntPtr outResult, out IntPtr outError);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void FreeUserDataFn(IntPtr userData);
@@ -2161,10 +2151,10 @@ public sealed class RendererBridge : IDisposable {
         }
     }
 
-    private int RenderFnCallback(IntPtr userData, IntPtr Doc, out IntPtr outResult, out IntPtr outError) {
+    private int RenderFnCallback(IntPtr userData, IntPtr doc, out IntPtr outResult, out IntPtr outError) {
         try {
-            var json_Doc = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(Doc) ?? "{}";
-            var result = _impl.Render(json_Doc);
+            var json_doc = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(doc) ?? "{}";
+            var result = _impl.Render(json_doc);
             outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(result));
             outError = IntPtr.Zero;
             return 0;

@@ -59,11 +59,3 @@ private func marshal_error_result(_ error: any Error) -> String {
     }
     return "{\"err\": \"unknown error\"}"
 }
-
-/// Register an outbound `DocumentExtractor` plugin.
-/// Pass an instance conforming to `SwiftDocumentExtractorBridge`.
-public func registerDocumentExtractor(_ bridge: any SwiftDocumentExtractorBridge) throws {
-    let adapter = SwiftDocumentExtractorAdapter(bridge: bridge)
-    // Call into Rust to register the adapter
-    try RustBridge.registerDocumentExtractor(adapter)
-}

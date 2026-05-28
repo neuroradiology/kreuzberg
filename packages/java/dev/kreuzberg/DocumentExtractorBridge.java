@@ -74,6 +74,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
                     int.class,
                     MemorySegment.class,
                     MemorySegment.class,
+                    long.class,
                     MemorySegment.class,
                     MemorySegment.class,
                     MemorySegment.class,
@@ -83,6 +84,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
                     ValueLayout.JAVA_INT,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS,
+                    ValueLayout.JAVA_LONG,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS,
@@ -196,13 +198,14 @@ public final class DocumentExtractorBridge implements AutoCloseable {
     private int handleExtractBytes(
         MemorySegment userData,
         MemorySegment content_in,
+        long contentLen,
         MemorySegment mime_type_in,
         MemorySegment config_in,
         MemorySegment outResult,
         MemorySegment outError
     ) {
         try {
-            byte[] content = content_in.reinterpret(Long.MAX_VALUE).toArray(ValueLayout.JAVA_BYTE);
+            byte[] content = content_in.reinterpret(contentLen).toArray(ValueLayout.JAVA_BYTE);
             String mime_type = mime_type_in.reinterpret(Long.MAX_VALUE).getString(0);
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig config = JSON.readValue(config_json, ExtractionConfig.class);
@@ -306,6 +309,11 @@ public final class DocumentExtractorBridge implements AutoCloseable {
         catch (Throwable ignored) { /* swallow */ }
     }
 
+    /** Read a NUL-terminated native C string safely without unbounded reinterpret. */
+    private static String readNativeString(MemorySegment ptr) {
+        return ptr.reinterpret(4096).getString(0);
+    }
+
     @Override
     public void close() { arena.close(); }
 
@@ -324,9 +332,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
                 );
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
-                    String msg = errPtr.equals(MemorySegment.NULL)
-                        ? "registration failed (rc=" + rc + ")"
-                        : errPtr.reinterpret(Long.MAX_VALUE).getString(0);
+                    String msg = errPtr.equals(MemorySegment.NULL) ? "registration failed (rc=" + rc + ")" : readNativeString(errPtr);
                     throw new RuntimeException("registerDocumentExtractor: " + msg);
                 }
             }

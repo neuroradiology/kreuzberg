@@ -65,11 +65,3 @@ private func marshal_error_result(_ error: any Error) -> String {
     }
     return "{\"err\": \"unknown error\"}"
 }
-
-/// Register an outbound `OcrBackend` plugin.
-/// Pass an instance conforming to `SwiftOcrBackendBridge`.
-public func registerOcrBackend(_ bridge: any SwiftOcrBackendBridge) throws {
-    let adapter = SwiftOcrBackendAdapter(bridge: bridge)
-    // Call into Rust to register the adapter
-    try RustBridge.registerOcrBackend(adapter)
-}

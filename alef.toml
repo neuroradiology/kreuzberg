@@ -1706,6 +1706,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.unregister_ocr_backend.overrides.zig]
 function = "unregister_ocr_backend"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.unregister_post_processor]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -1776,6 +1777,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.unregister_post_processor.overrides.zig]
 function = "unregister_post_processor"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.unregister_validator]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -1917,6 +1919,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_ocr_backend.overrides.zig]
 function = "register_ocr_backend"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.register_post_processor]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -1988,6 +1991,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_post_processor.overrides.zig]
 function = "register_post_processor"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.register_validator]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2059,6 +2063,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_validator.overrides.zig]
 function = "register_validator"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.register_embedding_backend]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2130,6 +2135,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_embedding_backend.overrides.zig]
 function = "register_embedding_backend"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.unregister_embedding_backend]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2200,6 +2206,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.unregister_embedding_backend.overrides.zig]
 function = "unregister_embedding_backend"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.clear_embedding_backends]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2341,6 +2348,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_document_extractor.overrides.zig]
 function = "register_document_extractor"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.unregister_document_extractor]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2411,6 +2419,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.unregister_document_extractor.overrides.zig]
 function = "unregister_document_extractor"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.clear_document_extractors]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2552,6 +2561,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.register_renderer.overrides.zig]
 function = "register_renderer"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.unregister_renderer]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2622,6 +2632,7 @@ module = "Kreuzberg"
 [crates.e2e.calls.unregister_renderer.overrides.zig]
 function = "unregister_renderer"
 module = "kreuzberg"
+returns_result = false
 
 [crates.e2e.calls.clear_renderers]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.

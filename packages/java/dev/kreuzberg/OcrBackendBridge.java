@@ -74,6 +74,7 @@ public final class OcrBackendBridge implements AutoCloseable {
                     int.class,
                     MemorySegment.class,
                     MemorySegment.class,
+                    long.class,
                     MemorySegment.class,
                     MemorySegment.class,
                     MemorySegment.class
@@ -82,6 +83,7 @@ public final class OcrBackendBridge implements AutoCloseable {
                     ValueLayout.JAVA_INT,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS,
+                    ValueLayout.JAVA_LONG,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS,
                     ValueLayout.ADDRESS
@@ -212,12 +214,13 @@ public final class OcrBackendBridge implements AutoCloseable {
     private int handleProcessImage(
         MemorySegment userData,
         MemorySegment image_bytes_in,
+        long image_bytesLen,
         MemorySegment config_in,
         MemorySegment outResult,
         MemorySegment outError
     ) {
         try {
-            byte[] image_bytes = image_bytes_in.reinterpret(Long.MAX_VALUE).toArray(ValueLayout.JAVA_BYTE);
+            byte[] image_bytes = image_bytes_in.reinterpret(image_bytesLen).toArray(ValueLayout.JAVA_BYTE);
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             OcrConfig config = JSON.readValue(config_json, OcrConfig.class);
             ExtractionResult result = impl.process_image(image_bytes, config);
@@ -346,6 +349,11 @@ public final class OcrBackendBridge implements AutoCloseable {
         catch (Throwable ignored) { /* swallow */ }
     }
 
+    /** Read a NUL-terminated native C string safely without unbounded reinterpret. */
+    private static String readNativeString(MemorySegment ptr) {
+        return ptr.reinterpret(4096).getString(0);
+    }
+
     @Override
     public void close() { arena.close(); }
 
@@ -359,9 +367,7 @@ public final class OcrBackendBridge implements AutoCloseable {
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_OCR_BACKEND.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
-                    String msg = errPtr.equals(MemorySegment.NULL)
-                        ? "registration failed (rc=" + rc + ")"
-                        : errPtr.reinterpret(Long.MAX_VALUE).getString(0);
+                    String msg = errPtr.equals(MemorySegment.NULL) ? "registration failed (rc=" + rc + ")" : readNativeString(errPtr);
                     throw new RuntimeException("registerOcrBackend: " + msg);
                 }
             }

@@ -59,11 +59,3 @@ private func marshal_error_result(_ error: any Error) -> String {
     }
     return "{\"err\": \"unknown error\"}"
 }
-
-/// Register an outbound `EmbeddingBackend` plugin.
-/// Pass an instance conforming to `SwiftEmbeddingBackendBridge`.
-public func registerEmbeddingBackend(_ bridge: any SwiftEmbeddingBackendBridge) throws {
-    let adapter = SwiftEmbeddingBackendAdapter(bridge: bridge)
-    // Call into Rust to register the adapter
-    try RustBridge.registerEmbeddingBackend(adapter)
-}
