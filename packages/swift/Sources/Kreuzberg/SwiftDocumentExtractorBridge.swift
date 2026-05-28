@@ -25,7 +25,7 @@ final class SwiftDocumentExtractorAdapter {
 
     func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String {
         do {
-        let result = await try self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
+        let result = try await self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
             return marshal_ok_result(try JSONEncoder().encode(result))
     } catch {
         return marshal_error_result(error)
@@ -34,7 +34,7 @@ final class SwiftDocumentExtractorAdapter {
 
     func supportedMimeTypesCall() -> [String] {
         let result = self.bridge.supportedMimeTypes()
-        return result
+        return try JSONEncoder().encode(result)
     }
 
 }

@@ -30,8 +30,8 @@ final class SwiftEmbeddingBackendAdapter {
 
     func embedCall(texts: [String]) async throws -> String {
         do {
-        let result = await try self.bridge.embed(texts: texts)
-            return marshal_ok_result(result)
+        let result = try await self.bridge.embed(texts: texts)
+            return marshal_ok_result(try JSONEncoder().encode(result))
     } catch {
         return marshal_error_result(error)
     }

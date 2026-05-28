@@ -58,63 +58,6 @@ func Ptr[T any](v T) *T {
 	return &v
 }
 
-// Trait bridge trampolines (exported to C)
-//export goOcrBackendProcessImage
-//export goOcrBackendProcessImageFile
-//export goOcrBackendSupportsLanguage
-//export goOcrBackendBackendType
-//export goOcrBackendSupportedLanguages
-//export goOcrBackendSupportsTableDetection
-//export goOcrBackendSupportsDocumentProcessing
-//export goOcrBackendProcessDocument
-//export goOcrBackendName
-//export goOcrBackendVersion
-//export goOcrBackendInitialize
-//export goOcrBackendShutdown
-//export goOcrBackendFreeUserData
-//export goPostProcessorProcess
-//export goPostProcessorProcessingStage
-//export goPostProcessorShouldProcess
-//export goPostProcessorEstimatedDurationMs
-//export goPostProcessorPriority
-//export goPostProcessorName
-//export goPostProcessorVersion
-//export goPostProcessorInitialize
-//export goPostProcessorShutdown
-//export goPostProcessorFreeUserData
-//export goValidatorValidate
-//export goValidatorShouldValidate
-//export goValidatorPriority
-//export goValidatorName
-//export goValidatorVersion
-//export goValidatorInitialize
-//export goValidatorShutdown
-//export goValidatorFreeUserData
-//export goEmbeddingBackendDimensions
-//export goEmbeddingBackendEmbed
-//export goEmbeddingBackendName
-//export goEmbeddingBackendVersion
-//export goEmbeddingBackendInitialize
-//export goEmbeddingBackendShutdown
-//export goEmbeddingBackendFreeUserData
-//export goDocumentExtractorExtractBytes
-//export goDocumentExtractorExtractFile
-//export goDocumentExtractorSupportedMimeTypes
-//export goDocumentExtractorPriority
-//export goDocumentExtractorCanHandle
-//export goDocumentExtractorAsSyncExtractor
-//export goDocumentExtractorName
-//export goDocumentExtractorVersion
-//export goDocumentExtractorInitialize
-//export goDocumentExtractorShutdown
-//export goDocumentExtractorFreeUserData
-//export goRendererRender
-//export goRendererName
-//export goRendererVersion
-//export goRendererInitialize
-//export goRendererShutdown
-//export goRendererFreeUserData
-
 var (
 	// ErrIo is returned when IO error.
 	ErrIo = errors.New("IO error")

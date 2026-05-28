@@ -25,7 +25,7 @@ final class SwiftPostProcessorAdapter {
 
     func processCall(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
         do {
-        let result = await try self.bridge.process(result: result, config: config)
+        let result = try await self.bridge.process(result: result, config: config)
             return marshal_ok_result(Empty())
     } catch {
         return marshal_error_result(error)
@@ -34,7 +34,7 @@ final class SwiftPostProcessorAdapter {
 
     func processingStageCall() -> ProcessingStage {
         let result = self.bridge.processingStage()
-        return result
+        return try JSONEncoder().encode(result)
     }
 
 }

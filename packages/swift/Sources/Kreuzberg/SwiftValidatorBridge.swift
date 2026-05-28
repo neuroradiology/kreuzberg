@@ -24,7 +24,7 @@ final class SwiftValidatorAdapter {
 
     func validateCall(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
         do {
-        let result = await try self.bridge.validate(result: result, config: config)
+        let result = try await self.bridge.validate(result: result, config: config)
             return marshal_ok_result(Empty())
     } catch {
         return marshal_error_result(error)

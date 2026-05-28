@@ -21,15 +21,15 @@ class PluginApiTest {
         // register_document_extractor: trait bridge
         class TestStubRegisterDocumentExtractorTraitBridge implements dev.kreuzberg.IDocumentExtractor {
     @Override
-    public java.util.concurrent.CompletableFuture<String> extractBytes(byte[] content, String mimeType, dev.kreuzberg.ExtractionConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture("");
+    public String extract_bytes(byte[] content, String mimeType, dev.kreuzberg.ExtractionConfig config) {
+        return "";
     }
     @Override
-    public java.util.concurrent.CompletableFuture<String> extractFile(java.nio.file.Path path, String mimeType, dev.kreuzberg.ExtractionConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture("");
+    public String extract_file(java.nio.file.Path path, String mimeType, dev.kreuzberg.ExtractionConfig config) {
+        return "";
     }
     @Override
-    public java.util.List<String> supportedMimeTypes() {
+    public java.util.List<String> supported_mime_types() {
         return new java.util.ArrayList<>();
     }
     @Override
@@ -37,11 +37,11 @@ class PluginApiTest {
         return 0;
     }
     @Override
-    public boolean canHandle(java.nio.file.Path path, String mimeType) {
+    public boolean can_handle(java.nio.file.Path path, String mimeType) {
         return false;
     }
     @Override
-    public String asSyncExtractor() {
+    public String as_sync_extractor() {
         return "";
     }
     @Override
@@ -80,8 +80,8 @@ class PluginApiTest {
         return 0;
     }
     @Override
-    public java.util.concurrent.CompletableFuture<java.util.List<java.util.List<float>>> embed(java.util.List<String> texts) {
-        return java.util.concurrent.CompletableFuture.completedFuture(new java.util.ArrayList<>());
+    public java.util.List<java.util.List<float>> embed(java.util.List<String> texts) {
+        return new java.util.ArrayList<>();
     }
     @Override
     public String name() {
@@ -115,36 +115,36 @@ class PluginApiTest {
         // register_ocr_backend: trait bridge
         class TestStubRegisterOcrBackendTraitBridge implements dev.kreuzberg.IOcrBackend {
     @Override
-    public java.util.concurrent.CompletableFuture<String> processImage(byte[] imageBytes, dev.kreuzberg.OcrConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture("");
-    }
-    @Override
-    public java.util.concurrent.CompletableFuture<String> processImageFile(java.nio.file.Path path, dev.kreuzberg.OcrConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture("");
-    }
-    @Override
-    public boolean supportsLanguage(String lang) {
-        return false;
-    }
-    @Override
-    public String backendType() {
+    public String process_image(byte[] imageBytes, dev.kreuzberg.OcrConfig config) {
         return "";
     }
     @Override
-    public java.util.List<String> supportedLanguages() {
+    public String process_image_file(java.nio.file.Path path, dev.kreuzberg.OcrConfig config) {
+        return "";
+    }
+    @Override
+    public boolean supports_language(String lang) {
+        return false;
+    }
+    @Override
+    public String backend_type() {
+        return "";
+    }
+    @Override
+    public java.util.List<String> supported_languages() {
         return new java.util.ArrayList<>();
     }
     @Override
-    public boolean supportsTableDetection() {
+    public boolean supports_table_detection() {
         return false;
     }
     @Override
-    public boolean supportsDocumentProcessing() {
+    public boolean supports_document_processing() {
         return false;
     }
     @Override
-    public java.util.concurrent.CompletableFuture<String> processDocument(java.nio.file.Path path, dev.kreuzberg.OcrConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture("");
+    public String process_document(java.nio.file.Path path, dev.kreuzberg.OcrConfig config) {
+        return "";
     }
     @Override
     public String name() {
@@ -178,19 +178,17 @@ class PluginApiTest {
         // register_post_processor: trait bridge
         class TestStubRegisterPostProcessorTraitBridge implements dev.kreuzberg.IPostProcessor {
     @Override
-    public java.util.concurrent.CompletableFuture<Void> process(String result, dev.kreuzberg.ExtractionConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture(null);
-    }
+    public void process(String result, dev.kreuzberg.ExtractionConfig config) {}
     @Override
-    public String processingStage() {
+    public String processing_stage() {
         return "";
     }
     @Override
-    public boolean shouldProcess(String result, dev.kreuzberg.ExtractionConfig config) {
+    public boolean should_process(String result, dev.kreuzberg.ExtractionConfig config) {
         return false;
     }
     @Override
-    public long estimatedDurationMs(String result) {
+    public long estimated_duration_ms(String result) {
         return 0;
     }
     @Override
@@ -264,11 +262,9 @@ class PluginApiTest {
         // register_validator: trait bridge
         class TestStubRegisterValidatorTraitBridge implements dev.kreuzberg.IValidator {
     @Override
-    public java.util.concurrent.CompletableFuture<Void> validate(String result, dev.kreuzberg.ExtractionConfig config) {
-        return java.util.concurrent.CompletableFuture.completedFuture(null);
-    }
+    public void validate(String result, dev.kreuzberg.ExtractionConfig config) {}
     @Override
-    public boolean shouldValidate(String result, dev.kreuzberg.ExtractionConfig config) {
+    public boolean should_validate(String result, dev.kreuzberg.ExtractionConfig config) {
         return false;
     }
     @Override

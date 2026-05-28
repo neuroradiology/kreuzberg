@@ -25,6 +25,7 @@
 #![cfg_attr(windows, feature(abi_vectorcall))]
 
 use ext_php_rs::prelude::*;
+use ext_php_rs::rc::PhpRc;
 use std::collections::HashMap;
 use std::sync::Arc;
 
