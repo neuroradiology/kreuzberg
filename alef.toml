@@ -471,6 +471,10 @@ exclude_functions = [
 module_name = "Kreuzberg"
 package_name = "Kreuzberg"
 features = ["full"]
+exclude_types = [
+  # Internal DTO type used by plugin trait-bridges; marshalled as JSON strings at FFI boundary
+  "InternalDocument",
+]
 exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
 exclude_functions = [
   # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge
