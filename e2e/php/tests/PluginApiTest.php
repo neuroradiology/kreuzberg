@@ -28,8 +28,8 @@ final class PluginApiTest extends TestCase
             public function can_handle($_path, $_mime_type): mixed { return false; }
             public function as_sync_extractor(): mixed { return null; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };
@@ -48,8 +48,8 @@ final class PluginApiTest extends TestCase
             public function dimensions(): mixed { return 1; }
             public function embed($texts): mixed { return []; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };
@@ -74,8 +74,8 @@ final class PluginApiTest extends TestCase
             public function supports_document_processing(): mixed { return false; }
             public function process_document($_path, $_config): mixed { return '{}'; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };
@@ -91,14 +91,14 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\PostProcessor {
             public function name(): string { return 'test-processor'; }
-            public function process($result, $config): void {}
+            public function process($result, $config): mixed { return null; }
             public function processing_stage(): mixed { return '{}'; }
             public function should_process($_result, $_config): mixed { return false; }
             public function estimated_duration_ms($_result): mixed { return 1; }
             public function priority(): mixed { return 1; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };
@@ -116,8 +116,8 @@ final class PluginApiTest extends TestCase
             public function name(): string { return 'test-renderer'; }
             public function render($doc): mixed { return ''; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };
@@ -133,12 +133,12 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\Validator {
             public function name(): string { return 'test-validator'; }
-            public function validate($result, $config): void {}
+            public function validate($result, $config): mixed { return null; }
             public function should_validate($_result, $_config): mixed { return false; }
             public function priority(): mixed { return 1; }
             public function version(): mixed { return ''; }
-            public function initialize(): void {}
-            public function shutdown(): void {}
+            public function initialize(): mixed { return null; }
+            public function shutdown(): mixed { return null; }
             public function description(): mixed { return ''; }
             public function author(): mixed { return ''; }
         };

@@ -4,202 +4,208 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/sample_crate-dev/alef
 # E2e tests for category: plugin_api
-defmodule E2e.PluginApiTest do
-  use ExUnit.Case, async: false
-
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridge do
-  def name, do: "test-extractor"
-  def initialize, do: :ok
-  def extract_bytes(content, mime_type, config), do: {:ok, %{}}
-  def supported_mime_types, do: []
+def name, do: "test-extractor"
+def initialize, do: :ok
+def extract_bytes(content, mime_type, config), do: {:ok, %{}}
+def supported_mime_types, do: []
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
-  describe "register_document_extractor_trait_bridge" do
-    test "register_document_extractor_trait_bridge" do
-      {:ok, registerdocumentextractortraitbridge_pid} = E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_document_extractor(registerdocumentextractortraitbridge_pid, "test-extractor")
-    end
-  end
-
+end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridge do
-  def name, do: "test-embedding-backend"
-  def initialize, do: :ok
-  def dimensions, do: 1
-  def embed(texts), do: {:ok, []}
+def name, do: "test-embedding-backend"
+def initialize, do: :ok
+def dimensions, do: 1
+def embed(texts), do: {:ok, []}
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
-  describe "register_embedding_backend_trait_bridge" do
-    test "register_embedding_backend_trait_bridge" do
-      {:ok, registerembeddingbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_embedding_backend(registerembeddingbackendtraitbridge_pid, "test-embedding-backend")
-    end
-  end
-
+end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterOcrBackendTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterOcrBackendTraitBridge do
-  def name, do: "test-backend"
-  def initialize, do: :ok
-  def process_image(image_bytes, config), do: {:ok, %{}}
-  def supports_language(lang), do: false
-  def backend_type, do: %{}
+def name, do: "test-backend"
+def initialize, do: :ok
+def process_image(image_bytes, config), do: {:ok, %{}}
+def supports_language(lang), do: false
+def backend_type, do: %{}
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterOcrBackendTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterOcrBackendTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterOcrBackendTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterOcrBackendTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
-  describe "register_ocr_backend_trait_bridge" do
-    test "register_ocr_backend_trait_bridge" do
-      {:ok, registerocrbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterOcrBackendTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_ocr_backend(registerocrbackendtraitbridge_pid, "test-backend")
-    end
-  end
-
+end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterPostProcessorTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterPostProcessorTraitBridge do
-  def name, do: "test-processor"
-  def initialize, do: :ok
-  def process(result, config), do: {:ok, nil}
-  def processing_stage, do: %{}
+def name, do: "test-processor"
+def initialize, do: :ok
+def process(result, config), do: {:ok, nil}
+def processing_stage, do: %{}
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterPostProcessorTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterPostProcessorTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterPostProcessorTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterPostProcessorTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
-  describe "register_post_processor_trait_bridge" do
-    test "register_post_processor_trait_bridge" do
-      {:ok, registerpostprocessortraitbridge_pid} = E2e.TestStubs.TestStubRegisterPostProcessorTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_post_processor(registerpostprocessortraitbridge_pid, "test-processor")
-    end
-  end
-
+end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterRendererTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterRendererTraitBridge do
-  def name, do: "test-renderer"
-  def initialize, do: :ok
-  def render(doc), do: {:ok, ""}
+def name, do: "test-renderer"
+def initialize, do: :ok
+def render(doc), do: {:ok, ""}
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterRendererTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterRendererTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterRendererTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterRendererTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
-  describe "register_renderer_trait_bridge" do
-    test "register_renderer_trait_bridge" do
-      {:ok, registerrenderertraitbridge_pid} = E2e.TestStubs.TestStubRegisterRendererTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_renderer(registerrenderertraitbridge_pid, "test-renderer")
-    end
-  end
-
+end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterValidatorTraitBridge) do
 defmodule E2e.TestStubs.TestStubRegisterValidatorTraitBridge do
-  def name, do: "test-validator"
-  def initialize, do: :ok
-  def validate(result, config), do: {:ok, nil}
+def name, do: "test-validator"
+def initialize, do: :ok
+def validate(result, config), do: {:ok, nil}
 end
 end
 unless Code.ensure_loaded?(E2e.TestStubs.TestStubRegisterValidatorTraitBridgeGenServer) do
 defmodule E2e.TestStubs.TestStubRegisterValidatorTraitBridgeGenServer do
-  use GenServer
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil)
-  end
-  @impl true
-  def init(_), do: {:ok, nil}
-  @impl true
-  def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
-    args = Jason.decode!(args_json)
-    result = apply(E2e.TestStubs.TestStubRegisterValidatorTraitBridge, method_atom, args)
-    result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
-    {:noreply, state}
-  end
+use GenServer
+def start_link(_opts) do
+GenServer.start_link(__MODULE__, nil)
+end
+@impl true
+def init(_), do: {:ok, nil}
+@impl true
+def handle_info({:trait_call, method_atom, args_json, reply_id}, state) do
+args = Jason.decode!(args_json)
+result = apply(E2e.TestStubs.TestStubRegisterValidatorTraitBridge, method_atom, args)
+result_json = Jason.encode!(result)
+Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+{:noreply, state}
 end
 end
+end
+defmodule E2e.PluginApiTest do
+  use ExUnit.Case, async: false
+
+  describe "register_document_extractor_trait_bridge" do
+    test "register_document_extractor_trait_bridge" do
+      {:ok, registerdocumentextractortraitbridge_pid} = E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer.start_link(nil)
+
+      result = Kreuzberg.register_document_extractor(registerdocumentextractortraitbridge_pid, "test-extractor")
+    end
+  end
+
+  describe "register_embedding_backend_trait_bridge" do
+    test "register_embedding_backend_trait_bridge" do
+      {:ok, registerembeddingbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridgeGenServer.start_link(nil)
+
+      result = Kreuzberg.register_embedding_backend(registerembeddingbackendtraitbridge_pid, "test-embedding-backend")
+    end
+  end
+
+  describe "register_ocr_backend_trait_bridge" do
+    test "register_ocr_backend_trait_bridge" do
+      {:ok, registerocrbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterOcrBackendTraitBridgeGenServer.start_link(nil)
+
+      result = Kreuzberg.register_ocr_backend(registerocrbackendtraitbridge_pid, "test-backend")
+    end
+  end
+
+  describe "register_post_processor_trait_bridge" do
+    test "register_post_processor_trait_bridge" do
+      {:ok, registerpostprocessortraitbridge_pid} = E2e.TestStubs.TestStubRegisterPostProcessorTraitBridgeGenServer.start_link(nil)
+
+      result = Kreuzberg.register_post_processor(registerpostprocessortraitbridge_pid, "test-processor")
+    end
+  end
+
+  describe "register_renderer_trait_bridge" do
+    test "register_renderer_trait_bridge" do
+      {:ok, registerrenderertraitbridge_pid} = E2e.TestStubs.TestStubRegisterRendererTraitBridgeGenServer.start_link(nil)
+
+      result = Kreuzberg.register_renderer(registerrenderertraitbridge_pid, "test-renderer")
+    end
+  end
+
   describe "register_validator_trait_bridge" do
     test "register_validator_trait_bridge" do
       {:ok, registervalidatortraitbridge_pid} = E2e.TestStubs.TestStubRegisterValidatorTraitBridgeGenServer.start_link(nil)
+
       result = Kreuzberg.register_validator(registervalidatortraitbridge_pid, "test-validator")
     end
   end
