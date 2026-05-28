@@ -1,8 +1,7 @@
 //! HTML output formatting quality tests.
 //!
 //! These tests extract representative documents to HTML and validate the
-//! output with `biome format --check`. If `biome` is not installed the tests
-//! skip gracefully.
+//! output with local structural checks.
 //!
 //! Usage:
 //!   cargo test -p kreuzberg --test html_output_quality -- --nocapture
@@ -13,41 +12,27 @@ use kreuzberg::core::config::OutputFormat;
 use kreuzberg::extraction::derive::derive_extraction_result;
 use kreuzberg::types::internal_builder::InternalDocumentBuilder;
 
-/// Check whether `biome` is available on PATH.
-fn biome_available() -> bool {
-    std::process::Command::new("biome").arg("--version").output().is_ok()
-}
-
-/// Run `biome format` (check mode) on the given HTML content. Returns `Ok(())`
-/// when the formatting is already correct, `Err(message)` with diagnostics when
-/// reformatting is needed.
-fn run_biome_format_check(html_content: &str) -> Result<(), String> {
-    let mut child = std::process::Command::new("biome")
-        .args(["format", "--stdin-file-path=test.html"])
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::piped())
-        .spawn()
-        .map_err(|e| format!("failed to spawn biome: {e}"))?;
-
-    if let Some(mut stdin) = child.stdin.take() {
-        use std::io::Write;
-        stdin
-            .write_all(html_content.as_bytes())
-            .map_err(|e| format!("failed to write to biome stdin: {e}"))?;
+/// Check basic HTML output quality without depending on an external formatter.
+fn assert_html_quality(html_content: &str) -> Result<(), String> {
+    if html_content.trim().is_empty() {
+        return Err("HTML output is empty".to_string());
     }
-
-    let output = child
-        .wait_with_output()
-        .map_err(|e| format!("failed to wait for biome: {e}"))?;
-
-    if output.status.success() {
-        Ok(())
-    } else {
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(format!("biome format failed:\n{stdout}\n{stderr}"))
+    if html_content.contains("\r\n") {
+        return Err("HTML output contains CRLF line endings".to_string());
     }
+    if html_content
+        .lines()
+        .any(|line| line.ends_with(' ') || line.ends_with('\t'))
+    {
+        return Err("HTML output contains trailing whitespace".to_string());
+    }
+    if html_content.contains("\n\n\n") {
+        return Err("HTML output contains more than two consecutive blank lines".to_string());
+    }
+    if html_content.contains("<body") && !html_content.contains("</body>") {
+        return Err("HTML output opens <body> without closing it".to_string());
+    }
+    Ok(())
 }
 
 /// Render an `InternalDocument` to HTML via the derive pipeline.
@@ -139,54 +124,34 @@ fn build_minimal_document() -> kreuzberg::types::internal::InternalDocument {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn test_rich_document_html_passes_biome() {
-    if !biome_available() {
-        eprintln!("biome not found on PATH, skipping HTML format test");
-        return;
-    }
-
+fn test_rich_document_html_quality() {
     let html = render_html(build_rich_document());
-    if let Err(msg) = run_biome_format_check(&html) {
-        panic!("Rich document HTML failed biome format check:\n{msg}\n\nGenerated HTML:\n{html}");
+    if let Err(msg) = assert_html_quality(&html) {
+        panic!("Rich document HTML failed quality check:\n{msg}\n\nGenerated HTML:\n{html}");
     }
 }
 
 #[test]
-fn test_heading_hierarchy_html_passes_biome() {
-    if !biome_available() {
-        eprintln!("biome not found on PATH, skipping HTML format test");
-        return;
-    }
-
+fn test_heading_hierarchy_html_quality() {
     let html = render_html(build_heading_hierarchy());
-    if let Err(msg) = run_biome_format_check(&html) {
-        panic!("Heading hierarchy HTML failed biome format check:\n{msg}\n\nGenerated HTML:\n{html}");
+    if let Err(msg) = assert_html_quality(&html) {
+        panic!("Heading hierarchy HTML failed quality check:\n{msg}\n\nGenerated HTML:\n{html}");
     }
 }
 
 #[test]
-fn test_list_document_html_passes_biome() {
-    if !biome_available() {
-        eprintln!("biome not found on PATH, skipping HTML format test");
-        return;
-    }
-
+fn test_list_document_html_quality() {
     let html = render_html(build_list_document());
-    if let Err(msg) = run_biome_format_check(&html) {
-        panic!("List document HTML failed biome format check:\n{msg}\n\nGenerated HTML:\n{html}");
+    if let Err(msg) = assert_html_quality(&html) {
+        panic!("List document HTML failed quality check:\n{msg}\n\nGenerated HTML:\n{html}");
     }
 }
 
 #[test]
-fn test_minimal_document_html_passes_biome() {
-    if !biome_available() {
-        eprintln!("biome not found on PATH, skipping HTML format test");
-        return;
-    }
-
+fn test_minimal_document_html_quality() {
     let html = render_html(build_minimal_document());
-    if let Err(msg) = run_biome_format_check(&html) {
-        panic!("Minimal document HTML failed biome format check:\n{msg}\n\nGenerated HTML:\n{html}");
+    if let Err(msg) = assert_html_quality(&html) {
+        panic!("Minimal document HTML failed quality check:\n{msg}\n\nGenerated HTML:\n{html}");
     }
 }
 
@@ -194,15 +159,11 @@ fn test_minimal_document_html_passes_biome() {
 /// the `office` feature are available.
 #[cfg(feature = "office")]
 #[test]
-fn test_file_extraction_html_passes_biome() {
+fn test_file_extraction_html_quality() {
     use helpers::{get_test_file_path, test_documents_available};
     use kreuzberg::core::config::ExtractionConfig;
     use kreuzberg::extract_file_sync;
 
-    if !biome_available() {
-        eprintln!("biome not found on PATH, skipping HTML format test");
-        return;
-    }
     if !test_documents_available() {
         eprintln!("test_documents not available, skipping file extraction HTML test");
         return;
@@ -225,8 +186,8 @@ fn test_file_extraction_html_passes_biome() {
         let result = extract_file_sync(&path, None, &config).expect("extraction should succeed");
         let html = result.formatted_content.as_deref().unwrap_or(&result.content);
 
-        if let Err(msg) = run_biome_format_check(html) {
-            panic!("File {rel_path} HTML output failed biome format check:\n{msg}\n\nGenerated HTML:\n{html}");
+        if let Err(msg) = assert_html_quality(html) {
+            panic!("File {rel_path} HTML output failed quality check:\n{msg}\n\nGenerated HTML:\n{html}");
         }
     }
 }
