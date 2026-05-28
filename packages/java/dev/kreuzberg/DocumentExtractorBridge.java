@@ -152,13 +152,6 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             vtable.set(ValueLayout.ADDRESS, offset, stubCanHandle);
             offset += ValueLayout.ADDRESS.byteSize();
 
-            var stubAsSyncExtractor = LINKER.upcallStub(LOOKUP.bind(this, "handleAsSyncExtractor",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubAsSyncExtractor);
-            offset += ValueLayout.ADDRESS.byteSize();
-
             vtable.set(ValueLayout.ADDRESS, offset, MemorySegment.NULL);
 
         } catch (ReflectiveOperationException e) {
@@ -281,19 +274,6 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             java.nio.file.Path _path = java.nio.file.Paths.get(_path_in.reinterpret(Long.MAX_VALUE).getString(0));
             String _mime_type = _mime_type_in.reinterpret(Long.MAX_VALUE).getString(0);
             boolean result = impl.can_handle(_path, _mime_type);
-            String json = JSON.writeValueAsString(result);
-            MemorySegment jsonCs = arena.allocateFrom(json);
-            outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
-            return 0;
-        } catch (Throwable e) {
-            writeError(outError, e);
-            return 1;
-        }
-    }
-
-    private int handleAsSyncExtractor(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
-        try {
-            String result = impl.as_sync_extractor();
             String json = JSON.writeValueAsString(result);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
