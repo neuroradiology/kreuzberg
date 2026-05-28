@@ -8,6 +8,7 @@
 package e2e_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	kreuzberg "github.com/kreuzberg-dev/kreuzberg/v5"
@@ -15,9 +16,18 @@ import (
 
 type testStub_register_document_extractor_trait_bridge struct{}
 
-func (testStub_register_document_extractor_trait_bridge) ExtractBytes(content []byte, mimeType string, config kreuzberg.ExtractionConfig) (kreuzberg.InternalDocument, error) { return nil, nil }
+func (testStub_register_document_extractor_trait_bridge) ExtractBytes(content []byte, mimeType string, config kreuzberg.ExtractionConfig) (json.RawMessage, error) { return nil, nil }
+func (testStub_register_document_extractor_trait_bridge) ExtractFile(path string, mimeType string, config kreuzberg.ExtractionConfig) (json.RawMessage, error) { return nil, nil }
 func (testStub_register_document_extractor_trait_bridge) SupportedMimeTypes() []string { return nil }
+func (testStub_register_document_extractor_trait_bridge) Priority() int32 { return 0 }
+func (testStub_register_document_extractor_trait_bridge) CanHandle(path string, mimeType string) bool { return false }
+func (testStub_register_document_extractor_trait_bridge) AsSyncExtractor() *kreuzberg.SyncExtractor { return nil }
 func (testStub_register_document_extractor_trait_bridge) Name() string { return "" }
+func (testStub_register_document_extractor_trait_bridge) Version() string { return "" }
+func (testStub_register_document_extractor_trait_bridge) Initialize() error { return nil }
+func (testStub_register_document_extractor_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_document_extractor_trait_bridge) Description() string { return "" }
+func (testStub_register_document_extractor_trait_bridge) Author() string { return "" }
 
 func Test_RegisterDocumentExtractorTraitBridge(t *testing.T) {
 	// register_document_extractor: trait bridge
@@ -29,6 +39,11 @@ type testStub_register_embedding_backend_trait_bridge struct{}
 func (testStub_register_embedding_backend_trait_bridge) Dimensions() uint { return 0 }
 func (testStub_register_embedding_backend_trait_bridge) Embed(texts []string) ([][]float32, error) { return nil, nil }
 func (testStub_register_embedding_backend_trait_bridge) Name() string { return "" }
+func (testStub_register_embedding_backend_trait_bridge) Version() string { return "" }
+func (testStub_register_embedding_backend_trait_bridge) Initialize() error { return nil }
+func (testStub_register_embedding_backend_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_embedding_backend_trait_bridge) Description() string { return "" }
+func (testStub_register_embedding_backend_trait_bridge) Author() string { return "" }
 
 func Test_RegisterEmbeddingBackendTraitBridge(t *testing.T) {
 	// register_embedding_backend: trait bridge
@@ -38,9 +53,19 @@ func Test_RegisterEmbeddingBackendTraitBridge(t *testing.T) {
 type testStub_register_ocr_backend_trait_bridge struct{}
 
 func (testStub_register_ocr_backend_trait_bridge) ProcessImage(imageBytes []byte, config kreuzberg.OcrConfig) (kreuzberg.ExtractionResult, error) { return nil, nil }
+func (testStub_register_ocr_backend_trait_bridge) ProcessImageFile(path string, config kreuzberg.OcrConfig) (kreuzberg.ExtractionResult, error) { return nil, nil }
 func (testStub_register_ocr_backend_trait_bridge) SupportsLanguage(lang string) bool { return false }
-func (testStub_register_ocr_backend_trait_bridge) BackendType() kreuzberg.OcrBackendType { return nil }
+func (testStub_register_ocr_backend_trait_bridge) BackendType() kreuzberg.OcrBackendType { return "" }
+func (testStub_register_ocr_backend_trait_bridge) SupportedLanguages() []string { return nil }
+func (testStub_register_ocr_backend_trait_bridge) SupportsTableDetection() bool { return false }
+func (testStub_register_ocr_backend_trait_bridge) SupportsDocumentProcessing() bool { return false }
+func (testStub_register_ocr_backend_trait_bridge) ProcessDocument(path string, config kreuzberg.OcrConfig) (kreuzberg.ExtractionResult, error) { return nil, nil }
 func (testStub_register_ocr_backend_trait_bridge) Name() string { return "" }
+func (testStub_register_ocr_backend_trait_bridge) Version() string { return "" }
+func (testStub_register_ocr_backend_trait_bridge) Initialize() error { return nil }
+func (testStub_register_ocr_backend_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_ocr_backend_trait_bridge) Description() string { return "" }
+func (testStub_register_ocr_backend_trait_bridge) Author() string { return "" }
 
 func Test_RegisterOcrBackendTraitBridge(t *testing.T) {
 	// register_ocr_backend: trait bridge
@@ -50,8 +75,16 @@ func Test_RegisterOcrBackendTraitBridge(t *testing.T) {
 type testStub_register_post_processor_trait_bridge struct{}
 
 func (testStub_register_post_processor_trait_bridge) Process(result kreuzberg.ExtractionResult, config kreuzberg.ExtractionConfig) error { return nil }
-func (testStub_register_post_processor_trait_bridge) ProcessingStage() kreuzberg.ProcessingStage { return nil }
+func (testStub_register_post_processor_trait_bridge) ProcessingStage() kreuzberg.ProcessingStage { return "" }
+func (testStub_register_post_processor_trait_bridge) ShouldProcess(result kreuzberg.ExtractionResult, config kreuzberg.ExtractionConfig) bool { return false }
+func (testStub_register_post_processor_trait_bridge) EstimatedDurationMs(result kreuzberg.ExtractionResult) uint64 { return 0 }
+func (testStub_register_post_processor_trait_bridge) Priority() int32 { return 0 }
 func (testStub_register_post_processor_trait_bridge) Name() string { return "" }
+func (testStub_register_post_processor_trait_bridge) Version() string { return "" }
+func (testStub_register_post_processor_trait_bridge) Initialize() error { return nil }
+func (testStub_register_post_processor_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_post_processor_trait_bridge) Description() string { return "" }
+func (testStub_register_post_processor_trait_bridge) Author() string { return "" }
 
 func Test_RegisterPostProcessorTraitBridge(t *testing.T) {
 	// register_post_processor: trait bridge
@@ -60,8 +93,13 @@ func Test_RegisterPostProcessorTraitBridge(t *testing.T) {
 
 type testStub_register_renderer_trait_bridge struct{}
 
-func (testStub_register_renderer_trait_bridge) Render(doc kreuzberg.InternalDocument) (string, error) { return "", nil }
+func (testStub_register_renderer_trait_bridge) Render(doc json.RawMessage) (string, error) { return "", nil }
 func (testStub_register_renderer_trait_bridge) Name() string { return "" }
+func (testStub_register_renderer_trait_bridge) Version() string { return "" }
+func (testStub_register_renderer_trait_bridge) Initialize() error { return nil }
+func (testStub_register_renderer_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_renderer_trait_bridge) Description() string { return "" }
+func (testStub_register_renderer_trait_bridge) Author() string { return "" }
 
 func Test_RegisterRendererTraitBridge(t *testing.T) {
 	// register_renderer: trait bridge
@@ -71,7 +109,14 @@ func Test_RegisterRendererTraitBridge(t *testing.T) {
 type testStub_register_validator_trait_bridge struct{}
 
 func (testStub_register_validator_trait_bridge) Validate(result kreuzberg.ExtractionResult, config kreuzberg.ExtractionConfig) error { return nil }
+func (testStub_register_validator_trait_bridge) ShouldValidate(result kreuzberg.ExtractionResult, config kreuzberg.ExtractionConfig) bool { return false }
+func (testStub_register_validator_trait_bridge) Priority() int32 { return 0 }
 func (testStub_register_validator_trait_bridge) Name() string { return "" }
+func (testStub_register_validator_trait_bridge) Version() string { return "" }
+func (testStub_register_validator_trait_bridge) Initialize() error { return nil }
+func (testStub_register_validator_trait_bridge) Shutdown() error { return nil }
+func (testStub_register_validator_trait_bridge) Description() string { return "" }
+func (testStub_register_validator_trait_bridge) Author() string { return "" }
 
 func Test_RegisterValidatorTraitBridge(t *testing.T) {
 	// register_validator: trait bridge

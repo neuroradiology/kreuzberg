@@ -23,9 +23,9 @@ final class SwiftDocumentExtractorAdapter {
     self.bridge = bridge
     }
 
-    func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) -> InternalDocument {
+    func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) -> String {
         do {
-        let result = try self.bridge.extractBytes(content, mime_type, config)
+        let result = try self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)

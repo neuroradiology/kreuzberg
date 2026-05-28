@@ -28,9 +28,9 @@ final class SwiftEmbeddingBackendAdapter {
         return result
     }
 
-    func embedCall(texts: [String]) -> [[Float]] {
+    func embedCall(texts: [String]) -> String {
         do {
-        let result = try self.bridge.embed(texts)
+        let result = try self.bridge.embed(texts: texts)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)

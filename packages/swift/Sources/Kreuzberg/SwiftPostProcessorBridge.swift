@@ -23,9 +23,9 @@ final class SwiftPostProcessorAdapter {
     self.bridge = bridge
     }
 
-    func processCall(result: ExtractionResult, config: ExtractionConfig) -> Void {
+    func processCall(result: ExtractionResult, config: ExtractionConfig) -> String {
         do {
-        let result = try self.bridge.process(result, config)
+        let result = try self.bridge.process(result: result, config: config)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)

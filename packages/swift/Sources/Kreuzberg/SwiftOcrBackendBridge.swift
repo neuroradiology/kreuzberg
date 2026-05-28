@@ -24,9 +24,9 @@ final class SwiftOcrBackendAdapter {
     self.bridge = bridge
     }
 
-    func processImageCall(image_bytes: Data, config: OcrConfig) -> ExtractionResult {
+    func processImageCall(image_bytes: Data, config: OcrConfig) -> String {
         do {
-        let result = try self.bridge.processImage(image_bytes, config)
+        let result = try self.bridge.processImage(image_bytes: image_bytes, config: config)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)
@@ -34,7 +34,7 @@ final class SwiftOcrBackendAdapter {
     }
 
     func supportsLanguageCall(lang: String) -> Bool {
-        let result = self.bridge.supportsLanguage(lang)
+        let result = self.bridge.supportsLanguage(lang: lang)
         return result
     }
 

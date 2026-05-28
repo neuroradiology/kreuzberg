@@ -22,9 +22,9 @@ final class SwiftValidatorAdapter {
     self.bridge = bridge
     }
 
-    func validateCall(result: ExtractionResult, config: ExtractionConfig) -> Void {
+    func validateCall(result: ExtractionResult, config: ExtractionConfig) -> String {
         do {
-        let result = try self.bridge.validate(result, config)
+        let result = try self.bridge.validate(result: result, config: config)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)

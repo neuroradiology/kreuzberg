@@ -24,7 +24,7 @@ final class SwiftRendererAdapter {
 
     func renderCall(doc: InternalDocument) -> String {
         do {
-        let result = try self.bridge.render(doc)
+        let result = try self.bridge.render(doc: doc)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)
