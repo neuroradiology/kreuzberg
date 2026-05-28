@@ -26,8 +26,8 @@ public final class OcrBackendBridge implements AutoCloseable {
     private static final ConcurrentHashMap<String, OcrBackendBridge>
             OCR_BACKEND_BRIDGES = new ConcurrentHashMap<>();
 
-    // C vtable: 12 fields (4 plugin methods + 7 trait methods + free_user_data)
-    private static final long VTABLE_SIZE = (long) ValueLayout.ADDRESS.byteSize() * 12L;
+    // C vtable: 13 fields (4 plugin methods + 8 trait methods + free_user_data)
+    private static final long VTABLE_SIZE = (long) ValueLayout.ADDRESS.byteSize() * 13L;
 
     private final Arena arena;
     private final MemorySegment vtable;
@@ -124,6 +124,13 @@ public final class OcrBackendBridge implements AutoCloseable {
                 ),
                 arena);
             vtable.set(ValueLayout.ADDRESS, offset, stubSupportsLanguage);
+            offset += ValueLayout.ADDRESS.byteSize();
+
+            var stubBackendType = LINKER.upcallStub(LOOKUP.bind(this, "handleBackendType",
+                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+                arena);
+            vtable.set(ValueLayout.ADDRESS, offset, stubBackendType);
             offset += ValueLayout.ADDRESS.byteSize();
 
             var stubSupportedLanguages = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportedLanguages",
@@ -253,6 +260,19 @@ public final class OcrBackendBridge implements AutoCloseable {
         try {
             String lang = lang_in.reinterpret(Long.MAX_VALUE).getString(0);
             boolean result = impl.supports_language(lang);
+            String json = JSON.writeValueAsString(result);
+            MemorySegment jsonCs = arena.allocateFrom(json);
+            outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
+            return 0;
+        } catch (Throwable e) {
+            writeError(outError, e);
+            return 1;
+        }
+    }
+
+    private int handleBackendType(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
+        try {
+            String result = impl.backend_type();
             String json = JSON.writeValueAsString(result);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
