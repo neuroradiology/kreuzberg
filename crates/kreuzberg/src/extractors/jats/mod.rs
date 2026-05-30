@@ -26,7 +26,7 @@ use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{ContributorRole, FormatMetadata, JatsMetadata};
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use async_trait::async_trait;
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -266,7 +266,7 @@ fn build_jats_internal_document(content: &str, budget: &mut SecurityBudget) -> c
                                     && !url.is_empty()
                                 {
                                     let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
-                                    builder.push_uri(Uri::hyperlink(url, label));
+                                    builder.push_uri(ExtractedUri::hyperlink(url, label));
                                 }
                             }
                             builder.push_paragraph(&text, annotations, None, None);
@@ -604,7 +604,7 @@ impl DocumentExtractor for JatsExtractor {
 
         // Add DOI as a citation URI
         if let Some(doi) = &jats_metadata.doi {
-            doc.push_uri(Uri::citation(
+            doc.push_uri(ExtractedUri::citation(
                 format!("https://doi.org/{}", doi),
                 Some(format!("DOI: {}", doi)),
             ));

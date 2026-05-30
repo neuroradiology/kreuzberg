@@ -484,6 +484,14 @@ typedef struct KREUZBERGExtractedImage KREUZBERGExtractedImage;
  */
 typedef struct KREUZBERGExtractedImageMetadata KREUZBERGExtractedImageMetadata;
 /**
+ * A URI extracted from a document.
+ *
+ * Represents any link, reference, or resource pointer found during extraction.
+ * The `kind` field classifies the URI semantically, while `label` carries
+ * optional human-readable display text.
+ */
+typedef struct KREUZBERGExtractedUri KREUZBERGExtractedUri;
+/**
  * Main extraction configuration.
  *
  * This struct contains all configuration options for the extraction process.
@@ -1393,14 +1401,6 @@ typedef struct KREUZBERGTreeSitterConfig KREUZBERGTreeSitterConfig;
  * Controls which analysis features are enabled when extracting code files.
  */
 typedef struct KREUZBERGTreeSitterProcessConfig KREUZBERGTreeSitterProcessConfig;
-/**
- * A URI extracted from a document.
- *
- * Represents any link, reference, or resource pointer found during extraction.
- * The `kind` field classifies the URI semantically, while `label` carries
- * optional human-readable display text.
- */
-typedef struct KREUZBERGUri KREUZBERGUri;
 /**
  * Semantic classification of an extracted URI.
  */
@@ -10161,55 +10161,55 @@ uint32_t kreuzberg_table_cell_col_span(const KREUZBERGTableCell *ptr);
 int32_t kreuzberg_table_cell_is_header(const KREUZBERGTableCell *ptr);
 
 /**
- * Create a `Uri` from a JSON string. Returns null on failure.
+ * Create a `ExtractedUri` from a JSON string. Returns null on failure.
  * # Safety
  * JSON string must be valid UTF-8 and null-terminated.
- * Returned handle must be freed with `kreuzberg_uri_free`.
+ * Returned handle must be freed with `kreuzberg_extracted_uri_free`.
  */
-KREUZBERGUri *kreuzberg_uri_from_json(const char *json);
+KREUZBERGExtractedUri *kreuzberg_extracted_uri_from_json(const char *json);
 
 /**
- * Serialize a `Uri` to a JSON string. Returns null on failure.
+ * Serialize a `ExtractedUri` to a JSON string. Returns null on failure.
  * # Safety
  * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
  * The returned string must be freed with `kreuzberg_free_string`.
  */
-char *kreuzberg_uri_to_json(const KREUZBERGUri *ptr);
+char *kreuzberg_extracted_uri_to_json(const KREUZBERGExtractedUri *ptr);
 
 /**
- * Free a `Uri` handle.
+ * Free a `ExtractedUri` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
  */
-void kreuzberg_uri_free(KREUZBERGUri *ptr);
+void kreuzberg_extracted_uri_free(KREUZBERGExtractedUri *ptr);
 
 /**
- * Get the `url` field from a `Uri`.
+ * Get the `url` field from a `ExtractedUri`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-char *kreuzberg_uri_url(const KREUZBERGUri *ptr);
+char *kreuzberg_extracted_uri_url(const KREUZBERGExtractedUri *ptr);
 
 /**
- * Get the `label` field from a `Uri`.
+ * Get the `label` field from a `ExtractedUri`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-char *kreuzberg_uri_label(const KREUZBERGUri *ptr);
+char *kreuzberg_extracted_uri_label(const KREUZBERGExtractedUri *ptr);
 
 /**
- * Get the `page` field from a `Uri`.
+ * Get the `page` field from a `ExtractedUri`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uint32_t kreuzberg_uri_page(const KREUZBERGUri *ptr);
+uint32_t kreuzberg_extracted_uri_page(const KREUZBERGExtractedUri *ptr);
 
 /**
- * Get the `kind` field from a `Uri`.
+ * Get the `kind` field from a `ExtractedUri`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-KREUZBERGUriKind *kreuzberg_uri_kind(const KREUZBERGUri *ptr);
+KREUZBERGUriKind *kreuzberg_extracted_uri_kind(const KREUZBERGExtractedUri *ptr);
 
 /**
  * Create a `DetectResponse` from a JSON string. Returns null on failure.

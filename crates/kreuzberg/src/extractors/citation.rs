@@ -9,7 +9,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{CitationMetadata, FormatMetadata, Metadata, YearRange};
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use ahash::AHashSet;
 use async_trait::async_trait;
 
@@ -141,7 +141,7 @@ impl DocumentExtractor for CitationExtractor {
                         && !doi.is_empty()
                     {
                         dois_vec.push(doi.clone());
-                        builder.push_uri(Uri::citation(
+                        builder.push_uri(ExtractedUri::citation(
                             format!("https://doi.org/{}", doi),
                             Some(citation.title.clone()),
                         ));

@@ -1680,7 +1680,7 @@ pub struct ExtractionResult {
     /// Contains hyperlinks, image references, citations, email addresses, and
     /// other URI-like references found in the document. Always extracted when
     /// present in the source document.
-    pub uris: Option<Vec<Uri>>,
+    pub uris: Option<Vec<ExtractedUri>>,
     /// Structured extraction output from LLM-based JSON schema extraction.
     ///
     /// When `structured_extraction` is configured in `ExtractionConfig`, the
@@ -2989,8 +2989,8 @@ pub struct TableCell {
 /// Represents any link, reference, or resource pointer found during extraction.
 /// The `kind` field classifies the URI semantically, while `label` carries
 /// optional human-readable display text.
-#[frb(mirror(Uri))]
-pub struct Uri {
+#[frb(mirror(ExtractedUri))]
+pub struct ExtractedUri {
     /// The URL or path string.
     pub url: String,
     /// Optional display text / label for the link.
@@ -4850,7 +4850,7 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
                 .annotations
                 .map(|vec| vec.into_iter().map(PdfAnnotation::from).collect()),
             children: v.children.map(|vec| vec.into_iter().map(ArchiveEntry::from).collect()),
-            uris: v.uris.map(|vec| vec.into_iter().map(Uri::from).collect()),
+            uris: v.uris.map(|vec| vec.into_iter().map(ExtractedUri::from).collect()),
             structured_output: v
                 .structured_output
                 .map(|j| serde_json::to_string(&j).unwrap_or_default()),
@@ -5696,9 +5696,9 @@ impl From<kreuzberg::TableCell> for TableCell {
     }
 }
 
-impl From<kreuzberg::Uri> for Uri {
-    fn from(v: kreuzberg::Uri) -> Self {
-        Uri {
+impl From<kreuzberg::ExtractedUri> for ExtractedUri {
+    fn from(v: kreuzberg::ExtractedUri) -> Self {
+        ExtractedUri {
             url: v.url.into(),
             label: v.label.map(|s| s.into()),
             page: v.page.map(|x| x as _),
@@ -7866,9 +7866,9 @@ impl From<Table> for kreuzberg::Table {
     }
 }
 
-impl From<Uri> for kreuzberg::Uri {
-    fn from(v: Uri) -> Self {
-        kreuzberg::Uri {
+impl From<ExtractedUri> for kreuzberg::ExtractedUri {
+    fn from(v: ExtractedUri) -> Self {
+        kreuzberg::ExtractedUri {
             url: v.url.into(),
             label: v.label.map(Into::into),
             page: v.page.map(|x| x as _),
@@ -9641,9 +9641,9 @@ pub fn create_table_cell_from_json(json: String) -> Result<TableCell, String> {
 }
 
 #[frb]
-pub fn create_uri_from_json(json: String) -> Result<Uri, String> {
-    serde_json::from_str::<kreuzberg::Uri>(&json)
-        .map(Uri::from)
+pub fn create_extracted_uri_from_json(json: String) -> Result<ExtractedUri, String> {
+    serde_json::from_str::<kreuzberg::ExtractedUri>(&json)
+        .map(ExtractedUri::from)
         .map_err(|e| e.to_string())
 }
 

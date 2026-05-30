@@ -23,7 +23,7 @@ use crate::types::ProcessingWarning;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{EpubMetadata, FormatMetadata};
-use crate::types::uri::{Uri, UriKind, classify_uri};
+use crate::types::uri::{ExtractedUri, UriKind, classify_uri};
 use ahash::{AHashMap, AHashSet};
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -384,7 +384,7 @@ impl EpubExtractor {
                             if let Some(img_src) = src
                                 && !img_src.is_empty()
                             {
-                                builder.push_uri(Uri {
+                                builder.push_uri(ExtractedUri {
                                     url: img_src.clone(),
                                     label: description.clone(),
                                     page: Some((index + 1) as u32),
@@ -533,7 +533,7 @@ fn collect_annotation_uris(
             } else {
                 None
             };
-            builder.push_uri(Uri {
+            builder.push_uri(ExtractedUri {
                 url: url.clone(),
                 label,
                 page: None,

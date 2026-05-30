@@ -20,7 +20,7 @@ use crate::extractors::security::SecurityBudget;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use crate::types::{ExtractedImage, Metadata, Table};
 use async_trait::async_trait;
 use base64::Engine;
@@ -647,7 +647,7 @@ impl FictionBookExtractor {
     /// <a l:href="http://example.com">link text</a>
     /// <a xlink:href="#note1">footnote ref</a>
     /// ```
-    fn extract_links(data: &[u8], budget: &mut SecurityBudget) -> Result<Vec<Uri>> {
+    fn extract_links(data: &[u8], budget: &mut SecurityBudget) -> Result<Vec<ExtractedUri>> {
         let mut reader = Reader::from_reader(data);
         let mut uris = Vec::new();
         let mut in_body = false;
@@ -714,7 +714,7 @@ impl FictionBookExtractor {
 
                         let label = if label_text.is_empty() { None } else { Some(label_text) };
 
-                        uris.push(Uri::hyperlink(&href, label));
+                        uris.push(ExtractedUri::hyperlink(&href, label));
                     }
                 }
                 Ok(Event::End(e)) => {

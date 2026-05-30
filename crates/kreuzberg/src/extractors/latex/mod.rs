@@ -27,7 +27,7 @@ use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 use crate::types::internal::InternalDocument;
 use crate::types::internal::{RelationshipKind, RelationshipTarget};
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 
@@ -538,7 +538,7 @@ impl LatexExtractor {
                         let caption = Self::extract_caption(&env_content);
                         let label = Self::extract_label(&env_content);
                         if let Some(path) = Self::extract_includegraphics_path(&env_content) {
-                            b.push_uri(Uri::image(&path, caption.clone()));
+                            b.push_uri(ExtractedUri::image(&path, caption.clone()));
                             if inject_placeholders {
                                 let idx = b.push_paragraph(&format!("[image: {}]", path), vec![], None, None);
                                 if let Some(lbl) = label {
@@ -814,7 +814,7 @@ impl LatexExtractor {
                                     let label = title_text
                                         .get(ann.start as usize..ann.end as usize)
                                         .map(|s| s.to_string());
-                                    b.push_uri(Uri::hyperlink(url, label));
+                                    b.push_uri(ExtractedUri::hyperlink(url, label));
                                 }
                             }
                         }
@@ -831,7 +831,7 @@ impl LatexExtractor {
         if trimmed.contains("\\includegraphics")
             && let Some(path) = Self::extract_includegraphics_path(trimmed)
         {
-            b.push_uri(Uri::image(&path, None));
+            b.push_uri(ExtractedUri::image(&path, None));
             if inject_placeholders {
                 b.push_paragraph(&format!("[image: {}]", path), vec![], None, None);
             }
@@ -893,7 +893,7 @@ impl LatexExtractor {
                         && !url.is_empty()
                     {
                         let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
-                        b.push_uri(Uri::hyperlink(url, label));
+                        b.push_uri(ExtractedUri::hyperlink(url, label));
                     }
                 }
                 let idx = b.push_paragraph(text, annotations, None, None);

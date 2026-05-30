@@ -601,9 +601,9 @@ impl PdfExtractor {
         // Extract URIs from annotations (links).
         {
             use crate::types::annotations::PdfAnnotationType;
-            use crate::types::uri::{Uri, UriKind};
+            use crate::types::uri::{ExtractedUri, UriKind};
 
-            let uris: Vec<Uri> = doc
+            let uris: Vec<ExtractedUri> = doc
                 .annotations
                 .as_ref()
                 .map(|annotations| {
@@ -619,7 +619,7 @@ impl PdfExtractor {
                                 } else {
                                     UriKind::Hyperlink
                                 };
-                                Uri {
+                                ExtractedUri {
                                     url: url.clone(),
                                     label: Some(url.clone()),
                                     page: Some(a.page_number),

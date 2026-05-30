@@ -151,7 +151,7 @@ pub struct InternalDocument {
     pub tables: Vec<Table>,
 
     /// URIs/links discovered during extraction (hyperlinks, image refs, citations, etc.).
-    pub uris: Vec<super::uri::Uri>,
+    pub uris: Vec<super::uri::ExtractedUri>,
 
     /// Archive children: fully-extracted results for files within an archive.
     ///
@@ -274,7 +274,7 @@ impl InternalDocument {
 
     /// Push a URI discovered during extraction.
     /// Silently drops URIs beyond `MAX_URIS` to prevent unbounded memory growth.
-    pub fn push_uri(&mut self, uri: super::uri::Uri) {
+    pub fn push_uri(&mut self, uri: super::uri::ExtractedUri) {
         if self.uris.len() < Self::MAX_URIS {
             self.uris.push(uri);
         }

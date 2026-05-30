@@ -305,7 +305,7 @@ fn build_internal_document(
     use crate::types::document_structure::ContentLayer;
     use crate::types::extraction::BoundingBox;
     use crate::types::internal::{ElementKind, InternalElement, RelationshipKind, RelationshipTarget};
-    use crate::types::uri::Uri;
+    use crate::types::uri::ExtractedUri;
 
     let mut builder = InternalDocumentBuilder::new("docx");
 
@@ -468,7 +468,7 @@ fn build_internal_document(
                                     RelationshipKind::InternalLink,
                                 );
                             }
-                            builder.push_uri(Uri::hyperlink(url.as_str(), Some(run.text.clone())));
+                            builder.push_uri(ExtractedUri::hyperlink(url.as_str(), Some(run.text.clone())));
                         }
                     }
 

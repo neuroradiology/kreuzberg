@@ -33,7 +33,7 @@ use crate::types::internal::RelationshipTarget;
 #[cfg(feature = "office")]
 use crate::types::internal_builder::InternalDocumentBuilder;
 #[cfg(feature = "office")]
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 #[cfg(feature = "office")]
 use crate::types::{Metadata, Table};
 #[cfg(feature = "office")]
@@ -725,7 +725,7 @@ impl OrgModeExtractor {
                     });
                     // Also emit a URI so path resolution can find the image
                     let label = if display == url { None } else { Some(display) };
-                    b.push_uri(Uri::image(&url, label));
+                    b.push_uri(ExtractedUri::image(&url, label));
                     i += 1;
                     continue;
                 }
@@ -774,9 +774,9 @@ impl OrgModeExtractor {
                                     l.ends_with(".png") || l.ends_with(".jpg") || l.ends_with(".jpeg")
                                 }));
                         if is_image {
-                            b.push_uri(Uri::image(url, label));
+                            b.push_uri(ExtractedUri::image(url, label));
                         } else {
-                            b.push_uri(Uri::hyperlink(url, label));
+                            b.push_uri(ExtractedUri::hyperlink(url, label));
                         }
                     }
                 }

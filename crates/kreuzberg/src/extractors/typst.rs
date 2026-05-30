@@ -34,7 +34,7 @@ use crate::types::internal::InternalDocument;
 #[cfg(feature = "office")]
 use crate::types::internal_builder::InternalDocumentBuilder;
 #[cfg(feature = "office")]
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 #[cfg(feature = "office")]
 use async_trait::async_trait;
 #[cfg(feature = "office")]
@@ -296,7 +296,7 @@ impl TypstExtractor {
                 Self::flush_paragraph_internal(&mut paragraph_buf, &mut builder);
                 let image_path = IMAGE_RE.captures(trimmed).and_then(|c| c.get(1)).map(|m| m.as_str());
                 if let Some(path) = image_path {
-                    builder.push_uri(Uri::image(path, None));
+                    builder.push_uri(ExtractedUri::image(path, None));
                 }
                 let description = image_path.map(|p| format!("[Image: {}]", p));
                 let desc_text = description.unwrap_or_else(|| "[Image]".to_string());
@@ -330,7 +330,7 @@ impl TypstExtractor {
                     && !url.is_empty()
                 {
                     let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
-                    builder.push_uri(Uri::hyperlink(url, label));
+                    builder.push_uri(ExtractedUri::hyperlink(url, label));
                 }
             }
             builder.push_paragraph(&text, annotations, None, None);

@@ -789,6 +789,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExtractedImage dco_decode_extracted_image(dynamic raw);
 
   @protected
+  ExtractedUri dco_decode_extracted_uri(dynamic raw);
+
+  @protected
   ExtractionConfig dco_decode_extraction_config(dynamic raw);
 
   @protected
@@ -956,6 +959,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ExtractedImage> dco_decode_list_extracted_image(dynamic raw);
 
   @protected
+  List<ExtractedUri> dco_decode_list_extracted_uri(dynamic raw);
+
+  @protected
   List<ExtractionResult> dco_decode_list_extraction_result(dynamic raw);
 
   @protected
@@ -1063,9 +1069,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<TextAnnotation> dco_decode_list_text_annotation(dynamic raw);
-
-  @protected
-  List<Uri> dco_decode_list_uri(dynamic raw);
 
   @protected
   LlmConfig dco_decode_llm_config(dynamic raw);
@@ -1342,6 +1345,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ExtractedImage>? dco_decode_opt_list_extracted_image(dynamic raw);
 
   @protected
+  List<ExtractedUri>? dco_decode_opt_list_extracted_uri(dynamic raw);
+
+  @protected
   List<Keyword>? dco_decode_opt_list_keyword(dynamic raw);
 
   @protected
@@ -1376,9 +1382,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
-
-  @protected
-  List<Uri>? dco_decode_opt_list_uri(dynamic raw);
 
   @protected
   OrientationResult dco_decode_orientation_result(dynamic raw);
@@ -1536,9 +1539,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void dco_decode_unit(dynamic raw);
-
-  @protected
-  Uri dco_decode_uri(dynamic raw);
 
   @protected
   UriKind dco_decode_uri_kind(dynamic raw);
@@ -2348,6 +2348,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExtractedImage sse_decode_extracted_image(SseDeserializer deserializer);
 
   @protected
+  ExtractedUri sse_decode_extracted_uri(SseDeserializer deserializer);
+
+  @protected
   ExtractionConfig sse_decode_extraction_config(SseDeserializer deserializer);
 
   @protected
@@ -2547,6 +2550,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<ExtractedUri> sse_decode_list_extracted_uri(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<ExtractionResult> sse_decode_list_extraction_result(
     SseDeserializer deserializer,
   );
@@ -2692,9 +2700,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<TextAnnotation> sse_decode_list_text_annotation(
     SseDeserializer deserializer,
   );
-
-  @protected
-  List<Uri> sse_decode_list_uri(SseDeserializer deserializer);
 
   @protected
   LlmConfig sse_decode_llm_config(SseDeserializer deserializer);
@@ -3063,6 +3068,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<ExtractedUri>? sse_decode_opt_list_extracted_uri(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<Keyword>? sse_decode_opt_list_keyword(SseDeserializer deserializer);
 
   @protected
@@ -3111,9 +3121,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
-
-  @protected
-  List<Uri>? sse_decode_opt_list_uri(SseDeserializer deserializer);
 
   @protected
   OrientationResult sse_decode_orientation_result(SseDeserializer deserializer);
@@ -3297,9 +3304,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_decode_unit(SseDeserializer deserializer);
-
-  @protected
-  Uri sse_decode_uri(SseDeserializer deserializer);
 
   @protected
   UriKind sse_decode_uri_kind(SseDeserializer deserializer);
@@ -4328,6 +4332,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_extracted_uri(ExtractedUri self, SseSerializer serializer);
+
+  @protected
   void sse_encode_extraction_config(
     ExtractionConfig self,
     SseSerializer serializer,
@@ -4586,6 +4593,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_extracted_uri(
+    List<ExtractedUri> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_extraction_result(
     List<ExtractionResult> self,
     SseSerializer serializer,
@@ -4770,9 +4783,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     List<TextAnnotation> self,
     SseSerializer serializer,
   );
-
-  @protected
-  void sse_encode_list_uri(List<Uri> self, SseSerializer serializer);
 
   @protected
   void sse_encode_llm_config(LlmConfig self, SseSerializer serializer);
@@ -5213,6 +5223,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_list_extracted_uri(
+    List<ExtractedUri>? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_list_keyword(
     List<Keyword>? self,
     SseSerializer serializer,
@@ -5283,9 +5299,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List? self,
     SseSerializer serializer,
   );
-
-  @protected
-  void sse_encode_opt_list_uri(List<Uri>? self, SseSerializer serializer);
 
   @protected
   void sse_encode_orientation_result(
@@ -5520,9 +5533,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_uri(Uri self, SseSerializer serializer);
 
   @protected
   void sse_encode_uri_kind(UriKind self, SseSerializer serializer);

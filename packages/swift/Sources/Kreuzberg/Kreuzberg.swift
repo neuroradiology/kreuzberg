@@ -7349,8 +7349,10 @@ public func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionCon
 /// ```
 public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
-    let result = try RustBridge.batchExtractFiles(_rb_items, config)
-    return result.map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
+    return try await Task.detached(priority: .userInitiated) {
+        let result = try RustBridge.batchExtractFiles(_rb_items, config)
+        return result
+    }.value
 }
 
 /// Extract content from multiple byte arrays concurrently.
@@ -7410,8 +7412,10 @@ public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) 
 /// ```
 public func batchExtractBytes(items: [BatchBytesItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
-    let result = try RustBridge.batchExtractBytes(_rb_items, config)
-    return result.map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
+    return try await Task.detached(priority: .userInitiated) {
+        let result = try RustBridge.batchExtractBytes(_rb_items, config)
+        return result
+    }.value
 }
 
 /// Detect MIME type from raw file bytes.

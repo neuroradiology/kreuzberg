@@ -29,7 +29,7 @@ use crate::types::ExtractedImage;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use async_trait::async_trait;
 use bytes::Bytes;
 use std::borrow::Cow;
@@ -76,7 +76,7 @@ impl RtfExtractor {
             if !url.is_empty() {
                 // Try to find link text from the extracted text
                 let label = extracted_text.get(*_start..*_end).map(|s| s.to_string());
-                builder.push_uri(Uri::hyperlink(url, label));
+                builder.push_uri(ExtractedUri::hyperlink(url, label));
             }
         }
 

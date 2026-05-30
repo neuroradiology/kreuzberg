@@ -10,7 +10,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::{Uri, classify_uri};
+use crate::types::uri::{ExtractedUri, classify_uri};
 use async_trait::async_trait;
 use jotdown::{Container, Event, Parser};
 #[cfg_attr(alef, alef(skip))]
@@ -280,7 +280,7 @@ impl DjotExtractor {
                             // Collect URI (compute kind before moving url)
                             if !url.is_empty() {
                                 let kind = classify_uri(&url);
-                                b.push_uri(Uri {
+                                b.push_uri(ExtractedUri {
                                     url,
                                     label: label_text.filter(|s| !s.is_empty()),
                                     page: None,
@@ -405,7 +405,7 @@ impl DjotExtractor {
                         } else {
                             Some(trimmed.to_string())
                         };
-                        b.push_uri(Uri::image(src_str, label));
+                        b.push_uri(ExtractedUri::image(src_str, label));
                     }
                     image_alt.clear();
                 }

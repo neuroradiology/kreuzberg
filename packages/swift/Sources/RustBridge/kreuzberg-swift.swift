@@ -6196,7 +6196,7 @@ extension TextAnnotation: Vectorizable {
 
 
 public class ExtractionResult: ExtractionResultRefMut {
-    public var isOwned: Bool = true
+    var isOwned: Bool = true
 
     public override init(ptr: UnsafeMutableRawPointer) {
         super.init(ptr: ptr)
@@ -6219,7 +6219,7 @@ public class ExtractionResultRefMut: ExtractionResultRef {
     }
 }
 public class ExtractionResultRef {
-    public var ptr: UnsafeMutableRawPointer
+    var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr

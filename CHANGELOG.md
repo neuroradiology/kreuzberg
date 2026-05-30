@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **rust**: `Uri` struct renamed to `ExtractedUri` to avoid collision with `dart:core.Uri` in Dart bindings. This is a breaking change for Rust consumers who reference `kreuzberg::Uri` directly; import `use kreuzberg::ExtractedUri` instead. All language bindings (`dart`, `python`, `node`, `ruby`, `php`, `go`, `java`, `csharp`, `kotlin`, `swift`, `r`, `elixir`, `zig`) automatically inherit the new struct name.
+
 ### Added
 
 - **extraction**: `ImageExtractionConfig` gains three new fields for controlling image-OCR output:

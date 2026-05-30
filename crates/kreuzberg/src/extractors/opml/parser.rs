@@ -6,7 +6,7 @@
 use crate::Result;
 use crate::extractors::security::SecurityBudget;
 use crate::text::utf8_validation;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use ahash::AHashMap;
 use std::borrow::Cow;
 
@@ -308,14 +308,14 @@ fn build_outline_internal(
         let trimmed = xml_url.trim();
         if !trimmed.is_empty() {
             budget.check_attr("xmlUrl", trimmed)?;
-            builder.push_uri(Uri::hyperlink(trimmed, label.clone()));
+            builder.push_uri(ExtractedUri::hyperlink(trimmed, label.clone()));
         }
     }
     if let Some(html_url) = node.attribute("htmlUrl") {
         let trimmed = html_url.trim();
         if !trimmed.is_empty() {
             budget.check_attr("htmlUrl", trimmed)?;
-            builder.push_uri(Uri::hyperlink(trimmed, label));
+            builder.push_uri(ExtractedUri::hyperlink(trimmed, label));
         }
     }
 

@@ -730,7 +730,7 @@ e2e = "cd e2e/rust && cargo test"
 
 [crates.test.kotlin_android]
 precondition = "command -v gradle >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
+before = ["cargo build --release -p kreuzberg-ffi", "ln -sf libkreuzberg_ffi.dylib target/release/libkreuzberg_jni.dylib 2>/dev/null || ln -sf libkreuzberg_ffi.so target/release/libkreuzberg_jni.so 2>/dev/null || true"]
 command = "cd packages/kotlin-android && gradle test --no-daemon"
 e2e = "cd e2e/kotlin_android && gradle test --no-daemon"
 

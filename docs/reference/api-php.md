@@ -1761,6 +1761,23 @@ Image metadata extracted from an image file.
 
 ---
 
+#### ExtractedUri
+
+A URI extracted from a document.
+
+Represents any link, reference, or resource pointer found during extraction.
+The `kind` field classifies the URI semantically, while `label` carries
+optional human-readable display text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `url` | `string` | — | The URL or path string. |
+| `label` | `?string` | `null` | Optional display text / label for the link. |
+| `page` | `?int` | `null` | Optional page number where the URI was found (1-indexed). |
+| `kind` | `UriKind` | — | Semantic classification of the URI. |
+
+---
+
 #### ExtractionConfig
 
 Main extraction configuration.
@@ -1863,7 +1880,7 @@ This is the main result type returned by all extraction functions.
 | `processingWarnings` | `array<ProcessingWarning>` | `[]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
 | `annotations` | `?array<PdfAnnotation>` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig::extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
 | `children` | `?array<ArchiveEntry>` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `null` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
-| `uris` | `?array<Uri>` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `uris` | `?array<ExtractedUri>` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
 | `structuredOutput` | `?mixed` | `null` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `codeIntelligence` | `?mixed` | `null` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack::ProcessResult`. |
 | `llmUsage` | `?array<LlmUsage>` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `null` when no LLM was used. |
@@ -4116,23 +4133,6 @@ Controls which analysis features are enabled when extracting code files.
 ```php
 public static function default(): TreeSitterProcessConfig
 ```
-
----
-
-#### Uri
-
-A URI extracted from a document.
-
-Represents any link, reference, or resource pointer found during extraction.
-The `kind` field classifies the URI semantically, while `label` carries
-optional human-readable display text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `url` | `string` | — | The URL or path string. |
-| `label` | `?string` | `null` | Optional display text / label for the link. |
-| `page` | `?int` | `null` | Optional page number where the URI was found (1-indexed). |
-| `kind` | `UriKind` | — | Semantic classification of the URI. |
 
 ---
 

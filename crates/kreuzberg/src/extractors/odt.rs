@@ -11,7 +11,7 @@ use crate::types::ExtractedImage;
 use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::{Uri, UriKind};
+use crate::types::uri::{ExtractedUri, UriKind};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use bytes::Bytes;
@@ -735,7 +735,7 @@ fn extract_odt_internal_headers_footers(
 fn collect_odt_annotations(
     node: roxmltree::Node,
     style_map: &AHashMap<String, OdtStyleProps>,
-) -> (String, Vec<crate::types::TextAnnotation>, Vec<Uri>) {
+) -> (String, Vec<crate::types::TextAnnotation>, Vec<ExtractedUri>) {
     use crate::types::builder;
     use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 
@@ -818,7 +818,7 @@ fn collect_odt_annotations(
                         } else {
                             UriKind::Hyperlink
                         };
-                        uris.push(Uri {
+                        uris.push(ExtractedUri {
                             url: url.to_string(),
                             label: Some(link_text.to_string()),
                             page: None,

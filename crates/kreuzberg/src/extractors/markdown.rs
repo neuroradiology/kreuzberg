@@ -19,7 +19,7 @@ use crate::extractors::security::SecurityBudget;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::{Uri, UriKind, classify_uri};
+use crate::types::uri::{ExtractedUri, UriKind, classify_uri};
 use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
@@ -300,7 +300,7 @@ impl MarkdownExtractor {
                             // Push URI (compute kind before moving url)
                             if !url.is_empty() {
                                 let kind = classify_uri(&url);
-                                b.push_uri(Uri {
+                                b.push_uri(ExtractedUri {
                                     url,
                                     label: label_text.filter(|s| !s.is_empty()),
                                     page: None,
@@ -430,7 +430,7 @@ impl MarkdownExtractor {
                     }
                     // Collect image URI
                     if let Some(url) = image_url.take().filter(|u| !u.is_empty()) {
-                        b.push_uri(Uri {
+                        b.push_uri(ExtractedUri {
                             url,
                             label: if desc.is_empty() { None } else { Some(desc.to_string()) },
                             page: None,

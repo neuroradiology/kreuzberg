@@ -7,7 +7,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
@@ -290,7 +290,7 @@ impl PptxExtractor {
 
         // Push hyperlink URIs discovered in slides
         for (url, label) in pptx_result.hyperlinks {
-            doc.push_uri(Uri::hyperlink(&url, label));
+            doc.push_uri(ExtractedUri::hyperlink(&url, label));
         }
 
         // Transfer per-page content (speaker notes, section names, etc.)

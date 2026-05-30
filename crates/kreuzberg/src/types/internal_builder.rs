@@ -80,7 +80,7 @@ impl InternalDocumentBuilder {
     }
 
     /// Push a URI discovered during extraction.
-    pub fn push_uri(&mut self, uri: super::uri::Uri) {
+    pub fn push_uri(&mut self, uri: super::uri::ExtractedUri) {
         self.doc.push_uri(uri);
     }
 

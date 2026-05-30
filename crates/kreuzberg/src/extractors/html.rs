@@ -10,7 +10,7 @@ use crate::types::document_structure::TextAnnotation;
 use crate::types::extraction::ExtractedImage;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::{Uri, classify_uri};
+use crate::types::uri::{ExtractedUri, classify_uri};
 use crate::types::{HtmlMetadata, Metadata, Table};
 use async_trait::async_trait;
 use bytes::Bytes;
@@ -161,7 +161,7 @@ impl HtmlExtractor {
                     }
                     // Always collect image URI reference regardless of inject_placeholders
                     if let Some(img_src) = src.as_ref().filter(|s| !s.is_empty()) {
-                        b.push_uri(Uri::image(img_src.as_str(), description.clone()));
+                        b.push_uri(ExtractedUri::image(img_src.as_str(), description.clone()));
                     }
                 }
                 HC::Code { text, language } => {
@@ -252,7 +252,7 @@ fn push_link_uris_from_annotations(annotations: &[TextAnnotation], text: &str, b
             } else {
                 None
             };
-            b.push_uri(Uri {
+            b.push_uri(ExtractedUri {
                 url: url.clone(),
                 label,
                 page: None,

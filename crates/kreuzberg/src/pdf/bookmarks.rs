@@ -1,10 +1,10 @@
 //! PDF bookmark/outline extraction using lopdf.
 //!
 //! Extracts the document outline (bookmarks) from the PDF catalog and returns
-//! them as a list of `Uri` values: external URLs as `Uri::hyperlink()`,
-//! page destinations as `Uri::anchor()`.
+//! them as a list of `Uri` values: external URLs as `ExtractedUri::hyperlink()`,
+//! page destinations as `ExtractedUri::anchor()`.
 
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use lopdf::{Document, Object, ObjectId};
 
 /// Decode a PDF string, handling UTF-16BE BOM and falling back to lossy UTF-8.
@@ -25,7 +25,7 @@ fn decode_pdf_string(bytes: &[u8]) -> String {
 ///
 /// Walks the `/Outlines` tree in the document catalog, collecting each bookmark's
 /// title and destination. Returns an empty `Vec` if the document has no outlines.
-pub(crate) fn extract_bookmarks(document: &Document) -> Vec<Uri> {
+pub(crate) fn extract_bookmarks(document: &Document) -> Vec<ExtractedUri> {
     let mut uris = Vec::new();
 
     let catalog_id = match document.catalog() {
@@ -63,7 +63,7 @@ pub(crate) fn extract_bookmarks(document: &Document) -> Vec<Uri> {
 }
 
 /// Recursively walk outline items linked by /Next siblings and /First children.
-fn walk_outline_items(document: &Document, item_id: ObjectId, uris: &mut Vec<Uri>) {
+fn walk_outline_items(document: &Document, item_id: ObjectId, uris: &mut Vec<ExtractedUri>) {
     // Guard against malformed circular references by limiting depth.
     walk_outline_items_inner(document, item_id, uris, 0, 500);
 }
@@ -71,7 +71,7 @@ fn walk_outline_items(document: &Document, item_id: ObjectId, uris: &mut Vec<Uri
 fn walk_outline_items_inner(
     document: &Document,
     item_id: ObjectId,
-    uris: &mut Vec<Uri>,
+    uris: &mut Vec<ExtractedUri>,
     depth: usize,
     max_items: usize,
 ) {
@@ -114,7 +114,7 @@ fn walk_outline_items_inner(
 }
 
 /// Extract a URI from a /Dest entry (page destination).
-fn extract_destination(document: &Document, dict: &lopdf::Dictionary, title: Option<&str>) -> Option<Uri> {
+fn extract_destination(document: &Document, dict: &lopdf::Dictionary, title: Option<&str>) -> Option<ExtractedUri> {
     let dest = dict.get(b"Dest").ok()?;
     let label = title.map(|s| s.to_string());
 
@@ -122,18 +122,18 @@ fn extract_destination(document: &Document, dict: &lopdf::Dictionary, title: Opt
         // Named destination (string).
         Object::String(name, _) => {
             let name_str = String::from_utf8_lossy(name);
-            Some(Uri::anchor(format!("#{}", name_str), label))
+            Some(ExtractedUri::anchor(format!("#{}", name_str), label))
         }
         // Named destination (name object).
         Object::Name(name) => {
             let name_str = String::from_utf8_lossy(name);
-            Some(Uri::anchor(format!("#{}", name_str), label))
+            Some(ExtractedUri::anchor(format!("#{}", name_str), label))
         }
         // Direct destination array: [page_ref /type ...].
         Object::Array(arr) => {
             let page_num = resolve_page_number(document, arr);
             let url = format!("#page={}", page_num.unwrap_or(1));
-            let mut uri = Uri::anchor(url, label);
+            let mut uri = ExtractedUri::anchor(url, label);
             if let Some(p) = page_num {
                 uri.page = Some(p);
             }
@@ -144,7 +144,7 @@ fn extract_destination(document: &Document, dict: &lopdf::Dictionary, title: Opt
             Ok(Object::Array(arr)) => {
                 let page_num = resolve_page_number(document, arr);
                 let url = format!("#page={}", page_num.unwrap_or(1));
-                let mut uri = Uri::anchor(url, label);
+                let mut uri = ExtractedUri::anchor(url, label);
                 if let Some(p) = page_num {
                     uri.page = Some(p);
                 }
@@ -157,7 +157,7 @@ fn extract_destination(document: &Document, dict: &lopdf::Dictionary, title: Opt
 }
 
 /// Extract a URI from an /A (action) entry.
-fn extract_action(document: &Document, dict: &lopdf::Dictionary, title: Option<&str>) -> Option<Uri> {
+fn extract_action(document: &Document, dict: &lopdf::Dictionary, title: Option<&str>) -> Option<ExtractedUri> {
     let action_obj = dict.get(b"A").ok()?;
     let action_dict = match action_obj {
         Object::Dictionary(d) => d,
@@ -183,7 +183,7 @@ fn extract_action(document: &Document, dict: &lopdf::Dictionary, title: Option<&
                 Object::String(bytes, _) => Some(String::from_utf8_lossy(bytes).into_owned()),
                 _ => None,
             })?;
-            Some(Uri::hyperlink(url, label))
+            Some(ExtractedUri::hyperlink(url, label))
         }
         Some("GoTo") => {
             // Internal page destination.
@@ -192,7 +192,7 @@ fn extract_action(document: &Document, dict: &lopdf::Dictionary, title: Option<&
                 Object::Array(arr) => {
                     let page_num = resolve_page_number(document, arr);
                     let url = format!("#page={}", page_num.unwrap_or(1));
-                    let mut uri = Uri::anchor(url, label);
+                    let mut uri = ExtractedUri::anchor(url, label);
                     if let Some(p) = page_num {
                         uri.page = Some(p);
                     }
@@ -200,7 +200,7 @@ fn extract_action(document: &Document, dict: &lopdf::Dictionary, title: Option<&
                 }
                 Object::String(name, _) => {
                     let name_str = String::from_utf8_lossy(name);
-                    Some(Uri::anchor(format!("#{}", name_str), label))
+                    Some(ExtractedUri::anchor(format!("#{}", name_str), label))
                 }
                 _ => None,
             }

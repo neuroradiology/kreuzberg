@@ -1600,7 +1600,7 @@ pub const ExtractionResult = struct {
     /// Contains hyperlinks, image references, citations, email addresses, and
     /// other URI-like references found in the document. Always extracted when
     /// present in the source document.
-    uris: ?[]const Uri,
+    uris: ?[]const ExtractedUri,
     /// Structured extraction output from LLM-based JSON schema extraction.
     ///
     /// When `structured_extraction` is configured in `ExtractionConfig`, the
@@ -2848,7 +2848,7 @@ pub const TableCell = struct {
 /// Represents any link, reference, or resource pointer found during extraction.
 /// The `kind` field classifies the URI semantically, while `label` carries
 /// optional human-readable display text.
-pub const Uri = struct {
+pub const ExtractedUri = struct {
     /// The URL or path string.
     url: []const u8,
     /// Optional display text / label for the link.
@@ -4885,7 +4885,7 @@ pub const IPostProcessor = extern struct {
     ///     ProcessingStage::Early  // Run before other processors
     /// }
     /// ```
-    processing_stage: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 = null,
+    processing_stage: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Optional: Check if this processor should run for a given result.
     ///
     /// Allows conditional processing based on MIME type, metadata, or content.
@@ -5029,14 +5029,11 @@ pub fn make_post_processor_vtable(comptime T: type, instance: *T) IPostProcessor
         }.thunk,
 
         .processing_stage = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
                 const value = self.processing_stage();
                 if (out_result) |ptr| {
                     ptr.* = @constCast(value);
-                }
-                if (out_error) |ptr| {
-                    ptr.* = null;
                 }
                 return 0;
             }
@@ -5548,7 +5545,7 @@ pub const IDocumentExtractor = extern struct {
     /// # Returns
     ///
     /// A slice of MIME type strings.
-    supported_mime_types: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 = null,
+    supported_mime_types: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Get the priority of this extractor.
     ///
     /// Higher priority extractors are preferred when multiple extractors
@@ -5695,14 +5692,11 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
         }.thunk,
 
         .supported_mime_types = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
                 const value = self.supported_mime_types();
                 if (out_result) |ptr| {
                     ptr.* = @constCast(value);
-                }
-                if (out_error) |ptr| {
-                    ptr.* = null;
                 }
                 return 0;
             }

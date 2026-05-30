@@ -2341,15 +2341,15 @@ TableCell <- new.env(parent = emptyenv())
 #' @field page Optional page number where the URI was found (1-indexed).
 #' @field kind Semantic classification of the URI.
 #' @export
-Uri <- new.env(parent = emptyenv())
+ExtractedUri <- new.env(parent = emptyenv())
 #' @export
-`$.Uri` <- function(self, name) {
-  func <- Uri[[name]]
+`$.ExtractedUri` <- function(self, name) {
+  func <- ExtractedUri[[name]]
   environment(func) <- environment()
   func
 }
 #' @export
-`[[.Uri` <- `$.Uri`
+`[[.ExtractedUri` <- `$.ExtractedUri`
 #' MIME type detection response
 #' @field mime_type Detected MIME type
 #' @field filename Original filename (if provided)

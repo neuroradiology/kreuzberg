@@ -1142,7 +1142,7 @@ mod ffi {
             processing_warnings: Vec<ProcessingWarning>,
             annotations: Option<Vec<PdfAnnotation>>,
             children: Option<Vec<ArchiveEntry>>,
-            uris: Option<Vec<Uri>>,
+            uris: Option<Vec<ExtractedUri>>,
             structured_output: Option<String>,
             code_intelligence: Option<String>,
             llm_usage: Option<Vec<LlmUsage>>,
@@ -1174,7 +1174,7 @@ mod ffi {
         fn processing_warnings(&self) -> Vec<ProcessingWarning>;
         fn annotations(&self) -> Option<Vec<PdfAnnotation>>;
         fn children(&self) -> Option<Vec<ArchiveEntry>>;
-        fn uris(&self) -> Option<Vec<Uri>>;
+        fn uris(&self) -> Option<Vec<ExtractedUri>>;
         #[swift_bridge(swift_name = "structuredOutput")]
         fn structured_output(&self) -> Option<String>;
         #[swift_bridge(swift_name = "codeIntelligence")]
@@ -2208,7 +2208,7 @@ mod ffi {
     }
 
     extern "Rust" {
-        type Uri;
+        type ExtractedUri;
         fn url(&self) -> String;
         fn label(&self) -> Option<String>;
         fn page(&self) -> Option<u32>;
@@ -3103,8 +3103,8 @@ mod ffi {
         fn table_from_json(json: String) -> Result<Table, String>;
         #[swift_bridge(swift_name = "tableCellFromJson")]
         fn table_cell_from_json(json: String) -> Result<TableCell, String>;
-        #[swift_bridge(swift_name = "uriFromJson")]
-        fn uri_from_json(json: String) -> Result<Uri, String>;
+        #[swift_bridge(swift_name = "extractedUriFromJson")]
+        fn extracted_uri_from_json(json: String) -> Result<ExtractedUri, String>;
         #[swift_bridge(swift_name = "detectResponseFromJson")]
         fn detect_response_from_json(json: String) -> Result<DetectResponse, String>;
         #[swift_bridge(swift_name = "embeddingPresetFromJson")]
@@ -6374,7 +6374,7 @@ impl ExtractionResult {
         processing_warnings: Vec<ProcessingWarning>,
         annotations: Option<Vec<PdfAnnotation>>,
         children: Option<Vec<ArchiveEntry>>,
-        uris: Option<Vec<Uri>>,
+        uris: Option<Vec<ExtractedUri>>,
         structured_output: Option<String>,
         code_intelligence: Option<String>,
         llm_usage: Option<Vec<LlmUsage>>,
@@ -6575,11 +6575,11 @@ impl ExtractionResult {
             .as_ref()
             .map(|v| v.iter().map(|elem| ArchiveEntry(elem.clone())).collect())
     }
-    pub fn uris(&self) -> Option<Vec<Uri>> {
+    pub fn uris(&self) -> Option<Vec<ExtractedUri>> {
         self.0
             .uris
             .as_ref()
-            .map(|v| v.iter().map(|elem| Uri(elem.clone())).collect())
+            .map(|v| v.iter().map(|elem| ExtractedUri(elem.clone())).collect())
     }
     pub fn structured_output(&self) -> Option<String> {
         self.0
@@ -9565,8 +9565,8 @@ impl TableCell {
     }
 }
 
-pub struct Uri(pub kreuzberg::Uri);
-impl Uri {
+pub struct ExtractedUri(pub kreuzberg::ExtractedUri);
+impl ExtractedUri {
     pub fn url(&self) -> String {
         self.0.url.clone()
     }
@@ -12989,9 +12989,9 @@ pub fn table_cell_from_json(json: String) -> Result<TableCell, String> {
         .map(TableCell)
         .map_err(|e| e.to_string())
 }
-pub fn uri_from_json(json: String) -> Result<Uri, String> {
-    serde_json::from_str::<kreuzberg::Uri>(&json)
-        .map(Uri)
+pub fn extracted_uri_from_json(json: String) -> Result<ExtractedUri, String> {
+    serde_json::from_str::<kreuzberg::ExtractedUri>(&json)
+        .map(ExtractedUri)
         .map_err(|e| e.to_string())
 }
 pub fn detect_response_from_json(json: String) -> Result<DetectResponse, String> {

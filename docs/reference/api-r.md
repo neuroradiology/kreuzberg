@@ -1790,6 +1790,23 @@ Image metadata extracted from an image file.
 
 ---
 
+#### ExtractedUri
+
+A URI extracted from a document.
+
+Represents any link, reference, or resource pointer found during extraction.
+The `kind` field classifies the URI semantically, while `label` carries
+optional human-readable display text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `url` | `character` | — | The URL or path string. |
+| `label` | `character or NULL` | `NULL` | Optional display text / label for the link. |
+| `page` | `integer or NULL` | `NULL` | Optional page number where the URI was found (1-indexed). |
+| `kind` | `UriKind` | — | Semantic classification of the URI. |
+
+---
+
 #### ExtractionConfig
 
 Main extraction configuration.
@@ -4145,23 +4162,6 @@ Controls which analysis features are enabled when extracting code files.
 ```r
 default()
 ```
-
----
-
-#### Uri
-
-A URI extracted from a document.
-
-Represents any link, reference, or resource pointer found during extraction.
-The `kind` field classifies the URI semantically, while `label` carries
-optional human-readable display text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `url` | `character` | — | The URL or path string. |
-| `label` | `character or NULL` | `NULL` | Optional display text / label for the link. |
-| `page` | `integer or NULL` | `NULL` | Optional page number where the URI was found (1-indexed). |
-| `kind` | `UriKind` | — | Semantic classification of the URI. |
 
 ---
 

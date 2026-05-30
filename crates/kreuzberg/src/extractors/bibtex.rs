@@ -9,7 +9,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{BibtexMetadata, FormatMetadata, Metadata, YearRange};
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use ahash::AHashMap;
 use ahash::AHashSet;
 use async_trait::async_trait;
@@ -146,12 +146,12 @@ impl DocumentExtractor for BibtexExtractor {
                     if let Some(url) = entry_fields.get("url")
                         && !url.is_empty()
                     {
-                        builder.push_uri(Uri::hyperlink(url.as_str(), Some(link_label.clone())));
+                        builder.push_uri(ExtractedUri::hyperlink(url.as_str(), Some(link_label.clone())));
                     }
                     if let Some(doi) = entry_fields.get("doi")
                         && !doi.is_empty()
                     {
-                        builder.push_uri(Uri::citation(
+                        builder.push_uri(ExtractedUri::citation(
                             format!("https://doi.org/{}", doi),
                             Some(link_label.clone()),
                         ));

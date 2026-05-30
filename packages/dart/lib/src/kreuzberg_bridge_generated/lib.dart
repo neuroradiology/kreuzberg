@@ -723,8 +723,8 @@ Future<Table> createTableFromJson({required String json}) =>
 Future<TableCell> createTableCellFromJson({required String json}) =>
     RustLib.instance.api.crateCreateTableCellFromJson(json: json);
 
-Future<Uri> createUriFromJson({required String json}) =>
-    RustLib.instance.api.crateCreateUriFromJson(json: json);
+Future<ExtractedUri> createExtractedUriFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateExtractedUriFromJson(json: json);
 
 Future<DetectResponse> createDetectResponseFromJson({required String json}) =>
     RustLib.instance.api.crateCreateDetectResponseFromJson(json: json);
@@ -3476,6 +3476,46 @@ class ExtractedImage {
           clusterId == other.clusterId;
 }
 
+/// A URI extracted from a document.
+///
+/// Represents any link, reference, or resource pointer found during extraction.
+/// The `kind` field classifies the URI semantically, while `label` carries
+/// optional human-readable display text.
+class ExtractedUri {
+  /// The URL or path string.
+  final String url;
+
+  /// Optional display text / label for the link.
+  final String? label;
+
+  /// Optional page number where the URI was found (1-indexed).
+  final PlatformInt64? page;
+
+  /// Semantic classification of the URI.
+  final UriKind kind;
+
+  const ExtractedUri({
+    required this.url,
+    this.label,
+    this.page,
+    required this.kind,
+  });
+
+  @override
+  int get hashCode =>
+      url.hashCode ^ label.hashCode ^ page.hashCode ^ kind.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractedUri &&
+          runtimeType == other.runtimeType &&
+          url == other.url &&
+          label == other.label &&
+          page == other.page &&
+          kind == other.kind;
+}
+
 /// Main extraction configuration.
 ///
 /// This struct contains all configuration options for the extraction process.
@@ -3951,7 +3991,7 @@ class ExtractionResult {
   /// Contains hyperlinks, image references, citations, email addresses, and
   /// other URI-like references found in the document. Always extracted when
   /// present in the source document.
-  final List<Uri>? uris;
+  final List<ExtractedUri>? uris;
 
   /// Structured extraction output from LLM-based JSON schema extraction.
   ///
@@ -9087,41 +9127,6 @@ class TreeSitterProcessConfig {
           diagnostics == other.diagnostics &&
           chunkMaxSize == other.chunkMaxSize &&
           contentMode == other.contentMode;
-}
-
-/// A URI extracted from a document.
-///
-/// Represents any link, reference, or resource pointer found during extraction.
-/// The `kind` field classifies the URI semantically, while `label` carries
-/// optional human-readable display text.
-class Uri {
-  /// The URL or path string.
-  final String url;
-
-  /// Optional display text / label for the link.
-  final String? label;
-
-  /// Optional page number where the URI was found (1-indexed).
-  final PlatformInt64? page;
-
-  /// Semantic classification of the URI.
-  final UriKind kind;
-
-  const Uri({required this.url, this.label, this.page, required this.kind});
-
-  @override
-  int get hashCode =>
-      url.hashCode ^ label.hashCode ^ page.hashCode ^ kind.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Uri &&
-          runtimeType == other.runtimeType &&
-          url == other.url &&
-          label == other.label &&
-          page == other.page &&
-          kind == other.kind;
 }
 
 /// Semantic classification of an extracted URI.

@@ -3,7 +3,6 @@
 import 'dart:typed_data';
 
 export 'kreuzberg_bridge_generated/lib.dart';
-export 'traits.dart';
 import 'kreuzberg_bridge_generated/lib.dart' as rust_bridge;
 // ignore: duplicate_import
 import 'kreuzberg_bridge_generated/lib.dart';
@@ -483,12 +482,7 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<List<List<double>>> embedTextsAsync(List<String> texts, [EmbeddingConfig? config]) async {
-    return await rust_bridge.embedTextsAsync(texts: texts, config: config ?? EmbeddingConfig(
-      model: EmbeddingModelType.preset(name: 'balanced'),
-      normalize: true,
-      batchSize: 32,
-      showDownloadProgress: false,
-    ));
+    return await rust_bridge.embedTextsAsync(texts: texts, config: config ?? EmbeddingConfig());
   }
 
   /// Render a single PDF page to PNG bytes.
@@ -526,12 +520,7 @@ class KreuzbergBridge {
   /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
   /// throws anyhow::Error on failure
   static Future<List<List<double>>> embedTexts(List<String> texts, [EmbeddingConfig? config]) async {
-    return await rust_bridge.embedTexts(texts: texts, config: config ?? EmbeddingConfig(
-      model: EmbeddingModelType.preset(name: 'balanced'),
-      normalize: true,
-      batchSize: 32,
-      showDownloadProgress: false,
-    ));
+    return await rust_bridge.embedTexts(texts: texts, config: config ?? EmbeddingConfig());
   }
 
   /// Get an embedding preset by name.

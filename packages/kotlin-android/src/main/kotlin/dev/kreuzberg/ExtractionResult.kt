@@ -167,7 +167,7 @@ data class ExtractionResult(
      * other URI-like references found in the document. Always extracted when
      * present in the source document.
      */
-    val uris: List<Uri>? = null,
+    val uris: List<ExtractedUri>? = null,
     /**
      * Structured extraction output from LLM-based JSON schema extraction.
      *

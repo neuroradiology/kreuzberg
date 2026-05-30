@@ -29,7 +29,7 @@ use crate::types::internal::{RelationshipKind, RelationshipTarget};
 #[cfg(feature = "office")]
 use crate::types::internal_builder::InternalDocumentBuilder;
 #[cfg(feature = "office")]
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 #[cfg(feature = "office")]
 use crate::types::{Metadata, Table};
 #[cfg(feature = "office")]
@@ -858,7 +858,7 @@ impl RstExtractor {
                 let alt = opts.get("alt").cloned();
                 let desc = alt.as_deref().unwrap_or(uri);
                 if !uri.is_empty() {
-                    b.push_uri(Uri::image(uri, alt.clone()));
+                    b.push_uri(ExtractedUri::image(uri, alt.clone()));
                 }
                 if inject_placeholders {
                     let idx = b.push_paragraph(&format!("[image: {}]", desc), vec![], None, None);

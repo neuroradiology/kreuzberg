@@ -200,7 +200,7 @@ pub struct ExtractionResult {
     /// present in the source document.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub uris: Option<Vec<super::uri::Uri>>,
+    pub uris: Option<Vec<super::uri::ExtractedUri>>,
 
     /// Structured extraction output from LLM-based JSON schema extraction.
     ///

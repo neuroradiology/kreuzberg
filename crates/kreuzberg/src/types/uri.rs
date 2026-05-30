@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// optional human-readable display text.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct Uri {
+pub struct ExtractedUri {
     /// The URL or path string.
     pub url: String,
     /// Optional display text / label for the link.
@@ -59,7 +59,7 @@ pub(crate) fn classify_uri(url: &str) -> UriKind {
     }
 }
 
-impl Uri {
+impl ExtractedUri {
     /// Create a new hyperlink URI, auto-classifying `mailto:` as Email and `#` as Anchor.
     #[cfg(any(feature = "pdf", feature = "xml", feature = "office"))]
     pub(crate) fn hyperlink(url: impl Into<String>, label: Option<String>) -> Self {
@@ -120,7 +120,7 @@ mod tests {
 
     #[test]
     fn test_uri_hyperlink() {
-        let uri = Uri::hyperlink("https://example.com", Some("Example".to_string()));
+        let uri = ExtractedUri::hyperlink("https://example.com", Some("Example".to_string()));
         assert_eq!(uri.kind, UriKind::Hyperlink);
         assert_eq!(uri.url, "https://example.com");
         assert_eq!(uri.label, Some("Example".to_string()));
@@ -128,31 +128,31 @@ mod tests {
 
     #[test]
     fn test_uri_mailto_auto_detects_email() {
-        let uri = Uri::hyperlink("mailto:test@example.com", None);
+        let uri = ExtractedUri::hyperlink("mailto:test@example.com", None);
         assert_eq!(uri.kind, UriKind::Email);
     }
 
     #[cfg(any(feature = "xml", feature = "office"))]
     #[test]
     fn test_uri_citation() {
-        let uri = Uri::citation("10.1234/test", Some("Smith 2024".to_string()));
+        let uri = ExtractedUri::citation("10.1234/test", Some("Smith 2024".to_string()));
         assert_eq!(uri.kind, UriKind::Citation);
     }
 
     #[test]
     fn test_uri_with_page() {
-        let uri = Uri::hyperlink("https://example.com", None).with_page(5);
+        let uri = ExtractedUri::hyperlink("https://example.com", None).with_page(5);
         assert_eq!(uri.page, Some(5));
     }
 
     #[test]
     fn test_uri_serialization() {
-        let uri = Uri::hyperlink("https://example.com", Some("Example".to_string()));
+        let uri = ExtractedUri::hyperlink("https://example.com", Some("Example".to_string()));
         let json = serde_json::to_string(&uri).unwrap();
         assert!(json.contains("\"url\":\"https://example.com\""));
         assert!(json.contains("\"kind\":\"hyperlink\""));
 
-        let deserialized: Uri = serde_json::from_str(&json).unwrap();
+        let deserialized: ExtractedUri = serde_json::from_str(&json).unwrap();
         assert_eq!(deserialized, uri);
     }
 }

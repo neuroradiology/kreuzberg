@@ -23,7 +23,7 @@ use crate::plugins::{DocumentExtractor, Plugin};
 use crate::text::utf8_validation;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 use quick_xml::Reader;
@@ -213,7 +213,7 @@ fn build_docbook_internal_document(
                                     && !url.is_empty()
                                 {
                                     let label = text.get(ann.start as usize..ann.end as usize).map(|s| s.to_string());
-                                    builder.push_uri(Uri::hyperlink(url, label));
+                                    builder.push_uri(ExtractedUri::hyperlink(url, label));
                                 }
                             }
                             builder.push_paragraph(&text, annotations, None, None);

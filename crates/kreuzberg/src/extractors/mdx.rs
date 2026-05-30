@@ -13,7 +13,7 @@ use crate::core::config::ExtractionConfig;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
-use crate::types::uri::{Uri, UriKind};
+use crate::types::uri::{ExtractedUri, UriKind};
 use crate::types::{Metadata, Table};
 use async_trait::async_trait;
 use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
@@ -401,7 +401,7 @@ impl MdxExtractor {
                             }
                             // Collect URI
                             if !url.is_empty() {
-                                b.push_uri(Uri::hyperlink(&url, title));
+                                b.push_uri(ExtractedUri::hyperlink(&url, title));
                             }
                         }
                     }
@@ -525,7 +525,7 @@ impl MdxExtractor {
                     }
                     // Collect image URI
                     if let Some(url) = image_url.take().filter(|u| !u.is_empty()) {
-                        b.push_uri(Uri {
+                        b.push_uri(ExtractedUri {
                             url,
                             label: if desc.is_empty() { None } else { Some(desc.to_string()) },
                             page: None,

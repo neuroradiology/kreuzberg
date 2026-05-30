@@ -22,7 +22,7 @@ use crate::types::internal::InternalDocument;
 #[cfg(feature = "office")]
 use crate::types::internal_builder::InternalDocumentBuilder;
 #[cfg(feature = "office")]
-use crate::types::uri::Uri;
+use crate::types::uri::ExtractedUri;
 #[cfg(feature = "office")]
 use crate::types::{ExtractedImage, Metadata};
 #[cfg(feature = "office")]
@@ -453,7 +453,7 @@ impl JupyterExtractor {
     ///
     /// Uses pulldown-cmark for robust parsing instead of hand-rolled byte scanning.
     /// Recognizes both `[text](url)` hyperlinks and `![alt](url)` image links.
-    fn extract_markdown_links(text: &str) -> Vec<Uri> {
+    fn extract_markdown_links(text: &str) -> Vec<ExtractedUri> {
         use pulldown_cmark::{Event, Parser, Tag, TagEnd};
 
         let parser = Parser::new(text);
@@ -487,7 +487,7 @@ impl JupyterExtractor {
                         } else {
                             Some(current_text.clone())
                         };
-                        uris.push(Uri::hyperlink(&url, label_opt));
+                        uris.push(ExtractedUri::hyperlink(&url, label_opt));
                     }
                     in_link = false;
                     current_text.clear();
@@ -501,7 +501,7 @@ impl JupyterExtractor {
                         } else {
                             Some(current_text.clone())
                         };
-                        uris.push(Uri::image(&url, label_opt));
+                        uris.push(ExtractedUri::image(&url, label_opt));
                     }
                     in_image = false;
                     current_text.clear();
