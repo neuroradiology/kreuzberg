@@ -937,7 +937,7 @@ public class AccelerationConfigRefMut: AccelerationConfigRef {
     }
 }
 public class AccelerationConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1026,7 +1026,7 @@ public class ContentFilterConfigRefMut: ContentFilterConfigRef {
     }
 }
 public class ContentFilterConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1123,7 +1123,7 @@ public class EmailConfigRefMut: EmailConfigRef {
     }
 }
 public class EmailConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1208,7 +1208,7 @@ public class ExtractionConfigRefMut: ExtractionConfigRef {
     }
 }
 public class ExtractionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1425,7 +1425,7 @@ public class FileExtractionConfigRefMut: FileExtractionConfigRef {
     }
 }
 public class FileExtractionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1589,7 +1589,7 @@ public class BatchBytesItemRefMut: BatchBytesItemRef {
     }
 }
 public class BatchBytesItemRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1677,7 +1677,7 @@ public class BatchFileItemRefMut: BatchFileItemRef {
     }
 }
 public class BatchFileItemRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1766,7 +1766,7 @@ public class ImageExtractionConfigRefMut: ImageExtractionConfigRef {
     }
 }
 public class ImageExtractionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1899,7 +1899,7 @@ public class TokenReductionOptionsRefMut: TokenReductionOptionsRef {
     }
 }
 public class TokenReductionOptionsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -1988,7 +1988,7 @@ public class LanguageDetectionConfigRefMut: LanguageDetectionConfigRef {
     }
 }
 public class LanguageDetectionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2081,7 +2081,7 @@ public class HtmlOutputConfigRefMut: HtmlOutputConfigRef {
     }
 }
 public class HtmlOutputConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2182,7 +2182,7 @@ public class LayoutDetectionConfigRefMut: LayoutDetectionConfigRef {
     }
 }
 public class LayoutDetectionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2279,7 +2279,7 @@ public class LlmConfigRefMut: LlmConfigRef {
     }
 }
 public class LlmConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2383,7 +2383,7 @@ public class StructuredExtractionConfigRefMut: StructuredExtractionConfigRef {
     }
 }
 public class StructuredExtractionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2488,7 +2488,7 @@ public class OcrQualityThresholdsRefMut: OcrQualityThresholdsRef {
     }
 }
 public class OcrQualityThresholdsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2628,7 +2628,7 @@ public class OcrPipelineStageRefMut: OcrPipelineStageRef {
     }
 }
 public class OcrPipelineStageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2732,7 +2732,7 @@ public class OcrPipelineConfigRefMut: OcrPipelineConfigRef {
     }
 }
 public class OcrPipelineConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2821,7 +2821,7 @@ public class OcrConfigRefMut: OcrConfigRef {
     }
 }
 public class OcrConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -2962,7 +2962,7 @@ public class PageConfigRefMut: PageConfigRef {
     }
 }
 public class PageConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3055,7 +3055,7 @@ public class PdfConfigRefMut: PdfConfigRef {
     }
 }
 public class PdfConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3176,7 +3176,7 @@ public class HierarchyConfigRefMut: HierarchyConfigRef {
     }
 }
 public class HierarchyConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3273,7 +3273,7 @@ public class PostProcessorConfigRefMut: PostProcessorConfigRef {
     }
 }
 public class PostProcessorConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3374,7 +3374,7 @@ public class ChunkingConfigRefMut: ChunkingConfigRef {
     }
 }
 public class ChunkingConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3491,7 +3491,7 @@ public class EmbeddingConfigRefMut: EmbeddingConfigRef {
     }
 }
 public class EmbeddingConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3600,7 +3600,7 @@ public class TreeSitterConfigRefMut: TreeSitterConfigRef {
     }
 }
 public class TreeSitterConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3701,7 +3701,7 @@ public class TreeSitterProcessConfigRefMut: TreeSitterProcessConfigRef {
     }
 }
 public class TreeSitterProcessConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3813,7 +3813,7 @@ public class SupportedFormatRefMut: SupportedFormatRef {
     }
 }
 public class SupportedFormatRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3902,7 +3902,7 @@ public class ServerConfigRefMut: ServerConfigRef {
     }
 }
 public class ServerConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -3998,7 +3998,7 @@ public class StructuredDataResultRefMut: StructuredDataResultRef {
     }
 }
 public class StructuredDataResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4090,7 +4090,7 @@ public class ExtractedImageMetadataRefMut: ExtractedImageMetadataRef {
     }
 }
 public class ExtractedImageMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4187,7 +4187,7 @@ public class DocxAppPropertiesRefMut: DocxAppPropertiesRef {
     }
 }
 public class DocxAppPropertiesRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4332,7 +4332,7 @@ public class XlsxAppPropertiesRefMut: XlsxAppPropertiesRef {
     }
 }
 public class XlsxAppPropertiesRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4449,7 +4449,7 @@ public class PptxAppPropertiesRefMut: PptxAppPropertiesRef {
     }
 }
 public class PptxAppPropertiesRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4590,7 +4590,7 @@ public class CorePropertiesRefMut: CorePropertiesRef {
     }
 }
 public class CorePropertiesRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4731,7 +4731,7 @@ public class SecurityLimitsRefMut: SecurityLimitsRef {
     }
 }
 public class SecurityLimitsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4848,7 +4848,7 @@ public class TokenReductionConfigRefMut: TokenReductionConfigRef {
     }
 }
 public class TokenReductionConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -4968,7 +4968,7 @@ public class PdfAnnotationRefMut: PdfAnnotationRef {
     }
 }
 public class PdfAnnotationRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5060,7 +5060,7 @@ public class DjotContentRefMut: DjotContentRef {
     }
 }
 public class DjotContentRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5164,7 +5164,7 @@ public class FormattedBlockRefMut: FormattedBlockRef {
     }
 }
 public class FormattedBlockRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5268,7 +5268,7 @@ public class InlineElementRefMut: InlineElementRef {
     }
 }
 public class InlineElementRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5360,7 +5360,7 @@ public class DjotImageRefMut: DjotImageRef {
     }
 }
 public class DjotImageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5452,7 +5452,7 @@ public class DjotLinkRefMut: DjotLinkRef {
     }
 }
 public class DjotLinkRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5544,7 +5544,7 @@ public class FootnoteRefMut: FootnoteRef {
     }
 }
 public class FootnoteRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5633,7 +5633,7 @@ public class DocumentStructureRefMut: DocumentStructureRef {
     }
 }
 public class DocumentStructureRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5725,7 +5725,7 @@ public class DocumentRelationshipRefMut: DocumentRelationshipRef {
     }
 }
 public class DocumentRelationshipRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5813,7 +5813,7 @@ public class DocumentNodeRefMut: DocumentNodeRef {
     }
 }
 public class DocumentNodeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -5934,7 +5934,7 @@ public class TableGridRefMut: TableGridRef {
     }
 }
 public class TableGridRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6022,7 +6022,7 @@ public class GridCellRefMut: GridCellRef {
     }
 }
 public class GridCellRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6126,7 +6126,7 @@ public class TextAnnotationRefMut: TextAnnotationRef {
     }
 }
 public class TextAnnotationRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6219,7 +6219,7 @@ public class ExtractionResultRefMut: ExtractionResultRef {
     }
 }
 public class ExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6387,7 +6387,7 @@ public class ArchiveEntryRefMut: ArchiveEntryRef {
     }
 }
 public class ArchiveEntryRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6475,7 +6475,7 @@ public class ProcessingWarningRefMut: ProcessingWarningRef {
     }
 }
 public class ProcessingWarningRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6564,7 +6564,7 @@ public class LlmUsageRefMut: LlmUsageRef {
     }
 }
 public class LlmUsageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6668,7 +6668,7 @@ public class ChunkRefMut: ChunkRef {
     }
 }
 public class ChunkRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6760,7 +6760,7 @@ public class HeadingContextRefMut: HeadingContextRef {
     }
 }
 public class HeadingContextRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6840,7 +6840,7 @@ public class HeadingLevelRefMut: HeadingLevelRef {
     }
 }
 public class HeadingLevelRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6924,7 +6924,7 @@ public class ChunkMetadataRefMut: ChunkMetadataRef {
     }
 }
 public class ChunkMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7036,7 +7036,7 @@ public class ExtractedImageRefMut: ExtractedImageRef {
     }
 }
 public class ExtractedImageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7181,7 +7181,7 @@ public class BoundingBoxRefMut: BoundingBoxRef {
     }
 }
 public class BoundingBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7273,7 +7273,7 @@ public class ElementMetadataRefMut: ElementMetadataRef {
     }
 }
 public class ElementMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7369,7 +7369,7 @@ public class ElementRefMut: ElementRef {
     }
 }
 public class ElementRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7461,7 +7461,7 @@ public class ExcelWorkbookRefMut: ExcelWorkbookRef {
     }
 }
 public class ExcelWorkbookRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7545,7 +7545,7 @@ public class ExcelSheetRefMut: ExcelSheetRef {
     }
 }
 public class ExcelSheetRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7645,7 +7645,7 @@ public class XmlExtractionResultRefMut: XmlExtractionResultRef {
     }
 }
 public class XmlExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7733,7 +7733,7 @@ public class TextExtractionResultRefMut: TextExtractionResultRef {
     }
 }
 public class TextExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7829,7 +7829,7 @@ public class PptxExtractionResultRefMut: PptxExtractionResultRef {
     }
 }
 public class PptxExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -7945,7 +7945,7 @@ public class EmailExtractionResultRefMut: EmailExtractionResultRef {
     }
 }
 public class EmailExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8069,7 +8069,7 @@ public class EmailAttachmentRefMut: EmailAttachmentRef {
     }
 }
 public class EmailAttachmentRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8169,7 +8169,7 @@ public class OcrExtractionResultRefMut: OcrExtractionResultRef {
     }
 }
 public class OcrExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8265,7 +8265,7 @@ public class OcrTableRefMut: OcrTableRef {
     }
 }
 public class OcrTableRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8362,7 +8362,7 @@ public class OcrTableBoundingBoxRefMut: OcrTableBoundingBoxRef {
     }
 }
 public class OcrTableBoundingBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8459,7 +8459,7 @@ public class ImagePreprocessingConfigRefMut: ImagePreprocessingConfigRef {
     }
 }
 public class ImagePreprocessingConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8568,7 +8568,7 @@ public class TesseractConfigRefMut: TesseractConfigRef {
     }
 }
 public class TesseractConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8728,7 +8728,7 @@ public class ImagePreprocessingMetadataRefMut: ImagePreprocessingMetadataRef {
     }
 }
 public class ImagePreprocessingMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -8857,7 +8857,7 @@ public class MetadataRefMut: MetadataRef {
     }
 }
 public class MetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9026,7 +9026,7 @@ public class ExcelMetadataRefMut: ExcelMetadataRef {
     }
 }
 public class ExcelMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9115,7 +9115,7 @@ public class EmailMetadataRefMut: EmailMetadataRef {
     }
 }
 public class EmailMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9224,7 +9224,7 @@ public class ArchiveMetadataRefMut: ArchiveMetadataRef {
     }
 }
 public class ArchiveMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9325,7 +9325,7 @@ public class ImageMetadataRefMut: ImageMetadataRef {
     }
 }
 public class ImageMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9422,7 +9422,7 @@ public class XmlMetadataRefMut: XmlMetadataRef {
     }
 }
 public class XmlMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9511,7 +9511,7 @@ public class TextMetadataRefMut: TextMetadataRef {
     }
 }
 public class TextMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9603,7 +9603,7 @@ public class HeaderMetadataRefMut: HeaderMetadataRef {
     }
 }
 public class HeaderMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9699,7 +9699,7 @@ public class LinkMetadataRefMut: LinkMetadataRef {
     }
 }
 public class LinkMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9795,7 +9795,7 @@ public class ImageMetadataTypeRefMut: ImageMetadataTypeRef {
     }
 }
 public class ImageMetadataTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9891,7 +9891,7 @@ public class StructuredDataRefMut: StructuredDataRef {
     }
 }
 public class StructuredDataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -9984,7 +9984,7 @@ public class HtmlMetadataRefMut: HtmlMetadataRef {
     }
 }
 public class HtmlMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10125,7 +10125,7 @@ public class OcrMetadataRefMut: OcrMetadataRef {
     }
 }
 public class OcrMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10225,7 +10225,7 @@ public class ErrorMetadataRefMut: ErrorMetadataRef {
     }
 }
 public class ErrorMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10314,7 +10314,7 @@ public class PptxMetadataRefMut: PptxMetadataRef {
     }
 }
 public class PptxMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10411,7 +10411,7 @@ public class DocxMetadataRefMut: DocxMetadataRef {
     }
 }
 public class DocxMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10504,7 +10504,7 @@ public class CsvMetadataRefMut: CsvMetadataRef {
     }
 }
 public class CsvMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10605,7 +10605,7 @@ public class BibtexMetadataRefMut: BibtexMetadataRef {
     }
 }
 public class BibtexMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10706,7 +10706,7 @@ public class CitationMetadataRefMut: CitationMetadataRef {
     }
 }
 public class CitationMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10806,7 +10806,7 @@ public class YearRangeRefMut: YearRangeRef {
     }
 }
 public class YearRangeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10899,7 +10899,7 @@ public class FictionBookMetadataRefMut: FictionBookMetadataRef {
     }
 }
 public class FictionBookMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -10992,7 +10992,7 @@ public class DbfMetadataRefMut: DbfMetadataRef {
     }
 }
 public class DbfMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11080,7 +11080,7 @@ public class DbfFieldInfoRefMut: DbfFieldInfoRef {
     }
 }
 public class DbfFieldInfoRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11169,7 +11169,7 @@ public class JatsMetadataRefMut: JatsMetadataRef {
     }
 }
 public class JatsMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11261,7 +11261,7 @@ public class ContributorRoleRefMut: ContributorRoleRef {
     }
 }
 public class ContributorRoleRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11350,7 +11350,7 @@ public class EpubMetadataRefMut: EpubMetadataRef {
     }
 }
 public class EpubMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11455,7 +11455,7 @@ public class PstMetadataRefMut: PstMetadataRef {
     }
 }
 public class PstMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11540,7 +11540,7 @@ public class OcrConfidenceRefMut: OcrConfidenceRef {
     }
 }
 public class OcrConfidenceRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11629,7 +11629,7 @@ public class OcrRotationRefMut: OcrRotationRef {
     }
 }
 public class OcrRotationRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11718,7 +11718,7 @@ public class OcrElementRefMut: OcrElementRef {
     }
 }
 public class OcrElementRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11831,7 +11831,7 @@ public class OcrElementConfigRefMut: OcrElementConfigRef {
     }
 }
 public class OcrElementConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -11923,7 +11923,7 @@ public class PageStructureRefMut: PageStructureRef {
     }
 }
 public class PageStructureRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12020,7 +12020,7 @@ public class PageBoundaryRefMut: PageBoundaryRef {
     }
 }
 public class PageBoundaryRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12108,7 +12108,7 @@ public class PageInfoRefMut: PageInfoRef {
     }
 }
 public class PageInfoRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12216,7 +12216,7 @@ public class PageContentRefMut: PageContentRef {
     }
 }
 public class PageContentRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12333,7 +12333,7 @@ public class LayoutRegionRefMut: LayoutRegionRef {
     }
 }
 public class LayoutRegionRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12425,7 +12425,7 @@ public class PageHierarchyRefMut: PageHierarchyRef {
     }
 }
 public class PageHierarchyRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12509,7 +12509,7 @@ public class HierarchicalBlockRefMut: HierarchicalBlockRef {
     }
 }
 public class HierarchicalBlockRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12606,7 +12606,7 @@ public class TableRefMut: TableRef {
     }
 }
 public class TableRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12703,7 +12703,7 @@ public class TableCellRefMut: TableCellRef {
     }
 }
 public class TableCellRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12795,7 +12795,7 @@ public class ExtractedUriRefMut: ExtractedUriRef {
     }
 }
 public class ExtractedUriRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12887,7 +12887,7 @@ public class DetectResponseRefMut: DetectResponseRef {
     }
 }
 public class DetectResponseRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -12971,7 +12971,7 @@ public class EmbeddingPresetRefMut: EmbeddingPresetRef {
     }
 }
 public class EmbeddingPresetRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13084,7 +13084,7 @@ public class YakeParamsRefMut: YakeParamsRef {
     }
 }
 public class YakeParamsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13169,7 +13169,7 @@ public class RakeParamsRefMut: RakeParamsRef {
     }
 }
 public class RakeParamsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13258,7 +13258,7 @@ public class KeywordConfigRefMut: KeywordConfigRef {
     }
 }
 public class KeywordConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13362,7 +13362,7 @@ public class KeywordRefMut: KeywordRef {
     }
 }
 public class KeywordRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13459,7 +13459,7 @@ public class OcrCacheStatsRefMut: OcrCacheStatsRef {
     }
 }
 public class OcrCacheStatsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13548,7 +13548,7 @@ public class PaddleOcrConfigRefMut: PaddleOcrConfigRef {
     }
 }
 public class PaddleOcrConfigRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13672,7 +13672,7 @@ public class ModelPathsRefMut: ModelPathsRef {
     }
 }
 public class ModelPathsRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13769,7 +13769,7 @@ public class OrientationResultRefMut: OrientationResultRef {
     }
 }
 public class OrientationResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13858,7 +13858,7 @@ public class BBoxRefMut: BBoxRef {
     }
 }
 public class BBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -13950,7 +13950,7 @@ public class LayoutDetectionRefMut: LayoutDetectionRef {
     }
 }
 public class LayoutDetectionRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14038,7 +14038,7 @@ public class RecognizedTableRefMut: RecognizedTableRef {
     }
 }
 public class RecognizedTableRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14126,7 +14126,7 @@ public class DetectionResultRefMut: DetectionResultRef {
     }
 }
 public class DetectionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14214,7 +14214,7 @@ public class EmbeddedFileRefMut: EmbeddedFileRef {
     }
 }
 public class EmbeddedFileRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14307,7 +14307,7 @@ public class PdfMetadataRefMut: PdfMetadataRef {
     }
 }
 public class PdfMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14407,7 +14407,7 @@ public class ExecutionProviderTypeRefMut: ExecutionProviderTypeRef {
     }
 }
 public class ExecutionProviderTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14487,7 +14487,7 @@ public class OutputFormatRefMut: OutputFormatRef {
     }
 }
 public class OutputFormatRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14567,7 +14567,7 @@ public class HtmlThemeRefMut: HtmlThemeRef {
     }
 }
 public class HtmlThemeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14647,7 +14647,7 @@ public class TableModelRefMut: TableModelRef {
     }
 }
 public class TableModelRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14727,7 +14727,7 @@ public class ChunkerTypeRefMut: ChunkerTypeRef {
     }
 }
 public class ChunkerTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14807,7 +14807,7 @@ public class ChunkSizingRefMut: ChunkSizingRef {
     }
 }
 public class ChunkSizingRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14887,7 +14887,7 @@ public class EmbeddingModelTypeRefMut: EmbeddingModelTypeRef {
     }
 }
 public class EmbeddingModelTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -14967,7 +14967,7 @@ public class CodeContentModeRefMut: CodeContentModeRef {
     }
 }
 public class CodeContentModeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15047,7 +15047,7 @@ public class ListTypeRefMut: ListTypeRef {
     }
 }
 public class ListTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15127,7 +15127,7 @@ public class FracTypeRefMut: FracTypeRef {
     }
 }
 public class FracTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15207,7 +15207,7 @@ public class OcrBackendTypeRefMut: OcrBackendTypeRef {
     }
 }
 public class OcrBackendTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15287,7 +15287,7 @@ public class ProcessingStageRefMut: ProcessingStageRef {
     }
 }
 public class ProcessingStageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15367,7 +15367,7 @@ public class ReductionLevelRefMut: ReductionLevelRef {
     }
 }
 public class ReductionLevelRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15447,7 +15447,7 @@ public class PdfAnnotationTypeRefMut: PdfAnnotationTypeRef {
     }
 }
 public class PdfAnnotationTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15527,7 +15527,7 @@ public class BlockTypeRefMut: BlockTypeRef {
     }
 }
 public class BlockTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15607,7 +15607,7 @@ public class InlineTypeRefMut: InlineTypeRef {
     }
 }
 public class InlineTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15687,7 +15687,7 @@ public class RelationshipKindRefMut: RelationshipKindRef {
     }
 }
 public class RelationshipKindRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15767,7 +15767,7 @@ public class ContentLayerRefMut: ContentLayerRef {
     }
 }
 public class ContentLayerRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15847,7 +15847,7 @@ public class NodeContentRefMut: NodeContentRef {
     }
 }
 public class NodeContentRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -15927,7 +15927,7 @@ public class AnnotationKindRefMut: AnnotationKindRef {
     }
 }
 public class AnnotationKindRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16007,7 +16007,7 @@ public class ExtractionMethodRefMut: ExtractionMethodRef {
     }
 }
 public class ExtractionMethodRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16087,7 +16087,7 @@ public class ChunkTypeRefMut: ChunkTypeRef {
     }
 }
 public class ChunkTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16167,7 +16167,7 @@ public class ImageKindRefMut: ImageKindRef {
     }
 }
 public class ImageKindRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16247,7 +16247,7 @@ public class ResultFormatRefMut: ResultFormatRef {
     }
 }
 public class ResultFormatRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16327,7 +16327,7 @@ public class ElementTypeRefMut: ElementTypeRef {
     }
 }
 public class ElementTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16407,7 +16407,7 @@ public class FormatMetadataRefMut: FormatMetadataRef {
     }
 }
 public class FormatMetadataRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16487,7 +16487,7 @@ public class TextDirectionRefMut: TextDirectionRef {
     }
 }
 public class TextDirectionRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16567,7 +16567,7 @@ public class LinkTypeRefMut: LinkTypeRef {
     }
 }
 public class LinkTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16647,7 +16647,7 @@ public class ImageTypeRefMut: ImageTypeRef {
     }
 }
 public class ImageTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16727,7 +16727,7 @@ public class StructuredDataTypeRefMut: StructuredDataTypeRef {
     }
 }
 public class StructuredDataTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16807,7 +16807,7 @@ public class OcrBoundingGeometryRefMut: OcrBoundingGeometryRef {
     }
 }
 public class OcrBoundingGeometryRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16887,7 +16887,7 @@ public class OcrElementLevelRefMut: OcrElementLevelRef {
     }
 }
 public class OcrElementLevelRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -16967,7 +16967,7 @@ public class PageUnitTypeRefMut: PageUnitTypeRef {
     }
 }
 public class PageUnitTypeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17047,7 +17047,7 @@ public class UriKindRefMut: UriKindRef {
     }
 }
 public class UriKindRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17127,7 +17127,7 @@ public class KeywordAlgorithmRefMut: KeywordAlgorithmRef {
     }
 }
 public class KeywordAlgorithmRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17207,7 +17207,7 @@ public class PSMModeRefMut: PSMModeRef {
     }
 }
 public class PSMModeRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17287,7 +17287,7 @@ public class PaddleLanguageRefMut: PaddleLanguageRef {
     }
 }
 public class PaddleLanguageRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17367,7 +17367,7 @@ public class LayoutClassRefMut: LayoutClassRef {
     }
 }
 public class LayoutClassRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17447,7 +17447,7 @@ public class OcrBackendBoxRefMut: OcrBackendBoxRef {
     }
 }
 public class OcrBackendBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17522,7 +17522,7 @@ public class PostProcessorBoxRefMut: PostProcessorBoxRef {
     }
 }
 public class PostProcessorBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17597,7 +17597,7 @@ public class ValidatorBoxRefMut: ValidatorBoxRef {
     }
 }
 public class ValidatorBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17672,7 +17672,7 @@ public class EmbeddingBackendBoxRefMut: EmbeddingBackendBoxRef {
     }
 }
 public class EmbeddingBackendBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17747,7 +17747,7 @@ public class DocumentExtractorBoxRefMut: DocumentExtractorBoxRef {
     }
 }
 public class DocumentExtractorBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -17822,7 +17822,7 @@ public class RendererBoxRefMut: RendererBoxRef {
     }
 }
 public class RendererBoxRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
