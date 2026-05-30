@@ -39,7 +39,7 @@ data class DocumentNode(
     /** Child node indices in reading order. */
     val children: List<Int> = emptyList(),
     /** Content layer classification. */
-    val contentLayer: ContentLayer? = null,
+    val contentLayer: ContentLayer,
     /** Page number where this node starts (1-indexed). */
     val page: Int? = null,
     /** Page number where this node ends (for multi-page tables/sections). */

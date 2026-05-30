@@ -8599,7 +8599,7 @@ pub fn batch_extract_bytes_sync(
 ///
 ///   per-file configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
+/// - `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// **Returns:**
 ///
@@ -8643,7 +8643,7 @@ pub async fn batch_extract_files(
 ///
 ///   MIME type, and optional per-item configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration
+/// - `config` - Batch-level extraction configuration
 ///
 /// **Returns:**
 ///

@@ -42,7 +42,7 @@ const ORT_FEATURE_SELECTION_WARNING: () = ();
 
 #[cfg(all(feature = "ort-bundled", feature = "ort-dynamic"))]
 const _: () = {
-    let _ = ORT_FEATURE_SELECTION_WARNING;
+    ORT_FEATURE_SELECTION_WARNING;
 };
 
 pub mod cache;

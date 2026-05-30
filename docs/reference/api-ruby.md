@@ -216,7 +216,7 @@ taken from the batch-level `config`.
 
   per-file configuration overrides.
 
-* `config` - Batch-level extraction configuration (provides defaults and batch settings)
+- `config` - Batch-level extraction configuration (provides defaults and batch settings)
 
 **Returns:**
 
@@ -264,7 +264,7 @@ the batch-level defaults for that item.
 
   MIME type, and optional per-item configuration overrides.
 
-* `config` - Batch-level extraction configuration
+- `config` - Batch-level extraction configuration
 
 **Returns:**
 
@@ -3074,11 +3074,7 @@ when page boundaries are available and chunking is configured.
 |-------|------|---------|-------------|
 | `extract_pages` | `Boolean` | `false` | Extract pages as separate array (ExtractionResult.pages) |
 | `insert_page_markers` | `Boolean` | `false` | Insert page markers in main content string |
-| `marker_format` | `String` | `"
-
-<!-- PAGE {page_num} -->
-
-"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
+| `marker_format` | `String` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
 ### Methods
 
@@ -4453,10 +4449,10 @@ Type of text chunker to use.
 
 ### Variants
 
-* `Text` - Generic text splitter, splits on whitespace and punctuation
-* `Markdown` - Markdown-aware splitter, preserves formatting and structure
-* `Yaml` - YAML-aware splitter, creates one chunk per top-level key
-* `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+- `Text` - Generic text splitter, splits on whitespace and punctuation
+- `Markdown` - Markdown-aware splitter, preserves formatting and structure
+- `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+- `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
   lower = more splits). Without an embedding, falls back to a
   structural-boundary heuristic (ALL-CAPS headers, numbered sections,

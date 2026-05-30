@@ -8,9 +8,6 @@ import RustBridge
 /// Protocol for outbound `Renderer` implementations.
 /// Conform your Swift class or struct to this protocol to implement
 /// a Rust trait from the host side.
-/// JSON-encoded `InternalDocument` (passed through as a string across the FFI).
-public typealias InternalDocument = String
-
 public protocol SwiftRendererBridge: AnyObject {
     func render(doc: InternalDocument) throws -> String
 }

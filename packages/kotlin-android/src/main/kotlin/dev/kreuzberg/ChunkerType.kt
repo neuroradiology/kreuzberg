@@ -27,10 +27,10 @@ package dev.kreuzberg
  *
  * # Variants
  *
- * * `Text` - Generic text splitter, splits on whitespace and punctuation
- * * `Markdown` - Markdown-aware splitter, preserves formatting and structure
- * * `Yaml` - YAML-aware splitter, creates one chunk per top-level key
- * * `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+ * - `Text` - Generic text splitter, splits on whitespace and punctuation
+ * - `Markdown` - Markdown-aware splitter, preserves formatting and structure
+ * - `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+ * - `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
  *   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
  *   lower = more splits). Without an embedding, falls back to a
  *   structural-boundary heuristic (ALL-CAPS headers, numbered sections,

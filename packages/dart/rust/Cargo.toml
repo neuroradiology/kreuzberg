@@ -7,16 +7,15 @@ license = "Elastic-2.0"
 [package.metadata.cargo-machete]
 # Umbrella + sibling crates are pulled in so flutter_rust_bridge can resolve
 # every referenced type, but the generated Rust wrapper only `use`s a subset.
-ignored = ["ahash", "kreuzberg"]
+ignored = ["kreuzberg"]
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.12.0"
-ahash = "0.8"
 serde_json = "1"
-tokio = { version = "1", features = ["rt-multi-thread"] }
+tokio = { version = "1", features = ["rt-multi-thread", "sync"] }
 async-trait = "0.1"
 
 [target.'cfg(not(all(target_os = "android", target_arch = "x86_64")))'.dependencies]

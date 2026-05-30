@@ -31,8 +31,6 @@ package dev.kreuzberg
  * `Structured` returns JSON with full OCR element data including bounding
  * boxes and confidence scores.
  */
-@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OutputFormatDeserializer::class)
-@com.fasterxml.jackson.databind.annotation.JsonSerialize(using = OutputFormatSerializer::class)
 sealed class OutputFormat {
     /** Plain text content only (default) */
     object Plain : OutputFormat()
@@ -51,51 +49,4 @@ sealed class OutputFormat {
      * The string is the renderer name (e.g., "docx", "latex").
      */
     data class Custom(val value: String) : OutputFormat()
-}
-
-private class OutputFormatDeserializer :
-    com.fasterxml.jackson.databind.deser.std.StdDeserializer<OutputFormat>(OutputFormat::class.java) {
-    override fun deserialize(
-        parser: com.fasterxml.jackson.core.JsonParser,
-        ctx: com.fasterxml.jackson.databind.DeserializationContext,
-    ): OutputFormat {
-        val node = parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
-        // Accept the Rust serialisation `"markdown"` or the Kotlin object-shape
-        // `{"value": "markdown"}` from a round-trip. Unknown / empty -> Plain.
-        val tag = when {
-            node.isTextual -> node.asText()
-            node.isObject && node.has("value") -> node.get("value").asText()
-            else -> "plain"
-        }
-        return when (tag.lowercase()) {
-            "plain" -> OutputFormat.Plain
-            "markdown" -> OutputFormat.Markdown
-            "djot" -> OutputFormat.Djot
-            "html" -> OutputFormat.Html
-            "json" -> OutputFormat.Json
-            "structured" -> OutputFormat.Structured
-            else -> OutputFormat.Custom(tag)
-        }
-    }
-}
-
-private class OutputFormatSerializer :
-    com.fasterxml.jackson.databind.ser.std.StdSerializer<OutputFormat>(OutputFormat::class.java) {
-    override fun serialize(
-        value: OutputFormat,
-        gen: com.fasterxml.jackson.core.JsonGenerator,
-        provider: com.fasterxml.jackson.databind.SerializerProvider,
-    ) {
-        gen.writeString(
-            when (value) {
-                is OutputFormat.Plain -> "plain"
-                is OutputFormat.Markdown -> "markdown"
-                is OutputFormat.Djot -> "djot"
-                is OutputFormat.Html -> "html"
-                is OutputFormat.Json -> "json"
-                is OutputFormat.Structured -> "structured"
-                is OutputFormat.Custom -> value.value
-            },
-        )
-    }
 }

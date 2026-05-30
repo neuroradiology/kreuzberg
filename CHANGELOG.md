@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **kotlin-android (e2e)**: added trait-bridge e2e test generation. alef.toml now includes `class` field overrides for register/unregister/clear trait-bridge calls (e.g., `class = "OcrBackendBridge"`) to properly route e2e tests through the Bridge object methods instead of the Kreuzberg main class. kotlin_android e2e test count increased from 21 to 22 files (PluginApiTest.kt added).
 - **rust**: `Uri` struct renamed to `ExtractedUri` to avoid collision with `dart:core.Uri` in Dart bindings. This is a breaking change for Rust consumers who reference `kreuzberg::Uri` directly; import `use kreuzberg::ExtractedUri` instead. All language bindings (`dart`, `python`, `node`, `ruby`, `php`, `go`, `java`, `csharp`, `kotlin`, `swift`, `r`, `elixir`, `zig`) automatically inherit the new struct name.
 - **kreuzberg-ffi**: crate-types extended with `rlib` so downstream Rust crates (e.g. `kreuzberg-jni`) can take an in-process Rust dep on it without re-exporting the C ABI through a separate dylib.
 

@@ -6386,67 +6386,85 @@ public func extractFile(
 , config
 )
 }
+// MARK: - JSON-String Convenience Overloads
+// These overloads accept JSON-encoded config parameters and decode them automatically.
+// Enables e2e tests to pass JSON strings directly without typed config construction.
 
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractFile(
-    _ path: String,
-    _ mimeType: String?,
-    _ configJson: String
-) throws -> ExtractionResult {
-    let config = try extractionConfigFromJson(configJson)
-    return try extractFile(path: path, mimeType: mimeType, config: config)
+/// Resolves a string argument as either a file path or literal UTF-8 content.
+/// Searches: current working directory, ALEF_TEST_DOCUMENTS_DIR env var,
+/// and ancestor `test_documents/` or `fixtures/` directories (up to 16 levels).
+/// If no file is found, treats the string as UTF-8 content and returns its bytes.
+private func _loadBytesFromPathOrUtf8(_ pathOrContent: String) throws -> [UInt8] {
+    let fm = FileManager.default
+    var roots: [String] = [fm.currentDirectoryPath]
+    if let envRoot = ProcessInfo.processInfo.environment["ALEF_TEST_DOCUMENTS_DIR"] {
+        roots.append(envRoot)
+    }
+    var walker = URL(fileURLWithPath: fm.currentDirectoryPath)
+    for _ in 0..<16 {
+        roots.append(walker.appendingPathComponent("test_documents").path)
+        roots.append(walker.appendingPathComponent("fixtures").path)
+        let parent = walker.deletingLastPathComponent()
+        if parent.path == walker.path { break }
+        walker = parent
+    }
+    let candidates = [pathOrContent] + roots.map { ($0 as NSString).appendingPathComponent(pathOrContent) }
+    for path in candidates {
+        if fm.fileExists(atPath: path), let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+            return [UInt8](data)
+        }
+    }
+    return [UInt8](pathOrContent.utf8)
 }
 
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractFileSync(
-    _ path: String,
-    _ mimeType: String?,
-    _ configJson: String
-) throws -> ExtractionResult {
-    let config = try extractionConfigFromJson(configJson)
-    return try extractFileSync(path: path, mimeType: mimeType, config: config)
-}
-
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractBytes(
-    _ content: String,
-    _ mimeType: String,
-    _ configJson: String
-) throws -> ExtractionResult {
-    let config = try extractionConfigFromJson(configJson)
-    let bytes = try _loadBytesFromPathOrUtf8(content)
-    return try extractBytes(content: bytes, mimeType: mimeType, config: config)
-}
-
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractBytes(
-    _ content: [UInt8],
-    _ mimeType: String,
-    _ configJson: String
-) throws -> ExtractionResult {
+public func extractBytes(_ content: [UInt8], _ mimeType: String, _ configJson: String) throws -> ExtractionResult {
     let config = try extractionConfigFromJson(configJson)
     return try extractBytes(content: content, mimeType: mimeType, config: config)
 }
 
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractBytesSync(
-    _ content: String,
-    _ mimeType: String,
-    _ configJson: String
-) throws -> ExtractionResult {
+public func extractFile(_ path: String, _ mimeType: String?, _ configJson: String) throws -> ExtractionResult {
     let config = try extractionConfigFromJson(configJson)
-    let bytes = try _loadBytesFromPathOrUtf8(content)
-    return try extractBytesSync(makeByteVec(bytes), mimeType, config)
+    return try extractFile(path: path, mimeType: mimeType, config: config)
 }
 
-/// Convenience overload: accepts JSON-string config (matches e2e generator pattern).
-public func extractBytesSync(
-    _ content: [UInt8],
-    _ mimeType: String,
-    _ configJson: String
-) throws -> ExtractionResult {
+public func extractFileSync(_ path: String, _ mimeType: String?, _ configJson: String) throws -> ExtractionResult {
     let config = try extractionConfigFromJson(configJson)
-    return try extractBytesSync(makeByteVec(content), mimeType, config)
+    return try extractFileSync(path: path, mimeType: mimeType, config: config)
+}
+
+public func extractBytesSync(_ content: [UInt8], _ mimeType: String, _ configJson: String) throws -> ExtractionResult {
+    let config = try extractionConfigFromJson(configJson)
+    return try extractBytesSync(content: content, mimeType: mimeType, config: config)
+}
+
+public func batchExtractFilesSync(_ items: [BatchFileItem], _ configJson: String) throws -> [ExtractionResult] {
+    let config = try extractionConfigFromJson(configJson)
+    return try batchExtractFilesSync(items: items, config: config)
+}
+
+public func batchExtractBytesSync(_ items: [BatchBytesItem], _ configJson: String) throws -> [ExtractionResult] {
+    let config = try extractionConfigFromJson(configJson)
+    return try batchExtractBytesSync(items: items, config: config)
+}
+
+public func batchExtractFiles(_ items: [BatchFileItem], _ configJson: String) throws -> [ExtractionResult] {
+    let config = try extractionConfigFromJson(configJson)
+    return try batchExtractFiles(items: items, config: config)
+}
+
+public func batchExtractBytes(_ items: [BatchBytesItem], _ configJson: String) throws -> [ExtractionResult] {
+    let config = try extractionConfigFromJson(configJson)
+    return try batchExtractBytes(items: items, config: config)
+}
+
+public func embedTextsAsync(_ texts: [String], _ configJson: String) throws -> [[Float]] {
+    let config = try embeddingConfigFromJson(configJson)
+    return try embedTextsAsync(texts: texts, config: config)
+}
+
+public func embedTexts(_ texts: [String], _ configJson: String) throws -> [[Float]] {
+    let config = try embeddingConfigFromJson(configJson)
+    return try embedTexts(texts: texts, config: config)
 }
 
 // MARK: - From-JSON Helpers
@@ -7316,10 +7334,7 @@ public func extractBytesSync(content: [UInt8], mimeType: String, config: Extract
 /// ```
 public func batchExtractFilesSync(items: [BatchFileItem], config: ExtractionConfig) throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
-    let result = try RustBridge.batchExtractFilesSync(_rb_items, config)
-    var out: [ExtractionResult] = []
-    while let item = result.pop() { out.append(item) }
-    return out.reversed()
+    return try RustBridge.batchExtractFilesSync(_rb_items, config).map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
 }
 
 /// Synchronous wrapper for `batch_extract_bytes`.
@@ -7348,22 +7363,7 @@ public func batchExtractFilesSync(items: [BatchFileItem], config: ExtractionConf
 /// ```
 public func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionConfig) throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
-    let result = try RustBridge.batchExtractBytesSync(_rb_items, config)
-    var out: [ExtractionResult] = []
-    while let item = result.pop() { out.append(item) }
-    return out.reversed()
-}
-
-/// Convenience overload: uses default ExtractionConfig when none provided.
-public func batchExtractBytesSync(items: [BatchBytesItem]) throws -> [ExtractionResult] {
-    let config = try extractionConfigFromJson("{}")
-    return try batchExtractBytesSync(items: items, config: config)
-}
-
-/// Convenience overload: accepts items with default config.
-public func batchExtractFilesSync(paths: [BatchFileItem]) throws -> [ExtractionResult] {
-    let config = try extractionConfigFromJson("{}")
-    return try batchExtractFilesSync(items: paths, config: config)
+    return try RustBridge.batchExtractBytesSync(_rb_items, config).map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
 }
 
 /// Extract content from multiple files concurrently.
@@ -7430,11 +7430,10 @@ public func batchExtractFilesSync(paths: [BatchFileItem]) throws -> [ExtractionR
 /// ```
 public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
-    await Task.yield()
-    let result = try RustBridge.batchExtractFiles(_rb_items, config)
-    var out: [ExtractionResult] = []
-    while let item = result.pop() { out.append(item) }
-    return out.reversed()
+    return try await Task.detached(priority: .userInitiated) {
+        let result = try RustBridge.batchExtractFiles(_rb_items, config)
+        return result
+    }.value
 }
 
 /// Extract content from multiple byte arrays concurrently.
@@ -7494,23 +7493,10 @@ public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) 
 /// ```
 public func batchExtractBytes(items: [BatchBytesItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
-    await Task.yield()
-    let result = try RustBridge.batchExtractBytes(_rb_items, config)
-    var out: [ExtractionResult] = []
-    while let item = result.pop() { out.append(item) }
-    return out.reversed()
-}
-
-/// Convenience overload: uses default ExtractionConfig when none provided.
-public func batchExtractBytes(items: [BatchBytesItem]) async throws -> [ExtractionResult] {
-    let config = try extractionConfigFromJson("{}")
-    return try await batchExtractBytes(items: items, config: config)
-}
-
-/// Convenience overload: accepts items with default config.
-public func batchExtractFiles(paths: [BatchFileItem]) async throws -> [ExtractionResult] {
-    let config = try extractionConfigFromJson("{}")
-    return try await batchExtractFiles(items: paths, config: config)
+    return try await Task.detached(priority: .userInitiated) {
+        let result = try RustBridge.batchExtractBytes(_rb_items, config)
+        return result
+    }.value
 }
 
 /// Detect MIME type from raw file bytes.
@@ -7535,12 +7521,6 @@ public func batchExtractFiles(paths: [BatchFileItem]) async throws -> [Extractio
 public func detectMimeTypeFromBytes(content: [UInt8]) throws -> String {
     let _rb_content: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in content { v.push(value: b) }; return v }()
     return try RustBridge.detectMimeTypeFromBytes(_rb_content).toString()
-}
-
-/// Convenience overload: reads file from path and detects MIME type from bytes.
-public func detectMimeTypeFromBytes(_ path: String) throws -> String {
-    let data = try Data(contentsOf: URL(fileURLWithPath: path))
-    return try detectMimeTypeFromBytes(content: [UInt8](data))
 }
 
 /// Get file extensions for a given MIME type.

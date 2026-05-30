@@ -216,7 +216,7 @@ taken from the batch-level `config`.
 
   per-file configuration overrides.
 
-* `config` - Batch-level extraction configuration (provides defaults and batch settings)
+- `config` - Batch-level extraction configuration (provides defaults and batch settings)
 
 **Returns:**
 
@@ -264,7 +264,7 @@ the batch-level defaults for that item.
 
   MIME type, and optional per-item configuration overrides.
 
-* `config` - Batch-level extraction configuration
+- `config` - Batch-level extraction configuration
 
 **Returns:**
 
@@ -581,35 +581,6 @@ pub fn clear_validators() -> Result<(), Error>
 
 **Returns:** `()`
 **Errors:** Returns `Err(Error)`.
-
----
-
-#### calculate_quality_score()
-
-Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
-
-`1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
-script/style noise, navigation chrome) subtract, structural cues (headings,
-punctuation) add. The result is clamped to `[0.0, 1.0]`.
-
-Pass `metadata` as `None` when the caller has no extraction metadata available;
-the metadata bonus simply isn't applied in that case. Texts shorter than
-`MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
-
-**Signature:**
-
-```rust
-pub fn calculate_quality_score(text: &str, metadata: Option<HashMap<String, serde_json::Value>>) -> f64
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `metadata` | `Option<HashMap<String, serde_json::Value>>` | No | The metadata |
-
-**Returns:** `f64`
 
 ---
 
@@ -3103,11 +3074,7 @@ when page boundaries are available and chunking is configured.
 |-------|------|---------|-------------|
 | `extract_pages` | `bool` | `false` | Extract pages as separate array (ExtractionResult.pages) |
 | `insert_page_markers` | `bool` | `false` | Insert page markers in main content string |
-| `marker_format` | `String` | `"
-
-<!-- PAGE {page_num} -->
-
-"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
+| `marker_format` | `String` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
 ### Methods
 
@@ -4482,10 +4449,10 @@ Type of text chunker to use.
 
 ### Variants
 
-* `Text` - Generic text splitter, splits on whitespace and punctuation
-* `Markdown` - Markdown-aware splitter, preserves formatting and structure
-* `Yaml` - YAML-aware splitter, creates one chunk per top-level key
-* `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+- `Text` - Generic text splitter, splits on whitespace and punctuation
+- `Markdown` - Markdown-aware splitter, preserves formatting and structure
+- `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+- `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
   lower = more splits). Without an embedding, falls back to a
   structural-boundary heuristic (ALL-CAPS headers, numbered sections,

@@ -71,7 +71,7 @@ data class ChunkingConfig(
      * Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing.
      */
     @field:com.fasterxml.jackson.databind.annotation.JsonSerialize(`as` = ChunkSizing::class)
-    val sizing: ChunkSizing? = null,
+    val sizing: ChunkSizing,
     /**
      * When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy
      * path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string.

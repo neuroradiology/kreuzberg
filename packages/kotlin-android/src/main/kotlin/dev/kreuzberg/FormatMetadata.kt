@@ -83,10 +83,7 @@ private class FormatMetadataDeserializer : com.fasterxml.jackson.databind.deser.
             "jats" -> FormatMetadata.Jats(ctx.readTreeAsValue<JatsMetadata>(payload, JatsMetadata::class.java))
             "epub" -> FormatMetadata.Epub(ctx.readTreeAsValue<EpubMetadata>(payload, EpubMetadata::class.java))
             "pst" -> FormatMetadata.Pst(ctx.readTreeAsValue<PstMetadata>(payload, PstMetadata::class.java))
-            // Rust's FormatMetadata::Code wraps tree_sitter_language_pack::ProcessResult, which
-            // serialises as a JSON object — not a string. Stash the raw JSON so callers that
-            // need the structured payload can re-parse it.
-            "code" -> FormatMetadata.Code(payload.toString())
+            "code" -> FormatMetadata.Code(ctx.readTreeAsValue<String>(payload, String::class.java))
             else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
                 parser, "Unknown FormatMetadata tag", tag, FormatMetadata::class.java,
             )

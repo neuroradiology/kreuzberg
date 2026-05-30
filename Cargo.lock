@@ -3833,7 +3833,6 @@ dependencies = [
 name = "kreuzberg-dart"
 version = "5.0.0-rc.3"
 dependencies = [
- "ahash",
  "async-trait",
  "flutter_rust_bridge",
  "kreuzberg",
@@ -3895,7 +3894,6 @@ dependencies = [
 name = "kreuzberg-php"
 version = "5.0.0-rc.3"
 dependencies = [
- "ahash",
  "async-trait",
  "ext-php-rs",
  "kreuzberg",
@@ -3924,6 +3922,7 @@ dependencies = [
  "ahash",
  "async-trait",
  "kreuzberg",
+ "libc",
  "serde",
  "serde_json",
  "swift-bridge",

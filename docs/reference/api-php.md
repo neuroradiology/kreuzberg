@@ -216,7 +216,7 @@ taken from the batch-level `config`.
 
   per-file configuration overrides.
 
-* `config` - Batch-level extraction configuration (provides defaults and batch settings)
+- `config` - Batch-level extraction configuration (provides defaults and batch settings)
 
 **Returns:**
 
@@ -264,7 +264,7 @@ the batch-level defaults for that item.
 
   MIME type, and optional per-item configuration overrides.
 
-* `config` - Batch-level extraction configuration
+- `config` - Batch-level extraction configuration
 
 **Returns:**
 
@@ -3074,11 +3074,7 @@ when page boundaries are available and chunking is configured.
 |-------|------|---------|-------------|
 | `extractPages` | `bool` | `false` | Extract pages as separate array (ExtractionResult.pages) |
 | `insertPageMarkers` | `bool` | `false` | Insert page markers in main content string |
-| `markerFormat` | `string` | `"
-
-<!-- PAGE {page_num} -->
-
-"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
+| `markerFormat` | `string` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
 ### Methods
 

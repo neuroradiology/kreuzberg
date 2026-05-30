@@ -2873,7 +2873,6 @@ mod ffi {
     }
 
     extern "Rust" {
-
         #[swift_bridge(swift_name = "extractionConfigFromJson")]
         fn extraction_config_from_json(json: String) -> Result<ExtractionConfig, String>;
         #[swift_bridge(swift_name = "batchBytesItemFromJson")]
@@ -2890,7 +2889,6 @@ mod ffi {
         fn ocr_extraction_result_from_json(json: String) -> Result<OcrExtractionResult, String>;
     }
     extern "Rust" {
-
         #[swift_bridge(swift_name = "accelerationConfigFromJson")]
         fn acceleration_config_from_json(json: String) -> Result<AccelerationConfig, String>;
         #[swift_bridge(swift_name = "contentFilterConfigFromJson")]
@@ -3137,7 +3135,6 @@ mod ffi {
         fn pdf_metadata_from_json(json: String) -> Result<PdfMetadata, String>;
     }
     extern "Rust" {
-
         #[swift_bridge(swift_name = "executionProviderTypeFromJson")]
         fn execution_provider_type_from_json(json: String) -> Result<ExecutionProviderType, String>;
         #[swift_bridge(swift_name = "outputFormatFromJson")]

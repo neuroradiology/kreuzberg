@@ -275,7 +275,7 @@ impl EpubExtractor {
             }
 
             // Skip navigation documents (TOC pages, etc.)
-            if looks_like_navigation_document(&sanitized) {
+            if looks_like_navigation_document(sanitized) {
                 continue;
             }
 
@@ -283,11 +283,11 @@ impl EpubExtractor {
             let _ = budget.account_text(sanitized.len());
 
             // Skip empty chapters
-            if extract_text_from_xhtml_budgeted(&sanitized, budget).is_empty() {
+            if extract_text_from_xhtml_budgeted(sanitized, budget).is_empty() {
                 continue;
             }
 
-            let chapter_structure = crate::extraction::html::structure::build_document_structure(&sanitized);
+            let chapter_structure = crate::extraction::html::structure::build_document_structure(sanitized);
 
             if chapter_structure.nodes.is_empty() {
                 // Fallback: extract plain text

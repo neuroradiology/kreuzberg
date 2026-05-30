@@ -410,7 +410,7 @@ fn build_epub_with_unused_invalid_manifest_asset() -> Vec<u8> {
 #[tokio::test]
 async fn test_epub3_excludes_navigation_but_keeps_non_linear_spine_content() {
     let bytes = build_epub3_with_navigation_and_auxiliary_spine_items();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
     let config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
         ..Default::default()
@@ -457,7 +457,7 @@ async fn test_epub3_excludes_navigation_but_keeps_non_linear_spine_content() {
 #[tokio::test]
 async fn test_epub3_plain_output_excludes_specialized_navigation_but_keeps_body_prose() {
     let bytes = build_epub3_with_navigation_and_auxiliary_spine_items();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let result = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
@@ -489,7 +489,7 @@ async fn test_epub3_plain_output_excludes_specialized_navigation_but_keeps_body_
 #[tokio::test]
 async fn test_epub_document_structure_excludes_navigation_but_keeps_non_linear_spine_content() {
     let bytes = build_epub3_with_navigation_and_auxiliary_spine_items();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
     let config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
         include_document_structure: true,
@@ -529,7 +529,7 @@ async fn test_epub_document_structure_excludes_navigation_but_keeps_non_linear_s
 #[tokio::test]
 async fn test_epub2_guide_toc_document_is_excluded_but_auxiliary_content_remains() {
     let bytes = build_epub2_with_guide_toc_in_spine();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let result = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
@@ -554,7 +554,7 @@ async fn test_epub2_guide_toc_document_is_excluded_but_auxiliary_content_remains
 #[tokio::test]
 async fn test_epub_ignores_invalid_unused_manifest_assets_when_body_content_is_valid() {
     let bytes = build_epub_with_unused_invalid_manifest_asset();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let result = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
@@ -574,7 +574,7 @@ async fn test_epub_ignores_invalid_unused_manifest_assets_when_body_content_is_v
 #[tokio::test]
 async fn test_epub_manifest_fallback_resolves_renderable_body_document() {
     let bytes = build_epub_with_fallback_content_document();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
     let config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
         ..Default::default()
@@ -604,7 +604,7 @@ async fn test_epub_manifest_fallback_resolves_renderable_body_document() {
 #[tokio::test]
 async fn test_epub_rejects_manifest_paths_that_escape_package_root() {
     let bytes = build_epub_with_root_escaping_manifest_href();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let err = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
@@ -714,7 +714,7 @@ fn build_epub_with_empty_spine() -> Vec<u8> {
 #[tokio::test]
 async fn test_epub_manifest_fallback_cycle_produces_warning_without_panic() {
     let bytes = build_epub_with_manifest_fallback_cycle();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let result = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())
@@ -735,7 +735,7 @@ async fn test_epub_manifest_fallback_cycle_produces_warning_without_panic() {
 #[tokio::test]
 async fn test_epub_empty_spine_produces_empty_content_without_error() {
     let bytes = build_epub_with_empty_spine();
-    let extractor = EpubExtractor::default();
+    let extractor = EpubExtractor;
 
     let result = extractor
         .extract_bytes(&bytes, "application/epub+zip", &ExtractionConfig::default())

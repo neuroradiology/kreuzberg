@@ -145,7 +145,7 @@ Future<List<ExtractionResult>> batchExtractBytesSync({
 ///
 ///   per-file configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
+/// - `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// **Returns:**
 ///
@@ -178,7 +178,7 @@ Future<List<ExtractionResult>> batchExtractFiles({
 ///
 ///   MIME type, and optional per-item configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration
+/// - `config` - Batch-level extraction configuration
 ///
 /// **Returns:**
 ///

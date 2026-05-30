@@ -3158,10 +3158,10 @@ pub const TableModel = enum {
 ///
 /// # Variants
 ///
-/// * `Text` - Generic text splitter, splits on whitespace and punctuation
-/// * `Markdown` - Markdown-aware splitter, preserves formatting and structure
-/// * `Yaml` - YAML-aware splitter, creates one chunk per top-level key
-/// * `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+/// - `Text` - Generic text splitter, splits on whitespace and punctuation
+/// - `Markdown` - Markdown-aware splitter, preserves formatting and structure
+/// - `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+/// - `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
 ///   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
 ///   lower = more splits). Without an embedding, falls back to a
 ///   structural-boundary heuristic (ALL-CAPS headers, numbered sections,
@@ -4020,10 +4020,10 @@ pub fn batch_extract_files_sync(items: []const u8, config: []const u8) Kreuzberg
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_files_sync(items_z, config_handle);
-    const _result_len = c.kreuzberg_batch_extract_files_sync_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_batch_extract_files_sync_len(items_z, config_handle);
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4050,10 +4050,10 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
-    const _result_len = c.kreuzberg_batch_extract_bytes_sync_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_batch_extract_bytes_sync_len(items_z, config_handle);
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4078,7 +4078,7 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
 ///
 ///   per-file configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
+/// - `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// **Returns:**
 ///
@@ -4103,10 +4103,10 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_files(items_z, config_handle);
-    const _result_len = c.kreuzberg_batch_extract_files_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_batch_extract_files_len(items_z, config_handle);
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4130,7 +4130,7 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
 ///
 ///   MIME type, and optional per-item configuration overrides.
 ///
-/// * `config` - Batch-level extraction configuration
+/// - `config` - Batch-level extraction configuration
 ///
 /// **Returns:**
 ///
@@ -4150,10 +4150,10 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_bytes(items_z, config_handle);
-    const _result_len = c.kreuzberg_batch_extract_bytes_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_batch_extract_bytes_len(items_z, config_handle);
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4181,10 +4181,10 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 pub fn detect_mime_type_from_bytes(content: []const u8) KreuzbergError![]u8 {
     const _result = c.kreuzberg_detect_mime_type_from_bytes(content.ptr, content.len);
-    const _result_len = c.kreuzberg_detect_mime_type_from_bytes_len(content.ptr, content.len);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_detect_mime_type_from_bytes_len(content.ptr, content.len);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4206,10 +4206,10 @@ pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
     const _result = c.kreuzberg_get_extensions_for_mime(mime_type_z);
-    const _result_len = c.kreuzberg_get_extensions_for_mime_len(mime_type_z);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_get_extensions_for_mime_len(mime_type_z);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4225,10 +4225,10 @@ pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
 /// language bindings via `alef.toml [exclude].functions`.
 pub fn list_embedding_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_embedding_backends();
-    const _result_len = c.kreuzberg_list_embedding_backends_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_embedding_backends_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4241,10 +4241,10 @@ pub fn list_embedding_backends() KreuzbergError![]u8 {
 /// List names of all registered document extractors.
 pub fn list_document_extractors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_document_extractors();
-    const _result_len = c.kreuzberg_list_document_extractors_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_document_extractors_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4263,10 +4263,10 @@ pub fn list_document_extractors() KreuzbergError![]u8 {
 /// A vector of OCR backend names.
 pub fn list_ocr_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_ocr_backends();
-    const _result_len = c.kreuzberg_list_ocr_backends_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_ocr_backends_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4287,10 +4287,10 @@ pub fn list_ocr_backends() KreuzbergError![]u8 {
 /// - `Err(...)` if the registry lock is poisoned
 pub fn list_post_processors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_post_processors();
-    const _result_len = c.kreuzberg_list_post_processors_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_post_processors_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4307,10 +4307,10 @@ pub fn list_post_processors() KreuzbergError![]u8 {
 /// Returns an error if the registry lock is poisoned.
 pub fn list_renderers() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_renderers();
-    const _result_len = c.kreuzberg_list_renderers_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_renderers_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4323,10 +4323,10 @@ pub fn list_renderers() KreuzbergError![]u8 {
 /// List names of all registered validators.
 pub fn list_validators() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_validators();
-    const _result_len = c.kreuzberg_list_validators_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_list_validators_len();
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4359,10 +4359,10 @@ pub fn embed_texts_async(texts: []const u8, config: []const u8) KreuzbergError![
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
     const _result = c.kreuzberg_embed_texts_async(texts_z, config_handle);
-    const _result_len = c.kreuzberg_embed_texts_async_len(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_embed_texts_async_len(texts_z, config_handle);
     if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4407,10 +4407,10 @@ pub fn detect_mime_type(path: []const u8, check_exists: bool) KreuzbergError![]u
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
     const _result = c.kreuzberg_detect_mime_type(path_z, check_exists);
-    const _result_len = c.kreuzberg_detect_mime_type_len(path_z, check_exists);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_detect_mime_type_len(path_z, check_exists);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4433,10 +4433,10 @@ pub fn embed_texts(texts: []const u8, config: []const u8) KreuzbergError![]u8 {
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
     const _result = c.kreuzberg_embed_texts(texts_z, config_handle);
-    const _result_len = c.kreuzberg_embed_texts_len(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    const _result_len = c.kreuzberg_embed_texts_len(texts_z, config_handle);
     if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
@@ -4680,15 +4680,13 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {
@@ -4989,15 +4987,13 @@ pub fn make_post_processor_vtable(comptime T: type, instance: *T) IPostProcessor
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {
@@ -5276,15 +5272,13 @@ pub fn make_validator_vtable(comptime T: type, instance: *T) IValidator {
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {
@@ -5426,15 +5420,13 @@ pub fn make_embedding_backend_vtable(comptime T: type, instance: *T) IEmbeddingB
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {
@@ -5639,15 +5631,13 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {
@@ -5816,15 +5806,13 @@ pub fn make_renderer_vtable(comptime T: type, instance: *T) IRenderer {
         .name_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_name;
-                unreachable; // override .name_fn in the returned vtable
+                if (out_name) |slot| slot.* = null;
             }
         }.thunk,
         .version_fn = struct {
             fn thunk(user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.c) void {
                 _ = user_data;
-                _ = out_version;
-                unreachable; // override .version_fn in the returned vtable
+                if (out_version) |slot| slot.* = null;
             }
         }.thunk,
         .initialize_fn = struct {

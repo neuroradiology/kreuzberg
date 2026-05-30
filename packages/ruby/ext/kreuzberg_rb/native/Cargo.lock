@@ -3091,7 +3091,6 @@ dependencies = [
 name = "kreuzberg-rb"
 version = "5.0.0-rc.3"
 dependencies = [
- "ahash",
  "async-trait",
  "kreuzberg",
  "magnus",

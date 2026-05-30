@@ -13,256 +13,118 @@ package dev.kreuzberg
 
 @Suppress("TooManyFunctions")
 object KreuzbergBridge {
-    private var nativeLibraryLoaded = false
-    private val loadLock = Any()
-
-    private fun ensureNativeLibraryLoaded() {
-        if (nativeLibraryLoaded) {
-            return
-        }
-        synchronized(loadLock) {
-            if (nativeLibraryLoaded) {
-                return
-            }
-            loadNativeLibrary()
-            nativeLibraryLoaded = true
-        }
-    }
-
-    private fun loadNativeLibrary() {
-        // First try absolute path from java.library.path for both JNI and FFI
-        val libPath = System.getProperty("java.library.path")
-        if (libPath != null) {
-            val separator = System.getProperty("path.separator")
-            for (path in libPath.split(separator)) {
-                // Try JNI first
-                for (libName in listOf("libkreuzberg_jni.dylib", "libkreuzberg_jni.so")) {
-                    val libFile = java.io.File(path, libName)
-                    if (libFile.exists()) {
-                        try {
-                            System.load(libFile.absolutePath)
-                            return
-                        } catch (e: UnsatisfiedLinkError) {
-                            // Continue trying other paths
-                        }
-                    }
-                }
-                // Fall back to FFI
-                for (libName in listOf("libkreuzberg_ffi.dylib", "libkreuzberg_ffi.so")) {
-                    val libFile = java.io.File(path, libName)
-                    if (libFile.exists()) {
-                        try {
-                            System.load(libFile.absolutePath)
-                            return
-                        } catch (e: UnsatisfiedLinkError) {
-                            // Continue trying other paths
-                        }
-                    }
-                }
-            }
-        }
-        // Fallback to System.loadLibrary as last resort
-        try {
-            System.loadLibrary("kreuzberg_jni")
-            return
-        } catch (e: UnsatisfiedLinkError) {
-            // Fallback: try kreuzberg_ffi
-        }
-        try {
-            System.loadLibrary("kreuzberg_ffi")
-            return
-        } catch (e: UnsatisfiedLinkError) {
-            // Give up
-        }
-        throw UnsatisfiedLinkError("Cannot load libkreuzberg_jni or libkreuzberg_ffi from java.library.path=${System.getProperty("java.library.path")}")
-    }
+    init { System.loadLibrary("kreuzberg_jni") }
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeExtractBytes(content: String, mimeType: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeExtractBytesImpl(content, mimeType, config)
-    }
-    private external fun nativeExtractBytesImpl(content: String, mimeType: String, config: String): String
+    external fun nativeExtractBytes(content: String, mimeType: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeExtractFile(path: String, mimeType: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeExtractFileImpl(path, mimeType, config)
-    }
-    private external fun nativeExtractFileImpl(path: String, mimeType: String, config: String): String
+    external fun nativeExtractFile(path: String, mimeType: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeExtractFileSync(path: String, mimeType: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeExtractFileSyncImpl(path, mimeType, config)
-    }
-    private external fun nativeExtractFileSyncImpl(path: String, mimeType: String, config: String): String
+    external fun nativeExtractFileSync(path: String, mimeType: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeExtractBytesSync(content: String, mimeType: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeExtractBytesSyncImpl(content, mimeType, config)
-    }
-    private external fun nativeExtractBytesSyncImpl(content: String, mimeType: String, config: String): String
+    external fun nativeExtractBytesSync(content: String, mimeType: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeBatchExtractFilesSync(items: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeBatchExtractFilesSyncImpl(items, config)
-    }
-    private external fun nativeBatchExtractFilesSyncImpl(items: String, config: String): String
+    external fun nativeBatchExtractFilesSync(items: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeBatchExtractBytesSync(items: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeBatchExtractBytesSyncImpl(items, config)
-    }
-    private external fun nativeBatchExtractBytesSyncImpl(items: String, config: String): String
+    external fun nativeBatchExtractBytesSync(items: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeBatchExtractFiles(items: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeBatchExtractFilesImpl(items, config)
-    }
-    private external fun nativeBatchExtractFilesImpl(items: String, config: String): String
+    external fun nativeBatchExtractFiles(items: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeBatchExtractBytes(items: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeBatchExtractBytesImpl(items, config)
-    }
-    private external fun nativeBatchExtractBytesImpl(items: String, config: String): String
+    external fun nativeBatchExtractBytes(items: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeDetectMimeTypeFromBytes(content: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeDetectMimeTypeFromBytesImpl(content)
-    }
-    private external fun nativeDetectMimeTypeFromBytesImpl(content: String): String
+    external fun nativeDetectMimeTypeFromBytes(content: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeGetExtensionsForMime(mimeType: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeGetExtensionsForMimeImpl(mimeType)
-    }
-    private external fun nativeGetExtensionsForMimeImpl(mimeType: String): String
+    external fun nativeGetExtensionsForMime(mimeType: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearEmbeddingBackends() {
-        ensureNativeLibraryLoaded()
-        nativeClearEmbeddingBackendsImpl()
-    }
-    private external fun nativeClearEmbeddingBackendsImpl()
+    external fun nativeClearEmbeddingBackends()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListEmbeddingBackends(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListEmbeddingBackendsImpl()
-    }
-    private external fun nativeListEmbeddingBackendsImpl(): String
+    external fun nativeListEmbeddingBackends(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListDocumentExtractors(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListDocumentExtractorsImpl()
-    }
-    private external fun nativeListDocumentExtractorsImpl(): String
+    external fun nativeListDocumentExtractors(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearDocumentExtractors() {
-        ensureNativeLibraryLoaded()
-        nativeClearDocumentExtractorsImpl()
-    }
-    private external fun nativeClearDocumentExtractorsImpl()
+    external fun nativeClearDocumentExtractors()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListOcrBackends(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListOcrBackendsImpl()
-    }
-    private external fun nativeListOcrBackendsImpl(): String
+    external fun nativeListOcrBackends(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearOcrBackends() {
-        ensureNativeLibraryLoaded()
-        nativeClearOcrBackendsImpl()
-    }
-    private external fun nativeClearOcrBackendsImpl()
+    external fun nativeClearOcrBackends()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListPostProcessors(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListPostProcessorsImpl()
-    }
-    private external fun nativeListPostProcessorsImpl(): String
+    external fun nativeListPostProcessors(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearPostProcessors() {
-        ensureNativeLibraryLoaded()
-        nativeClearPostProcessorsImpl()
-    }
-    private external fun nativeClearPostProcessorsImpl()
+    external fun nativeClearPostProcessors()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListRenderers(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListRenderersImpl()
-    }
-    private external fun nativeListRenderersImpl(): String
+    external fun nativeListRenderers(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearRenderers() {
-        ensureNativeLibraryLoaded()
-        nativeClearRenderersImpl()
-    }
-    private external fun nativeClearRenderersImpl()
+    external fun nativeClearRenderers()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListValidators(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListValidatorsImpl()
-    }
-    private external fun nativeListValidatorsImpl(): String
+    external fun nativeListValidators(): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeClearValidators() {
-        ensureNativeLibraryLoaded()
-        nativeClearValidatorsImpl()
-    }
-    private external fun nativeClearValidatorsImpl()
+    external fun nativeClearValidators()
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeRenderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int, password: String): ByteArray {
-        ensureNativeLibraryLoaded()
-        return nativeRenderPdfPageToPngImpl(pdfBytes, pageIndex, dpi, password)
-    }
-    private external fun nativeRenderPdfPageToPngImpl(pdfBytes: String, pageIndex: Long, dpi: Int, password: String): ByteArray
+    external fun nativeRenderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int, password: String): ByteArray
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeDetectMimeType(path: String, checkExists: Boolean): String {
-        ensureNativeLibraryLoaded()
-        return nativeDetectMimeTypeImpl(path, checkExists)
-    }
-    private external fun nativeDetectMimeTypeImpl(path: String, checkExists: Boolean): String
+    external fun nativeDetectMimeType(path: String, checkExists: Boolean): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeEmbedTexts(texts: String, config: String): String {
-        ensureNativeLibraryLoaded()
-        return nativeEmbedTextsImpl(texts, config)
-    }
-    private external fun nativeEmbedTextsImpl(texts: String, config: String): String
+    external fun nativeEmbedTexts(texts: String, config: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeGetEmbeddingPreset(name: String): String? {
-        ensureNativeLibraryLoaded()
-        return nativeGetEmbeddingPresetImpl(name)
-    }
-    private external fun nativeGetEmbeddingPresetImpl(name: String): String?
+    external fun nativeGetEmbeddingPreset(name: String): String?
 
     @Throws(KreuzbergBridgeException::class)
-    fun nativeListEmbeddingPresets(): String {
-        ensureNativeLibraryLoaded()
-        return nativeListEmbeddingPresetsImpl()
-    }
-    private external fun nativeListEmbeddingPresetsImpl(): String
+    external fun nativeListEmbeddingPresets(): String
+
+    // JNI trait-bridge external funs — implementations are Rust JNI shims.
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterOcrBackend(impl: dev.kreuzberg.IOcrBackend)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterOcrBackend(name: String)
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterPostProcessor(impl: dev.kreuzberg.IPostProcessor)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterPostProcessor(name: String)
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterValidator(impl: dev.kreuzberg.IValidator)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterValidator(name: String)
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterEmbeddingBackend(impl: dev.kreuzberg.IEmbeddingBackend)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterEmbeddingBackend(name: String)
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterDocumentExtractor(impl: dev.kreuzberg.IDocumentExtractor)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterDocumentExtractor(name: String)
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeRegisterRenderer(impl: dev.kreuzberg.IRenderer)
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeUnregisterRenderer(name: String)
 }

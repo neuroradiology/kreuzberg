@@ -419,8 +419,11 @@ AccelerationConfig$from_json <- function(json) {
 #' @export
 `$.AccelerationConfig` <- function(self, name) {
   func <- AccelerationConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.AccelerationConfig` <- `$.AccelerationConfig`
@@ -446,8 +449,11 @@ ContentFilterConfig$from_json <- function(json) {
 #' @export
 `$.ContentFilterConfig` <- function(self, name) {
   func <- ContentFilterConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ContentFilterConfig` <- `$.ContentFilterConfig`
@@ -461,8 +467,11 @@ EmailConfig$from_json <- function(json) {
 #' @export
 `$.EmailConfig` <- function(self, name) {
   func <- EmailConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmailConfig` <- `$.EmailConfig`
@@ -507,15 +516,18 @@ EmailConfig$from_json <- function(json) {
 #' @export
 ExtractionConfig <- new.env(parent = emptyenv())
 ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "kreuzberg")
-ExtractionConfig$needs_image_processing <- function() .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "kreuzberg")
+ExtractionConfig$needs_image_processing <- function(self) .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "kreuzberg")
 ExtractionConfig$from_json <- function(json) {
   .Call("wrap__ExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
 }
 #' @export
 `$.ExtractionConfig` <- function(self, name) {
   func <- ExtractionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ExtractionConfig` <- `$.ExtractionConfig`
@@ -566,8 +578,11 @@ FileExtractionConfig$from_json <- function(json) {
 #' @export
 `$.FileExtractionConfig` <- function(self, name) {
   func <- FileExtractionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.FileExtractionConfig` <- `$.FileExtractionConfig`
@@ -583,8 +598,11 @@ BatchBytesItem <- new.env(parent = emptyenv())
 #' @export
 `$.BatchBytesItem` <- function(self, name) {
   func <- BatchBytesItem[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.BatchBytesItem` <- `$.BatchBytesItem`
@@ -599,8 +617,11 @@ BatchFileItem <- new.env(parent = emptyenv())
 #' @export
 `$.BatchFileItem` <- function(self, name) {
   func <- BatchFileItem[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.BatchFileItem` <- `$.BatchFileItem`
@@ -627,8 +648,11 @@ ImageExtractionConfig$from_json <- function(json) {
 #' @export
 `$.ImageExtractionConfig` <- function(self, name) {
   func <- ImageExtractionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ImageExtractionConfig` <- `$.ImageExtractionConfig`
@@ -644,8 +668,11 @@ TokenReductionOptions$from_json <- function(json) {
 #' @export
 `$.TokenReductionOptions` <- function(self, name) {
   func <- TokenReductionOptions[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TokenReductionOptions` <- `$.TokenReductionOptions`
@@ -662,8 +689,11 @@ LanguageDetectionConfig$from_json <- function(json) {
 #' @export
 `$.LanguageDetectionConfig` <- function(self, name) {
   func <- LanguageDetectionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LanguageDetectionConfig` <- `$.LanguageDetectionConfig`
@@ -687,8 +717,11 @@ HtmlOutputConfig$from_json <- function(json) {
 #' @export
 `$.HtmlOutputConfig` <- function(self, name) {
   func <- HtmlOutputConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.HtmlOutputConfig` <- `$.HtmlOutputConfig`
@@ -710,8 +743,11 @@ LayoutDetectionConfig$from_json <- function(json) {
 #' @export
 `$.LayoutDetectionConfig` <- function(self, name) {
   func <- LayoutDetectionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LayoutDetectionConfig` <- `$.LayoutDetectionConfig`
@@ -734,8 +770,11 @@ LlmConfig$from_json <- function(json) {
 #' @export
 `$.LlmConfig` <- function(self, name) {
   func <- LlmConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LlmConfig` <- `$.LlmConfig`
@@ -754,8 +793,11 @@ StructuredExtractionConfig <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredExtractionConfig` <- function(self, name) {
   func <- StructuredExtractionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.StructuredExtractionConfig` <- `$.StructuredExtractionConfig`
@@ -788,8 +830,11 @@ OcrQualityThresholds$from_json <- function(json) {
 #' @export
 `$.OcrQualityThresholds` <- function(self, name) {
   func <- OcrQualityThresholds[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrQualityThresholds` <- `$.OcrQualityThresholds`
@@ -806,8 +851,11 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 #' @export
 `$.OcrPipelineStage` <- function(self, name) {
   func <- OcrPipelineStage[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrPipelineStage` <- `$.OcrPipelineStage`
@@ -836,8 +884,11 @@ OcrConfig$from_json <- function(json) {
 #' @export
 `$.OcrConfig` <- function(self, name) {
   func <- OcrConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrConfig` <- `$.OcrConfig`
@@ -860,8 +911,11 @@ PageConfig$from_json <- function(json) {
 #' @export
 `$.PageConfig` <- function(self, name) {
   func <- PageConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PageConfig` <- `$.PageConfig`
@@ -885,8 +939,11 @@ PdfConfig$from_json <- function(json) {
 #' @export
 `$.PdfConfig` <- function(self, name) {
   func <- PdfConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PdfConfig` <- `$.PdfConfig`
@@ -908,8 +965,11 @@ HierarchyConfig$from_json <- function(json) {
 #' @export
 `$.HierarchyConfig` <- function(self, name) {
   func <- HierarchyConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.HierarchyConfig` <- `$.HierarchyConfig`
@@ -928,8 +988,11 @@ PostProcessorConfig$from_json <- function(json) {
 #' @export
 `$.PostProcessorConfig` <- function(self, name) {
   func <- PostProcessorConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PostProcessorConfig` <- `$.PostProcessorConfig`
@@ -963,8 +1026,11 @@ ChunkingConfig$from_json <- function(json) {
 #' @export
 `$.ChunkingConfig` <- function(self, name) {
   func <- ChunkingConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ChunkingConfig` <- `$.ChunkingConfig`
@@ -988,8 +1054,11 @@ EmbeddingConfig$from_json <- function(json) {
 #' @export
 `$.EmbeddingConfig` <- function(self, name) {
   func <- EmbeddingConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmbeddingConfig` <- `$.EmbeddingConfig`
@@ -1023,8 +1092,11 @@ TreeSitterConfig$from_json <- function(json) {
 #' @export
 `$.TreeSitterConfig` <- function(self, name) {
   func <- TreeSitterConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TreeSitterConfig` <- `$.TreeSitterConfig`
@@ -1049,8 +1121,11 @@ TreeSitterProcessConfig$from_json <- function(json) {
 #' @export
 `$.TreeSitterProcessConfig` <- function(self, name) {
   func <- TreeSitterProcessConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TreeSitterProcessConfig` <- `$.TreeSitterProcessConfig`
@@ -1064,8 +1139,11 @@ SupportedFormat <- new.env(parent = emptyenv())
 #' @export
 `$.SupportedFormat` <- function(self, name) {
   func <- SupportedFormat[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.SupportedFormat` <- `$.SupportedFormat`
@@ -1089,19 +1167,22 @@ SupportedFormat <- new.env(parent = emptyenv())
 #' @export
 ServerConfig <- new.env(parent = emptyenv())
 ServerConfig$default <- function() .Call("wrap__ServerConfig__default", PACKAGE = "kreuzberg")
-ServerConfig$listen_addr <- function() .Call("wrap__ServerConfig__listen_addr", self, PACKAGE = "kreuzberg")
-ServerConfig$cors_allows_all <- function() .Call("wrap__ServerConfig__cors_allows_all", self, PACKAGE = "kreuzberg")
-ServerConfig$is_origin_allowed <- function(origin) .Call("wrap__ServerConfig__is_origin_allowed", self, origin, PACKAGE = "kreuzberg")
-ServerConfig$max_request_body_mb <- function() .Call("wrap__ServerConfig__max_request_body_mb", self, PACKAGE = "kreuzberg")
-ServerConfig$max_multipart_field_mb <- function() .Call("wrap__ServerConfig__max_multipart_field_mb", self, PACKAGE = "kreuzberg")
+ServerConfig$listen_addr <- function(self) .Call("wrap__ServerConfig__listen_addr", self, PACKAGE = "kreuzberg")
+ServerConfig$cors_allows_all <- function(self) .Call("wrap__ServerConfig__cors_allows_all", self, PACKAGE = "kreuzberg")
+ServerConfig$is_origin_allowed <- function(self, origin) .Call("wrap__ServerConfig__is_origin_allowed", self, origin, PACKAGE = "kreuzberg")
+ServerConfig$max_request_body_mb <- function(self) .Call("wrap__ServerConfig__max_request_body_mb", self, PACKAGE = "kreuzberg")
+ServerConfig$max_multipart_field_mb <- function(self) .Call("wrap__ServerConfig__max_multipart_field_mb", self, PACKAGE = "kreuzberg")
 ServerConfig$from_json <- function(json) {
   .Call("wrap__ServerConfig__from_json", json, PACKAGE = "kreuzberg")
 }
 #' @export
 `$.ServerConfig` <- function(self, name) {
   func <- ServerConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ServerConfig` <- `$.ServerConfig`
@@ -1125,8 +1206,11 @@ StructuredDataResult <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredDataResult` <- function(self, name) {
   func <- StructuredDataResult[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.StructuredDataResult` <- `$.StructuredDataResult`
@@ -1140,8 +1224,11 @@ ExtractedImageMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ExtractedImageMetadata` <- function(self, name) {
   func <- ExtractedImageMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ExtractedImageMetadata` <- `$.ExtractedImageMetadata`
@@ -1172,8 +1259,11 @@ DocxAppProperties$from_json <- function(json) {
 #' @export
 `$.DocxAppProperties` <- function(self, name) {
   func <- DocxAppProperties[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DocxAppProperties` <- `$.DocxAppProperties`
@@ -1194,8 +1284,11 @@ XlsxAppProperties <- new.env(parent = emptyenv())
 #' @export
 `$.XlsxAppProperties` <- function(self, name) {
   func <- XlsxAppProperties[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.XlsxAppProperties` <- `$.XlsxAppProperties`
@@ -1222,8 +1315,11 @@ PptxAppProperties <- new.env(parent = emptyenv())
 #' @export
 `$.PptxAppProperties` <- function(self, name) {
   func <- PptxAppProperties[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PptxAppProperties` <- `$.PptxAppProperties`
@@ -1254,8 +1350,11 @@ CoreProperties$from_json <- function(json) {
 #' @export
 `$.CoreProperties` <- function(self, name) {
   func <- CoreProperties[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.CoreProperties` <- `$.CoreProperties`
@@ -1281,8 +1380,11 @@ SecurityLimits$from_json <- function(json) {
 #' @export
 `$.SecurityLimits` <- function(self, name) {
   func <- SecurityLimits[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.SecurityLimits` <- `$.SecurityLimits`
@@ -1307,8 +1409,11 @@ TokenReductionConfig$from_json <- function(json) {
 #' @export
 `$.TokenReductionConfig` <- function(self, name) {
   func <- TokenReductionConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TokenReductionConfig` <- `$.TokenReductionConfig`
@@ -1322,8 +1427,11 @@ PdfAnnotation <- new.env(parent = emptyenv())
 #' @export
 `$.PdfAnnotation` <- function(self, name) {
   func <- PdfAnnotation[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PdfAnnotation` <- `$.PdfAnnotation`
@@ -1339,8 +1447,11 @@ InlineElement <- new.env(parent = emptyenv())
 #' @export
 `$.InlineElement` <- function(self, name) {
   func <- InlineElement[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.InlineElement` <- `$.InlineElement`
@@ -1354,8 +1465,11 @@ DjotImage <- new.env(parent = emptyenv())
 #' @export
 `$.DjotImage` <- function(self, name) {
   func <- DjotImage[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DjotImage` <- `$.DjotImage`
@@ -1369,8 +1483,11 @@ DjotLink <- new.env(parent = emptyenv())
 #' @export
 `$.DjotLink` <- function(self, name) {
   func <- DjotLink[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DjotLink` <- `$.DjotLink`
@@ -1383,8 +1500,11 @@ DocumentRelationship <- new.env(parent = emptyenv())
 #' @export
 `$.DocumentRelationship` <- function(self, name) {
   func <- DocumentRelationship[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DocumentRelationship` <- `$.DocumentRelationship`
@@ -1401,8 +1521,11 @@ GridCell <- new.env(parent = emptyenv())
 #' @export
 `$.GridCell` <- function(self, name) {
   func <- GridCell[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.GridCell` <- `$.GridCell`
@@ -1418,8 +1541,11 @@ TextAnnotation <- new.env(parent = emptyenv())
 #' @export
 `$.TextAnnotation` <- function(self, name) {
   func <- TextAnnotation[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TextAnnotation` <- `$.TextAnnotation`
@@ -1435,8 +1561,11 @@ ArchiveEntry <- new.env(parent = emptyenv())
 #' @export
 `$.ArchiveEntry` <- function(self, name) {
   func <- ArchiveEntry[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ArchiveEntry` <- `$.ArchiveEntry`
@@ -1451,8 +1580,11 @@ ProcessingWarning <- new.env(parent = emptyenv())
 #' @export
 `$.ProcessingWarning` <- function(self, name) {
   func <- ProcessingWarning[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ProcessingWarning` <- `$.ProcessingWarning`
@@ -1476,8 +1608,11 @@ LlmUsage$from_json <- function(json) {
 #' @export
 `$.LlmUsage` <- function(self, name) {
   func <- LlmUsage[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LlmUsage` <- `$.LlmUsage`
@@ -1495,8 +1630,11 @@ Chunk <- new.env(parent = emptyenv())
 #' @export
 `$.Chunk` <- function(self, name) {
   func <- Chunk[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.Chunk` <- `$.Chunk`
@@ -1508,8 +1646,11 @@ HeadingLevel <- new.env(parent = emptyenv())
 #' @export
 `$.HeadingLevel` <- function(self, name) {
   func <- HeadingLevel[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.HeadingLevel` <- `$.HeadingLevel`
@@ -1528,8 +1669,11 @@ ChunkMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ChunkMetadata` <- function(self, name) {
   func <- ChunkMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ChunkMetadata` <- `$.ChunkMetadata`
@@ -1559,8 +1703,11 @@ ExtractedImage <- new.env(parent = emptyenv())
 #' @export
 `$.ExtractedImage` <- function(self, name) {
   func <- ExtractedImage[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ExtractedImage` <- `$.ExtractedImage`
@@ -1577,8 +1724,11 @@ BoundingBox$from_json <- function(json) {
 #' @export
 `$.BoundingBox` <- function(self, name) {
   func <- BoundingBox[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.BoundingBox` <- `$.BoundingBox`
@@ -1593,8 +1743,11 @@ ElementMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ElementMetadata` <- function(self, name) {
   func <- ElementMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ElementMetadata` <- `$.ElementMetadata`
@@ -1611,8 +1764,11 @@ Element <- new.env(parent = emptyenv())
 #' @export
 `$.Element` <- function(self, name) {
   func <- Element[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.Element` <- `$.Element`
@@ -1628,8 +1784,11 @@ XmlExtractionResult <- new.env(parent = emptyenv())
 #' @export
 `$.XmlExtractionResult` <- function(self, name) {
   func <- XmlExtractionResult[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.XmlExtractionResult` <- `$.XmlExtractionResult`
@@ -1647,8 +1806,11 @@ EmailAttachment <- new.env(parent = emptyenv())
 #' @export
 `$.EmailAttachment` <- function(self, name) {
   func <- EmailAttachment[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmailAttachment` <- `$.EmailAttachment`
@@ -1662,8 +1824,11 @@ OcrTableBoundingBox <- new.env(parent = emptyenv())
 #' @export
 `$.OcrTableBoundingBox` <- function(self, name) {
   func <- OcrTableBoundingBox[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrTableBoundingBox` <- `$.OcrTableBoundingBox`
@@ -1688,8 +1853,11 @@ ImagePreprocessingConfig$from_json <- function(json) {
 #' @export
 `$.ImagePreprocessingConfig` <- function(self, name) {
   func <- ImagePreprocessingConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ImagePreprocessingConfig` <- `$.ImagePreprocessingConfig`
@@ -1728,8 +1896,11 @@ TesseractConfig$from_json <- function(json) {
 #' @export
 `$.TesseractConfig` <- function(self, name) {
   func <- TesseractConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TesseractConfig` <- `$.TesseractConfig`
@@ -1754,8 +1925,11 @@ ImagePreprocessingMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ImagePreprocessingMetadata` <- function(self, name) {
   func <- ImagePreprocessingMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ImagePreprocessingMetadata` <- `$.ImagePreprocessingMetadata`
@@ -1787,15 +1961,18 @@ ImagePreprocessingMetadata <- new.env(parent = emptyenv())
 #' @field additional Additional custom fields from postprocessors.
 #' @export
 Metadata <- new.env(parent = emptyenv())
-Metadata$is_empty <- function() .Call("wrap__Metadata__is_empty", self, PACKAGE = "kreuzberg")
+Metadata$is_empty <- function(self) .Call("wrap__Metadata__is_empty", self, PACKAGE = "kreuzberg")
 Metadata$from_json <- function(json) {
   .Call("wrap__Metadata__from_json", json, PACKAGE = "kreuzberg")
 }
 #' @export
 `$.Metadata` <- function(self, name) {
   func <- Metadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.Metadata` <- `$.Metadata`
@@ -1815,8 +1992,11 @@ ExcelMetadata$from_json <- function(json) {
 #' @export
 `$.ExcelMetadata` <- function(self, name) {
   func <- ExcelMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ExcelMetadata` <- `$.ExcelMetadata`
@@ -1838,8 +2018,11 @@ EmailMetadata$from_json <- function(json) {
 #' @export
 `$.EmailMetadata` <- function(self, name) {
   func <- EmailMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmailMetadata` <- `$.EmailMetadata`
@@ -1859,8 +2042,11 @@ ArchiveMetadata$from_json <- function(json) {
 #' @export
 `$.ArchiveMetadata` <- function(self, name) {
   func <- ArchiveMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ArchiveMetadata` <- `$.ArchiveMetadata`
@@ -1879,8 +2065,11 @@ ImageMetadata$from_json <- function(json) {
 #' @export
 `$.ImageMetadata` <- function(self, name) {
   func <- ImageMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ImageMetadata` <- `$.ImageMetadata`
@@ -1897,8 +2086,11 @@ XmlMetadata$from_json <- function(json) {
 #' @export
 `$.XmlMetadata` <- function(self, name) {
   func <- XmlMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.XmlMetadata` <- `$.XmlMetadata`
@@ -1913,8 +2105,11 @@ HeaderMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.HeaderMetadata` <- function(self, name) {
   func <- HeaderMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.HeaderMetadata` <- `$.HeaderMetadata`
@@ -1927,8 +2122,11 @@ StructuredData <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredData` <- function(self, name) {
   func <- StructuredData[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.StructuredData` <- `$.StructuredData`
@@ -1949,8 +2147,11 @@ OcrMetadata$from_json <- function(json) {
 #' @export
 `$.OcrMetadata` <- function(self, name) {
   func <- OcrMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrMetadata` <- `$.OcrMetadata`
@@ -1962,8 +2163,11 @@ ErrorMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ErrorMetadata` <- function(self, name) {
   func <- ErrorMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ErrorMetadata` <- `$.ErrorMetadata`
@@ -1982,8 +2186,11 @@ PptxMetadata$from_json <- function(json) {
 #' @export
 `$.PptxMetadata` <- function(self, name) {
   func <- PptxMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PptxMetadata` <- `$.PptxMetadata`
@@ -2002,8 +2209,11 @@ DocxMetadata$from_json <- function(json) {
 #' @export
 `$.DocxMetadata` <- function(self, name) {
   func <- DocxMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DocxMetadata` <- `$.DocxMetadata`
@@ -2021,8 +2231,11 @@ CsvMetadata$from_json <- function(json) {
 #' @export
 `$.CsvMetadata` <- function(self, name) {
   func <- CsvMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.CsvMetadata` <- `$.CsvMetadata`
@@ -2040,8 +2253,11 @@ BibtexMetadata$from_json <- function(json) {
 #' @export
 `$.BibtexMetadata` <- function(self, name) {
   func <- BibtexMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.BibtexMetadata` <- `$.BibtexMetadata`
@@ -2060,8 +2276,11 @@ CitationMetadata$from_json <- function(json) {
 #' @export
 `$.CitationMetadata` <- function(self, name) {
   func <- CitationMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.CitationMetadata` <- `$.CitationMetadata`
@@ -2074,8 +2293,11 @@ YearRange <- new.env(parent = emptyenv())
 #' @export
 `$.YearRange` <- function(self, name) {
   func <- YearRange[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.YearRange` <- `$.YearRange`
@@ -2091,8 +2313,11 @@ FictionBookMetadata$from_json <- function(json) {
 #' @export
 `$.FictionBookMetadata` <- function(self, name) {
   func <- FictionBookMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.FictionBookMetadata` <- `$.FictionBookMetadata`
@@ -2104,8 +2329,11 @@ DbfFieldInfo <- new.env(parent = emptyenv())
 #' @export
 `$.DbfFieldInfo` <- function(self, name) {
   func <- DbfFieldInfo[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DbfFieldInfo` <- `$.DbfFieldInfo`
@@ -2117,8 +2345,11 @@ ContributorRole <- new.env(parent = emptyenv())
 #' @export
 `$.ContributorRole` <- function(self, name) {
   func <- ContributorRole[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ContributorRole` <- `$.ContributorRole`
@@ -2137,8 +2368,11 @@ EpubMetadata$from_json <- function(json) {
 #' @export
 `$.EpubMetadata` <- function(self, name) {
   func <- EpubMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EpubMetadata` <- `$.EpubMetadata`
@@ -2152,8 +2386,11 @@ PstMetadata$from_json <- function(json) {
 #' @export
 `$.PstMetadata` <- function(self, name) {
   func <- PstMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PstMetadata` <- `$.PstMetadata`
@@ -2171,8 +2408,11 @@ OcrConfidence$from_json <- function(json) {
 #' @export
 `$.OcrConfidence` <- function(self, name) {
   func <- OcrConfidence[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrConfidence` <- `$.OcrConfidence`
@@ -2184,8 +2424,11 @@ OcrRotation <- new.env(parent = emptyenv())
 #' @export
 `$.OcrRotation` <- function(self, name) {
   func <- OcrRotation[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrRotation` <- `$.OcrRotation`
@@ -2209,8 +2452,11 @@ OcrElement$from_json <- function(json) {
 #' @export
 `$.OcrElement` <- function(self, name) {
   func <- OcrElement[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrElement` <- `$.OcrElement`
@@ -2229,8 +2475,11 @@ OcrElementConfig$from_json <- function(json) {
 #' @export
 `$.OcrElementConfig` <- function(self, name) {
   func <- OcrElementConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrElementConfig` <- `$.OcrElementConfig`
@@ -2247,8 +2496,11 @@ PageBoundary <- new.env(parent = emptyenv())
 #' @export
 `$.PageBoundary` <- function(self, name) {
   func <- PageBoundary[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PageBoundary` <- `$.PageBoundary`
@@ -2269,8 +2521,11 @@ PageInfo <- new.env(parent = emptyenv())
 #' @export
 `$.PageInfo` <- function(self, name) {
   func <- PageInfo[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PageInfo` <- `$.PageInfo`
@@ -2291,8 +2546,11 @@ LayoutRegion$from_json <- function(json) {
 #' @export
 `$.LayoutRegion` <- function(self, name) {
   func <- LayoutRegion[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LayoutRegion` <- `$.LayoutRegion`
@@ -2309,8 +2567,11 @@ HierarchicalBlock <- new.env(parent = emptyenv())
 #' @export
 `$.HierarchicalBlock` <- function(self, name) {
   func <- HierarchicalBlock[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.HierarchicalBlock` <- `$.HierarchicalBlock`
@@ -2326,8 +2587,11 @@ TableCell <- new.env(parent = emptyenv())
 #' @export
 `$.TableCell` <- function(self, name) {
   func <- TableCell[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.TableCell` <- `$.TableCell`
@@ -2345,8 +2609,11 @@ ExtractedUri <- new.env(parent = emptyenv())
 #' @export
 `$.ExtractedUri` <- function(self, name) {
   func <- ExtractedUri[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ExtractedUri` <- `$.ExtractedUri`
@@ -2358,8 +2625,11 @@ DetectResponse <- new.env(parent = emptyenv())
 #' @export
 `$.DetectResponse` <- function(self, name) {
   func <- DetectResponse[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.DetectResponse` <- `$.DetectResponse`
@@ -2383,8 +2653,11 @@ EmbeddingPreset <- new.env(parent = emptyenv())
 #' @export
 `$.EmbeddingPreset` <- function(self, name) {
   func <- EmbeddingPreset[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmbeddingPreset` <- `$.EmbeddingPreset`
@@ -2399,8 +2672,11 @@ YakeParams$from_json <- function(json) {
 #' @export
 `$.YakeParams` <- function(self, name) {
   func <- YakeParams[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.YakeParams` <- `$.YakeParams`
@@ -2416,8 +2692,11 @@ RakeParams$from_json <- function(json) {
 #' @export
 `$.RakeParams` <- function(self, name) {
   func <- RakeParams[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.RakeParams` <- `$.RakeParams`
@@ -2438,8 +2717,11 @@ KeywordConfig$from_json <- function(json) {
 #' @export
 `$.KeywordConfig` <- function(self, name) {
   func <- KeywordConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.KeywordConfig` <- `$.KeywordConfig`
@@ -2453,8 +2735,11 @@ Keyword <- new.env(parent = emptyenv())
 #' @export
 `$.Keyword` <- function(self, name) {
   func <- Keyword[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.Keyword` <- `$.Keyword`
@@ -2466,8 +2751,11 @@ OcrCacheStats <- new.env(parent = emptyenv())
 #' @export
 `$.OcrCacheStats` <- function(self, name) {
   func <- OcrCacheStats[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrCacheStats` <- `$.OcrCacheStats`
@@ -2489,17 +2777,17 @@ OcrCacheStats <- new.env(parent = emptyenv())
 #' @field model_tier Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"`
 #' @export
 PaddleOcrConfig <- new.env(parent = emptyenv())
-PaddleOcrConfig$with_cache_dir <- function(path) .Call("wrap__PaddleOcrConfig__with_cache_dir", self, path, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_table_detection <- function(enable) .Call("wrap__PaddleOcrConfig__with_table_detection", self, enable, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_angle_cls <- function(enable) .Call("wrap__PaddleOcrConfig__with_angle_cls", self, enable, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_thresh <- function(threshold) .Call("wrap__PaddleOcrConfig__with_det_db_thresh", self, threshold, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_box_thresh <- function(threshold) .Call("wrap__PaddleOcrConfig__with_det_db_box_thresh", self, threshold, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_unclip_ratio <- function(ratio) .Call("wrap__PaddleOcrConfig__with_det_db_unclip_ratio", self, ratio, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_limit_side_len <- function(length) .Call("wrap__PaddleOcrConfig__with_det_limit_side_len", self, length, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_rec_batch_num <- function(batch_size) .Call("wrap__PaddleOcrConfig__with_rec_batch_num", self, batch_size, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_drop_score <- function(score) .Call("wrap__PaddleOcrConfig__with_drop_score", self, score, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_padding <- function(padding) .Call("wrap__PaddleOcrConfig__with_padding", self, padding, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_model_tier <- function(tier) .Call("wrap__PaddleOcrConfig__with_model_tier", self, tier, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_cache_dir <- function(self, path) .Call("wrap__PaddleOcrConfig__with_cache_dir", self, path, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_table_detection <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_table_detection", self, enable, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_angle_cls <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_angle_cls", self, enable, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_det_db_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_thresh", self, threshold, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_det_db_box_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_box_thresh", self, threshold, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_det_db_unclip_ratio <- function(self, ratio) .Call("wrap__PaddleOcrConfig__with_det_db_unclip_ratio", self, ratio, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_det_limit_side_len <- function(self, length) .Call("wrap__PaddleOcrConfig__with_det_limit_side_len", self, length, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_rec_batch_num <- function(self, batch_size) .Call("wrap__PaddleOcrConfig__with_rec_batch_num", self, batch_size, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_drop_score <- function(self, score) .Call("wrap__PaddleOcrConfig__with_drop_score", self, score, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_padding <- function(self, padding) .Call("wrap__PaddleOcrConfig__with_padding", self, padding, PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_model_tier <- function(self, tier) .Call("wrap__PaddleOcrConfig__with_model_tier", self, tier, PACKAGE = "kreuzberg")
 PaddleOcrConfig$default <- function() .Call("wrap__PaddleOcrConfig__default", PACKAGE = "kreuzberg")
 PaddleOcrConfig$from_json <- function(json) {
   .Call("wrap__PaddleOcrConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -2507,8 +2795,11 @@ PaddleOcrConfig$from_json <- function(json) {
 #' @export
 `$.PaddleOcrConfig` <- function(self, name) {
   func <- PaddleOcrConfig[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PaddleOcrConfig` <- `$.PaddleOcrConfig`
@@ -2544,8 +2835,11 @@ ModelPaths <- new.env(parent = emptyenv())
 #' @export
 `$.ModelPaths` <- function(self, name) {
   func <- ModelPaths[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ModelPaths` <- `$.ModelPaths`
@@ -2557,8 +2851,11 @@ OrientationResult <- new.env(parent = emptyenv())
 #' @export
 `$.OrientationResult` <- function(self, name) {
   func <- OrientationResult[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OrientationResult` <- `$.OrientationResult`
@@ -2572,8 +2869,11 @@ BBox <- new.env(parent = emptyenv())
 #' @export
 `$.BBox` <- function(self, name) {
   func <- BBox[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.BBox` <- `$.BBox`
@@ -2586,8 +2886,11 @@ LayoutDetection <- new.env(parent = emptyenv())
 #' @export
 `$.LayoutDetection` <- function(self, name) {
   func <- LayoutDetection[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.LayoutDetection` <- `$.LayoutDetection`
@@ -2600,8 +2903,11 @@ EmbeddedFile <- new.env(parent = emptyenv())
 #' @export
 `$.EmbeddedFile` <- function(self, name) {
   func <- EmbeddedFile[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmbeddedFile` <- `$.EmbeddedFile`
@@ -2624,8 +2930,11 @@ PdfMetadata$from_json <- function(json) {
 #' @export
 `$.PdfMetadata` <- function(self, name) {
   func <- PdfMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.PdfMetadata` <- `$.PdfMetadata`
@@ -2648,8 +2957,11 @@ OutputFormat <- new.env(parent = emptyenv())
 #' @export
 `$.OutputFormat` <- function(self, name) {
   func <- OutputFormat[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OutputFormat` <- `$.OutputFormat`
@@ -2682,8 +2994,11 @@ FormatMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.FormatMetadata` <- function(self, name) {
   func <- FormatMetadata[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.FormatMetadata` <- `$.FormatMetadata`
@@ -2950,8 +3265,11 @@ ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", js
 #' @export
 `$.ChunkSizing` <- function(self, name) {
   func <- ChunkSizing[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.ChunkSizing` <- `$.ChunkSizing`
@@ -2963,8 +3281,11 @@ EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__
 #' @export
 `$.EmbeddingModelType` <- function(self, name) {
   func <- EmbeddingModelType[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.EmbeddingModelType` <- `$.EmbeddingModelType`
@@ -2979,8 +3300,11 @@ NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", js
 #' @export
 `$.NodeContent` <- function(self, name) {
   func <- NodeContent[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.NodeContent` <- `$.NodeContent`
@@ -2992,8 +3316,11 @@ AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_jso
 #' @export
 `$.AnnotationKind` <- function(self, name) {
   func <- AnnotationKind[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.AnnotationKind` <- `$.AnnotationKind`
@@ -3008,8 +3335,11 @@ OcrBoundingGeometry$from_json <- function(json) .Call("wrap__OcrBoundingGeometry
 #' @export
 `$.OcrBoundingGeometry` <- function(self, name) {
   func <- OcrBoundingGeometry[[name]]
-  environment(func) <- environment()
-  func
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
 }
 #' @export
 `[[.OcrBoundingGeometry` <- `$.OcrBoundingGeometry`
