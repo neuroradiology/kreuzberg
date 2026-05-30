@@ -4474,7 +4474,7 @@ internal extension TableCell {
 /// Represents any link, reference, or resource pointer found during extraction.
 /// The `kind` field classifies the URI semantically, while `label` carries
 /// optional human-readable display text.
-public struct Uri: Codable, Sendable, Hashable {
+public struct ExtractedUri: Codable, Sendable, Hashable {
     /// The URL or path string.
     public let url: String
     /// Optional display text / label for the link.
@@ -4491,18 +4491,18 @@ public struct Uri: Codable, Sendable, Hashable {
     }
 }
 
-// MARK: - Internal FFI conversions for Uri
-internal extension Uri {
-    init(_ rb: RustBridge.UriRef) throws {
+// MARK: - Internal FFI conversions for ExtractedUri
+internal extension ExtractedUri {
+    init(_ rb: RustBridge.ExtractedUriRef) throws {
         self.url = rb.url().toString()
         self.label = rb.label()?.toString()
         self.page = rb.page()
         self.kind = UriKind(rawValue: rb.kind().toString()) ?? { fatalError("Unknown UriKind: \(rb.kind().toString())") }()
     }
-    func intoRust() throws -> RustBridge.Uri {
+    func intoRust() throws -> RustBridge.ExtractedUri {
         let data = try JSONEncoder().encode(self)
         let json = String(data: data, encoding: .utf8) ?? "{}"
-        return try RustBridge.uriFromJson(json)
+        return try RustBridge.extractedUriFromJson(json)
     }
 }
 
@@ -6919,9 +6919,9 @@ public func tableCellFromJson(_ json: String) throws -> TableCell {
     return try JSONDecoder().decode(TableCell.self, from: data)
 }
 
-public func uriFromJson(_ json: String) throws -> Uri {
+public func extractedUriFromJson(_ json: String) throws -> ExtractedUri {
     let data = json.data(using: .utf8) ?? Data()
-    return try JSONDecoder().decode(Uri.self, from: data)
+    return try JSONDecoder().decode(ExtractedUri.self, from: data)
 }
 
 public func detectResponseFromJson(_ json: String) throws -> DetectResponse {
@@ -7349,10 +7349,8 @@ public func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionCon
 /// ```
 public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
-    return try await Task.detached(priority: .userInitiated) {
-        let result = try RustBridge.batchExtractFiles(_rb_items, config)
-        return result
-    }.value
+    let result = try RustBridge.batchExtractFiles(_rb_items, config)
+    return result.map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
 }
 
 /// Extract content from multiple byte arrays concurrently.
@@ -7412,10 +7410,8 @@ public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) 
 /// ```
 public func batchExtractBytes(items: [BatchBytesItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
     let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
-    return try await Task.detached(priority: .userInitiated) {
-        let result = try RustBridge.batchExtractBytes(_rb_items, config)
-        return result
-    }.value
+    let result = try RustBridge.batchExtractBytes(_rb_items, config)
+    return result.map { ref in var item = ExtractionResult(ptr: ref.ptr); item.isOwned = false; return item }
 }
 
 /// Detect MIME type from raw file bytes.

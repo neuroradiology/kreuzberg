@@ -756,8 +756,8 @@ public func tableFromJson<GenericIntoRustString: IntoRustString>(_ json: Generic
 public func tableCellFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> TableCell {
     try { let val = __swift_bridge__$table_cell_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return TableCell(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func uriFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> Uri {
-    try { let val = __swift_bridge__$uri_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return Uri(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+public func extractedUriFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ExtractedUri {
+    try { let val = __swift_bridge__$extracted_uri_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ExtractedUri(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func detectResponseFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> DetectResponse {
     try { let val = __swift_bridge__$detect_response_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return DetectResponse(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -6196,7 +6196,7 @@ extension TextAnnotation: Vectorizable {
 
 
 public class ExtractionResult: ExtractionResultRefMut {
-    var isOwned: Bool = true
+    public var isOwned: Bool = true
 
     public override init(ptr: UnsafeMutableRawPointer) {
         super.init(ptr: ptr)
@@ -6209,7 +6209,7 @@ public class ExtractionResult: ExtractionResultRefMut {
     }
 }
 extension ExtractionResult {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ content: GenericIntoRustString, _ mime_type: GenericIntoRustString, _ metadata: Metadata, _ extraction_method: Optional<ExtractionMethod>, _ tables: RustVec<Table>, _ detected_languages: Optional<RustVec<GenericIntoRustString>>, _ chunks: Optional<RustVec<Chunk>>, _ images: Optional<RustVec<ExtractedImage>>, _ pages: Optional<RustVec<PageContent>>, _ elements: Optional<RustVec<Element>>, _ djot_content: Optional<DjotContent>, _ ocr_elements: Optional<RustVec<OcrElement>>, _ document: Optional<DocumentStructure>, _ extracted_keywords: Optional<RustVec<Keyword>>, _ quality_score: Optional<Double>, _ processing_warnings: RustVec<ProcessingWarning>, _ annotations: Optional<RustVec<PdfAnnotation>>, _ children: Optional<RustVec<ArchiveEntry>>, _ uris: Optional<RustVec<Uri>>, _ structured_output: Optional<GenericIntoRustString>, _ code_intelligence: Optional<GenericIntoRustString>, _ llm_usage: Optional<RustVec<LlmUsage>>, _ formatted_content: Optional<GenericIntoRustString>) {
+    public convenience init<GenericIntoRustString: IntoRustString>(_ content: GenericIntoRustString, _ mime_type: GenericIntoRustString, _ metadata: Metadata, _ extraction_method: Optional<ExtractionMethod>, _ tables: RustVec<Table>, _ detected_languages: Optional<RustVec<GenericIntoRustString>>, _ chunks: Optional<RustVec<Chunk>>, _ images: Optional<RustVec<ExtractedImage>>, _ pages: Optional<RustVec<PageContent>>, _ elements: Optional<RustVec<Element>>, _ djot_content: Optional<DjotContent>, _ ocr_elements: Optional<RustVec<OcrElement>>, _ document: Optional<DocumentStructure>, _ extracted_keywords: Optional<RustVec<Keyword>>, _ quality_score: Optional<Double>, _ processing_warnings: RustVec<ProcessingWarning>, _ annotations: Optional<RustVec<PdfAnnotation>>, _ children: Optional<RustVec<ArchiveEntry>>, _ uris: Optional<RustVec<ExtractedUri>>, _ structured_output: Optional<GenericIntoRustString>, _ code_intelligence: Optional<GenericIntoRustString>, _ llm_usage: Optional<RustVec<LlmUsage>>, _ formatted_content: Optional<GenericIntoRustString>) {
         self.init(ptr: __swift_bridge__$ExtractionResult$new({ let rustString = content.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {metadata.isOwned = false; return metadata.ptr;}(), { if let val = extraction_method { val.isOwned = false; return val.ptr } else { return nil } }(), { let val = tables; val.isOwned = false; return val.ptr }(), { if let val = detected_languages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = chunks { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = djot_content { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ocr_elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = document { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = extracted_keywords { val.isOwned = false; return val.ptr } else { return nil } }(), quality_score.intoFfiRepr(), { let val = processing_warnings; val.isOwned = false; return val.ptr }(), { if let val = annotations { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = children { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = uris { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(structured_output) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(code_intelligence) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = llm_usage { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(formatted_content) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
     }
 }
@@ -6219,7 +6219,7 @@ public class ExtractionResultRefMut: ExtractionResultRef {
     }
 }
 public class ExtractionResultRef {
-    var ptr: UnsafeMutableRawPointer
+    public var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
@@ -6298,7 +6298,7 @@ extension ExtractionResultRef {
         { let val = __swift_bridge__$ExtractionResult$children(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
-    public func uris() -> Optional<RustVec<Uri>> {
+    public func uris() -> Optional<RustVec<ExtractedUri>> {
         { let val = __swift_bridge__$ExtractionResult$uris(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
@@ -12776,7 +12776,7 @@ extension TableCell: Vectorizable {
 }
 
 
-public class Uri: UriRefMut {
+public class ExtractedUri: ExtractedUriRefMut {
     var isOwned: Bool = true
 
     public override init(ptr: UnsafeMutableRawPointer) {
@@ -12785,85 +12785,85 @@ public class Uri: UriRefMut {
 
     deinit {
         if isOwned {
-            __swift_bridge__$Uri$_free(ptr)
+            __swift_bridge__$ExtractedUri$_free(ptr)
         }
     }
 }
-public class UriRefMut: UriRef {
+public class ExtractedUriRefMut: ExtractedUriRef {
     public override init(ptr: UnsafeMutableRawPointer) {
         super.init(ptr: ptr)
     }
 }
-public class UriRef {
+public class ExtractedUriRef {
     var ptr: UnsafeMutableRawPointer
 
     public init(ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
     }
 }
-extension UriRef {
+extension ExtractedUriRef {
     public func url() -> RustString {
-        RustString(ptr: __swift_bridge__$Uri$url(ptr))
+        RustString(ptr: __swift_bridge__$ExtractedUri$url(ptr))
     }
 
     public func label() -> Optional<RustString> {
-        { let val = __swift_bridge__$Uri$label(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+        { let val = __swift_bridge__$ExtractedUri$label(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
     public func page() -> Optional<UInt32> {
-        __swift_bridge__$Uri$page(ptr).intoSwiftRepr()
+        __swift_bridge__$ExtractedUri$page(ptr).intoSwiftRepr()
     }
 
     public func kind() -> RustString {
-        RustString(ptr: __swift_bridge__$Uri$kind(ptr))
+        RustString(ptr: __swift_bridge__$ExtractedUri$kind(ptr))
     }
 }
-extension Uri: Vectorizable {
+extension ExtractedUri: Vectorizable {
     public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_Uri$new()
+        __swift_bridge__$Vec_ExtractedUri$new()
     }
 
     public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_Uri$drop(vecPtr)
+        __swift_bridge__$Vec_ExtractedUri$drop(vecPtr)
     }
 
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: Uri) {
-        __swift_bridge__$Vec_Uri$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: ExtractedUri) {
+        __swift_bridge__$Vec_ExtractedUri$push(vecPtr, {value.isOwned = false; return value.ptr;}())
     }
 
     public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_Uri$pop(vecPtr)
+        let pointer = __swift_bridge__$Vec_ExtractedUri$pop(vecPtr)
         if pointer == nil {
             return nil
         } else {
-            return (Uri(ptr: pointer!) as! Self)
+            return (ExtractedUri(ptr: pointer!) as! Self)
         }
     }
 
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<UriRef> {
-        let pointer = __swift_bridge__$Vec_Uri$get(vecPtr, index)
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<ExtractedUriRef> {
+        let pointer = __swift_bridge__$Vec_ExtractedUri$get(vecPtr, index)
         if pointer == nil {
             return nil
         } else {
-            return UriRef(ptr: pointer!)
+            return ExtractedUriRef(ptr: pointer!)
         }
     }
 
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<UriRefMut> {
-        let pointer = __swift_bridge__$Vec_Uri$get_mut(vecPtr, index)
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<ExtractedUriRefMut> {
+        let pointer = __swift_bridge__$Vec_ExtractedUri$get_mut(vecPtr, index)
         if pointer == nil {
             return nil
         } else {
-            return UriRefMut(ptr: pointer!)
+            return ExtractedUriRefMut(ptr: pointer!)
         }
     }
 
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<UriRef> {
-        UnsafePointer<UriRef>(OpaquePointer(__swift_bridge__$Vec_Uri$as_ptr(vecPtr)))
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<ExtractedUriRef> {
+        UnsafePointer<ExtractedUriRef>(OpaquePointer(__swift_bridge__$Vec_ExtractedUri$as_ptr(vecPtr)))
     }
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_Uri$len(vecPtr)
+        __swift_bridge__$Vec_ExtractedUri$len(vecPtr)
     }
 }
 
