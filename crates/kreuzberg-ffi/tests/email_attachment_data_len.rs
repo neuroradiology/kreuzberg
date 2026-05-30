@@ -10,34 +10,16 @@
 /// Callers had no way to know the valid length of the returned pointer, making any read
 /// past the first byte undefined behaviour (especially for payloads containing 0x00).
 ///
-/// This test is the "lock-in" test:
-/// - It asserts at runtime + against the committed header that the correct signature
-///   (with out_len) is present after regeneration.
-/// - It exercises a payload containing embedded NULs + a high byte to kill any
-///   strlen / "read until 0" or truncated read assumptions.
+/// The alef fix shipped with the 2-parameter form (`ptr`, `out_len`). These tests
+/// lock in the correct 2-param ABI and verify the full-length contract for payloads
+/// that contain embedded NUL bytes.
 ///
-/// Important: Until alef#118 is fixed and `task alef:generate` is run, the two tests
-/// that assert the desired future behavior (`out_len` parameter + full length for
-/// payloads with NULs) are `#[ignore]`d. Only tests that exercise the *current*
-/// (buggy) 1-parameter ABI are active.
-///
-/// See also: crates/kreuzberg-ffi/tests/vtable_bytes_len.rs (previous identical class of bug).
 /// Per project rules: every unsafe block has a SAFETY comment.
 use std::ffi::{c_char, CString};
 use std::fs;
 use std::path::Path;
 
-// The functions we need are re-exported / visible via the rlib built from the
-// generated lib.rs. We only use the stable ones (from_json / free) directly here.
 use kreuzberg_ffi::{kreuzberg_email_attachment_free, kreuzberg_email_attachment_from_json, kreuzberg_last_error_code};
-
-// NOTE: We deliberately do *not* declare a 2-parameter version of
-// kreuzberg_email_attachment_data at the top level. The real symbol exported by
-// the crate today only takes one parameter (ptr). Declaring a 2-param version
-// here and calling it would be UB on the current generated code.
-//
-// The two ignored tests below document the desired future signature. When
-// alef#118 is fixed they can be un-ignored (or rewritten to use the real symbol).
 
 /// Construct a minimal EmailAttachment JSON with a data payload that contains
 /// an embedded NUL and a trailing high byte (0xEF). This defeats any strlen-based
@@ -61,13 +43,12 @@ fn attachment_json_with_nuls() -> CString {
     CString::new(json).expect("valid UTF-8 JSON for test attachment")
 }
 
-/// Ignored until a fixed alef emits the correct accessor (then `task alef:generate` + rebuild will make it pass).
-/// The test body + this file remain the permanent regression specification for #1059.
+/// The committed C header must declare the 2-parameter form for
+/// `kreuzberg_email_attachment_data` (with `out_len`). This locks in the fix
+/// for GitHub #1059 so a future regeneration cannot silently revert to the
+/// 1-parameter form.
 #[test]
-#[ignore = "requires alef fix + regeneration for the Option<Bytes> data case (see #1059)"]
 fn email_attachment_data_accessor_must_provide_out_len_in_header() {
-    // This is a snapshot-style check against the committed C header.
-    // It is ignored until the generator is fixed.
     let header_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("include/kreuzberg.h");
     let header = fs::read_to_string(&header_path).expect("committed kreuzberg.h must be readable by the test");
 
@@ -86,38 +67,60 @@ fn email_attachment_data_accessor_must_provide_out_len_in_header() {
     );
 }
 
-/// Ignored until a fixed alef emits the correct 2-parameter accessor.
-/// This test encodes the exact required behaviour (full length + correct bytes past embedded NUL).
+/// When an attachment has no data payload the accessor must return a null pointer
+/// and write 0 to out_len.
 #[test]
-#[ignore = "requires alef fix + regeneration for the Option<Bytes> data case (see #1059)"]
-fn email_attachment_data_with_out_len_returns_full_buffer_including_embedded_nuls() {
-    // This test demonstrates the full contract once the generator emits the
-    // two-parameter form. It is written against the desired extern declaration above.
-    //
-    // Until the generator is fixed this test documents the required behaviour.
-    // After `task alef:generate` + rebuild it will execute the real call path.
+fn email_attachment_data_none_returns_null_pointer() {
+    let json = CString::new(
+        r#"{"name":"empty","filename":"empty","mime_type":null,"size":null,"is_image":false,"data":null}"#,
+    )
+    .unwrap();
 
+    // SAFETY: json is valid null-terminated UTF-8.
+    let handle = unsafe { kreuzberg_email_attachment_from_json(json.as_ptr() as *const c_char) };
+    assert!(
+        !handle.is_null(),
+        "from_json should succeed (last_error_code={})",
+        // SAFETY: no precondition; reads a thread-local.
+        unsafe { kreuzberg_last_error_code() }
+    );
+
+    let mut out_len: usize = usize::MAX;
+    // SAFETY: handle is a valid non-null pointer returned by from_json;
+    // out_len is a valid stack-allocated usize.
+    let data_ptr = unsafe { kreuzberg_ffi::kreuzberg_email_attachment_data(handle, &mut out_len) };
+
+    assert!(
+        data_ptr.is_null(),
+        "data must be null when the attachment has no payload"
+    );
+    assert_eq!(out_len, 0, "out_len must be 0 when data is None");
+
+    // SAFETY: handle came from from_json; we are the sole owner.
+    unsafe { kreuzberg_email_attachment_free(handle) };
+}
+
+/// When an attachment carries a binary payload the accessor must return a non-null
+/// pointer and write the exact byte count — including bytes past any embedded NUL —
+/// to out_len. This is the core contract broken by the 1-parameter bug (#1059).
+#[test]
+fn email_attachment_data_with_out_len_returns_full_buffer_including_embedded_nuls() {
     let json = attachment_json_with_nuls();
     // SAFETY: json is a valid null-terminated CString we just created.
     let handle = unsafe { kreuzberg_email_attachment_from_json(json.as_ptr() as *const c_char) };
     assert!(
         !handle.is_null(),
         "from_json should succeed for our well-formed test attachment (last_error_code={})",
+        // SAFETY: no precondition; reads a thread-local.
         unsafe { kreuzberg_last_error_code() }
     );
 
     let mut out_len: usize = 0;
 
-    // Local declaration of the *desired* future 2-param signature.
-    // This code is only compiled when the test is explicitly un-ignored
-    // after the generator has been fixed.
-    unsafe extern "C" {
-        pub fn kreuzberg_email_attachment_data(ptr: *const std::ffi::c_void, out_len: *mut usize) -> *mut u8;
-    }
-
-    // SAFETY: handle is non-null and freshly allocated by from_json.
-    // We pass a valid &mut out_len. The returned pointer must not be freed by us.
-    let data_ptr = unsafe { kreuzberg_email_attachment_data(handle as *const std::ffi::c_void, &mut out_len) };
+    // SAFETY: handle is non-null and freshly allocated by from_json;
+    // out_len is a valid stack-allocated usize. The returned pointer must not
+    // be freed by us — it borrows the internal Bytes of the handle.
+    let data_ptr = unsafe { kreuzberg_ffi::kreuzberg_email_attachment_data(handle, &mut out_len) };
 
     assert!(
         !data_ptr.is_null(),
@@ -147,45 +150,10 @@ fn email_attachment_data_with_out_len_returns_full_buffer_including_embedded_nul
     unsafe { kreuzberg_email_attachment_free(handle) };
 }
 
+/// Verify that passing a null out_len pointer is safe: the accessor must not
+/// segfault, and the data pointer itself must still be returned.
 #[test]
-fn email_attachment_data_none_returns_null_pointer() {
-    // This test exercises the *current* (buggy) 1-parameter ABI that is actually
-    // emitted by the generator today. It is intentionally not ignored.
-    //
-    // It proves that the basic handle lifecycle (from_json + data accessor + free)
-    // works for the None case using the real exported symbol.
-    let json = CString::new(
-        r#"{"name":"empty","filename":"empty","mime_type":null,"size":null,"is_image":false,"data":null}"#,
-    )
-    .unwrap();
-
-    // SAFETY: json is valid.
-    let handle = unsafe { kreuzberg_email_attachment_from_json(json.as_ptr() as *const c_char) };
-    assert!(!handle.is_null());
-
-    // Call the real 1-parameter function that the crate actually exports today.
-    // SAFETY: handle is a valid pointer returned by from_json.
-    let data_ptr = unsafe { kreuzberg_ffi::kreuzberg_email_attachment_data(handle) };
-
-    assert!(
-        data_ptr.is_null(),
-        "data must be null when the attachment has no payload (current 1-param ABI)"
-    );
-
-    // SAFETY: handle from from_json.
-    unsafe { kreuzberg_email_attachment_free(handle) };
-}
-
-/// This active (non-ignored) test demonstrates the current bug using the real
-/// 1-parameter ABI that the generator emits today.
-///
-/// We can obtain a data pointer for an attachment that has payload, but the
-/// accessor provides no length. This is exactly the safety problem reported
-/// in #1059. After the alef fix this test can be extended or replaced by the
-/// full length-aware version (currently ignored).
-#[test]
-fn email_attachment_data_current_abi_returns_pointer_but_no_length() {
-    // Small payload with an embedded NUL to make the point.
+fn email_attachment_data_null_out_len_is_safe() {
     let json = CString::new(
         r#"{"name":"hasdata.bin","filename":"hasdata.bin","mime_type":"application/octet-stream","size":4,"is_image":false,"data":[65,0,66,67]}"#,
     )
@@ -195,22 +163,16 @@ fn email_attachment_data_current_abi_returns_pointer_but_no_length() {
     let handle = unsafe { kreuzberg_email_attachment_from_json(json.as_ptr() as *const c_char) };
     assert!(!handle.is_null());
 
-    // Real 1-param function (current buggy generator output).
-    // SAFETY: handle is valid.
-    let data_ptr = unsafe { kreuzberg_ffi::kreuzberg_email_attachment_data(handle) };
+    // SAFETY: handle is valid; passing null for out_len is a defined contract
+    // (the accessor null-checks before writing).
+    let data_ptr =
+        unsafe { kreuzberg_ffi::kreuzberg_email_attachment_data(handle, std::ptr::null_mut()) };
 
     assert!(
         !data_ptr.is_null(),
         "data pointer should be non-null when the attachment carries a payload"
     );
 
-    // The fundamental problem: with the current 1-param signature there is
-    // no out_len. Callers have no safe way to know how many bytes are valid
-    // at data_ptr. This assertion documents the missing contract.
-    //
-    // After the generator is fixed, a proper test will also receive and
-    // validate the length (see the ignored test above).
-
-    // SAFETY: handle from from_json.
+    // SAFETY: handle from from_json; we are the owner.
     unsafe { kreuzberg_email_attachment_free(handle) };
 }

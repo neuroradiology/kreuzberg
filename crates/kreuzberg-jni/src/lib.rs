@@ -162,9 +162,12 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesImpl
     };
 
     // Parse config JSON into ExtractionConfig
+    // SAFETY: config_c is a valid C string created from CString::new above.
+    // FFI returns null on error; error context is available via kreuzberg_last_error_code/context.
     let config_ptr = unsafe { kreuzberg_extraction_config_from_json(config_c.as_ptr()) };
     if config_ptr.is_null() {
         // Try to get FFI error details
+        // SAFETY: kreuzberg_last_error_code and kreuzberg_last_error_context return valid FFI data.
         let error_code = unsafe { kreuzberg_last_error_code() };
         let error_msg = unsafe { CStr::from_ptr(kreuzberg_last_error_context()) }.to_string_lossy();
         return throw_exception(

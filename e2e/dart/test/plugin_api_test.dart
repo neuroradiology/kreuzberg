@@ -53,10 +53,10 @@ class TestStubRegisterDocumentExtractorTraitBridge extends DocumentExtractor {
   String get name => 'register_document_extractor_trait_bridge';
   Future<InternalDocument> extractBytes(Uint8List content, String mimeType, ExtractionConfig config) async => InternalDocument();
   Future<InternalDocument> extractFile(String path, String mimeType, ExtractionConfig config) async => InternalDocument();
-  List<String> supportedMimeTypes() => [];
-  int priority() => 0;
-  bool canHandle(String path, String mimeType) => false;
-  SyncExtractor? asSyncExtractor() => null;
+  Future<List<String>> supportedMimeTypes() async => [];
+  Future<int> priority() async => 0;
+  Future<bool> canHandle(String path, String mimeType) async => false;
+  Future<SyncExtractor?> asSyncExtractor() async => null;
 }
 final _TestStubRegisterDocumentExtractorTraitBridge_instance = TestStubRegisterDocumentExtractorTraitBridge();
 late final DocumentExtractorDartImpl _TestStubRegisterDocumentExtractorTraitBridge_wrapped;
@@ -67,17 +67,16 @@ Future<void> _initTestStubRegisterDocumentExtractorTraitBridge() async {
     pluginVersion: '0.0.1',
     extractBytes: (content, mimeType, config) => _TestStubRegisterDocumentExtractorTraitBridge_instance.extractBytes(content, mimeType, config),
     extractFile: (path, mimeType, config) => _TestStubRegisterDocumentExtractorTraitBridge_instance.extractFile(path, mimeType, config),
-    supportedMimeTypes: () => Future.value(_TestStubRegisterDocumentExtractorTraitBridge_instance.supportedMimeTypes()),
-    priority: () => Future.value(_TestStubRegisterDocumentExtractorTraitBridge_instance.priority()),
-    canHandle: (path, mimeType) => Future.value(_TestStubRegisterDocumentExtractorTraitBridge_instance.canHandle(path, mimeType)),
-    asSyncExtractor: () => Future.value(_TestStubRegisterDocumentExtractorTraitBridge_instance.asSyncExtractor())
+    supportedMimeTypes: () => _TestStubRegisterDocumentExtractorTraitBridge_instance.supportedMimeTypes(),
+    priority: () => _TestStubRegisterDocumentExtractorTraitBridge_instance.priority(),
+    canHandle: (path, mimeType) => _TestStubRegisterDocumentExtractorTraitBridge_instance.canHandle(path, mimeType)
   );
 }
 
 
 class TestStubRegisterEmbeddingBackendTraitBridge extends EmbeddingBackend {
   String get name => 'register_embedding_backend_trait_bridge';
-  int dimensions() => 0;
+  Future<int> dimensions() async => 0;
   Future<List<List<double>>> embed(List<String> texts) async => [];
 }
 final _TestStubRegisterEmbeddingBackendTraitBridge_instance = TestStubRegisterEmbeddingBackendTraitBridge();
@@ -87,7 +86,7 @@ Future<void> _initTestStubRegisterEmbeddingBackendTraitBridge() async {
   _TestStubRegisterEmbeddingBackendTraitBridge_wrapped = await createEmbeddingBackendDartImpl(
     pluginName: 'register_embedding_backend_trait_bridge',
     pluginVersion: '0.0.1',
-    dimensions: () => Future.value(_TestStubRegisterEmbeddingBackendTraitBridge_instance.dimensions()),
+    dimensions: () => _TestStubRegisterEmbeddingBackendTraitBridge_instance.dimensions(),
     embed: (texts) => _TestStubRegisterEmbeddingBackendTraitBridge_instance.embed(texts)
   );
 }
@@ -95,14 +94,14 @@ Future<void> _initTestStubRegisterEmbeddingBackendTraitBridge() async {
 
 class TestStubRegisterOcrBackendTraitBridge extends OcrBackend {
   String get name => 'register_ocr_backend_trait_bridge';
-  Future<ExtractionResult> processImage(Uint8List imageBytes, OcrConfig config) async => ExtractionResult();
-  Future<ExtractionResult> processImageFile(String path, OcrConfig config) async => ExtractionResult();
-  bool supportsLanguage(String lang) => false;
-  OcrBackendType backendType() => OcrBackendType.tesseract;
-  List<String> supportedLanguages() => [];
-  bool supportsTableDetection() => false;
-  bool supportsDocumentProcessing() => false;
-  Future<ExtractionResult> processDocument(String path, OcrConfig config) async => ExtractionResult();
+  Future<ExtractionResult> processImage(Uint8List imageBytes, OcrConfig config) async => throw UnimplementedError();
+  Future<ExtractionResult> processImageFile(String path, OcrConfig config) async => throw UnimplementedError();
+  Future<bool> supportsLanguage(String lang) async => false;
+  Future<OcrBackendType> backendType() async => OcrBackendType.tesseract;
+  Future<List<String>> supportedLanguages() async => [];
+  Future<bool> supportsTableDetection() async => false;
+  Future<bool> supportsDocumentProcessing() async => false;
+  Future<ExtractionResult> processDocument(String path, OcrConfig config) async => throw UnimplementedError();
 }
 final _TestStubRegisterOcrBackendTraitBridge_instance = TestStubRegisterOcrBackendTraitBridge();
 late final OcrBackendDartImpl _TestStubRegisterOcrBackendTraitBridge_wrapped;
@@ -113,11 +112,11 @@ Future<void> _initTestStubRegisterOcrBackendTraitBridge() async {
     pluginVersion: '0.0.1',
     processImage: (imageBytes, config) => _TestStubRegisterOcrBackendTraitBridge_instance.processImage(imageBytes, config),
     processImageFile: (path, config) => _TestStubRegisterOcrBackendTraitBridge_instance.processImageFile(path, config),
-    supportsLanguage: (lang) => Future.value(_TestStubRegisterOcrBackendTraitBridge_instance.supportsLanguage(lang)),
-    backendType: () => Future.value(_TestStubRegisterOcrBackendTraitBridge_instance.backendType()),
-    supportedLanguages: () => Future.value(_TestStubRegisterOcrBackendTraitBridge_instance.supportedLanguages()),
-    supportsTableDetection: () => Future.value(_TestStubRegisterOcrBackendTraitBridge_instance.supportsTableDetection()),
-    supportsDocumentProcessing: () => Future.value(_TestStubRegisterOcrBackendTraitBridge_instance.supportsDocumentProcessing()),
+    supportsLanguage: (lang) => _TestStubRegisterOcrBackendTraitBridge_instance.supportsLanguage(lang),
+    backendType: () => _TestStubRegisterOcrBackendTraitBridge_instance.backendType(),
+    supportedLanguages: () => _TestStubRegisterOcrBackendTraitBridge_instance.supportedLanguages(),
+    supportsTableDetection: () => _TestStubRegisterOcrBackendTraitBridge_instance.supportsTableDetection(),
+    supportsDocumentProcessing: () => _TestStubRegisterOcrBackendTraitBridge_instance.supportsDocumentProcessing(),
     processDocument: (path, config) => _TestStubRegisterOcrBackendTraitBridge_instance.processDocument(path, config)
   );
 }
@@ -126,10 +125,10 @@ Future<void> _initTestStubRegisterOcrBackendTraitBridge() async {
 class TestStubRegisterPostProcessorTraitBridge extends PostProcessor {
   String get name => 'register_post_processor_trait_bridge';
   Future<void> process(ExtractionResult result, ExtractionConfig config) async => null;
-  ProcessingStage processingStage() => ProcessingStage.preProcessing;
-  bool shouldProcess(ExtractionResult result, ExtractionConfig config) => false;
-  int estimatedDurationMs(ExtractionResult result) => 0;
-  int priority() => 0;
+  Future<ProcessingStage> processingStage() async => ProcessingStage.preProcessing;
+  Future<bool> shouldProcess(ExtractionResult result, ExtractionConfig config) async => false;
+  Future<int> estimatedDurationMs(ExtractionResult result) async => 0;
+  Future<int> priority() async => 0;
 }
 final _TestStubRegisterPostProcessorTraitBridge_instance = TestStubRegisterPostProcessorTraitBridge();
 late final PostProcessorDartImpl _TestStubRegisterPostProcessorTraitBridge_wrapped;
@@ -139,10 +138,10 @@ Future<void> _initTestStubRegisterPostProcessorTraitBridge() async {
     pluginName: 'register_post_processor_trait_bridge',
     pluginVersion: '0.0.1',
     process: (result, config) => _TestStubRegisterPostProcessorTraitBridge_instance.process(result, config),
-    processingStage: () => Future.value(_TestStubRegisterPostProcessorTraitBridge_instance.processingStage()),
-    shouldProcess: (result, config) => Future.value(_TestStubRegisterPostProcessorTraitBridge_instance.shouldProcess(result, config)),
-    estimatedDurationMs: (result) => Future.value(_TestStubRegisterPostProcessorTraitBridge_instance.estimatedDurationMs(result)),
-    priority: () => Future.value(_TestStubRegisterPostProcessorTraitBridge_instance.priority())
+    processingStage: () => _TestStubRegisterPostProcessorTraitBridge_instance.processingStage(),
+    shouldProcess: (result, config) => _TestStubRegisterPostProcessorTraitBridge_instance.shouldProcess(result, config),
+    estimatedDurationMs: (result) => _TestStubRegisterPostProcessorTraitBridge_instance.estimatedDurationMs(result),
+    priority: () => _TestStubRegisterPostProcessorTraitBridge_instance.priority()
   );
 }
 
@@ -158,7 +157,7 @@ Future<void> _initTestStubRegisterRendererTraitBridge() async {
   _TestStubRegisterRendererTraitBridge_wrapped = await createRendererDartImpl(
     pluginName: 'register_renderer_trait_bridge',
     pluginVersion: '0.0.1',
-    render: (doc) => Future.value(_TestStubRegisterRendererTraitBridge_instance.render(doc))
+    render: (doc) => _TestStubRegisterRendererTraitBridge_instance.render(doc)
   );
 }
 
@@ -166,8 +165,8 @@ Future<void> _initTestStubRegisterRendererTraitBridge() async {
 class TestStubRegisterValidatorTraitBridge extends Validator {
   String get name => 'register_validator_trait_bridge';
   Future<void> validate(ExtractionResult result, ExtractionConfig config) async => null;
-  bool shouldValidate(ExtractionResult result, ExtractionConfig config) => false;
-  int priority() => 0;
+  Future<bool> shouldValidate(ExtractionResult result, ExtractionConfig config) async => false;
+  Future<int> priority() async => 0;
 }
 final _TestStubRegisterValidatorTraitBridge_instance = TestStubRegisterValidatorTraitBridge();
 late final ValidatorDartImpl _TestStubRegisterValidatorTraitBridge_wrapped;
@@ -177,8 +176,8 @@ Future<void> _initTestStubRegisterValidatorTraitBridge() async {
     pluginName: 'register_validator_trait_bridge',
     pluginVersion: '0.0.1',
     validate: (result, config) => _TestStubRegisterValidatorTraitBridge_instance.validate(result, config),
-    shouldValidate: (result, config) => Future.value(_TestStubRegisterValidatorTraitBridge_instance.shouldValidate(result, config)),
-    priority: () => Future.value(_TestStubRegisterValidatorTraitBridge_instance.priority())
+    shouldValidate: (result, config) => _TestStubRegisterValidatorTraitBridge_instance.shouldValidate(result, config),
+    priority: () => _TestStubRegisterValidatorTraitBridge_instance.priority()
   );
 }
 

@@ -434,3 +434,77 @@ Kotlin (custom serializer):
 No binding bugs or test fixture issues were found. The hand-edits are production-ready and provide a concrete specification for alef kotlin-android template upstreaming.
 
 **Next Step**: Upstream each ALEF_GAP into alef's kotlin-android binding template using the patterns documented above.
+
+---
+
+## Cleanup Session — May 30, 2026
+
+### Changes Applied
+
+#### 1. Replace Hand-Rolled base64_decode() with `base64` Crate
+
+**File**: `crates/kreuzberg-jni/src/lib.rs`
+
+- **Added**: `base64 = "0.22"` to `Cargo.toml` dependencies
+- **Replaced**: Manual Base64 alphabet mapping (lines 37–66) with:
+  ```rust
+  use base64::engine::general_purpose::STANDARD;
+  use base64::Engine;
+
+  fn base64_decode(input: &str) -> Result<Vec<u8>, String> {
+      STANDARD.decode(input).map_err(|e| format!("Invalid Base64: {}", e))
+  }
+  ```
+- **Rationale**: Eliminates 30 lines of hand-rolled code; uses well-tested standard library
+
+#### 2. Improve Exception Handling Pattern
+
+**File**: `crates/kreuzberg-jni/src/lib.rs`
+
+- **Refactored**: Early return patterns to use `return throw_exception(...)` instead of:
+  ```rust
+  throw_exception(&mut env, &e);
+  return std::ptr::null_mut();
+  ```
+- **Scope**: Fixed in `nativeRenderPdfPageToPngImpl` (lines 1121–1150)
+- **Impact**: Cleaner code, no functional change (throw_exception already returns the null value)
+
+#### 3. Add SAFETY Comments to Critical Unsafe Blocks
+
+**File**: `crates/kreuzberg-jni/src/lib.rs`
+
+- **Enhanced**: `get_ffi_error_message()` (lines 53–67)
+- **Enhanced**: `nativeExtractBytesImpl()` config parsing section (lines 164–172)
+- **Pattern**: Each SAFETY comment documents invariants and null-check patterns
+- **Not Yet Complete**: Future work to add SAFETY comments to all 70+ unsafe blocks
+
+### Bugs Found & Status
+
+#### Confirmed Non-Issues
+
+1. **JNI Exception Behavior**: JNI exceptions are lazy — `env.throw_new()` doesn't immediately interrupt the JNI function. However, all call sites properly check for null returns and early-return, so pending exceptions are handled correctly before calling back into JNI.
+
+2. **fixConfigSerialization() Deprecation**: The audit notes flagged this for potential deprecation. Analysis shows:
+   - OutputFormatSerializer now handles sealed class conversion (✓ working)
+   - `cancel_token` removal still needed (Kotlin ExtractionConfig has field, Rust doesn't)
+   - Jackson's `FAIL_ON_UNKNOWN_PROPERTIES = false` provides defense-in-depth
+   - **Recommendation**: Keep as-is; the defensive fix is zero-cost and will survive future alef generations
+
+3. **Memory Leaks**: All FFI pointers are properly freed:
+   - `kreuzberg_extraction_config_free()` called on both success and error paths
+   - `kreuzberg_free_string()` called on all JSON pointers from FFI
+   - `kreuzberg_extraction_result_free()` called after serialization
+   - `kreuzberg_embedding_preset_free()` called after use
+
+#### No Active Bugs Found
+
+- Type signature matching: All JNI function signatures match KreuzbergBridge.kt external declarations
+- Exception handling: All throw sites properly propagate via JVM's exception state
+- Null pointer checks: All FFI returns checked before use
+- String ownership: All JString → Rust String conversions via `jstring_to_string()` with error handling
+
+### Testing Status
+
+- **Target**: 82/82 kotlin-android e2e tests (unchanged)
+- **Build**: JNI shim compiles cleanly with no clippy warnings
+- **Pending Verification**: Full e2e test suite (gradle test running)
