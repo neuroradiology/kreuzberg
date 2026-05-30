@@ -266,9 +266,23 @@ tasks:
 
   # === Alef lifecycle ===
   alef:generate:
-    desc: "Regenerate all Alef-managed outputs without formatting or building"
+    desc: "[DISABLED during hand-edit phase] Regenerate all Alef-managed outputs"
     cmds:
-      - alef all --clean --format=false
+      - |
+        echo "============================================================" >&2
+        echo "ERROR: 'alef:generate' is DISABLED during the hand-edit phase." >&2
+        echo "" >&2
+        echo "We are getting all 15 language e2e suites green by editing" >&2
+        echo "alef-generated code in place. Running alef:generate (or any" >&2
+        echo "regen task) blows away hand-edits and forces repeated rework." >&2
+        echo "" >&2
+        echo "DO NOT regenerate. Edit the generated files directly." >&2
+        echo "When all e2e are green and committed, Phase 6 will port the" >&2
+        echo "hand-edits back into alef templates upstream." >&2
+        echo "" >&2
+        echo "If you genuinely need this task, talk to the user first." >&2
+        echo "============================================================" >&2
+        exit 1
 
   alef:verify:
     desc: "Check Alef-generated files are up to date"
@@ -281,9 +295,23 @@ tasks:
       - alef build
 
   alef:format:
-    desc: "Format Alef-managed generated output"
+    desc: "[DISABLED during hand-edit phase] Format Alef-managed generated output"
     cmds:
-      - alef fmt
+      - |
+        echo "============================================================" >&2
+        echo "ERROR: 'alef:format' is DISABLED during the hand-edit phase." >&2
+        echo "" >&2
+        echo "alef fmt rewrites alef-generated files and discards hand-edits." >&2
+        echo "We are getting all 15 language e2e suites green by editing" >&2
+        echo "alef-generated code in place." >&2
+        echo "" >&2
+        echo "DO NOT format. Edit the generated files directly." >&2
+        echo "When all e2e are green and committed, Phase 6 will port the" >&2
+        echo "hand-edits back into alef templates upstream." >&2
+        echo "" >&2
+        echo "If you genuinely need this task, talk to the user first." >&2
+        echo "============================================================" >&2
+        exit 1
 
   alef:sync:
     desc: "Sync version from Cargo.toml to all manifests"
@@ -297,9 +325,23 @@ tasks:
 
   # === E2E tests ===
   e2e:generate:
-    desc: "Generate E2E tests for all languages from fixtures"
+    desc: "[DISABLED during hand-edit phase] Generate E2E tests from fixtures"
     cmds:
-      - alef e2e generate
+      - |
+        echo "============================================================" >&2
+        echo "ERROR: 'e2e:generate' is DISABLED during the hand-edit phase." >&2
+        echo "" >&2
+        echo "Running alef e2e generate overwrites the per-language test" >&2
+        echo "files in e2e/<lang>/ and discards hand-edits applied to fix" >&2
+        echo "e2e failures." >&2
+        echo "" >&2
+        echo "DO NOT regenerate. Edit the e2e test files directly." >&2
+        echo "When all e2e are green and committed, Phase 6 will port the" >&2
+        echo "hand-edits back into alef templates upstream." >&2
+        echo "" >&2
+        echo "If you genuinely need this task, talk to the user first." >&2
+        echo "============================================================" >&2
+        exit 1
 
   e2e:build:
     desc: "Build all language bindings used by e2e suites (release)"
@@ -307,11 +349,19 @@ tasks:
       - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,kotlin_android,swift,zig
 
   e2e:all:
-    desc: "Generate, build, and run all e2e test suites"
+    desc: "[DISABLED during hand-edit phase] Generate + build + test all e2e suites"
     cmds:
-      - task: e2e:generate
-      - task: e2e:build
-      - task: e2e:test
+      - |
+        echo "============================================================" >&2
+        echo "ERROR: 'e2e:all' is DISABLED during the hand-edit phase." >&2
+        echo "" >&2
+        echo "This task chains through e2e:generate which overwrites" >&2
+        echo "hand-edits. Use 'task <lang>:e2e' (per-language tasks are" >&2
+        echo "still safe — they only test, do not regenerate)." >&2
+        echo "" >&2
+        echo "If you genuinely need this task, talk to the user first." >&2
+        echo "============================================================" >&2
+        exit 1
 
   e2e:test:
     desc: "Run all e2e test suites across all languages"
@@ -329,10 +379,18 @@ tasks:
       - alef e2e validate
 
   e2e:verify:
-    desc: "Verify generated e2e tests are up to date"
+    desc: "[DISABLED during hand-edit phase] Verify generated e2e tests are up to date"
     cmds:
-      - alef e2e generate
-      - git diff --exit-code e2e/
+      - |
+        echo "============================================================" >&2
+        echo "ERROR: 'e2e:verify' is DISABLED during the hand-edit phase." >&2
+        echo "" >&2
+        echo "This task runs alef e2e generate then diffs — guaranteed to" >&2
+        echo "overwrite hand-edits to e2e/<lang>/ files." >&2
+        echo "" >&2
+        echo "If you genuinely need this task, talk to the user first." >&2
+        echo "============================================================" >&2
+        exit 1
 
   rust:e2e:
     desc: "Run Rust e2e tests via alef"
@@ -422,7 +480,8 @@ tasks:
     desc: "Build Swift e2e test suite (separate from test run)"
     internal: true
     cmds:
-      - alef e2e generate
+      # NOTE: 'alef e2e generate' deliberately removed during hand-edit phase.
+      # Phase 6 will restore it once alef templates absorb the hand-edits.
       - cargo build --release -p kreuzberg-swift
       - bash scripts/setup-swift-bridge.sh
 
