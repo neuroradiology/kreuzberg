@@ -10,7 +10,7 @@ import RustBridge
 /// a Rust trait from the host side.
 public protocol SwiftEmbeddingBackendBridge: AnyObject {
     func dimensions() -> Int
-    func embed(texts: [String]) async throws -> [[Float]]
+    func embed(texts: [String]) throws -> [[Float]]
 }
 
 /// Internal adapter wrapping a `SwiftEmbeddingBackendBridge` conformer.
@@ -28,9 +28,9 @@ final class SwiftEmbeddingBackendAdapter {
         return result
     }
 
-    func embedCall(texts: [String]) async throws -> String {
+    func embedCall(texts: [String]) throws -> String {
         do {
-    let result = try await self.bridge.embed(texts: texts)
+    let result = try self.bridge.embed(texts: texts)
             return marshal_ok_result(try JSONEncoder().encode(result))
     } catch {
         return marshal_error_result(error)

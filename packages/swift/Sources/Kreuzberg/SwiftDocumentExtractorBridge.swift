@@ -9,7 +9,7 @@ import RustBridge
 /// Conform your Swift class or struct to this protocol to implement
 /// a Rust trait from the host side.
 public protocol SwiftDocumentExtractorBridge: AnyObject {
-    func extractBytes(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String
+    func extractBytes(content: Data, mime_type: String, config: ExtractionConfig) throws -> String
     func supportedMimeTypes() -> [String]
 }
 
@@ -23,9 +23,9 @@ final class SwiftDocumentExtractorAdapter {
     self.bridge = bridge
     }
 
-    func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String {
+    func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) throws -> String {
         do {
-    let result = try await self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
+    let result = try self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
             let encodedData = try marshal_encode_excluded(result)
     if let jsonString = String(data: encodedData, encoding: .utf8) {
         return "{\"ok\": \(jsonString)}"

@@ -9,7 +9,7 @@ import RustBridge
 /// Conform your Swift class or struct to this protocol to implement
 /// a Rust trait from the host side.
 public protocol SwiftPostProcessorBridge: AnyObject {
-    func process(result: String, config: ExtractionConfig) async throws -> Void
+    func process(result: String, config: ExtractionConfig) throws -> Void
     func processingStage() -> ProcessingStage
 }
 
@@ -23,9 +23,9 @@ final class SwiftPostProcessorAdapter {
     self.bridge = bridge
     }
 
-    func processCall(result: String, config: ExtractionConfig) async throws -> String {
+    func processCall(result: String, config: ExtractionConfig) throws -> String {
         do {
-    let result = try await self.bridge.process(result: result, config: config)
+    let result = try self.bridge.process(result: result, config: config)
             return marshal_ok_result(Empty())
     } catch {
         return marshal_error_result(error)

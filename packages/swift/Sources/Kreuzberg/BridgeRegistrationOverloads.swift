@@ -33,146 +33,26 @@ public func unregisterRenderer(name: String) throws {
 
 // MARK: - Bridge → Box register overloads
 
-public func registerOcrBackend(_ bridge: SwiftOcrBackendBridge) throws {
-    try registerOcrBackend(SwiftOcrBackendBox(_OcrBackendBridgeAdapter(bridge: bridge)))
+public func registerOcrBackend(_ bridge: any SwiftOcrBackendBridge) throws {
+    try registerOcrBackend(SwiftOcrBackendBox(bridge))
 }
 
-public func registerPostProcessor(_ bridge: SwiftPostProcessorBridge) throws {
-    try registerPostProcessor(SwiftPostProcessorBox(_PostProcessorBridgeAdapter(bridge: bridge)))
+public func registerPostProcessor(_ bridge: any SwiftPostProcessorBridge) throws {
+    try registerPostProcessor(SwiftPostProcessorBox(bridge))
 }
 
-public func registerValidator(_ bridge: SwiftValidatorBridge) throws {
-    try registerValidator(SwiftValidatorBox(_ValidatorBridgeAdapter(bridge: bridge)))
+public func registerValidator(_ bridge: any SwiftValidatorBridge) throws {
+    try registerValidator(SwiftValidatorBox(bridge))
 }
 
-public func registerEmbeddingBackend(_ bridge: SwiftEmbeddingBackendBridge) throws {
-    try registerEmbeddingBackend(SwiftEmbeddingBackendBox(_EmbeddingBackendBridgeAdapter(bridge: bridge)))
+public func registerEmbeddingBackend(_ bridge: any SwiftEmbeddingBackendBridge) throws {
+    try registerEmbeddingBackend(SwiftEmbeddingBackendBox(bridge))
 }
 
-public func registerDocumentExtractor(_ bridge: SwiftDocumentExtractorBridge) throws {
-    try registerDocumentExtractor(SwiftDocumentExtractorBox(_DocumentExtractorBridgeAdapter(bridge: bridge)))
+public func registerDocumentExtractor(_ bridge: any SwiftDocumentExtractorBridge) throws {
+    try registerDocumentExtractor(SwiftDocumentExtractorBox(bridge))
 }
 
-public func registerRenderer(_ bridge: SwiftRendererBridge) throws {
-    try registerRenderer(SwiftRendererBox(_RendererBridgeAdapter(bridge: bridge)))
-}
-
-// MARK: - Internal stub adapters
-//
-// Each adapter conforms to the full plugin protocol expected by the
-// `Swift<Plugin>Box` wrapper and delegates only the methods the bridge
-// exposes. The remaining methods use safe defaults: register/initialize/
-// shutdown are no-ops, processing entrypoints throw, capability queries
-// report false/empty.
-//
-// Adapter stub names (returned by name() method):
-// - _OcrBackendBridgeAdapter → "swift-bridge-ocr-stub"
-// - _PostProcessorBridgeAdapter → "swift-bridge-post-processor-stub"
-// - _ValidatorBridgeAdapter → "swift-bridge-validator-stub"
-// - _EmbeddingBackendBridgeAdapter → "swift-bridge-embedding-stub"
-// - _DocumentExtractorBridgeAdapter → "swift-bridge-document-extractor-stub"
-// - _RendererBridgeAdapter → "swift-bridge-renderer-stub"
-//
-// These names are used by e2e test cleanup to unregister stubs after each test.
-
-private struct _BridgeStubError: Error, CustomStringConvertible {
-    let description: String
-}
-
-private final class _OcrBackendBridgeAdapter: OcrBackend {
-    private let bridge: any SwiftOcrBackendBridge
-    init(bridge: any SwiftOcrBackendBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-ocr-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    func processImage(image_bytes: Data, config: OcrConfig) async throws -> String {
-        throw _BridgeStubError(description: "async bridge processImage cannot be invoked from sync FFI stub")
-    }
-
-    func supportsLanguage(lang: String) -> Bool { false }
-
-    // TODO: Implement backendType stub
-
-}
-
-private final class _PostProcessorBridgeAdapter: PostProcessor {
-    private let bridge: any SwiftPostProcessorBridge
-    init(bridge: any SwiftPostProcessorBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-post-processor-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    func process(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
-        throw _BridgeStubError(description: "async bridge process cannot be invoked from sync FFI stub")
-    }
-
-    // TODO: Implement processingStage stub
-
-}
-
-private final class _ValidatorBridgeAdapter: Validator {
-    private let bridge: any SwiftValidatorBridge
-    init(bridge: any SwiftValidatorBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-validator-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    func validate(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
-        throw _BridgeStubError(description: "async bridge validate cannot be invoked from sync FFI stub")
-    }
-
-}
-
-private final class _EmbeddingBackendBridgeAdapter: EmbeddingBackend {
-    private let bridge: any SwiftEmbeddingBackendBridge
-    init(bridge: any SwiftEmbeddingBackendBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-embedding-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    // TODO: Implement dimensions stub
-
-    func embed(texts: [String]) async throws -> String {
-        throw _BridgeStubError(description: "async bridge embed cannot be invoked from sync FFI stub")
-    }
-
-}
-
-private final class _DocumentExtractorBridgeAdapter: DocumentExtractor {
-    private let bridge: any SwiftDocumentExtractorBridge
-    init(bridge: any SwiftDocumentExtractorBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-document-extractor-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    func extractBytes(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String {
-        throw _BridgeStubError(description: "async bridge extractBytes cannot be invoked from sync FFI stub")
-    }
-
-    // TODO: Implement supportedMimeTypes stub
-
-}
-
-private final class _RendererBridgeAdapter: Renderer {
-    private let bridge: any SwiftRendererBridge
-    init(bridge: any SwiftRendererBridge) { self.bridge = bridge }
-
-    func name() -> String { "swift-bridge-renderer-stub" }
-    func version() -> String { "0.0.0" }
-    func initialize() throws {}
-    func shutdown() throws {}
-
-    func render(doc: InternalDocument) -> String { "" }
-
+public func registerRenderer(_ bridge: any SwiftRendererBridge) throws {
+    try registerRenderer(SwiftRendererBox(bridge))
 }
