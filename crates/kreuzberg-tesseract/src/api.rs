@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_double, c_float, c_int, c_void};
 use std::path::Path;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 
 /// Batch bounding box results from Tesseract layout analysis.
 ///
@@ -100,6 +100,9 @@ impl TesseractAPI {
     /// Returns [`TesseractError::NullPointerError`] when `TessBaseAPICreate` returns a
     /// null pointer, which indicates an allocation failure in the Tesseract C library.
     pub fn new() -> Result<Self> {
+        // Register global cleanup handler once at first instance creation
+        ensure_tesseract_cleanup_registered();
+
         // SAFETY: TessBaseAPICreate() is a C FFI function that allocates and initializes
         // a new Tesseract engine handle. It returns a valid opaque pointer on success or
         // null on allocation failure. The returned handle is owned exclusively by this
@@ -2157,6 +2160,46 @@ impl Clone for TesseractAPI {
 
         new_api
     }
+}
+
+/// Global registry of active Tesseract instances for cleanup at process shutdown.
+/// This ensures TessBaseAPIEnd is called on at least one instance before process exit,
+/// which helps finalize Tesseract's internal singleton ObjectCache and reduces leak warnings.
+static TESSERACT_CLEANUP: OnceLock<()> = OnceLock::new();
+
+// SAFETY: atexit is a standard C library function that registers a function to be called
+// at program termination. The callback parameter must be a non-null function pointer.
+unsafe extern "C" {
+    fn atexit(f: extern "C" fn()) -> c_int;
+}
+
+/// Global Tesseract cleanup handler called at process exit.
+/// Creates a temporary engine instance and calls End to finalize ObjectCache.
+extern "C" fn tesseract_atexit_cleanup() {
+    unsafe {
+        // SAFETY: TessBaseAPICreate, TessBaseAPIEnd, and TessBaseAPIDelete are defined below.
+        // This function is only called once at process exit.
+        // Create a temporary engine instance
+        let handle = TessBaseAPICreate();
+        if !handle.is_null() {
+            // Call End to finalize ObjectCache and global state
+            TessBaseAPIEnd(handle);
+            // Clean up the handle
+            TessBaseAPIDelete(handle);
+        }
+    }
+}
+
+/// Register the global Tesseract cleanup handler.
+/// Called once when the first TesseractAPI instance is created.
+fn ensure_tesseract_cleanup_registered() {
+    let _ = TESSERACT_CLEANUP.get_or_init(|| {
+        // Register the cleanup handler to run at process exit
+        // SAFETY: tesseract_atexit_cleanup is a valid extern "C" fn() defined above
+        unsafe {
+            let _ = atexit(tesseract_atexit_cleanup);
+        }
+    });
 }
 
 #[cfg(any(feature = "build-tesseract", feature = "build-tesseract-wasm"))]
