@@ -823,33 +823,14 @@ fields_array = [
   "metadata.format.excel.sheet_names",
   "document.node_types",
 ]
-fields_method_calls = [
-  "content",
-  "mime_type",
-  "metadata",
-  "extraction_method",
-  "tables",
-  "detected_languages",
-  "chunks",
-  "images",
-  "pages",
-  "elements",
-  "djot_content",
-  "ocr_elements",
-  "document",
-  "extracted_keywords",
-  "quality_score",
-  "processing_warnings",
-  "annotations",
-  "children",
-  "uris",
-  "revisions",
-  "structured_output",
-  "code_intelligence",
-  "llm_usage",
-  "formatted_content",
-  "metadata.format.excel",
-]
+# Kreuzberg's `ExtractionResult` exposes every result field as a `pub <field>:`
+# struct field. The Rust e2e renderer in alef uses `fields_method_calls` to
+# decide whether to append `()` after the accessor; leaving the list empty
+# means Rust e2e tests use the correct field-access form (`result.content`,
+# not `result.content()`). Java/Kotlin/Swift/Csharp generate their own
+# accessor shape via per-language backend conventions and do not consult
+# this set.
+fields_method_calls = []
 result_fields = [
   "content",
   "mime_type",

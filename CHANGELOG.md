@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ci(e2e)**: `Validate PR` and `Validate Issues` workflows no longer fail with `startup_failure`. Both reusable callers now declare the `permissions:` block (`contents: read, pull-requests: read` for the PR validator; `issues: write, repository-projects: write` for the issue validator) that the reusable workflows in `kreuzberg-dev/actions@v1` require.
 - **ci(e2e/kotlin_android)**: `setup-android@v3` no longer fails with `sdkmanager exit 1`. Replaced the deprecated `api-level` / `build-tools-version` inputs (which the action ignored with a workflow warning and which forced the legacy `sdkmanager tools` install path that Google removed) with the modern `packages: "platforms;android-35 build-tools;35.0.0"` input.
+- **alef.toml**: `fields_method_calls` is now an empty list. The Rust e2e codegen consults this set to decide whether to emit `result.<field>()` vs `result.<field>` — kreuzberg's `ExtractionResult` exposes every result item as a `pub <field>:` struct field, so the previous list of 26 entries caused `error[E0599]: no method named 'content' found` and similar errors in the regenerated `e2e/rust/tests/*` suite. Java / Kotlin / Swift / C# / Zig e2e codegens emit their own accessor shape via per-language backend conventions and do not consult this set.
 
 ### Added
 
