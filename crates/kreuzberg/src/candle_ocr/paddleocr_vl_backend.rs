@@ -117,8 +117,6 @@ impl OcrBackend for PaddleOcrVlBackend {
 
         // Clone image bytes for async block
         let image_bytes = image_bytes.to_vec();
-        let task = task;
-        let device = device;
 
         // Run inference in a blocking task to avoid blocking the async runtime
         let content = tokio::task::spawn_blocking(move || {

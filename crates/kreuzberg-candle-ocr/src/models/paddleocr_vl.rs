@@ -32,8 +32,10 @@ use tokenizers::Tokenizer;
 /// PaddleOCR-VL task selection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum PaddleOcrVlTask {
     /// Text recognition (OCR)
+    #[default]
     Ocr,
     /// Table recognition
     Table,
@@ -55,11 +57,6 @@ impl PaddleOcrVlTask {
     }
 }
 
-impl Default for PaddleOcrVlTask {
-    fn default() -> Self {
-        PaddleOcrVlTask::Ocr
-    }
-}
 
 impl std::fmt::Display for PaddleOcrVlTask {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -133,7 +130,7 @@ impl PaddleOcrVlEngine {
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load pth: {}", e)))?
         } else {
             unsafe {
-                VarBuilder::from_mapped_safetensors(&[&model_file], dtype, &device)
+                VarBuilder::from_mmaped_safetensors(&[&model_file], dtype, &device)
                     .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load safetensors: {}", e)))?
             }
         };

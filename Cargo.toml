@@ -6,6 +6,7 @@ members = [
     "crates/kreuzberg-jni",
     "crates/kreuzberg-libheif",
     "crates/kreuzberg-node",
+    "crates/kreuzberg-candle-ocr",
     "crates/kreuzberg-paddle-ocr",
     "crates/kreuzberg-php",
     "crates/kreuzberg-py",
@@ -47,6 +48,9 @@ async-trait = "0.1.89"
 base64 = "0.22.1"
 blake3 = "1"
 bytes = { version = "1", features = ["serde"] }
+candle-core = { version = "0.10", default-features = false }
+candle-nn = { version = "0.10", default-features = false }
+candle-transformers = { version = "0.10", default-features = false }
 cfb = "0.14"
 chrono = "0.4"
 clap = { version = "4.6", features = ["derive", "color", "suggestions"] }
@@ -122,6 +126,7 @@ web-sys = { version = "0.3", features = [
 kreuzberg = { path = "crates/kreuzberg" }
 kreuzberg-tesseract = { path = "crates/kreuzberg-tesseract" }
 kreuzberg-paddle-ocr = { path = "crates/kreuzberg-paddle-ocr" }
+kreuzberg-candle-ocr = { path = "crates/kreuzberg-candle-ocr" }
 
 [profile.release]
 lto = "thin"
