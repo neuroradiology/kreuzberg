@@ -59,7 +59,13 @@ pub fn load(root: &Path, split: Split) -> Result<Vec<StructuredFixture>> {
             continue;
         }
 
-        let gt_json: Value = serde_json::from_str(&fs::read_to_string(&gt_path)?)?;
+        let mut gt_json: Value = serde_json::from_str(&fs::read_to_string(&gt_path)?)?;
+
+        // CORD v2 GT serializes `menu` as either a single object OR an array of
+        // objects depending on the receipt. Normalise to always-array so paths
+        // are stable across fixtures and so the LLM has a single target shape
+        // to satisfy. The schema below requires `menu` as an array.
+        normalize_cord_menu(&mut gt_json);
 
         fixtures.push(StructuredFixture {
             document_path: doc_path,
@@ -73,26 +79,64 @@ pub fn load(root: &Path, split: Split) -> Result<Vec<StructuredFixture>> {
     Ok(fixtures)
 }
 
+/// Wrap a single `menu` object into a one-element array so leaf paths align
+/// across fixtures regardless of whether the receipt had one item or many.
+fn normalize_cord_menu(value: &mut Value) {
+    if let Value::Object(map) = value
+        && let Some(menu) = map.get_mut("menu")
+        && menu.is_object()
+    {
+        let single = std::mem::replace(menu, Value::Null);
+        *menu = Value::Array(vec![single]);
+    }
+}
+
 /// Load the CORD JSON schema.
+///
+/// Reflects the actual CORD v2 structure (menu/sub_total/total). All values are
+/// kept as `string` to match the GT format (which serialises numerics as
+/// quoted strings like `"60.000"`). The schema is permissive
+/// (`additionalProperties: true`) so receipts with extra fields don't fail
+/// validation, but the listed fields cover the bulk of the dataset's coverage.
 fn load_cord_schema() -> Result<Value> {
-    // CORD schema derived from receipt field set: company, date, address, total, items, etc.
     Ok(json!({
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
+        "additionalProperties": true,
         "properties": {
-            "company": { "type": ["string", "null"] },
-            "date": { "type": ["string", "null"] },
-            "address": { "type": ["string", "null"] },
-            "total": { "type": ["number", "null"] },
-            "items": {
-                "type": ["array", "null"],
+            "menu": {
+                "type": "array",
                 "items": {
                     "type": "object",
+                    "additionalProperties": true,
                     "properties": {
-                        "name": { "type": "string" },
-                        "quantity": { "type": "number" },
-                        "price": { "type": "number" }
+                        "nm": { "type": "string", "description": "Item name as printed" },
+                        "num": { "type": "string", "description": "Item / SKU number" },
+                        "cnt": { "type": "string", "description": "Item quantity / count" },
+                        "price": { "type": "string", "description": "Unit price as printed" },
+                        "itemsubtotal": { "type": "string", "description": "Line subtotal as printed" }
                     }
+                }
+            },
+            "sub_total": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                    "subtotal_price": { "type": "string" },
+                    "discount_price": { "type": "string" },
+                    "tax_price": { "type": "string" },
+                    "service_price": { "type": "string" }
+                }
+            },
+            "total": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                    "total_price": { "type": "string", "description": "Grand total" },
+                    "cashprice": { "type": "string" },
+                    "creditcardprice": { "type": "string" },
+                    "changeprice": { "type": "string" },
+                    "menuqty_cnt": { "type": "string", "description": "Total items count" }
                 }
             }
         }

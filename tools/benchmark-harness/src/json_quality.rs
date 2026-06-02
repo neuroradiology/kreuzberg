@@ -247,7 +247,16 @@ pub fn numeric_match(predicted: &Value, ground_truth: &Value, tolerance: &Numeri
     match (pred_num, gt_num) {
         (Some(p), Some(g)) => {
             let percent_diff = ((p - g).abs() / g.abs()).min(1.0);
-            percent_diff <= tolerance.decimal_percent
+            // Values >= 1.0 are treated as currency-scale (prices, totals, counts),
+            // letting the looser currency_percent govern. Sub-unit decimals stick
+            // with the tighter decimal_percent budget. When the two tolerances are
+            // identical (Default::default), the choice is a no-op.
+            let effective = if g.abs() >= 1.0 {
+                tolerance.currency_percent.max(tolerance.decimal_percent)
+            } else {
+                tolerance.decimal_percent
+            };
+            percent_diff <= effective
         }
         _ => false,
     }

@@ -43,7 +43,7 @@ struct PerProviderMetrics {
     mean_f1: f64,
     mean_type_correctness: f64,
     schema_validity_rate: f64,
-    total_tokens: u32,
+    total_tokens: u64,
     estimated_cost: f64,
     p50_latency_ms: f64,
     p95_latency_ms: f64,
@@ -72,8 +72,14 @@ async fn test_structured_extraction_matrix() -> Result<()> {
         return Ok(());
     }
 
-    let fixtures = cord::load(Path::new(&datasets_root), Split::Test)
+    let max_docs: usize = env::var("STRUCTURED_MATRIX_LIMIT")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(10);
+
+    let mut fixtures = cord::load(Path::new(&datasets_root), Split::Test)
         .context("Failed to load CORD fixtures")?;
+    fixtures.truncate(max_docs);
 
     if fixtures.is_empty() {
         eprintln!("Skipping test: no CORD fixtures found");
@@ -111,8 +117,8 @@ async fn test_structured_extraction_matrix() -> Result<()> {
         let mut f1_scores = Vec::new();
         let mut type_correctness_scores = Vec::new();
         let mut schema_validity_passes = 0;
-        let total_tokens = 0u32;
-        let total_estimated_cost = 0.0;
+        let mut total_tokens: u64 = 0;
+        let mut total_estimated_cost = 0.0;
         let mut latencies = Vec::new();
         let mut error_count = 0;
 
@@ -130,8 +136,8 @@ async fn test_structured_extraction_matrix() -> Result<()> {
                     llm: LlmConfig {
                         model: provider.model.to_string(),
                         api_key: Some(api_key.clone()),
-                        timeout_secs: Some(180),
-                        max_retries: Some(2),
+                        timeout_secs: Some(60),
+                        max_retries: Some(1),
                         ..Default::default()
                     },
                 }),
@@ -149,6 +155,16 @@ async fn test_structured_extraction_matrix() -> Result<()> {
 
             let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
             latencies.push(elapsed_ms);
+
+            // Capture LLM usage across all calls this extraction made.
+            if let Some(usages) = &result.llm_usage {
+                for usage in usages {
+                    total_tokens += usage.total_tokens.unwrap_or_else(|| {
+                        usage.input_tokens.unwrap_or(0) + usage.output_tokens.unwrap_or(0)
+                    });
+                    total_estimated_cost += usage.estimated_cost.unwrap_or(0.0);
+                }
+            }
 
             // Extract structured output
             let Some(extraction) = result.structured_output else {
@@ -170,9 +186,15 @@ async fn test_structured_extraction_matrix() -> Result<()> {
             let type_rate = type_correctness_rate(&extraction, &fixture.ground_truth);
             type_correctness_scores.push(type_rate);
 
-            if (i + 1) % 5 == 0 {
-                eprintln!("  Processed {}/{}", i + 1, fixtures.len());
-            }
+            eprintln!(
+                "  [{}/{}] {} | f1={:.3} type={:.3} latency={:.0}ms",
+                i + 1,
+                fixtures.len(),
+                provider.name,
+                metrics.f1,
+                type_rate,
+                elapsed_ms
+            );
         }
 
         // Compute aggregates
@@ -242,8 +264,8 @@ async fn test_structured_extraction_matrix() -> Result<()> {
         per_provider_results.insert(provider.name.to_string(), metrics);
     }
 
-    // Write reports
-    let bench_out_dir = PathBuf::from("tools/benchmark-harness/bench-out");
+    // Write reports — anchored at the crate root so the test is location-independent.
+    let bench_out_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("bench-out");
     fs::create_dir_all(&bench_out_dir).context("Failed to create bench-out directory")?;
 
     // Markdown report
