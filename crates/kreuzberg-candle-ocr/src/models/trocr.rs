@@ -79,7 +79,6 @@ impl TrocrVariant {
     }
 }
 
-
 impl std::fmt::Display for TrocrVariant {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let name = match self {
@@ -169,7 +168,7 @@ impl TrocrEngine {
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to parse config.json: {}", e)))?;
 
         // Load weights using memory mapping
-        // SAFETY: VarBuilder::from_mmaped_safetensors requires that:
+        // SAFETY: VarBuilder::from_mapped_safetensors requires that:
         // 1. The file path is valid and readable (guaranteed by hf_hub cache)
         // 2. The safetensors format is valid (guaranteed by HF validation)
         // 3. The device is compatible (guaranteed by candle)
@@ -179,7 +178,7 @@ impl TrocrEngine {
         // and the underlying file handle is managed by hf_hub's cache system.
         #[allow(unsafe_code)]
         let vb = unsafe {
-            VarBuilder::from_mmaped_safetensors(&[model_file], DType::F32, &device)
+            VarBuilder::from_mapped_safetensors(&[model_file], DType::F32, &device)
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load safetensors: {}", e)))?
         };
 

@@ -8000,6 +8000,9 @@ enum OcrBackendType {
   /// PaddleOCR (Python-based, via FFI)
   paddleOcr,
 
+  /// Candle-based VLM OCR (TrOCR, PaddleOCR-VL)
+  candle,
+
   /// Custom/third-party OCR backend
   custom,
 }

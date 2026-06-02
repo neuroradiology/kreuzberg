@@ -57,7 +57,6 @@ impl PaddleOcrVlTask {
     }
 }
 
-
 impl std::fmt::Display for PaddleOcrVlTask {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let name = match self {
@@ -130,7 +129,7 @@ impl PaddleOcrVlEngine {
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load pth: {}", e)))?
         } else {
             unsafe {
-                VarBuilder::from_mmaped_safetensors(&[&model_file], dtype, &device)
+                VarBuilder::from_mapped_safetensors(&[&model_file], dtype, &device)
                     .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load safetensors: {}", e)))?
             }
         };

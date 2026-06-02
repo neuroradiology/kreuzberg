@@ -14056,6 +14056,7 @@ pub enum OcrBackendType {
     Tesseract,
     EasyOCR,
     PaddleOCR,
+    Candle,
     Custom,
 }
 
@@ -14065,6 +14066,7 @@ impl From<kreuzberg::OcrBackendType> for OcrBackendType {
             kreuzberg::OcrBackendType::Tesseract => Self::Tesseract,
             kreuzberg::OcrBackendType::EasyOCR => Self::EasyOCR,
             kreuzberg::OcrBackendType::PaddleOCR => Self::PaddleOCR,
+            kreuzberg::OcrBackendType::Candle => Self::Candle,
             kreuzberg::OcrBackendType::Custom => Self::Custom,
         }
     }
@@ -14076,6 +14078,7 @@ impl OcrBackendType {
             Self::Tesseract => "Tesseract".to_string(),
             Self::EasyOCR => "EasyOCR".to_string(),
             Self::PaddleOCR => "PaddleOCR".to_string(),
+            Self::Candle => "Candle".to_string(),
             Self::Custom => "Custom".to_string(),
         }
     }

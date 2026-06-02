@@ -11,10 +11,10 @@ use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
 use crate::types::ExtractionResult;
-use kreuzberg_candle_ocr::DevicePreference;
-use kreuzberg_candle_ocr::models::PaddleOcrVlTask;
 #[cfg(not(target_arch = "wasm32"))]
 use kreuzberg_candle_ocr::DType;
+use kreuzberg_candle_ocr::DevicePreference;
+use kreuzberg_candle_ocr::models::PaddleOcrVlTask;
 
 /// PaddleOCR-VL backend using candle transformers.
 ///

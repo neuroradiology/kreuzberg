@@ -4645,6 +4645,8 @@ pub enum OcrBackendType {
     EasyOCR,
     /// PaddleOCR (Python-based, via FFI)
     PaddleOCR,
+    /// Candle-based VLM OCR (TrOCR, PaddleOCR-VL)
+    Candle,
     /// Custom/third-party OCR backend
     Custom,
 }
@@ -8136,6 +8138,7 @@ impl From<kreuzberg::OcrBackendType> for OcrBackendType {
             kreuzberg::OcrBackendType::Tesseract => OcrBackendType::Tesseract,
             kreuzberg::OcrBackendType::EasyOCR => OcrBackendType::EasyOCR,
             kreuzberg::OcrBackendType::PaddleOCR => OcrBackendType::PaddleOCR,
+            kreuzberg::OcrBackendType::Candle => OcrBackendType::Candle,
             kreuzberg::OcrBackendType::Custom => OcrBackendType::Custom,
         }
     }
@@ -10691,6 +10694,7 @@ impl From<OcrBackendType> for kreuzberg::OcrBackendType {
             OcrBackendType::Tesseract => kreuzberg::OcrBackendType::Tesseract,
             OcrBackendType::EasyOCR => kreuzberg::OcrBackendType::EasyOCR,
             OcrBackendType::PaddleOCR => kreuzberg::OcrBackendType::PaddleOCR,
+            OcrBackendType::Candle => kreuzberg::OcrBackendType::Candle,
             OcrBackendType::Custom => kreuzberg::OcrBackendType::Custom,
         }
     }

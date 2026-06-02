@@ -13160,7 +13160,8 @@ pub enum WasmOcrBackendType {
     Tesseract = 0,
     EasyOCR = 1,
     PaddleOCR = 2,
-    Custom = 3,
+    Candle = 3,
+    Custom = 4,
 }
 
 #[allow(clippy::derivable_impls)]
@@ -13177,6 +13178,7 @@ impl WasmOcrBackendType {
             Self::Tesseract => "Tesseract",
             Self::EasyOCR => "EasyOCR",
             Self::PaddleOCR => "PaddleOCR",
+            Self::Candle => "Candle",
             Self::Custom => "Custom",
         }
     }
@@ -21262,6 +21264,7 @@ impl From<kreuzberg::OcrBackendType> for WasmOcrBackendType {
             kreuzberg::OcrBackendType::Tesseract => Self::Tesseract,
             kreuzberg::OcrBackendType::EasyOCR => Self::EasyOCR,
             kreuzberg::OcrBackendType::PaddleOCR => Self::PaddleOCR,
+            kreuzberg::OcrBackendType::Candle => Self::Candle,
             kreuzberg::OcrBackendType::Custom => Self::Custom,
         }
     }

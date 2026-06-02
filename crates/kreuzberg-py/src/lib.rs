@@ -11614,8 +11614,10 @@ pub enum OcrBackendType {
     EasyOCR = 1,
     #[pyo3(name = "PADDLE_OCR")]
     PaddleOCR = 2,
+    #[pyo3(name = "CANDLE")]
+    Candle = 3,
     #[pyo3(name = "CUSTOM")]
-    Custom = 3,
+    Custom = 4,
 }
 #[pymethods]
 impl OcrBackendType {
@@ -22060,6 +22062,7 @@ impl From<kreuzberg::OcrBackendType> for OcrBackendType {
             kreuzberg::OcrBackendType::Tesseract => Self::Tesseract,
             kreuzberg::OcrBackendType::EasyOCR => Self::EasyOCR,
             kreuzberg::OcrBackendType::PaddleOCR => Self::PaddleOCR,
+            kreuzberg::OcrBackendType::Candle => Self::Candle,
             kreuzberg::OcrBackendType::Custom => Self::Custom,
         }
     }

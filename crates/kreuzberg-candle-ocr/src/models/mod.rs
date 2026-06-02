@@ -13,4 +13,3 @@ pub mod paddleocr_vl;
 
 #[cfg(feature = "paddleocr-vl")]
 pub use paddleocr_vl::{PaddleOcrVlEngine, PaddleOcrVlTask};
-

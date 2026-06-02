@@ -6244,6 +6244,8 @@ pub enum JsOcrBackendType {
     EasyOCR,
     /// PaddleOCR (Python-based, via FFI)
     PaddleOCR,
+    /// Candle-based VLM OCR (TrOCR, PaddleOCR-VL)
+    Candle,
     /// Custom/third-party OCR backend
     Custom,
 }
@@ -15777,6 +15779,7 @@ impl From<kreuzberg::OcrBackendType> for JsOcrBackendType {
             kreuzberg::OcrBackendType::Tesseract => Self::Tesseract,
             kreuzberg::OcrBackendType::EasyOCR => Self::EasyOCR,
             kreuzberg::OcrBackendType::PaddleOCR => Self::PaddleOCR,
+            kreuzberg::OcrBackendType::Candle => Self::Candle,
             kreuzberg::OcrBackendType::Custom => Self::Custom,
         }
     }

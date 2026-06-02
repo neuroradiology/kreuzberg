@@ -212,7 +212,8 @@ fn ocr_backend_type_from_i32_rs(v: i32) -> Option<kreuzberg::OcrBackendType> {
         0 => Some(kreuzberg::OcrBackendType::Tesseract),
         1 => Some(kreuzberg::OcrBackendType::EasyOCR),
         2 => Some(kreuzberg::OcrBackendType::PaddleOCR),
-        3 => Some(kreuzberg::OcrBackendType::Custom),
+        3 => Some(kreuzberg::OcrBackendType::Candle),
+        4 => Some(kreuzberg::OcrBackendType::Custom),
         _ => None,
     }
 }

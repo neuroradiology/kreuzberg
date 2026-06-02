@@ -90,6 +90,9 @@ yor = "yor"
 ment = "ment"
 # PaddleOCR upstream naming
 cliper = "cliper"
+# Qwen2-VL / PaddleOCR-VL vision-encoder grid dimension order
+thw = "thw"
+THW = "THW"
 # PDFium upstream doc typos
 similarily = "similarily"
 execpt = "execpt"

@@ -153,7 +153,6 @@ impl OcrBackendRegistry {
             });
             tracing::info!("PaddleOCR-VL backend registered successfully");
         }
-
     }
 
     /// Create a new empty OCR backend registry without default backends.
