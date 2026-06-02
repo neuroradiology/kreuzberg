@@ -30,10 +30,20 @@ bench-pdftotext = [ "pdftotext>=2.2.2" ]
 bench-playa-pdf = [ "playa-pdf>=0.6.0" ]
 bench-pymupdf4llm = [ "pillow>=10.0.0", "pymupdf-layout>=0.0.1", "pymupdf4llm>=0.0.17" ]
 bench-pypdf = [ "pypdf>=4.0.0" ]
-bench-unstructured = [ "unstructured[all-docs]>=0.18.21" ]
+bench-unstructured = [ "unstructured[all-docs]>=0.18.21,<0.22" ]
 doc = [ "mkdocstrings>=1.0.4", "mkdocstrings-python>=2.0.3", "zensical" ]
 
 [tool.uv]
+# Restrict the resolution universe to the Python versions our CI and dev
+# environments actually use. Without this, requires-python = ">=3.10" forces
+# uv to keep both onnxruntime 1.24.x (last build with 3.10 wheels) and 1.26.x
+# (3.11+) in the lock; the install step then ambiguously matches both rows
+# on a single bench group and errors with "Found multiple packages matching
+# `onnxruntime`" when syncing bench-mineru or bench-unstructured. Restricting
+# uv's environment universe to 3.11+ collapses each transitive dep to a
+# single version while leaving the published abi3-py310 wheel untouched (that
+# distribution is driven by maturin, not uv).
+environments = [ "python_version >= '3.11'" ]
 workspace.members = [ "packages/python" ]
 conflicts = [
   [
