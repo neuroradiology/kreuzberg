@@ -308,6 +308,9 @@ async fn test_vlm_fallback_disabled_does_not_call_llm() {
             ..Default::default()
         }),
         force_ocr: true,
+        // Tesseract OCR on the scanned-PDF fixture takes ~2 min on the slow Linux arm64 CI
+        // runner; the 60 s default introduced alongside vlm_fallback would always trip.
+        extraction_timeout_secs: Some(300),
         ..Default::default()
     };
     let result = kreuzberg::extract_file(SCANNED_PDF, None, &config)
