@@ -161,6 +161,12 @@ pub use extractors::security::SecurityLimits;
 #[cfg(feature = "quality")]
 pub use text::{ReductionLevel, TokenReductionConfig};
 
+#[cfg(all(feature = "ner-llm", not(target_os = "windows"), not(target_arch = "wasm32")))]
+pub use text::ner::llm::LlmBackend;
+
+#[cfg(feature = "redaction")]
+pub use text::redaction::strategy::TokenCounter;
+
 #[cfg(feature = "api-types")]
 pub use core::server_config::ServerConfig;
 

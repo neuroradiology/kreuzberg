@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **feat(core)**: expose `LlmBackend` (gated on `ner-llm`, non-Windows, non-WASM) and `TokenCounter` (gated on `redaction`) at crate root for binding re-use.
+
 ### Fixed
 
 - **ci(ruby)**: Work around bundler 2.6 `--frozen` flag removal in `ruby/setup-ruby@v1` action. Set `bundler-cache: false` and explicitly run `bundle config set frozen true && bundle install --jobs 4` in affected workflows (`ci-lint`, `ci-e2e`). Bundler 2.6+ requires runtime configuration instead of the deprecated flag.
