@@ -354,6 +354,22 @@ pub fn build(b: *std.Build) void {
     smoke_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&smoke_run.step);
 
+    const summarization_module = b.createModule(.{
+        .root_source_file = b.path("src/summarization_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    summarization_module.addImport("kreuzberg", kreuzberg_module);
+    const summarization_tests = b.addTest(.{
+        .name = "summarization_test",
+        .root_module = summarization_module,
+        .use_llvm = true,
+    });
+    const summarization_run = b.addRunArtifact(summarization_tests);
+    summarization_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&summarization_run.step);
+
     const validator_management_module = b.createModule(.{
         .root_source_file = b.path("src/validator_management_test.zig"),
         .target = target,

@@ -150,6 +150,29 @@ detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_f
 #' @return A vector of file extensions (without leading dot) for the MIME type.
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
+#' Detect QR codes in the bytes of an [`ExtractedImage`]
+#'
+#' `format_hint` is currently unused — the `image` crate auto-detects the
+#' container format from magic bytes — but the parameter is retained so future
+#' backends (e.g. a WebP-via-`webp-decoder` variant) can use it without an API
+#' break.
+#'
+#' Returns an empty vector on any of:
+#'
+#' - Empty input.
+#' - Image-decode failure.
+#' - No QR grids detected.
+#' - All detected grids fail to decode.
+#'
+#' Successfully decoded QR codes carry their payload, a confidence of `1.0`
+#' (rqrr does not expose per-grid confidence; a successful decode is treated
+#' as high-confidence by convention), and the pixel-space bounding box derived
+#' from the four corner points of the grid.
+#' @param image_bytes Raw vector of bytes.
+#' @param _format_hint Character string.
+#' @return List of qrcode object (list with class attribute).
+#' @export
+detect_qr_codes <- function(image_bytes, _format_hint = NULL) .Call("wrap__detect_qr_codes", image_bytes, _format_hint, PACKAGE = "kreuzberg")
 #' List the names of all registered embedding backends
 #'
 #' Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
@@ -167,6 +190,16 @@ list_document_extractors <- function() .Call("wrap__list_document_extractors", P
 #' @return A vector of OCR backend names.
 #' @export
 list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")
+#' Register every built-in post-processor enabled by the active feature set
+#'
+#' This is the single entry point that callers (including
+#' `register_default_post_processors`) use to populate the global
+#' post-processor registry with the in-tree built-ins. Each submodule's own
+#' `register` function is gated by its feature flag so this aggregate stays
+#' safe to call on any target.
+#' @return Invisible NULL.
+#' @export
+register_builtin <- function() .Call("wrap__register_builtin", PACKAGE = "kreuzberg")
 #' List all registered post-processor names
 #'
 #' Returns a vector of all post-processor names currently registered in the
@@ -186,6 +219,120 @@ list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg"
 #' @return List of character string.
 #' @export
 list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzberg")
+#' Run page classification against an extraction result
+#'
+#' Mutates `result.page_classifications` with one entry per non-empty page and
+#' appends every LLM call's usage to `result.llm_usage`.
+#' @param result ExtractionResult object (list with class attribute).
+#' @param config PageClassificationConfig object (list with class attribute).
+#' @return Invisible NULL.
+#'
+#' @section Errors:
+#' Returns the first error encountered when rendering the prompt or calling the
+#' LLM. Partially produced classifications are discarded so callers do not see
+#' a half-populated vector.
+#' @export
+classify_pages <- function(result = ExtractionResult$default(), config) .Call("wrap__classify_pages", result, config, PACKAGE = "kreuzberg")
+#' Eagerly download a NER model into the kreuzberg cache
+#'
+#' `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
+#' CLI flag `kreuzberg warm --ner` delegates here.
+#' @param name Character string.
+#' @param cache_dir File path as character string.
+#' @return File path as character string.
+#' @export
+download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
+#' Pinned default NER model identifier
+#' @return Character string.
+#' @export
+default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
+#' All NER models kreuzberg knows about (used by `--all-ner-models`)
+#' @return List of character string.
+#' @export
+known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
+#' Run pattern redaction (and optional NER-driven redaction) over `result` and
+#'
+#' rewrite every textual field. Populates `result.redaction_report`.
+#' @param result ExtractionResult object (list with class attribute).
+#' @param config RedactionConfig object (list with class attribute).
+#' @return Invisible NULL.
+#' @export
+redact <- function(result = ExtractionResult$default(), config = RedactionConfig$default()) .Call("wrap__redact", result, config, PACKAGE = "kreuzberg")
+#' find_all
+#' @param text Character string.
+#' @return List of patternmatch object (list with class attribute).
+#' @export
+find_all <- function(text) .Call("wrap__find_all", text, PACKAGE = "kreuzberg")
+#' Scan `text` for every PII category in `categories` and return all matches
+#'
+#' in source-byte order.
+#'
+#' When `categories` is empty every supported regex-detectable category fires.
+#' Person / Organization / Location are *not* covered by the pattern engine —
+#' they must be supplied by a NER backend through the redaction engine.
+#' @param text Character string.
+#' @param categories List of piicategory object (list with class attribute).
+#' @return List of patternmatch object (list with class attribute).
+#' @export
+scan_text <- function(text, categories) .Call("wrap__scan_text", text, categories, PACKAGE = "kreuzberg")
+#' Apply `strategy` to `original` for `category` and return the replacement token
+#'
+#' The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
+#' other strategies ignore it.
+#' @param strategy RedactionStrategy object (list with class attribute).
+#' @param original Character string.
+#' @param category PiiCategory object (list with class attribute).
+#' @param counter TokenCounter object (list with class attribute).
+#' @return Character string.
+#' @export
+apply_strategy <- function(strategy, original, category, counter = TokenCounter$default()) .Call("wrap__apply_strategy", strategy, original, category, counter, PACKAGE = "kreuzberg")
+#' Score and return the top-N sentences from `text`, joined in original order
+#'
+#' `language` is an ISO 639 (or locale) code used to pick a stopword list;
+#' pass `None` (or an unknown code) to fall back to English.
+#' `max_tokens` bounds the summary length by whitespace-separated tokens;
+#' `None` falls back to [`DEFAULT_MAX_TOKENS`].
+#' @param text Character string.
+#' @param language Character string.
+#' @param max_tokens Integer.
+#' @return Optional character string. Defaults to NULL.
+#' @export
+summarize <- function(text, language = NULL, max_tokens = NULL) .Call("wrap__summarize", text, language, max_tokens, PACKAGE = "kreuzberg")
+#' Count whitespace-separated tokens (used for token-budget bookkeeping by
+#'
+#' callers).
+#' @param text Character string.
+#' @return Integer.
+#' @export
+token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzberg")
+#' Run abstractive summarisation against the configured LLM
+#'
+#' `text` is the document content to summarise (already extracted by the
+#' pipeline). `max_tokens` softly bounds the requested summary length in
+#' natural-language tokens; `None` uses [`DEFAULT_MAX_TOKENS`].
+#'
+#' Returns the summary string and the (optional) usage record.
+#' @param text Character string.
+#' @param llm_config LlmConfig object (list with class attribute).
+#' @param max_tokens Integer.
+#' @return Character string.
+#'
+#' @section Errors:
+#' Propagates any LLM client / request error returned by
+#' `complete_text`.
+#' @export
+summarize_with_llm <- function(text, llm_config = LlmConfig$default(), max_tokens = NULL) .Call("wrap__summarize_with_llm", text, llm_config, max_tokens, PACKAGE = "kreuzberg")
+#' Translate the extraction result in place
+#'
+#' Populates `result.translation` with the translated `content`, optionally the
+#' translated `formatted_content` (when `preserve_markup = true`), and rewrites
+#' every chunk's `content` field. Every LLM call's usage is appended to
+#' `result.llm_usage`.
+#' @param result ExtractionResult object (list with class attribute).
+#' @param config TranslationConfig object (list with class attribute).
+#' @return Invisible NULL.
+#' @export
+translate_result <- function(result = ExtractionResult$default(), config) .Call("wrap__translate_result", result, config, PACKAGE = "kreuzberg")
 #' Compare two extraction results and return a structured diff
 #'
 #' The comparison is purely structural — no I/O, no side effects. All fields
@@ -196,6 +343,80 @@ list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzber
 #' @return ExtractionDiff object (list with class attribute).
 #' @export
 compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default(), opts = DiffOptions$default()) .Call("wrap__compare", a, b, opts, PACKAGE = "kreuzberg")
+#' Extract content from a pre-cropped image region using a VLM
+#'
+#' The caller is responsible for cropping the page image to the region's bounding
+#' box before calling this function. The `image_bytes` parameter must contain the
+#' raw bytes of the **cropped** region image (JPEG, PNG, WebP, etc.).
+#' @param image_bytes — Raw bytes of the **pre-cropped** region image.
+#' @param image_mime — MIME type of the image (`"image/png"`, `"image/jpeg"`, etc.).
+#' @param region_kind — Content type of the region, used to select the default prompt.
+#' @param llm_config — LLM provider and model configuration.
+#' @param custom_prompt — Optional override for the default per-region prompt template.
+#' @return Extracted Markdown text from the VLM, or an error if the VLM call fails.
+#'
+#' @section Errors:
+#' - `Ocr` if the VLM call fails or returns no content.
+#' - `MissingDependency` if the liter-llm client cannot
+#'   be initialised.
+#' @export
+extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
+#' Same as [`extract_region_with_vlm`], but also returns the [`LlmUsage`] data captured
+#'
+#' from the underlying VLM call.
+#'
+#' Callers that need to track token / cost data per call (for example the captioning
+#' post-processor, which appends every call's usage to
+#' [`ExtractionResult::llm_usage`](crate::types::ExtractionResult::llm_usage)) should
+#' prefer this variant. The plain [`extract_region_with_vlm`] is kept for callers that
+#' only care about the markdown output (PDF region splicing).
+#' @param image_bytes Raw vector of bytes.
+#' @param image_mime Character string.
+#' @param region_kind RegionKind object (list with class attribute).
+#' @param llm_config LlmConfig object (list with class attribute).
+#' @param custom_prompt Character string.
+#' @return Character string.
+#'
+#' @section Errors:
+#' Same as [`extract_region_with_vlm`].
+#' @export
+extract_region_with_vlm_usage <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm_usage", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
+#' Send a free-form prompt to the configured LLM with a JSON-schema response
+#'
+#' constraint and return the parsed JSON value plus captured usage.
+#'
+#' This is the shared helper used by LLM-backed post-processors (page
+#' classification, LLM-driven NER, etc.) that need structured output but do not
+#' want to depend on [`StructuredExtractionConfig`]'s schema/prompt machinery.
+#' @param llm_config — provider/model configuration.
+#' @param prompt — fully-rendered user prompt (no Jinja substitution performed).
+#' @param schema_name — name for the JSON schema (passed to providers that distinguish multiple structured outputs).
+#' @param schema — the JSON schema the LLM is required to obey.
+#' @param source — label used for the returned [`LlmUsage`] entry.
+#' @return Character string.
+#'
+#' @section Errors:
+#' Returns an error if the LLM client cannot be constructed, the request fails,
+#' the response contains no content, or the response is not parseable JSON.
+#' @export
+complete_with_json_schema <- function(llm_config = LlmConfig$default(), prompt, schema_name, schema, source) .Call("wrap__complete_with_json_schema", llm_config, prompt, schema_name, schema, source, PACKAGE = "kreuzberg")
+#' Send a single user prompt to the configured LLM and return the response text
+#'
+#' along with the captured usage metadata.
+#'
+#' The `source` argument labels the [`LlmUsage`] entry that is returned so
+#' callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
+#' etc.). The helper performs a single non-streaming chat completion request.
+#' @param llm_config LlmConfig object (list with class attribute).
+#' @param prompt Character string.
+#' @param source Character string.
+#' @return Character string.
+#'
+#' @section Errors:
+#' Returns an error if the LLM client cannot be constructed, the request fails,
+#' or the response does not contain assistant content.
+#' @export
+complete_text <- function(llm_config = LlmConfig$default(), prompt, source) .Call("wrap__complete_text", llm_config, prompt, source, PACKAGE = "kreuzberg")
 #' Generate embeddings asynchronously for a list of text strings
 #'
 #' This is the async counterpart to [`embed_texts`]. It offloads the blocking
@@ -456,6 +677,41 @@ AccelerationConfig$from_json <- function(json) {
 }
 #' @export
 `[[.AccelerationConfig` <- `$.AccelerationConfig`
+#' Configuration for the VLM captioning post-processor
+#' @field llm LLM configuration used for the VLM call.
+#' @field prompt Optional custom caption prompt. `None` uses the default `RegionKind::Caption` prompt that ships with
+#' @field min_image_area Skip images whose `width * height` is below this threshold (in pixels). Default `1_000`
+#' @export
+CaptioningConfig <- new.env(parent = emptyenv())
+#' @export
+`$.CaptioningConfig` <- function(self, name) {
+  func <- CaptioningConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.CaptioningConfig` <- `$.CaptioningConfig`
+#' Configuration for the page-classification post-processor
+#' @field prompt_template Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{
+#' @field labels The set of labels the classifier may emit. Must contain at least one entry.
+#' @field multi_label Allow multiple labels per page. Single-label mode returns at most one label.
+#' @field llm LLM configuration used for classification.
+#' @export
+PageClassificationConfig <- new.env(parent = emptyenv())
+#' @export
+`$.PageClassificationConfig` <- function(self, name) {
+  func <- PageClassificationConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PageClassificationConfig` <- `$.PageClassificationConfig`
 #' Cross-extractor content filtering configuration
 #'
 #' Controls whether "furniture" content (headers, footers, page numbers,
@@ -542,6 +798,13 @@ EmailConfig$from_json <- function(json) {
 #' @field max_archive_depth Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive
 #' @field tree_sitter Tree-sitter language pack configuration (None = tree-sitter disabled).
 #' @field structured_extraction Structured extraction via LLM (None = disabled).
+#' @field ner Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and
+#' @field redaction Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late
+#' @field summarization Summarisation configuration. When set, the summarisation post-processor runs at the Middle
+#' @field translation Translation configuration. When set, the translation post-processor runs at the Middle stage and
+#' @field page_classification Per-page classification configuration. When set, the classification post-processor runs
+#' @field captioning VLM captioning configuration for extracted images. When set, the captioning post-processor runs at
+#' @field qr_codes Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle
 #' @field cancel_token Cancellation token for this extraction (None = no external cancellation).
 #' @export
 ExtractionConfig <- new.env(parent = emptyenv())
@@ -831,6 +1094,28 @@ StructuredExtractionConfig <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.StructuredExtractionConfig` <- `$.StructuredExtractionConfig`
+#' Configuration for the NER post-processor
+#' @field backend Backend that runs the entity detection.
+#' @field categories Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty.
+#' @field model Override the default model — only used by [`NerBackendKind::Onnx`]. `None` lets the backend pick its
+#' @field llm Optional LLM configuration — only used by [`NerBackendKind::Llm`]. Token usage for LLM backends is
+#' @field custom_labels Arbitrary user-supplied entity labels for zero-shot detection.
+#' @export
+NerConfig <- new.env(parent = emptyenv())
+NerConfig$from_json <- function(json) {
+  .Call("wrap__NerConfig__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.NerConfig` <- function(self, name) {
+  func <- NerConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.NerConfig` <- `$.NerConfig`
 #' Quality thresholds for OCR fallback decisions and pipeline quality gating
 #'
 #' All fields default to the values that match the previous hardcoded behavior,
@@ -901,6 +1186,7 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 #' @field quality_thresholds Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled
 #' @field pipeline Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR
 #' @field auto_rotate Enable automatic page rotation based on orientation detection.
+#' @field vlm_fallback Ergonomic VLM fallback policy.
 #' @field vlm_config VLM (Vision Language Model) OCR configuration.
 #' @field vlm_prompt Custom Jinja2 prompt template for VLM OCR.
 #' @field acceleration Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection).
@@ -1092,6 +1378,89 @@ EmbeddingConfig$from_json <- function(json) {
 }
 #' @export
 `[[.EmbeddingConfig` <- `$.EmbeddingConfig`
+#' One user-supplied literal term to redact
+#'
+#' Matched as a regex-escaped substring (so callers do not need to escape
+#' metacharacters themselves). Case-insensitive by default — set
+#' [`Self::case_sensitive`] to `true` for exact byte-match semantics.
+#' @field label Custom category label surfaced in
+#' @field value Literal value to match. Regex metacharacters are escaped automatically.
+#' @field case_sensitive When `true`, match the value as-is; otherwise match ASCII-case-insensitively.
+#' @export
+RedactionTerm <- new.env(parent = emptyenv())
+RedactionTerm$literal <- function(value) .Call("wrap__RedactionTerm__literal", value, PACKAGE = "kreuzberg")
+RedactionTerm$labeled <- function(label, value) .Call("wrap__RedactionTerm__labeled", label, value, PACKAGE = "kreuzberg")
+#' @export
+`$.RedactionTerm` <- function(self, name) {
+  func <- RedactionTerm[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RedactionTerm` <- `$.RedactionTerm`
+#' One user-supplied regex pattern to redact
+#'
+#' The pattern is compiled with the Rust `regex` crate (no look-around). Case
+#' sensitivity is encoded in the pattern via the `(?i)` inline flag when
+#' [`Self::case_sensitive`] is `false`.
+#' @field label Custom category label surfaced in
+#' @field pattern Regex pattern (Rust `regex` crate dialect — no look-around).
+#' @field case_sensitive When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex.
+#' @export
+RedactionPattern <- new.env(parent = emptyenv())
+RedactionPattern$labeled <- function(label, pattern) .Call("wrap__RedactionPattern__labeled", label, pattern, PACKAGE = "kreuzberg")
+#' @export
+`$.RedactionPattern` <- function(self, name) {
+  func <- RedactionPattern[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RedactionPattern` <- `$.RedactionPattern`
+#' Configuration for the summarisation post-processor
+#' @field strategy Summarisation strategy.
+#' @field max_tokens Maximum summary length in tokens. `None` lets the backend pick a default.
+#' @field llm LLM configuration for the abstractive backend. Ignored when `strategy = Extractive`. Required when
+#' @export
+SummarizationConfig <- new.env(parent = emptyenv())
+SummarizationConfig$from_json <- function(json) {
+  .Call("wrap__SummarizationConfig__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.SummarizationConfig` <- function(self, name) {
+  func <- SummarizationConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.SummarizationConfig` <- `$.SummarizationConfig`
+#' Configuration for the translation post-processor
+#' @field target_lang BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`).
+#' @field source_lang Optional explicit source language. `None` asks the backend to auto-detect.
+#' @field preserve_markup Translate the formatted (Markdown/HTML) rendition alongside plain text when
+#' @field llm LLM configuration used for translation.
+#' @export
+TranslationConfig <- new.env(parent = emptyenv())
+#' @export
+`$.TranslationConfig` <- function(self, name) {
+  func <- TranslationConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.TranslationConfig` <- `$.TranslationConfig`
 #' Configuration for tree-sitter language pack integration
 #'
 #' Controls grammar download behavior and code analysis options.
@@ -1429,6 +1798,67 @@ TokenReductionConfig$from_json <- function(json) {
 }
 #' @export
 `[[.TokenReductionConfig` <- `$.TokenReductionConfig`
+#' Kreuzberg-gliner-rs ONNX backend wrapper
+#'
+#' Holds an initialised [`GLiNER<SpanMode>`] behind an `Arc<Mutex<...>>` so the
+#' model can be safely shared across async tasks (inference is synchronous and
+#' serialised internally by the mutex).
+#' @field repo_id repo_id
+#' @field model_path model_path
+#' @field tokenizer_path tokenizer_path
+#' @export
+GlineBackend <- new.env(parent = emptyenv())
+GlineBackend$new <- function(repo_id) .Call("wrap__GlineBackend__new", repo_id, PACKAGE = "kreuzberg")
+GlineBackend$detect <- function(self, text, categories) .Call("wrap__GlineBackend__detect", self, text, categories, PACKAGE = "kreuzberg")
+GlineBackend$detect_with_custom <- function(self, text, categories, custom_labels) .Call("wrap__GlineBackend__detect_with_custom", self, text, categories, custom_labels, PACKAGE = "kreuzberg")
+#' @export
+`$.GlineBackend` <- function(self, name) {
+  func <- GlineBackend[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.GlineBackend` <- `$.GlineBackend`
+#' @export
+detect.GlineBackend <- function(x, ...) x$detect(...)
+#' @export
+detect_with_custom.GlineBackend <- function(x, ...) x$detect_with_custom(...)
+#' One detected PII span in the input text
+#' @field start Inclusive byte-offset start of the match in the source text.
+#' @field end Exclusive byte-offset end of the match.
+#' @field category Category the match belongs to.
+#' @field text Matched substring (owned copy — pattern engine returns owned data so the caller can free the original
+#' @export
+PatternMatch <- new.env(parent = emptyenv())
+#' @export
+`$.PatternMatch` <- function(self, name) {
+  func <- PatternMatch[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PatternMatch` <- `$.PatternMatch`
+#' Per-category running counter for [`RedactionStrategy::TokenReplace`]
+#' @export
+TokenCounter <- new.env(parent = emptyenv())
+TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "kreuzberg")
+#' @export
+`$.TokenCounter` <- function(self, name) {
+  func <- TokenCounter[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.TokenCounter` <- `$.TokenCounter`
 #' A PDF annotation extracted from a document page
 #' @field annotation_type The type of annotation.
 #' @field content Text content of the annotation (e.g., comment text, link URL).
@@ -1447,6 +1877,22 @@ PdfAnnotation <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.PdfAnnotation` <- `$.PdfAnnotation`
+#' A single label + confidence pair
+#' @field label Label name as configured in `PageClassificationConfig::labels`.
+#' @field confidence Backend-reported confidence in `[0.0, 1.0]`. `None` when the backend (e.g. an LLM prompt without
+#' @export
+ClassificationLabel <- new.env(parent = emptyenv())
+#' @export
+`$.ClassificationLabel` <- function(self, name) {
+  func <- ClassificationLabel[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ClassificationLabel` <- `$.ClassificationLabel`
 #' Inline element within a block
 #'
 #' Represents text with formatting, links, images, etc.
@@ -1561,6 +2007,25 @@ TextAnnotation <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.TextAnnotation` <- `$.TextAnnotation`
+#' A single named entity detected in the extracted text
+#' @field category Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.).
+#' @field text Raw mention text exactly as it appeared in the source.
+#' @field start Byte-offset span in `ExtractionResult::content` where the mention starts.
+#' @field end Byte-offset span in `ExtractionResult::content` where the mention ends (exclusive).
+#' @field confidence Backend-reported confidence in `[0.0, 1.0]`. `None` when the backend does not expose confidence
+#' @export
+Entity <- new.env(parent = emptyenv())
+#' @export
+`$.Entity` <- function(self, name) {
+  func <- Entity[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Entity` <- `$.Entity`
 #' A single file extracted from an archive
 #'
 #' When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
@@ -1689,40 +2154,6 @@ ChunkMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ChunkMetadata` <- `$.ChunkMetadata`
-#' Extracted image from a document
-#'
-#' Contains raw image data, metadata, and optional nested OCR results.
-#' Raw bytes allow cross-language compatibility - users can convert to
-#' PIL.Image (Python), Sharp (Node.js), or other formats as needed.
-#' @field data Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes::Bytes` for cheap cloning of large buffers.
-#' @field format Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static
-#' @field image_index Zero-indexed position of this image in the document/page
-#' @field page_number Page/slide number where image was found (1-indexed)
-#' @field width Image width in pixels
-#' @field height Image height in pixels
-#' @field colorspace Colorspace information (e.g., "RGB", "CMYK", "Gray")
-#' @field bits_per_component Bits per color component (e.g., 8, 16)
-#' @field is_mask Whether this image is a mask image
-#' @field description Optional description of the image
-#' @field ocr_result Nested OCR extraction result (if image was OCRed)
-#' @field bounding_box Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
-#' @field source_path Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
-#' @field image_kind Heuristic classification of what this image likely depicts. `None` if classification was disabled
-#' @field kind_confidence Confidence score for `image_kind`, in the range 0.0 to 1.0.
-#' @field cluster_id Identifier shared across images that form a single logical figure (e.g. all raster tiles of one
-#' @export
-ExtractedImage <- new.env(parent = emptyenv())
-#' @export
-`$.ExtractedImage` <- function(self, name) {
-  func <- ExtractedImage[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.ExtractedImage` <- `$.ExtractedImage`
 #' Bounding box coordinates for element positioning
 #' @field x0 Left x-coordinate
 #' @field y0 Bottom y-coordinate
@@ -2587,6 +3018,60 @@ HierarchicalBlock <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.HierarchicalBlock` <- `$.HierarchicalBlock`
+#' One QR code decoded from an extracted image
+#' @field payload Decoded payload (text, URL, vCard string, …).
+#' @field confidence Detector-reported confidence in `[0.0, 1.0]`. `None` when the decoder does not expose confidence
+#' @field bbox Bounding box of the QR code inside the source image, in pixel coordinates (`x`, `y` of the top-left
+#' @export
+QrCode <- new.env(parent = emptyenv())
+#' @export
+`$.QrCode` <- function(self, name) {
+  func <- QrCode[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.QrCode` <- `$.QrCode`
+#' Pixel-space bounding box of a QR code inside its source image
+#' @field x x
+#' @field y y
+#' @field width width
+#' @field height height
+#' @export
+QrBoundingBox <- new.env(parent = emptyenv())
+#' @export
+`$.QrBoundingBox` <- function(self, name) {
+  func <- QrBoundingBox[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.QrBoundingBox` <- `$.QrBoundingBox`
+#' One redaction event: which span was rewritten, why, and with what
+#' @field start Byte-offset start in the original (pre-redaction) `ExtractionResult::content`.
+#' @field end Byte-offset end (exclusive) in the original `ExtractionResult::content`.
+#' @field category PII category that fired this redaction.
+#' @field strategy Strategy applied to this finding (mask, hash, token-replace, drop).
+#' @field replacement_token String that replaced the original mention. Always present; for `Drop` the replacement is
+#' @export
+RedactionFinding <- new.env(parent = emptyenv())
+#' @export
+`$.RedactionFinding` <- function(self, name) {
+  func <- RedactionFinding[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RedactionFinding` <- `$.RedactionFinding`
 #' A single changed cell within a table
 #'
 #' Defined here (rather than only in `crate::diff`) so `RevisionDelta` can
@@ -2634,6 +3119,23 @@ DocumentRevision <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DocumentRevision` <- `$.DocumentRevision`
+#' Summary of an extracted document
+#' @field text Summary text (plain prose).
+#' @field strategy Strategy that produced this summary.
+#' @field token_count Approximate token count of the summary, when known.
+#' @export
+DocumentSummary <- new.env(parent = emptyenv())
+#' @export
+`$.DocumentSummary` <- function(self, name) {
+  func <- DocumentSummary[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.DocumentSummary` <- `$.DocumentSummary`
 #' Individual table cell with content and optional styling
 #'
 #' Future extension point for rich table support with cell-level metadata.
@@ -2654,6 +3156,29 @@ TableCell <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.TableCell` <- `$.TableCell`
+#' Translation of the extracted content
+#'
+#' Holds the translated rendition of `ExtractionResult::content` and (when
+#' `preserve_markup` was requested) the translated `formatted_content`. Chunks
+#' are translated in place inside `ExtractionResult::chunks[*].content` rather
+#' than duplicated here.
+#' @field target_lang BCP-47 language tag the translation was produced into (e.g. `"de"`, `"fr-CA"`).
+#' @field source_lang BCP-47 source language. `None` when the translation backend was asked to detect.
+#' @field content Translated plain-text body. Matches the shape of `ExtractionResult::content`.
+#' @field formatted_content Translated markup body (Markdown / HTML / etc.) when `preserve_markup` was enabled on the
+#' @export
+Translation <- new.env(parent = emptyenv())
+#' @export
+`$.Translation` <- function(self, name) {
+  func <- Translation[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Translation` <- `$.Translation`
 #' A URI extracted from a document
 #'
 #' Represents any link, reference, or resource pointer found during extraction.
@@ -2692,6 +3217,22 @@ DetectResponse <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DetectResponse` <- `$.DetectResponse`
+#' A text segment with its byte offset in the original document
+#' @field text text
+#' @field byte_start byte_start
+#' @export
+Segment <- new.env(parent = emptyenv())
+#' @export
+`$.Segment` <- function(self, name) {
+  func <- Segment[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Segment` <- `$.Segment`
 #' Options controlling how two `ExtractionResult` values are compared
 #' @field include_metadata Include metadata changes in the diff. Default: `true`.
 #' @field include_embedded Include embedded-children changes in the diff. Default: `true`.
@@ -3065,6 +3606,64 @@ OutputFormat <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OutputFormat` <- `$.OutputFormat`
+#' Policy controlling when VLM (Vision Language Model) OCR is used as a fallback
+#'
+#' This knob is syntactic sugar over the explicit [`OcrPipelineConfig`] stage
+#' ordering. When `vlm_fallback` is set and `pipeline` is `None`, an equivalent
+#' pipeline is synthesised at extraction time:
+#'
+#' - [`VlmFallbackPolicy::Disabled`] — no synthesis; single-backend mode (default).
+#' - [`VlmFallbackPolicy::OnLowQuality`] — tries the classical backend first; if the
+#'   result scores below `quality_threshold`, tries VLM.
+#' - [`VlmFallbackPolicy::Always`] — skips the classical backend and sends every page
+#'   to the VLM.
+#'
+#' When [`OcrConfig::pipeline`] is explicitly set, `vlm_fallback` is ignored — the
+#' explicit pipeline takes precedence.
+#' @field Disabled No VLM fallback (default). Behaves identically to the pre-policy single-backend mode.
+#' @field OnLowQuality Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the
+#' @field Always Skip the classical OCR backend entirely. Every page is sent to the VLM.
+#' @export
+VlmFallbackPolicy <- new.env(parent = emptyenv())
+#' @export
+`$.VlmFallbackPolicy` <- function(self, name) {
+  func <- VlmFallbackPolicy[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.VlmFallbackPolicy` <- `$.VlmFallbackPolicy`
+#' Standard entity categories produced by built-in NER backends
+#'
+#' The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
+#' schemas) flow through without losing fidelity to the consumer.
+#' @field Person Person
+#' @field Organization Organization
+#' @field Location Location
+#' @field Date Date
+#' @field Time Time
+#' @field Money Money
+#' @field Percent Percent
+#' @field Email Email
+#' @field Phone Phone
+#' @field Url Url
+#' @field Custom Custom
+#' @export
+EntityCategory <- new.env(parent = emptyenv())
+#' @export
+`$.EntityCategory` <- function(self, name) {
+  func <- EntityCategory[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.EntityCategory` <- `$.EntityCategory`
 #' Format-specific metadata (discriminated union)
 #'
 #' Only one format type can exist per extraction result. This provides
@@ -3102,6 +3701,33 @@ FormatMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.FormatMetadata` <- `$.FormatMetadata`
+#' PII categories the pattern engine recognises
+#' @field Email Email
+#' @field Phone Phone
+#' @field Ssn Ssn
+#' @field CreditCard CreditCard
+#' @field PostalCode PostalCode
+#' @field IpAddress IpAddress
+#' @field Iban Iban
+#' @field SwiftBic SwiftBic
+#' @field DateOfBirth DateOfBirth
+#' @field Person Person name, surfaced by the optional NER backend.
+#' @field Organization Organization name, surfaced by the optional NER backend.
+#' @field Location Location, surfaced by the optional NER backend.
+#' @field Custom Caller-supplied custom category (e.g. internal employee IDs).
+#' @export
+PiiCategory <- new.env(parent = emptyenv())
+#' @export
+`$.PiiCategory` <- function(self, name) {
+  func <- PiiCategory[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PiiCategory` <- `$.PiiCategory`
 #' A single line in a unified-diff hunk
 #'
 #' Defined here (rather than only in `crate::diff`) so `RevisionDelta` can
@@ -3146,6 +3772,14 @@ HtmlTheme  <- function() list() |> structure(class = "HtmlTheme")
 #' @return A TableModel enum value
 #' @export
 TableModel  <- function() list() |> structure(class = "TableModel")
+
+#' Create a NerBackendKind enum value
+#'
+#' Returns the default NerBackendKind variant.
+#'
+#' @return A NerBackendKind enum value
+#' @export
+NerBackendKind  <- function() list() |> structure(class = "NerBackendKind")
 
 #' Create a ChunkerType enum value
 #'
@@ -3323,6 +3957,14 @@ OcrElementLevel  <- function() list() |> structure(class = "OcrElementLevel")
 #' @export
 PageUnitType  <- function() list() |> structure(class = "PageUnitType")
 
+#' Create a RedactionStrategy enum value
+#'
+#' Returns the default RedactionStrategy variant.
+#'
+#' @return A RedactionStrategy enum value
+#' @export
+RedactionStrategy  <- function() list() |> structure(class = "RedactionStrategy")
+
 #' Create a RevisionKind enum value
 #'
 #' Returns the default RevisionKind variant.
@@ -3331,6 +3973,14 @@ PageUnitType  <- function() list() |> structure(class = "PageUnitType")
 #' @export
 RevisionKind  <- function() list() |> structure(class = "RevisionKind")
 
+#' Create a SummaryStrategy enum value
+#'
+#' Returns the default SummaryStrategy variant.
+#'
+#' @return A SummaryStrategy enum value
+#' @export
+SummaryStrategy  <- function() list() |> structure(class = "SummaryStrategy")
+
 #' Create a UriKind enum value
 #'
 #' Returns the default UriKind variant.
@@ -3338,6 +3988,14 @@ RevisionKind  <- function() list() |> structure(class = "RevisionKind")
 #' @return A UriKind enum value
 #' @export
 UriKind  <- function() list() |> structure(class = "UriKind")
+
+#' Create a RegionKind enum value
+#'
+#' Returns the default RegionKind variant.
+#'
+#' @return A RegionKind enum value
+#' @export
+RegionKind  <- function() list() |> structure(class = "RegionKind")
 
 #' Create a KeywordAlgorithm enum value
 #'
@@ -3482,6 +4140,10 @@ RevisionAnchor$from_json <- function(json) .Call("wrap__RevisionAnchor__from_jso
 `[[.RevisionAnchor` <- `$.RevisionAnchor`
 #' @export
 cors_allows_all <- function(x, ...) UseMethod("cors_allows_all")
+#' @export
+detect <- function(x, ...) UseMethod("detect")
+#' @export
+detect_with_custom <- function(x, ...) UseMethod("detect_with_custom")
 #' @export
 is_empty <- function(x, ...) UseMethod("is_empty")
 #' @export

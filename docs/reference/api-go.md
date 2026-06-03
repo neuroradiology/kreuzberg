@@ -354,6 +354,44 @@ func GetExtensionsForMime(mimeType string) ([]string, error)
 
 ---
 
+#### DetectQrCodes()
+
+Detect QR codes in the bytes of an `ExtractedImage`.
+
+`format_hint` is currently unused — the `image` crate auto-detects the
+container format from magic bytes — but the parameter is retained so future
+backends (e.g. a WebP-via-`webp-decoder` variant) can use it without an API
+break.
+
+Returns an empty vector on any of:
+
+- Empty input.
+- Image-decode failure.
+- No QR grids detected.
+- All detected grids fail to decode.
+
+Successfully decoded QR codes carry their payload, a confidence of `1.0`
+(rqrr does not expose per-grid confidence; a successful decode is treated
+as high-confidence by convention), and the pixel-space bounding box derived
+from the four corner points of the grid.
+
+**Signature:**
+
+```go
+func DetectQrCodes(imageBytes []byte, formatHint string) []QrCode
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `[]byte` | Yes | The image bytes |
+| `FormatHint` | `*string` | No | The  format hint |
+
+**Returns:** `[]QrCode`
+
+---
+
 #### ClearEmbeddingBackends()
 
 Clear all embedding backends from the global registry.
@@ -474,6 +512,27 @@ func ClearOcrBackends() error
 
 ---
 
+#### RegisterBuiltin()
+
+Register every built-in post-processor enabled by the active feature set.
+
+This is the single entry point that callers (including
+`register_default_post_processors`) use to populate the global
+post-processor registry with the in-tree built-ins. Each submodule's own
+`register` function is gated by its feature flag so this aggregate stays
+safe to call on any target.
+
+**Signature:**
+
+```go
+func RegisterBuiltin() error
+```
+
+**Returns:** ``
+**Errors:** Returns `error`.
+
+---
+
 #### ListPostProcessors()
 
 List all registered post-processor names.
@@ -584,6 +643,292 @@ func ClearValidators() error
 
 ---
 
+#### ClassifyPages()
+
+Run page classification against an extraction result.
+
+Mutates `result.page_classifications` with one entry per non-empty page and
+appends every LLM call's usage to `result.llm_usage`.
+
+**Errors:**
+
+Returns the first error encountered when rendering the prompt or calling the
+LLM. Partially produced classifications are discarded so callers do not see
+a half-populated vector.
+
+**Signature:**
+
+```go
+func ClassifyPages(result ExtractionResult, config PageClassificationConfig) error
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `PageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** ``
+**Errors:** Returns `error`.
+
+---
+
+#### DownloadModel()
+
+Eagerly download a NER model into the kreuzberg cache.
+
+`name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
+CLI flag `kreuzberg warm --ner` delegates here.
+
+**Signature:**
+
+```go
+func DownloadModel(name string, cacheDir string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The name |
+| `CacheDir` | `*string` | No | The cache dir |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### DefaultModelName()
+
+Pinned default NER model identifier.
+
+**Signature:**
+
+```go
+func DefaultModelName() string
+```
+
+**Returns:** `string`
+
+---
+
+#### KnownModels()
+
+All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```go
+func KnownModels() []string
+```
+
+**Returns:** `[]string`
+
+---
+
+#### Redact()
+
+Run pattern redaction (and optional NER-driven redaction) over `result` and
+rewrite every textual field. Populates `result.redaction_report`.
+
+**Signature:**
+
+```go
+func Redact(result ExtractionResult, config RedactionConfig) error
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `RedactionConfig` | Yes | The configuration options |
+
+**Returns:** ``
+**Errors:** Returns `error`.
+
+---
+
+#### FindAll()
+
+**Signature:**
+
+```go
+func FindAll(text string) []PatternMatch
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+
+**Returns:** `[]PatternMatch`
+
+---
+
+#### ScanText()
+
+Scan `text` for every PII category in `categories` and return all matches
+in source-byte order.
+
+When `categories` is empty every supported regex-detectable category fires.
+Person / Organization / Location are *not* covered by the pattern engine —
+they must be supplied by a NER backend through the redaction engine.
+
+**Signature:**
+
+```go
+func ScanText(text string, categories []PiiCategory) []PatternMatch
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Categories` | `[]PiiCategory` | Yes | The categories |
+
+**Returns:** `[]PatternMatch`
+
+---
+
+#### ApplyStrategy()
+
+Apply `strategy` to `original` for `category` and return the replacement token.
+
+The optional `counter` is required for `RedactionStrategy.TokenReplace`;
+other strategies ignore it.
+
+**Signature:**
+
+```go
+func ApplyStrategy(strategy RedactionStrategy, original string, category PiiCategory, counter TokenCounter) string
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Strategy` | `RedactionStrategy` | Yes | The redaction strategy |
+| `Original` | `string` | Yes | The original |
+| `Category` | `PiiCategory` | Yes | The pii category |
+| `Counter` | `TokenCounter` | Yes | The token counter |
+
+**Returns:** `string`
+
+---
+
+#### Summarize()
+
+Score and return the top-N sentences from `text`, joined in original order.
+
+`language` is an ISO 639 (or locale) code used to pick a stopword list;
+pass `nil` (or an unknown code) to fall back to English.
+`max_tokens` bounds the summary length by whitespace-separated tokens;
+`nil` falls back to `DEFAULT_MAX_TOKENS`.
+
+**Signature:**
+
+```go
+func Summarize(text string, language string, maxTokens uint32) *string
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Language` | `*string` | No | The language |
+| `MaxTokens` | `*uint32` | No | The max tokens |
+
+**Returns:** `*string`
+
+---
+
+#### TokenCount()
+
+Count whitespace-separated tokens (used for token-budget bookkeeping by
+callers).
+
+**Signature:**
+
+```go
+func TokenCount(text string) uint32
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+
+**Returns:** `uint32`
+
+---
+
+#### SummarizeWithLlm()
+
+Run abstractive summarisation against the configured LLM.
+
+`text` is the document content to summarise (already extracted by the
+pipeline). `max_tokens` softly bounds the requested summary length in
+natural-language tokens; `nil` uses `DEFAULT_MAX_TOKENS`.
+
+Returns the summary string and the (optional) usage record.
+
+**Errors:**
+
+Propagates any LLM client / request error returned by
+`complete_text`.
+
+**Signature:**
+
+```go
+func SummarizeWithLlm(text string, llmConfig LlmConfig, maxTokens uint32) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `LlmConfig` | `LlmConfig` | Yes | The llm config |
+| `MaxTokens` | `*uint32` | No | The max tokens |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### TranslateResult()
+
+Translate the extraction result in place.
+
+Populates `result.translation` with the translated `content`, optionally the
+translated `formatted_content` (when `preserve_markup = true`), and rewrites
+every chunk's `content` field. Every LLM call's usage is appended to
+`result.llm_usage`.
+
+**Signature:**
+
+```go
+func TranslateResult(result ExtractionResult, config TranslationConfig) error
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `TranslationConfig` | Yes | The configuration options |
+
+**Returns:** ``
+**Errors:** Returns `error`.
+
+---
+
 #### Compare()
 
 Compare two extraction results and return a structured diff.
@@ -606,6 +951,154 @@ func Compare(a ExtractionResult, b ExtractionResult, opts DiffOptions) Extractio
 | `Opts` | `DiffOptions` | Yes | The options to use |
 
 **Returns:** `ExtractionDiff`
+
+---
+
+#### ExtractRegionWithVlm()
+
+Extract content from a pre-cropped image region using a VLM.
+
+The caller is responsible for cropping the page image to the region's bounding
+box before calling this function. The `image_bytes` parameter must contain the
+raw bytes of the **cropped** region image (JPEG, PNG, WebP, etc.).
+
+**Returns:**
+
+Extracted Markdown text from the VLM, or an error if the VLM call fails.
+
+**Errors:**
+
+- `Ocr` if the VLM call fails or returns no content.
+- `MissingDependency` if the liter-llm client cannot
+  be initialised.
+
+**Signature:**
+
+```go
+func ExtractRegionWithVlm(imageBytes []byte, imageMime string, regionKind RegionKind, llmConfig LlmConfig, customPrompt string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `[]byte` | Yes | The image bytes |
+| `ImageMime` | `string` | Yes | The image mime |
+| `RegionKind` | `RegionKind` | Yes | The region kind |
+| `LlmConfig` | `LlmConfig` | Yes | The llm config |
+| `CustomPrompt` | `*string` | No | The custom prompt |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### ExtractRegionWithVlmUsage()
+
+Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
+from the underlying VLM call.
+
+Callers that need to track token / cost data per call (for example the captioning
+post-processor, which appends every call's usage to
+`ExtractionResult.llm_usage`) should
+prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
+only care about the markdown output (PDF region splicing).
+
+**Errors:**
+
+Same as `extract_region_with_vlm`.
+
+**Signature:**
+
+```go
+func ExtractRegionWithVlmUsage(imageBytes []byte, imageMime string, regionKind RegionKind, llmConfig LlmConfig, customPrompt string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `[]byte` | Yes | The image bytes |
+| `ImageMime` | `string` | Yes | The image mime |
+| `RegionKind` | `RegionKind` | Yes | The region kind |
+| `LlmConfig` | `LlmConfig` | Yes | The llm config |
+| `CustomPrompt` | `*string` | No | The custom prompt |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### CompleteWithJsonSchema()
+
+Send a free-form prompt to the configured LLM with a JSON-schema response
+constraint and return the parsed JSON value plus captured usage.
+
+This is the shared helper used by LLM-backed post-processors (page
+classification, LLM-driven NER, etc.) that need structured output but do not
+want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
+
+  distinguish multiple structured outputs).
+
+- `schema` — the JSON schema the LLM is required to obey.
+- `source` — label used for the returned `LlmUsage` entry.
+
+**Errors:**
+
+Returns an error if the LLM client cannot be constructed, the request fails,
+the response contains no content, or the response is not parseable JSON.
+
+**Signature:**
+
+```go
+func CompleteWithJsonSchema(llmConfig LlmConfig, prompt string, schemaName string, schema interface{}, source string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `LlmConfig` | `LlmConfig` | Yes | The llm config |
+| `Prompt` | `string` | Yes | The prompt |
+| `SchemaName` | `string` | Yes | The schema name |
+| `Schema` | `interface{}` | Yes | The schema |
+| `Source` | `string` | Yes | The source |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### CompleteText()
+
+Send a single user prompt to the configured LLM and return the response text
+along with the captured usage metadata.
+
+The `source` argument labels the `LlmUsage` entry that is returned so
+callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
+etc.). The helper performs a single non-streaming chat completion request.
+
+**Errors:**
+
+Returns an error if the LLM client cannot be constructed, the request fails,
+or the response does not contain assistant content.
+
+**Signature:**
+
+```go
+func CompleteText(llmConfig LlmConfig, prompt string, source string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `LlmConfig` | `LlmConfig` | Yes | The llm config |
+| `Prompt` | `string` | Yes | The prompt |
+| `Source` | `string` | Yes | The source |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
 
 ---
 
@@ -891,6 +1384,18 @@ Bounding box coordinates for element positioning.
 
 ---
 
+#### CaptioningConfig
+
+Configuration for the VLM captioning post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
+| `Prompt` | `*string` | `nil` | Optional custom caption prompt. `nil` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
+| `MinImageArea` | `uint32` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+
+---
+
 #### CellChange
 
 A single changed cell within a table.
@@ -988,6 +1493,17 @@ Citation file metadata (RIS, PubMed, EndNote).
 | `YearRange` | `*YearRange` | `nil` | Year range (year range) |
 | `Dois` | `[]string` | `nil` | Dois |
 | `Keywords` | `[]string` | `nil` | Keywords |
+
+---
+
+#### ClassificationLabel
+
+A single label + confidence pair.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Label` | `string` | — | Label name as configured in `PageClassificationConfig.labels`. |
+| `Confidence` | `*float32` | `nil` | Backend-reported confidence in `[0.0, 1.0]`. `nil` when the backend (e.g. an LLM prompt without explicit confidence schema) did not report one. |
 
 ---
 
@@ -1457,6 +1973,18 @@ func (o *DocumentStructure) Default() DocumentStructure
 
 ---
 
+#### DocumentSummary
+
+Summary of an extracted document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Text` | `string` | — | Summary text (plain prose). |
+| `Strategy` | `SummaryStrategy` | — | Strategy that produced this summary. |
+| `TokenCount` | `*uint32` | `nil` | Approximate token count of the summary, when known. |
+
+---
+
 #### DocxAppProperties
 
 Application properties from docProps/app.xml for DOCX
@@ -1768,6 +2296,20 @@ are safe to clone and pass across language boundaries.
 
 ---
 
+#### Entity
+
+A single named entity detected in the extracted text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Category` | `EntityCategory` | — | Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.). |
+| `Text` | `string` | — | Raw mention text exactly as it appeared in the source. |
+| `Start` | `uint32` | — | Byte-offset span in `ExtractionResult.content` where the mention starts. |
+| `End` | `uint32` | — | Byte-offset span in `ExtractionResult.content` where the mention ends (exclusive). |
+| `Confidence` | `*float32` | `nil` | Backend-reported confidence in `[0.0, 1.0]`. `nil` when the backend does not expose confidence scores. |
+
+---
+
 #### EpubMetadata
 
 EPUB metadata (Dublin Core extensions).
@@ -1859,14 +2401,16 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `Height` | `*uint32` | `nil` | Image height in pixels |
 | `Colorspace` | `*string` | `nil` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
 | `BitsPerComponent` | `*uint32` | `nil` | Bits per color component (e.g., 8, 16) |
-| `IsMask` | `bool` | `/* serde(default) */` | Whether this image is a mask image |
+| `IsMask` | `bool` | — | Whether this image is a mask image |
 | `Description` | `*string` | `nil` | Optional description of the image |
 | `OcrResult` | `*ExtractionResult` | `nil` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `BoundingBox` | `*BoundingBox` | `/* serde(default) */` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
-| `SourcePath` | `*string` | `/* serde(default) */` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `ImageKind` | `*ImageKind` | `/* serde(default) */` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
-| `KindConfidence` | `*float32` | `/* serde(default) */` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
-| `ClusterId` | `*uint32` | `/* serde(default) */` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
+| `BoundingBox` | `*BoundingBox` | `nil` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `SourcePath` | `*string` | `nil` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
+| `ImageKind` | `*ImageKind` | `nil` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
+| `KindConfidence` | `*float32` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
+| `ClusterId` | `*uint32` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
+| `Caption` | `*string` | `nil` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `nil` when captioning is disabled or the VLM declined to caption. |
+| `QrCodes` | `*[]QrCode` | `nil` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `nil` when QR detection is disabled; an empty `Some(vec![])` when detection ran but found nothing. |
 
 ---
 
@@ -1930,6 +2474,13 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `MaxArchiveDepth` | `int` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `TreeSitter` | `*TreeSitterConfig` | `nil` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `StructuredExtraction` | `*StructuredExtractionConfig` | `nil` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `Ner` | `*NerConfig` | `nil` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult.entities`. |
+| `Redaction` | `*RedactionConfig` | `nil` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult.redaction_report`. |
+| `Summarization` | `*SummarizationConfig` | `nil` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult.summary`. |
+| `Translation` | `*TranslationConfig` | `nil` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult.translation`. |
+| `PageClassification` | `*PageClassificationConfig` | `nil` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
+| `Captioning` | `*CaptioningConfig` | `nil` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
+| `QrCodes` | `*bool` | `nil` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `CancelToken` | `*string` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ### Methods
@@ -2010,6 +2561,11 @@ This is the main result type returned by all extraction functions.
 | `StructuredOutput` | `*interface{}` | `nil` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `CodeIntelligence` | `*interface{}` | `nil` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
 | `LlmUsage` | `*[]LlmUsage` | `nil` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `nil` when no LLM was used. |
+| `Entities` | `*[]Entity` | `nil` | Named entities detected in `content` by the NER post-processor. `nil` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
+| `Summary` | `*DocumentSummary` | `nil` | Summary of `content` produced by the summarisation post-processor. `nil` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
+| `Translation` | `*Translation` | `nil` | Translation of `content` produced by the translation post-processor. `nil` when translation is not configured. |
+| `PageClassifications` | `*[]PageClassification` | `nil` | Per-page classifications produced by the page-classification post-processor. `nil` when classification is not configured. |
+| `RedactionReport` | `*RedactionReport` | `nil` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `nil` when redaction is not configured. |
 | `FormattedContent` | `*string` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `OcrInternalDocument` | `*string` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
@@ -2111,6 +2667,56 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `Language` | `*string` | `nil` | Language identifier for code blocks |
 | `Code` | `*string` | `nil` | Raw code content for code blocks |
 | `Children` | `[]FormattedBlock` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
+
+---
+
+#### GlineBackend
+
+kreuzberg-gliner-rs ONNX backend wrapper.
+
+Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
+model can be safely shared across async tasks (inference is synchronous and
+serialised internally by the mutex).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `RepoId` | `string` | — | Repo id |
+| `ModelPath` | `string` | — | Model path |
+| `TokenizerPath` | `string` | — | Tokenizer path |
+
+### Methods
+
+#### New()
+
+Build a backend for `repo_id` (or the default model if `nil`).
+
+Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
+After this returns, inference is available without further I/O.
+
+**Signature:**
+
+```go
+func (o *GlineBackend) New(repoId string) (GlineBackend, error)
+```
+
+#### Detect()
+
+**Signature:**
+
+```go
+func (o *GlineBackend) Detect(text string, categories []EntityCategory) ([]Entity, error)
+```
+
+#### DetectWithCustom()
+
+Native zero-shot multi-label inference: passes the union of `categories`
+(as label strings) and `custom_labels` to a single GLiNER inference call.
+
+**Signature:**
+
+```go
+func (o *GlineBackend) DetectWithCustom(text string, categories []EntityCategory, customLabels []string) ([]Entity, error)
+```
 
 ---
 
@@ -2542,6 +3148,38 @@ Link element metadata.
 
 ---
 
+#### LlmBackend
+
+liter-llm-backed NER backend.
+
+### Methods
+
+#### New()
+
+**Signature:**
+
+```go
+func (o *LlmBackend) New(config LlmConfig) LlmBackend
+```
+
+#### Detect()
+
+**Signature:**
+
+```go
+func (o *LlmBackend) Detect(text string, categories []EntityCategory) ([]Entity, error)
+```
+
+#### DetectWithCustom()
+
+**Signature:**
+
+```go
+func (o *LlmBackend) DetectWithCustom(text string, categories []EntityCategory, customLabels []string) ([]Entity, error)
+```
+
+---
+
 #### LlmConfig
 
 Configuration for an LLM provider/model via liter-llm.
@@ -2638,6 +3276,20 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `ClsModel` | `string` | — | Path to the classification model directory. |
 | `RecModel` | `string` | — | Path to the recognition model directory. |
 | `DictFile` | `string` | — | Path to the character dictionary file. |
+
+---
+
+#### NerConfig
+
+Configuration for the NER post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Backend` | `NerBackendKind` | `NerBackendKind.Onnx` | Backend that runs the entity detection. |
+| `Categories` | `[]EntityCategory` | `nil` | Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty. |
+| `Model` | `*string` | `nil` | Override the default model — only used by `NerBackendKind.Onnx`. `nil` lets the backend pick its pinned default (`urchade/gliner_multi-v2.1` for gline-rs). |
+| `Llm` | `*LlmConfig` | `nil` | Optional LLM configuration — only used by `NerBackendKind.Llm`. Token usage for LLM backends is recorded in `ExtractionResult.llm_usage`. |
+| `CustomLabels` | `[]string` | `nil` | Arbitrary user-supplied entity labels for zero-shot detection. gline-rs natively supports zero-shot inference over caller-supplied labels — this is the primary value of GLiNER. The LLM backend also honours these labels by including them in the structured-output schema. Custom labels surface as `EntityCategory.Custom` in the resulting `Entity` stream. Use this when you need domain-specific entity types (e.g. `"Treatment"`, `"Product"`, `"Vessel"`) without forking GLiNER's taxonomy. |
 
 ---
 
@@ -2809,7 +3461,8 @@ OCR configuration.
 | `QualityThresholds` | `*OcrQualityThresholds` | `nil` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `Pipeline` | `*OcrPipelineConfig` | `nil` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `AutoRotate` | `bool` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `VlmConfig` | `*LlmConfig` | `nil` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `VlmFallback` | `VlmFallbackPolicy` | `VlmFallbackPolicy.Disabled` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy.Disabled` and `OcrConfig.pipeline` is `nil`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy.OnLowQuality` → `[classical_stage, vlm_stage]` with the `quality_threshold` mapped onto `OcrQualityThresholds.pipeline_min_quality`. - `VlmFallbackPolicy.Always` → `[vlm_stage]` only. Requires `OcrConfig.vlm_config` to be `Some` when not `Disabled`. When `OcrConfig.pipeline` is explicitly set, this field is ignored. |
+| `VlmConfig` | `*LlmConfig` | `nil` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy.Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
 | `VlmPrompt` | `*string` | `nil` | Custom Jinja2 prompt template for VLM OCR. When `nil`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
 | `Acceleration` | `*AccelerationConfig` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `TessdataBytes` | `*map[string][]byte` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
@@ -3177,6 +3830,30 @@ at valid UTF-8 character boundaries when using standard String methods (push_str
 
 ---
 
+#### PageClassification
+
+Classification result for a single page.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `PageNumber` | `uint32` | — | 1-indexed page number this classification belongs to. |
+| `Labels` | `[]ClassificationLabel` | — | Labels assigned to the page. Single-label classification yields exactly one entry; multi-label classification yields any subset of the configured label set. |
+
+---
+
+#### PageClassificationConfig
+
+Configuration for the page-classification post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `PromptTemplate` | `*string` | `nil` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `nil` lets the backend pick a sensible default. |
+| `Labels` | `[]string` | — | The set of labels the classifier may emit. Must contain at least one entry. |
+| `MultiLabel` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `Llm` | `LlmConfig` | — | LLM configuration used for classification. |
+
+---
+
 #### PageConfig
 
 Page extraction and tracking configuration.
@@ -3285,6 +3962,19 @@ with character offset boundaries for chunk-to-page mapping.
 | `UnitType` | `PageUnitType` | — | Type of paginated unit |
 | `Boundaries` | `*[]PageBoundary` | `nil` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
 | `Pages` | `*[]PageInfo` | `nil` | Detailed per-page metadata (optional, only when needed) |
+
+---
+
+#### PatternMatch
+
+One detected PII span in the input text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Start` | `int` | — | Inclusive byte-offset start of the match in the source text. |
+| `End` | `int` | — | Exclusive byte-offset end of the match. |
+| `Category` | `PiiCategory` | — | Category the match belongs to. |
+| `Text` | `string` | — | Matched substring (owned copy — pattern engine returns owned data so the caller can free the original text if needed before replacement). |
 
 ---
 
@@ -3736,6 +4426,31 @@ Outlook PST archive metadata.
 
 ---
 
+#### QrBoundingBox
+
+Pixel-space bounding box of a QR code inside its source image.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `X` | `uint32` | — | X |
+| `Y` | `uint32` | — | Y |
+| `Width` | `uint32` | — | Width |
+| `Height` | `uint32` | — | Height |
+
+---
+
+#### QrCode
+
+One QR code decoded from an extracted image.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Payload` | `string` | — | Decoded payload (text, URL, vCard string, …). |
+| `Confidence` | `*float32` | `nil` | Detector-reported confidence in `[0.0, 1.0]`. `nil` when the decoder does not expose confidence (the default `rqrr` backend always reports `Some` because successful decode implies high confidence). |
+| `Bbox` | `*QrBoundingBox` | `nil` | Bounding box of the QR code inside the source image, in pixel coordinates (`x`, `y` of the top-left corner; `width`, `height` of the rectangle). `nil` if the decoder did not report a bounding box. |
+
+---
+
 #### RakeParams
 
 RAKE-specific parameters.
@@ -3771,6 +4486,143 @@ the type in their own code.
 | `DetectionBbox` | `BBox` | — | Detection bbox that this table corresponds to (for matching). |
 | `Cells` | `[][]string` | — | Table cells as a 2D vector (rows × columns). |
 | `Markdown` | `string` | — | Rendered markdown table. |
+
+---
+
+#### RedactionConfig
+
+Configuration for the redaction post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Categories` | `[]PiiCategory` | `nil` | Categories to redact. Empty means "every category supported by the engine." |
+| `Strategy` | `RedactionStrategy` | `RedactionStrategy.Mask` | Strategy applied to every match. |
+| `Ner` | `*NerConfig` | `nil` | Optional NER backend — required to redact PERSON / ORGANIZATION / LOCATION categories (the pure-Rust pattern engine only covers regex-detectable PII). |
+| `PreserveOffsets` | `bool` | `true` | When `true`, chunk byte ranges are kept consistent with the rewritten content by adjusting `byte_start` / `byte_end` after replacement. When `false`, chunk byte ranges still refer to the *original* content offsets — useful when downstream consumers want to map findings back to the original document. |
+| `CustomTerms` | `[]RedactionTerm` | `nil` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
+| `CustomPatterns` | `[]RedactionPattern` | `nil` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
+
+### Methods
+
+#### Default()
+
+**Signature:**
+
+```go
+func (o *RedactionConfig) Default() RedactionConfig
+```
+
+#### Validate()
+
+Validate user-supplied terms and patterns at config-construction time.
+
+Compiles every `RedactionPattern.pattern` (with the case-insensitive
+inline flag where applicable) and returns the first compilation error so
+the caller can reject the config before the redaction pipeline runs.
+Pure terms (regex-escaped) cannot fail to compile, but the function
+still rejects empty values to avoid degenerate zero-length matches.
+
+**Signature:**
+
+```go
+func (o *RedactionConfig) Validate() error
+```
+
+---
+
+#### RedactionFinding
+
+One redaction event: which span was rewritten, why, and with what.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Start` | `uint32` | — | Byte-offset start in the original (pre-redaction) `ExtractionResult.content`. |
+| `End` | `uint32` | — | Byte-offset end (exclusive) in the original `ExtractionResult.content`. |
+| `Category` | `PiiCategory` | — | PII category that fired this redaction. |
+| `Strategy` | `RedactionStrategy` | — | Strategy applied to this finding (mask, hash, token-replace, drop). |
+| `ReplacementToken` | `string` | — | String that replaced the original mention. Always present; for `Drop` the replacement is the empty string. |
+
+---
+
+#### RedactionPattern
+
+One user-supplied regex pattern to redact.
+
+The pattern is compiled with the Rust `regex` crate (no look-around). Case
+sensitivity is encoded in the pattern via the `(?i)` inline flag when
+`Self.case_sensitive` is `false`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Label` | `string` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `Pattern` | `string` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
+| `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+
+### Methods
+
+#### Labeled()
+
+Build a pattern with the given label (case-insensitive by default).
+
+**Signature:**
+
+```go
+func (o *RedactionPattern) Labeled(label string, pattern string) RedactionPattern
+```
+
+---
+
+#### RedactionReport
+
+Audit report describing what the redaction processor found and how it replaced it.
+
+The redactor returns this alongside the rewritten content so compliance, replay, and
+audit-log consumers can see exactly what fired. Offsets are relative to the *original*
+pre-redaction `content` and are intended for audit reconstruction only — the original
+bytes are dropped at the end of the pipeline.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Findings` | `[]RedactionFinding` | — | Individual redaction findings in original-source byte order. |
+| `TotalRedacted` | `uint32` | — | Total number of redactions applied across the document. |
+
+---
+
+#### RedactionTerm
+
+One user-supplied literal term to redact.
+
+Matched as a regex-escaped substring (so callers do not need to escape
+metacharacters themselves). Case-insensitive by default — set
+`Self.case_sensitive` to `true` for exact byte-match semantics.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Label` | `string` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `Value` | `string` | — | Literal value to match. Regex metacharacters are escaped automatically. |
+| `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+
+### Methods
+
+#### Literal()
+
+Build a term whose label is the literal value itself (case-insensitive).
+
+**Signature:**
+
+```go
+func (o *RedactionTerm) Literal(value string) RedactionTerm
+```
+
+#### Labeled()
+
+Build a term with a custom label.
+
+**Signature:**
+
+```go
+func (o *RedactionTerm) Labeled(label string, value string) RedactionTerm
+```
 
 ---
 
@@ -3858,6 +4710,17 @@ while still supporting legitimate documents.
 ```go
 func (o *SecurityLimits) Default() SecurityLimits
 ```
+
+---
+
+#### Segment
+
+A text segment with its byte offset in the original document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Text` | `string` | — | Text |
+| `ByteStart` | `int` | — | Byte start |
 
 ---
 
@@ -3992,6 +4855,18 @@ returning structured data that conforms to the schema.
 | `Strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
 | `Prompt` | `*string` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `Llm` | `LlmConfig` | — | LLM configuration for the extraction. |
+
+---
+
+#### SummarizationConfig
+
+Configuration for the summarisation post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Strategy` | `SummaryStrategy` | `SummaryStrategy.Extractive` | Summarisation strategy. |
+| `MaxTokens` | `*uint32` | `nil` | Maximum summary length in tokens. `nil` lets the backend pick a default. |
+| `Llm` | `*LlmConfig` | `nil` | LLM configuration for the abstractive backend. Ignored when `strategy = Extractive`. Required when `strategy = Abstractive`. |
 
 ---
 
@@ -4161,6 +5036,33 @@ for Markdown, structural elements like headers and links.
 
 ---
 
+#### TokenCounter
+
+Per-category running counter for `RedactionStrategy.TokenReplace`.
+
+### Methods
+
+#### New()
+
+**Signature:**
+
+```go
+func (o *TokenCounter) New() TokenCounter
+```
+
+#### NextToken()
+
+Allocate the next token for `category` and `original`. If the original
+has been seen before in this category, the same token is reused.
+
+**Signature:**
+
+```go
+func (o *TokenCounter) NextToken(category PiiCategory, original string) string
+```
+
+---
+
 #### TokenReductionConfig
 
 | Field | Type | Default | Description |
@@ -4207,6 +5109,37 @@ Token reduction configuration.
 ```go
 func (o *TokenReductionOptions) Default() TokenReductionOptions
 ```
+
+---
+
+#### Translation
+
+Translation of the extracted content.
+
+Holds the translated rendition of `ExtractionResult.content` and (when
+`preserve_markup` was requested) the translated `formatted_content`. Chunks
+are translated in place inside `ExtractionResult.chunks[*].content` rather
+than duplicated here.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `TargetLang` | `string` | — | BCP-47 language tag the translation was produced into (e.g. `"de"`, `"fr-CA"`). |
+| `SourceLang` | `*string` | `nil` | BCP-47 source language. `nil` when the translation backend was asked to detect. |
+| `Content` | `string` | — | Translated plain-text body. Matches the shape of `ExtractionResult.content`. |
+| `FormattedContent` | `*string` | `nil` | Translated markup body (Markdown / HTML / etc.) when `preserve_markup` was enabled on the config. `nil` otherwise. |
+
+---
+
+#### TranslationConfig
+
+Configuration for the translation post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `TargetLang` | `string` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
+| `SourceLang` | `*string` | `nil` | Optional explicit source language. `nil` asks the backend to auto-detect. |
+| `PreserveMarkup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `Llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
 
@@ -4590,6 +5523,50 @@ YAML).
 
 ---
 
+#### NerBackendKind
+
+NER backend selector.
+
+| Value | Description |
+|-------|-------------|
+| `Onnx` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download.hf_download`. |
+| `Llm` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
+
+---
+
+#### VlmFallbackPolicy
+
+Policy controlling when VLM (Vision Language Model) OCR is used as a fallback.
+
+This knob is syntactic sugar over the explicit `OcrPipelineConfig` stage
+ordering. When `vlm_fallback` is set and `pipeline` is `nil`, an equivalent
+pipeline is synthesised at extraction time:
+
+- `VlmFallbackPolicy.Disabled` — no synthesis; single-backend mode (default).
+- `VlmFallbackPolicy.OnLowQuality` — tries the classical backend first; if the
+  result scores below `quality_threshold`, tries VLM.
+
+- `VlmFallbackPolicy.Always` — skips the classical backend and sends every page
+  to the VLM.
+
+When `OcrConfig.pipeline` is explicitly set, `vlm_fallback` is ignored — the
+explicit pipeline takes precedence.
+
+**Errors:**
+
+Both `OnLowQuality` and `Always` require `OcrConfig.vlm_config` to be `Some`.
+Constructing an `OcrConfig` with one of these policies but no `vlm_config` is
+detected by `OcrConfig.validate` and will surface as a
+`Validation` error at extraction time, not a panic.
+
+| Value | Description |
+|-------|-------------|
+| `Disabled` | No VLM fallback (default). Behaves identically to the pre-policy single-backend mode. |
+| `OnLowQuality` | Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the page to the VLM. `quality_threshold` is in the `[0.0, 1.0]` range produced by `calculate_quality_score`. A value of `0.5` is a reasonable starting point; calibrate with the Stage 0 benchmark harness. — Fields: `QualityThreshold`: `float64` |
+| `Always` | Skip the classical OCR backend entirely. Every page is sent to the VLM. |
+
+---
+
 #### ChunkerType
 
 Type of text chunker to use.
@@ -4865,6 +5842,29 @@ Types of inline text annotations.
 
 ---
 
+#### EntityCategory
+
+Standard entity categories produced by built-in NER backends.
+
+The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
+schemas) flow through without losing fidelity to the consumer.
+
+| Value | Description |
+|-------|-------------|
+| `Person` | Person |
+| `Organization` | Organization |
+| `Location` | Location |
+| `Date` | Date |
+| `Time` | Time |
+| `Money` | Money |
+| `Percent` | Percent |
+| `Email` | Email |
+| `Phone` | Phone |
+| `Url` | Url |
+| `Custom` | Custom — Fields: `0`: `string` |
+
+---
+
 #### ExtractionMethod
 
 How the extracted text was produced.
@@ -5090,6 +6090,41 @@ Distinguishes between different types of "pages" (PDF pages, presentation slides
 
 ---
 
+#### RedactionStrategy
+
+Strategy applied when a PII match is rewritten.
+
+| Value | Description |
+|-------|-------------|
+| `Mask` | Replace the matched span with a fixed mask token (default `"[REDACTED]"`). |
+| `Hash` | Replace with a SHA-256 hash of the original value (truncated to 16 hex chars). Lets downstream consumers do equality joins without recovering the source. |
+| `TokenReplace` | Replace with a per-category running token (`"[PERSON_1]"`, `"[PERSON_2]"`, …) so the same person referenced twice gets the same token within the document. |
+| `Drop` | Delete the matched span entirely. |
+
+---
+
+#### PiiCategory
+
+PII categories the pattern engine recognises.
+
+| Value | Description |
+|-------|-------------|
+| `Email` | Email |
+| `Phone` | Phone |
+| `Ssn` | Ssn |
+| `CreditCard` | Credit card |
+| `PostalCode` | Postal code |
+| `IpAddress` | Ip address |
+| `Iban` | Iban |
+| `SwiftBic` | Swift bic |
+| `DateOfBirth` | Date of birth |
+| `Person` | Person name, surfaced by the optional NER backend. |
+| `Organization` | Organization name, surfaced by the optional NER backend. |
+| `Location` | Location, surfaced by the optional NER backend. |
+| `Custom` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig.custom_terms` or `RedactionConfig.custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `string` |
+
+---
+
 #### DiffLine
 
 A single line in a unified-diff hunk.
@@ -5133,6 +6168,17 @@ Best-effort document location for a revision.
 
 ---
 
+#### SummaryStrategy
+
+Summarisation strategy.
+
+| Value | Description |
+|-------|-------------|
+| `Extractive` | Pure-Rust extractive summary (TextRank over the chunk graph). Deterministic, fast, no external service required. |
+| `Abstractive` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult.llm_usage`. |
+
+---
+
 #### UriKind
 
 Semantic classification of an extracted URI.
@@ -5145,6 +6191,23 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
+
+---
+
+#### RegionKind
+
+Classification of a detected layout region that warrants VLM extraction.
+
+Each variant maps to a specific prompt optimised for that content type.
+The mapping is intentionally narrow — only region kinds for which VLM
+extraction provides a clear quality benefit over classical suppression.
+
+| Value | Description |
+|-------|-------------|
+| `Figure` | A figure, diagram, chart, or image region. VLM prompt: describe the diagram / chart, including axis labels, legend entries, and any embedded text. |
+| `DenseTable` | A densely formatted or complex table that classical extraction garbles. VLM prompt: extract the table as GitHub-Flavoured Markdown. |
+| `ComplexLayout` | A region whose layout the classical pipeline cannot handle (multi-column insets, heavily annotated forms, mixed text+diagram). VLM prompt: extract all text and structure as markdown, preserving reading order. |
+| `Caption` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage.caption`. |
 
 ---
 

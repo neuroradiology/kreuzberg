@@ -354,6 +354,44 @@ const char** kreuzberg_get_extensions_for_mime(const char* mime_type);
 
 ---
 
+#### kreuzberg_detect_qr_codes()
+
+Detect QR codes in the bytes of an `ExtractedImage`.
+
+`format_hint` is currently unused — the `image` crate auto-detects the
+container format from magic bytes — but the parameter is retained so future
+backends (e.g. a WebP-via-`webp-decoder` variant) can use it without an API
+break.
+
+Returns an empty vector on any of:
+
+- Empty input.
+- Image-decode failure.
+- No QR grids detected.
+- All detected grids fail to decode.
+
+Successfully decoded QR codes carry their payload, a confidence of `1.0`
+(rqrr does not expose per-grid confidence; a successful decode is treated
+as high-confidence by convention), and the pixel-space bounding box derived
+from the four corner points of the grid.
+
+**Signature:**
+
+```c
+KreuzbergQrCode* kreuzberg_detect_qr_codes(const uint8_t* image_bytes, const char* format_hint);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `const uint8_t*` | Yes | The image bytes |
+| `format_hint` | `const char**` | No | The  format hint |
+
+**Returns:** `KreuzbergQrCode*`
+
+---
+
 #### kreuzberg_clear_embedding_backends()
 
 Clear all embedding backends from the global registry.
@@ -474,6 +512,27 @@ void kreuzberg_clear_ocr_backends();
 
 ---
 
+#### kreuzberg_register_builtin()
+
+Register every built-in post-processor enabled by the active feature set.
+
+This is the single entry point that callers (including
+`register_default_post_processors`) use to populate the global
+post-processor registry with the in-tree built-ins. Each submodule's own
+`register` function is gated by its feature flag so this aggregate stays
+safe to call on any target.
+
+**Signature:**
+
+```c
+void kreuzberg_register_builtin();
+```
+
+**Returns:** `void`
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_list_post_processors()
 
 List all registered post-processor names.
@@ -584,6 +643,292 @@ void kreuzberg_clear_validators();
 
 ---
 
+#### kreuzberg_classify_pages()
+
+Run page classification against an extraction result.
+
+Mutates `result.page_classifications` with one entry per non-empty page and
+appends every LLM call's usage to `result.llm_usage`.
+
+**Errors:**
+
+Returns the first error encountered when rendering the prompt or calling the
+LLM. Partially produced classifications are discarded so callers do not see
+a half-populated vector.
+
+**Signature:**
+
+```c
+void kreuzberg_classify_pages(KreuzbergExtractionResult result, KreuzbergPageClassificationConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `void`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_download_model()
+
+Eagerly download a NER model into the kreuzberg cache.
+
+`name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
+CLI flag `kreuzberg warm --ner` delegates here.
+
+**Signature:**
+
+```c
+const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `const char*` | Yes | The name |
+| `cache_dir` | `const char**` | No | The cache dir |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_default_model_name()
+
+Pinned default NER model identifier.
+
+**Signature:**
+
+```c
+const char* kreuzberg_default_model_name();
+```
+
+**Returns:** `const char*`
+
+---
+
+#### kreuzberg_known_models()
+
+All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```c
+const char** kreuzberg_known_models();
+```
+
+**Returns:** `const char**`
+
+---
+
+#### kreuzberg_redact()
+
+Run pattern redaction (and optional NER-driven redaction) over `result` and
+rewrite every textual field. Populates `result.redaction_report`.
+
+**Signature:**
+
+```c
+void kreuzberg_redact(KreuzbergExtractionResult result, KreuzbergRedactionConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `config` | `KreuzbergRedactionConfig` | Yes | The configuration options |
+
+**Returns:** `void`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_find_all()
+
+**Signature:**
+
+```c
+KreuzbergPatternMatch* kreuzberg_find_all(const char* text);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+
+**Returns:** `KreuzbergPatternMatch*`
+
+---
+
+#### kreuzberg_scan_text()
+
+Scan `text` for every PII category in `categories` and return all matches
+in source-byte order.
+
+When `categories` is empty every supported regex-detectable category fires.
+Person / Organization / Location are *not* covered by the pattern engine —
+they must be supplied by a NER backend through the redaction engine.
+
+**Signature:**
+
+```c
+KreuzbergPatternMatch* kreuzberg_scan_text(const char* text, KreuzbergPiiCategory* categories);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `categories` | `KreuzbergPiiCategory*` | Yes | The categories |
+
+**Returns:** `KreuzbergPatternMatch*`
+
+---
+
+#### kreuzberg_apply_strategy()
+
+Apply `strategy` to `original` for `category` and return the replacement token.
+
+The optional `counter` is required for `RedactionStrategy.TokenReplace`;
+other strategies ignore it.
+
+**Signature:**
+
+```c
+const char* kreuzberg_apply_strategy(KreuzbergRedactionStrategy strategy, const char* original, KreuzbergPiiCategory category, KreuzbergTokenCounter counter);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `strategy` | `KreuzbergRedactionStrategy` | Yes | The redaction strategy |
+| `original` | `const char*` | Yes | The original |
+| `category` | `KreuzbergPiiCategory` | Yes | The pii category |
+| `counter` | `KreuzbergTokenCounter` | Yes | The token counter |
+
+**Returns:** `const char*`
+
+---
+
+#### kreuzberg_summarize()
+
+Score and return the top-N sentences from `text`, joined in original order.
+
+`language` is an ISO 639 (or locale) code used to pick a stopword list;
+pass `NULL` (or an unknown code) to fall back to English.
+`max_tokens` bounds the summary length by whitespace-separated tokens;
+`NULL` falls back to `DEFAULT_MAX_TOKENS`.
+
+**Signature:**
+
+```c
+const char** kreuzberg_summarize(const char* text, const char* language, uint32_t max_tokens);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `language` | `const char**` | No | The language |
+| `max_tokens` | `uint32_t*` | No | The max tokens |
+
+**Returns:** `const char**`
+
+---
+
+#### kreuzberg_token_count()
+
+Count whitespace-separated tokens (used for token-budget bookkeeping by
+callers).
+
+**Signature:**
+
+```c
+uint32_t kreuzberg_token_count(const char* text);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+
+**Returns:** `uint32_t`
+
+---
+
+#### kreuzberg_summarize_with_llm()
+
+Run abstractive summarisation against the configured LLM.
+
+`text` is the document content to summarise (already extracted by the
+pipeline). `max_tokens` softly bounds the requested summary length in
+natural-language tokens; `NULL` uses `DEFAULT_MAX_TOKENS`.
+
+Returns the summary string and the (optional) usage record.
+
+**Errors:**
+
+Propagates any LLM client / request error returned by
+`complete_text`.
+
+**Signature:**
+
+```c
+const char* kreuzberg_summarize_with_llm(const char* text, KreuzbergLlmConfig llm_config, uint32_t max_tokens);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `max_tokens` | `uint32_t*` | No | The max tokens |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_translate_result()
+
+Translate the extraction result in place.
+
+Populates `result.translation` with the translated `content`, optionally the
+translated `formatted_content` (when `preserve_markup = true`), and rewrites
+every chunk's `content` field. Every LLM call's usage is appended to
+`result.llm_usage`.
+
+**Signature:**
+
+```c
+void kreuzberg_translate_result(KreuzbergExtractionResult result, KreuzbergTranslationConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `config` | `KreuzbergTranslationConfig` | Yes | The configuration options |
+
+**Returns:** `void`
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_compare()
 
 Compare two extraction results and return a structured diff.
@@ -606,6 +951,154 @@ KreuzbergExtractionDiff* kreuzberg_compare(KreuzbergExtractionResult a, Kreuzber
 | `opts` | `KreuzbergDiffOptions` | Yes | The options to use |
 
 **Returns:** `KreuzbergExtractionDiff`
+
+---
+
+#### kreuzberg_extract_region_with_vlm()
+
+Extract content from a pre-cropped image region using a VLM.
+
+The caller is responsible for cropping the page image to the region's bounding
+box before calling this function. The `image_bytes` parameter must contain the
+raw bytes of the **cropped** region image (JPEG, PNG, WebP, etc.).
+
+**Returns:**
+
+Extracted Markdown text from the VLM, or an error if the VLM call fails.
+
+**Errors:**
+
+- `Ocr` if the VLM call fails or returns no content.
+- `MissingDependency` if the liter-llm client cannot
+  be initialised.
+
+**Signature:**
+
+```c
+const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const char* image_mime, KreuzbergRegionKind region_kind, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `const uint8_t*` | Yes | The image bytes |
+| `image_mime` | `const char*` | Yes | The image mime |
+| `region_kind` | `KreuzbergRegionKind` | Yes | The region kind |
+| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `custom_prompt` | `const char**` | No | The custom prompt |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_extract_region_with_vlm_usage()
+
+Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
+from the underlying VLM call.
+
+Callers that need to track token / cost data per call (for example the captioning
+post-processor, which appends every call's usage to
+`ExtractionResult.llm_usage`) should
+prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
+only care about the markdown output (PDF region splicing).
+
+**Errors:**
+
+Same as `extract_region_with_vlm`.
+
+**Signature:**
+
+```c
+const char* kreuzberg_extract_region_with_vlm_usage(const uint8_t* image_bytes, const char* image_mime, KreuzbergRegionKind region_kind, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `const uint8_t*` | Yes | The image bytes |
+| `image_mime` | `const char*` | Yes | The image mime |
+| `region_kind` | `KreuzbergRegionKind` | Yes | The region kind |
+| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `custom_prompt` | `const char**` | No | The custom prompt |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_complete_with_json_schema()
+
+Send a free-form prompt to the configured LLM with a JSON-schema response
+constraint and return the parsed JSON value plus captured usage.
+
+This is the shared helper used by LLM-backed post-processors (page
+classification, LLM-driven NER, etc.) that need structured output but do not
+want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
+
+  distinguish multiple structured outputs).
+
+- `schema` — the JSON schema the LLM is required to obey.
+- `source` — label used for the returned `LlmUsage` entry.
+
+**Errors:**
+
+Returns an error if the LLM client cannot be constructed, the request fails,
+the response contains no content, or the response is not parseable JSON.
+
+**Signature:**
+
+```c
+const char* kreuzberg_complete_with_json_schema(KreuzbergLlmConfig llm_config, const char* prompt, const char* schema_name, void* schema, const char* source);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `prompt` | `const char*` | Yes | The prompt |
+| `schema_name` | `const char*` | Yes | The schema name |
+| `schema` | `void*` | Yes | The schema |
+| `source` | `const char*` | Yes | The source |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_complete_text()
+
+Send a single user prompt to the configured LLM and return the response text
+along with the captured usage metadata.
+
+The `source` argument labels the `LlmUsage` entry that is returned so
+callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
+etc.). The helper performs a single non-streaming chat completion request.
+
+**Errors:**
+
+Returns an error if the LLM client cannot be constructed, the request fails,
+or the response does not contain assistant content.
+
+**Signature:**
+
+```c
+const char* kreuzberg_complete_text(KreuzbergLlmConfig llm_config, const char* prompt, const char* source);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `prompt` | `const char*` | Yes | The prompt |
+| `source` | `const char*` | Yes | The source |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -891,6 +1384,18 @@ Bounding box coordinates for element positioning.
 
 ---
 
+#### KreuzbergCaptioningConfig
+
+Configuration for the VLM captioning post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for the VLM call. |
+| `prompt` | `const char**` | `NULL` | Optional custom caption prompt. `NULL` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
+| `min_image_area` | `uint32_t` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+
+---
+
 #### KreuzbergCellChange
 
 A single changed cell within a table.
@@ -988,6 +1493,17 @@ Citation file metadata (RIS, PubMed, EndNote).
 | `year_range` | `KreuzbergYearRange*` | `NULL` | Year range (year range) |
 | `dois` | `const char**` | `NULL` | Dois |
 | `keywords` | `const char**` | `NULL` | Keywords |
+
+---
+
+#### KreuzbergClassificationLabel
+
+A single label + confidence pair.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `const char*` | — | Label name as configured in `PageClassificationConfig.labels`. |
+| `confidence` | `float*` | `NULL` | Backend-reported confidence in `[0.0, 1.0]`. `NULL` when the backend (e.g. an LLM prompt without explicit confidence schema) did not report one. |
 
 ---
 
@@ -1457,6 +1973,18 @@ KreuzbergDocumentStructure kreuzberg_default();
 
 ---
 
+#### KreuzbergDocumentSummary
+
+Summary of an extracted document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text` | `const char*` | — | Summary text (plain prose). |
+| `strategy` | `KreuzbergSummaryStrategy` | — | Strategy that produced this summary. |
+| `token_count` | `uint32_t*` | `NULL` | Approximate token count of the summary, when known. |
+
+---
+
 #### KreuzbergDocxAppProperties
 
 Application properties from docProps/app.xml for DOCX
@@ -1768,6 +2296,20 @@ are safe to clone and pass across language boundaries.
 
 ---
 
+#### KreuzbergEntity
+
+A single named entity detected in the extracted text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `category` | `KreuzbergEntityCategory` | — | Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.). |
+| `text` | `const char*` | — | Raw mention text exactly as it appeared in the source. |
+| `start` | `uint32_t` | — | Byte-offset span in `ExtractionResult.content` where the mention starts. |
+| `end` | `uint32_t` | — | Byte-offset span in `ExtractionResult.content` where the mention ends (exclusive). |
+| `confidence` | `float*` | `NULL` | Backend-reported confidence in `[0.0, 1.0]`. `NULL` when the backend does not expose confidence scores. |
+
+---
+
 #### KreuzbergEpubMetadata
 
 EPUB metadata (Dublin Core extensions).
@@ -1859,14 +2401,16 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `height` | `uint32_t*` | `NULL` | Image height in pixels |
 | `colorspace` | `const char**` | `NULL` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
 | `bits_per_component` | `uint32_t*` | `NULL` | Bits per color component (e.g., 8, 16) |
-| `is_mask` | `bool` | `/* serde(default) */` | Whether this image is a mask image |
+| `is_mask` | `bool` | — | Whether this image is a mask image |
 | `description` | `const char**` | `NULL` | Optional description of the image |
 | `ocr_result` | `KreuzbergExtractionResult*` | `NULL` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `bounding_box` | `KreuzbergBoundingBox*` | `/* serde(default) */` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
-| `source_path` | `const char**` | `/* serde(default) */` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `image_kind` | `KreuzbergImageKind*` | `/* serde(default) */` | Heuristic classification of what this image likely depicts. `NULL` if classification was disabled or inconclusive. |
-| `kind_confidence` | `float*` | `/* serde(default) */` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
-| `cluster_id` | `uint32_t*` | `/* serde(default) */` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `NULL` for singletons. |
+| `bounding_box` | `KreuzbergBoundingBox*` | `NULL` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `source_path` | `const char**` | `NULL` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
+| `image_kind` | `KreuzbergImageKind*` | `NULL` | Heuristic classification of what this image likely depicts. `NULL` if classification was disabled or inconclusive. |
+| `kind_confidence` | `float*` | `NULL` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
+| `cluster_id` | `uint32_t*` | `NULL` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `NULL` for singletons. |
+| `caption` | `const char**` | `NULL` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `NULL` when captioning is disabled or the VLM declined to caption. |
+| `qr_codes` | `KreuzbergQrCode**` | `NULL` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `NULL` when QR detection is disabled; an empty `Some(vec![])` when detection ran but found nothing. |
 
 ---
 
@@ -1930,6 +2474,13 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `max_archive_depth` | `uintptr_t` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `KreuzbergTreeSitterConfig*` | `NULL` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `KreuzbergStructuredExtractionConfig*` | `NULL` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `ner` | `KreuzbergNerConfig*` | `NULL` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult.entities`. |
+| `redaction` | `KreuzbergRedactionConfig*` | `NULL` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult.redaction_report`. |
+| `summarization` | `KreuzbergSummarizationConfig*` | `NULL` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult.summary`. |
+| `translation` | `KreuzbergTranslationConfig*` | `NULL` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult.translation`. |
+| `page_classification` | `KreuzbergPageClassificationConfig*` | `NULL` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
+| `captioning` | `KreuzbergCaptioningConfig*` | `NULL` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
+| `qr_codes` | `bool*` | `NULL` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancel_token` | `const char**` | `NULL` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ### Methods
@@ -2010,6 +2561,11 @@ This is the main result type returned by all extraction functions.
 | `structured_output` | `void**` | `NULL` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `code_intelligence` | `void**` | `NULL` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
 | `llm_usage` | `KreuzbergLlmUsage**` | `NULL` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `NULL` when no LLM was used. |
+| `entities` | `KreuzbergEntity**` | `NULL` | Named entities detected in `content` by the NER post-processor. `NULL` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
+| `summary` | `KreuzbergDocumentSummary*` | `NULL` | Summary of `content` produced by the summarisation post-processor. `NULL` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
+| `translation` | `KreuzbergTranslation*` | `NULL` | Translation of `content` produced by the translation post-processor. `NULL` when translation is not configured. |
+| `page_classifications` | `KreuzbergPageClassification**` | `NULL` | Per-page classifications produced by the page-classification post-processor. `NULL` when classification is not configured. |
+| `redaction_report` | `KreuzbergRedactionReport*` | `NULL` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `NULL` when redaction is not configured. |
 | `formatted_content` | `const char**` | `NULL` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `const char**` | `NULL` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
@@ -2111,6 +2667,56 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `language` | `const char**` | `NULL` | Language identifier for code blocks |
 | `code` | `const char**` | `NULL` | Raw code content for code blocks |
 | `children` | `KreuzbergFormattedBlock*` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
+
+---
+
+#### KreuzbergGlineBackend
+
+kreuzberg-gliner-rs ONNX backend wrapper.
+
+Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
+model can be safely shared across async tasks (inference is synchronous and
+serialised internally by the mutex).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `repo_id` | `const char*` | — | Repo id |
+| `model_path` | `const char*` | — | Model path |
+| `tokenizer_path` | `const char*` | — | Tokenizer path |
+
+### Methods
+
+#### kreuzberg_new()
+
+Build a backend for `repo_id` (or the default model if `NULL`).
+
+Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
+After this returns, inference is available without further I/O.
+
+**Signature:**
+
+```c
+KreuzbergGlineBackend kreuzberg_new(const char* repo_id);
+```
+
+#### kreuzberg_detect()
+
+**Signature:**
+
+```c
+KreuzbergEntity* kreuzberg_detect(const char* text, KreuzbergEntityCategory* categories);
+```
+
+#### kreuzberg_detect_with_custom()
+
+Native zero-shot multi-label inference: passes the union of `categories`
+(as label strings) and `custom_labels` to a single GLiNER inference call.
+
+**Signature:**
+
+```c
+KreuzbergEntity* kreuzberg_detect_with_custom(const char* text, KreuzbergEntityCategory* categories, const char** custom_labels);
+```
 
 ---
 
@@ -2542,6 +3148,38 @@ Link element metadata.
 
 ---
 
+#### KreuzbergLlmBackend
+
+liter-llm-backed NER backend.
+
+### Methods
+
+#### kreuzberg_new()
+
+**Signature:**
+
+```c
+KreuzbergLlmBackend kreuzberg_new(KreuzbergLlmConfig config);
+```
+
+#### kreuzberg_detect()
+
+**Signature:**
+
+```c
+KreuzbergEntity* kreuzberg_detect(const char* text, KreuzbergEntityCategory* categories);
+```
+
+#### kreuzberg_detect_with_custom()
+
+**Signature:**
+
+```c
+KreuzbergEntity* kreuzberg_detect_with_custom(const char* text, KreuzbergEntityCategory* categories, const char** custom_labels);
+```
+
+---
+
 #### KreuzbergLlmConfig
 
 Configuration for an LLM provider/model via liter-llm.
@@ -2638,6 +3276,20 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `cls_model` | `const char*` | — | Path to the classification model directory. |
 | `rec_model` | `const char*` | — | Path to the recognition model directory. |
 | `dict_file` | `const char*` | — | Path to the character dictionary file. |
+
+---
+
+#### KreuzbergNerConfig
+
+Configuration for the NER post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `backend` | `KreuzbergNerBackendKind` | `KREUZBERG_KREUZBERG_ONNX` | Backend that runs the entity detection. |
+| `categories` | `KreuzbergEntityCategory*` | `NULL` | Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty. |
+| `model` | `const char**` | `NULL` | Override the default model — only used by `NerBackendKind.Onnx`. `NULL` lets the backend pick its pinned default (`urchade/gliner_multi-v2.1` for gline-rs). |
+| `llm` | `KreuzbergLlmConfig*` | `NULL` | Optional LLM configuration — only used by `NerBackendKind.Llm`. Token usage for LLM backends is recorded in `ExtractionResult.llm_usage`. |
+| `custom_labels` | `const char**` | `NULL` | Arbitrary user-supplied entity labels for zero-shot detection. gline-rs natively supports zero-shot inference over caller-supplied labels — this is the primary value of GLiNER. The LLM backend also honours these labels by including them in the structured-output schema. Custom labels surface as `EntityCategory.Custom` in the resulting `Entity` stream. Use this when you need domain-specific entity types (e.g. `"Treatment"`, `"Product"`, `"Vessel"`) without forking GLiNER's taxonomy. |
 
 ---
 
@@ -2809,7 +3461,8 @@ OCR configuration.
 | `quality_thresholds` | `KreuzbergOcrQualityThresholds*` | `NULL` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `KreuzbergOcrPipelineConfig*` | `NULL` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `auto_rotate` | `bool` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlm_config` | `KreuzbergLlmConfig*` | `NULL` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_fallback` | `KreuzbergVlmFallbackPolicy` | `KREUZBERG_KREUZBERG_DISABLED` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy.Disabled` and `OcrConfig.pipeline` is `NULL`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy.OnLowQuality` → `[classical_stage, vlm_stage]` with the `quality_threshold` mapped onto `OcrQualityThresholds.pipeline_min_quality`. - `VlmFallbackPolicy.Always` → `[vlm_stage]` only. Requires `OcrConfig.vlm_config` to be `Some` when not `Disabled`. When `OcrConfig.pipeline` is explicitly set, this field is ignored. |
+| `vlm_config` | `KreuzbergLlmConfig*` | `NULL` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy.Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
 | `vlm_prompt` | `const char**` | `NULL` | Custom Jinja2 prompt template for VLM OCR. When `NULL`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
 | `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `void**` | `NULL` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
@@ -3177,6 +3830,30 @@ at valid UTF-8 character boundaries when using standard String methods (push_str
 
 ---
 
+#### KreuzbergPageClassification
+
+Classification result for a single page.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_number` | `uint32_t` | — | 1-indexed page number this classification belongs to. |
+| `labels` | `KreuzbergClassificationLabel*` | — | Labels assigned to the page. Single-label classification yields exactly one entry; multi-label classification yields any subset of the configured label set. |
+
+---
+
+#### KreuzbergPageClassificationConfig
+
+Configuration for the page-classification post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `prompt_template` | `const char**` | `NULL` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `NULL` lets the backend pick a sensible default. |
+| `labels` | `const char**` | — | The set of labels the classifier may emit. Must contain at least one entry. |
+| `multi_label` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for classification. |
+
+---
+
 #### KreuzbergPageConfig
 
 Page extraction and tracking configuration.
@@ -3285,6 +3962,19 @@ with character offset boundaries for chunk-to-page mapping.
 | `unit_type` | `KreuzbergPageUnitType` | — | Type of paginated unit |
 | `boundaries` | `KreuzbergPageBoundary**` | `NULL` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
 | `pages` | `KreuzbergPageInfo**` | `NULL` | Detailed per-page metadata (optional, only when needed) |
+
+---
+
+#### KreuzbergPatternMatch
+
+One detected PII span in the input text.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start` | `uintptr_t` | — | Inclusive byte-offset start of the match in the source text. |
+| `end` | `uintptr_t` | — | Exclusive byte-offset end of the match. |
+| `category` | `KreuzbergPiiCategory` | — | Category the match belongs to. |
+| `text` | `const char*` | — | Matched substring (owned copy — pattern engine returns owned data so the caller can free the original text if needed before replacement). |
 
 ---
 
@@ -3736,6 +4426,31 @@ Outlook PST archive metadata.
 
 ---
 
+#### KreuzbergQrBoundingBox
+
+Pixel-space bounding box of a QR code inside its source image.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `x` | `uint32_t` | — | X |
+| `y` | `uint32_t` | — | Y |
+| `width` | `uint32_t` | — | Width |
+| `height` | `uint32_t` | — | Height |
+
+---
+
+#### KreuzbergQrCode
+
+One QR code decoded from an extracted image.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `payload` | `const char*` | — | Decoded payload (text, URL, vCard string, …). |
+| `confidence` | `float*` | `NULL` | Detector-reported confidence in `[0.0, 1.0]`. `NULL` when the decoder does not expose confidence (the default `rqrr` backend always reports `Some` because successful decode implies high confidence). |
+| `bbox` | `KreuzbergQrBoundingBox*` | `NULL` | Bounding box of the QR code inside the source image, in pixel coordinates (`x`, `y` of the top-left corner; `width`, `height` of the rectangle). `NULL` if the decoder did not report a bounding box. |
+
+---
+
 #### KreuzbergRakeParams
 
 RAKE-specific parameters.
@@ -3771,6 +4486,143 @@ the type in their own code.
 | `detection_bbox` | `KreuzbergBBox` | — | Detection bbox that this table corresponds to (for matching). |
 | `cells` | `const char***` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `const char*` | — | Rendered markdown table. |
+
+---
+
+#### KreuzbergRedactionConfig
+
+Configuration for the redaction post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `categories` | `KreuzbergPiiCategory*` | `NULL` | Categories to redact. Empty means "every category supported by the engine." |
+| `strategy` | `KreuzbergRedactionStrategy` | `KREUZBERG_KREUZBERG_MASK` | Strategy applied to every match. |
+| `ner` | `KreuzbergNerConfig*` | `NULL` | Optional NER backend — required to redact PERSON / ORGANIZATION / LOCATION categories (the pure-Rust pattern engine only covers regex-detectable PII). |
+| `preserve_offsets` | `bool` | `true` | When `true`, chunk byte ranges are kept consistent with the rewritten content by adjusting `byte_start` / `byte_end` after replacement. When `false`, chunk byte ranges still refer to the *original* content offsets — useful when downstream consumers want to map findings back to the original document. |
+| `custom_terms` | `KreuzbergRedactionTerm*` | `NULL` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
+| `custom_patterns` | `KreuzbergRedactionPattern*` | `NULL` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
+
+### Methods
+
+#### kreuzberg_default()
+
+**Signature:**
+
+```c
+KreuzbergRedactionConfig kreuzberg_default();
+```
+
+#### kreuzberg_validate()
+
+Validate user-supplied terms and patterns at config-construction time.
+
+Compiles every `RedactionPattern.pattern` (with the case-insensitive
+inline flag where applicable) and returns the first compilation error so
+the caller can reject the config before the redaction pipeline runs.
+Pure terms (regex-escaped) cannot fail to compile, but the function
+still rejects empty values to avoid degenerate zero-length matches.
+
+**Signature:**
+
+```c
+void kreuzberg_validate();
+```
+
+---
+
+#### KreuzbergRedactionFinding
+
+One redaction event: which span was rewritten, why, and with what.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start` | `uint32_t` | — | Byte-offset start in the original (pre-redaction) `ExtractionResult.content`. |
+| `end` | `uint32_t` | — | Byte-offset end (exclusive) in the original `ExtractionResult.content`. |
+| `category` | `KreuzbergPiiCategory` | — | PII category that fired this redaction. |
+| `strategy` | `KreuzbergRedactionStrategy` | — | Strategy applied to this finding (mask, hash, token-replace, drop). |
+| `replacement_token` | `const char*` | — | String that replaced the original mention. Always present; for `Drop` the replacement is the empty string. |
+
+---
+
+#### KreuzbergRedactionPattern
+
+One user-supplied regex pattern to redact.
+
+The pattern is compiled with the Rust `regex` crate (no look-around). Case
+sensitivity is encoded in the pattern via the `(?i)` inline flag when
+`Self.case_sensitive` is `false`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `const char*` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `pattern` | `const char*` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
+| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+
+### Methods
+
+#### kreuzberg_labeled()
+
+Build a pattern with the given label (case-insensitive by default).
+
+**Signature:**
+
+```c
+KreuzbergRedactionPattern kreuzberg_labeled(const char* label, const char* pattern);
+```
+
+---
+
+#### KreuzbergRedactionReport
+
+Audit report describing what the redaction processor found and how it replaced it.
+
+The redactor returns this alongside the rewritten content so compliance, replay, and
+audit-log consumers can see exactly what fired. Offsets are relative to the *original*
+pre-redaction `content` and are intended for audit reconstruction only — the original
+bytes are dropped at the end of the pipeline.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `findings` | `KreuzbergRedactionFinding*` | — | Individual redaction findings in original-source byte order. |
+| `total_redacted` | `uint32_t` | — | Total number of redactions applied across the document. |
+
+---
+
+#### KreuzbergRedactionTerm
+
+One user-supplied literal term to redact.
+
+Matched as a regex-escaped substring (so callers do not need to escape
+metacharacters themselves). Case-insensitive by default — set
+`Self.case_sensitive` to `true` for exact byte-match semantics.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `const char*` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `value` | `const char*` | — | Literal value to match. Regex metacharacters are escaped automatically. |
+| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+
+### Methods
+
+#### kreuzberg_literal()
+
+Build a term whose label is the literal value itself (case-insensitive).
+
+**Signature:**
+
+```c
+KreuzbergRedactionTerm kreuzberg_literal(const char* value);
+```
+
+#### kreuzberg_labeled()
+
+Build a term with a custom label.
+
+**Signature:**
+
+```c
+KreuzbergRedactionTerm kreuzberg_labeled(const char* label, const char* value);
+```
 
 ---
 
@@ -3858,6 +4710,17 @@ while still supporting legitimate documents.
 ```c
 KreuzbergSecurityLimits kreuzberg_default();
 ```
+
+---
+
+#### KreuzbergSegment
+
+A text segment with its byte offset in the original document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text` | `const char*` | — | Text |
+| `byte_start` | `uintptr_t` | — | Byte start |
 
 ---
 
@@ -3992,6 +4855,18 @@ returning structured data that conforms to the schema.
 | `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
 | `prompt` | `const char**` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `NULL`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration for the extraction. |
+
+---
+
+#### KreuzbergSummarizationConfig
+
+Configuration for the summarisation post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `strategy` | `KreuzbergSummaryStrategy` | `KREUZBERG_KREUZBERG_EXTRACTIVE` | Summarisation strategy. |
+| `max_tokens` | `uint32_t*` | `NULL` | Maximum summary length in tokens. `NULL` lets the backend pick a default. |
+| `llm` | `KreuzbergLlmConfig*` | `NULL` | LLM configuration for the abstractive backend. Ignored when `strategy = Extractive`. Required when `strategy = Abstractive`. |
 
 ---
 
@@ -4161,6 +5036,33 @@ for Markdown, structural elements like headers and links.
 
 ---
 
+#### KreuzbergTokenCounter
+
+Per-category running counter for `RedactionStrategy.TokenReplace`.
+
+### Methods
+
+#### kreuzberg_new()
+
+**Signature:**
+
+```c
+KreuzbergTokenCounter kreuzberg_new();
+```
+
+#### kreuzberg_next_token()
+
+Allocate the next token for `category` and `original`. If the original
+has been seen before in this category, the same token is reused.
+
+**Signature:**
+
+```c
+const char* kreuzberg_next_token(KreuzbergPiiCategory category, const char* original);
+```
+
+---
+
 #### KreuzbergTokenReductionConfig
 
 | Field | Type | Default | Description |
@@ -4207,6 +5109,37 @@ Token reduction configuration.
 ```c
 KreuzbergTokenReductionOptions kreuzberg_default();
 ```
+
+---
+
+#### KreuzbergTranslation
+
+Translation of the extracted content.
+
+Holds the translated rendition of `ExtractionResult.content` and (when
+`preserve_markup` was requested) the translated `formatted_content`. Chunks
+are translated in place inside `ExtractionResult.chunks[*].content` rather
+than duplicated here.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `target_lang` | `const char*` | — | BCP-47 language tag the translation was produced into (e.g. `"de"`, `"fr-CA"`). |
+| `source_lang` | `const char**` | `NULL` | BCP-47 source language. `NULL` when the translation backend was asked to detect. |
+| `content` | `const char*` | — | Translated plain-text body. Matches the shape of `ExtractionResult.content`. |
+| `formatted_content` | `const char**` | `NULL` | Translated markup body (Markdown / HTML / etc.) when `preserve_markup` was enabled on the config. `NULL` otherwise. |
+
+---
+
+#### KreuzbergTranslationConfig
+
+Configuration for the translation post-processor.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `target_lang` | `const char*` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
+| `source_lang` | `const char**` | `NULL` | Optional explicit source language. `NULL` asks the backend to auto-detect. |
+| `preserve_markup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for translation. |
 
 ---
 
@@ -4590,6 +5523,50 @@ YAML).
 
 ---
 
+#### KreuzbergNerBackendKind
+
+NER backend selector.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_ONNX` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download.hf_download`. |
+| `KREUZBERG_LLM` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
+
+---
+
+#### KreuzbergVlmFallbackPolicy
+
+Policy controlling when VLM (Vision Language Model) OCR is used as a fallback.
+
+This knob is syntactic sugar over the explicit `OcrPipelineConfig` stage
+ordering. When `vlm_fallback` is set and `pipeline` is `NULL`, an equivalent
+pipeline is synthesised at extraction time:
+
+- `VlmFallbackPolicy.Disabled` — no synthesis; single-backend mode (default).
+- `VlmFallbackPolicy.OnLowQuality` — tries the classical backend first; if the
+  result scores below `quality_threshold`, tries VLM.
+
+- `VlmFallbackPolicy.Always` — skips the classical backend and sends every page
+  to the VLM.
+
+When `OcrConfig.pipeline` is explicitly set, `vlm_fallback` is ignored — the
+explicit pipeline takes precedence.
+
+**Errors:**
+
+Both `OnLowQuality` and `Always` require `OcrConfig.vlm_config` to be `Some`.
+Constructing an `OcrConfig` with one of these policies but no `vlm_config` is
+detected by `OcrConfig.validate` and will surface as a
+`Validation` error at extraction time, not a panic.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_DISABLED` | No VLM fallback (default). Behaves identically to the pre-policy single-backend mode. |
+| `KREUZBERG_ON_LOW_QUALITY` | Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the page to the VLM. `quality_threshold` is in the `[0.0, 1.0]` range produced by `calculate_quality_score`. A value of `0.5` is a reasonable starting point; calibrate with the Stage 0 benchmark harness. — Fields: `quality_threshold`: `double` |
+| `KREUZBERG_ALWAYS` | Skip the classical OCR backend entirely. Every page is sent to the VLM. |
+
+---
+
 #### KreuzbergChunkerType
 
 Type of text chunker to use.
@@ -4865,6 +5842,29 @@ Types of inline text annotations.
 
 ---
 
+#### KreuzbergEntityCategory
+
+Standard entity categories produced by built-in NER backends.
+
+The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
+schemas) flow through without losing fidelity to the consumer.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_PERSON` | Person |
+| `KREUZBERG_ORGANIZATION` | Organization |
+| `KREUZBERG_LOCATION` | Location |
+| `KREUZBERG_DATE` | Date |
+| `KREUZBERG_TIME` | Time |
+| `KREUZBERG_MONEY` | Money |
+| `KREUZBERG_PERCENT` | Percent |
+| `KREUZBERG_EMAIL` | Email |
+| `KREUZBERG_PHONE` | Phone |
+| `KREUZBERG_URL` | Url |
+| `KREUZBERG_CUSTOM` | Custom — Fields: `0`: `const char*` |
+
+---
+
 #### KreuzbergExtractionMethod
 
 How the extracted text was produced.
@@ -5090,6 +6090,41 @@ Distinguishes between different types of "pages" (PDF pages, presentation slides
 
 ---
 
+#### KreuzbergRedactionStrategy
+
+Strategy applied when a PII match is rewritten.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_MASK` | Replace the matched span with a fixed mask token (default `"[REDACTED]"`). |
+| `KREUZBERG_HASH` | Replace with a SHA-256 hash of the original value (truncated to 16 hex chars). Lets downstream consumers do equality joins without recovering the source. |
+| `KREUZBERG_TOKEN_REPLACE` | Replace with a per-category running token (`"[PERSON_1]"`, `"[PERSON_2]"`, …) so the same person referenced twice gets the same token within the document. |
+| `KREUZBERG_DROP` | Delete the matched span entirely. |
+
+---
+
+#### KreuzbergPiiCategory
+
+PII categories the pattern engine recognises.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_EMAIL` | Email |
+| `KREUZBERG_PHONE` | Phone |
+| `KREUZBERG_SSN` | Ssn |
+| `KREUZBERG_CREDIT_CARD` | Credit card |
+| `KREUZBERG_POSTAL_CODE` | Postal code |
+| `KREUZBERG_IP_ADDRESS` | Ip address |
+| `KREUZBERG_IBAN` | Iban |
+| `KREUZBERG_SWIFT_BIC` | Swift bic |
+| `KREUZBERG_DATE_OF_BIRTH` | Date of birth |
+| `KREUZBERG_PERSON` | Person name, surfaced by the optional NER backend. |
+| `KREUZBERG_ORGANIZATION` | Organization name, surfaced by the optional NER backend. |
+| `KREUZBERG_LOCATION` | Location, surfaced by the optional NER backend. |
+| `KREUZBERG_CUSTOM` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig.custom_terms` or `RedactionConfig.custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `const char*` |
+
+---
+
 #### KreuzbergDiffLine
 
 A single line in a unified-diff hunk.
@@ -5133,6 +6168,17 @@ Best-effort document location for a revision.
 
 ---
 
+#### KreuzbergSummaryStrategy
+
+Summarisation strategy.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_EXTRACTIVE` | Pure-Rust extractive summary (TextRank over the chunk graph). Deterministic, fast, no external service required. |
+| `KREUZBERG_ABSTRACTIVE` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult.llm_usage`. |
+
+---
+
 #### KreuzbergUriKind
 
 Semantic classification of an extracted URI.
@@ -5145,6 +6191,23 @@ Semantic classification of an extracted URI.
 | `KREUZBERG_CITATION` | A citation or bibliographic reference (DOI, academic ref). |
 | `KREUZBERG_REFERENCE` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `KREUZBERG_EMAIL` | An email address (`mailto:` link or bare email). |
+
+---
+
+#### KreuzbergRegionKind
+
+Classification of a detected layout region that warrants VLM extraction.
+
+Each variant maps to a specific prompt optimised for that content type.
+The mapping is intentionally narrow — only region kinds for which VLM
+extraction provides a clear quality benefit over classical suppression.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_FIGURE` | A figure, diagram, chart, or image region. VLM prompt: describe the diagram / chart, including axis labels, legend entries, and any embedded text. |
+| `KREUZBERG_DENSE_TABLE` | A densely formatted or complex table that classical extraction garbles. VLM prompt: extract the table as GitHub-Flavoured Markdown. |
+| `KREUZBERG_COMPLEX_LAYOUT` | A region whose layout the classical pipeline cannot handle (multi-column insets, heavily annotated forms, mixed text+diagram). VLM prompt: extract all text and structure as markdown, preserving reading order. |
+| `KREUZBERG_CAPTION` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage.caption`. |
 
 ---
 
