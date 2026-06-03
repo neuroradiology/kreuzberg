@@ -422,7 +422,7 @@ fn make_ner_backend(
             }
         }
         NerBackendKind::Llm => {
-            #[cfg(feature = "ner-llm")]
+            #[cfg(all(feature = "ner-llm", not(target_os = "windows")))]
             {
                 let llm = config.llm.clone().ok_or_else(|| {
                     crate::KreuzbergError::validation("Llm NER backend selected but NerConfig.llm is None".to_string())
@@ -430,7 +430,7 @@ fn make_ner_backend(
                 let backend = crate::text::ner::llm::LlmBackend::new(llm);
                 Ok(std::sync::Arc::new(backend))
             }
-            #[cfg(not(feature = "ner-llm"))]
+            #[cfg(not(all(feature = "ner-llm", not(target_os = "windows"))))]
             {
                 Err(crate::KreuzbergError::MissingDependency(
                     "ner-llm feature is not enabled — rebuild kreuzberg with --features ner-llm".to_string(),
