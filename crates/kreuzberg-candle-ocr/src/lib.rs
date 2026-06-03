@@ -6,6 +6,7 @@
 //!
 //! - `trocr` — Microsoft TrOCR (printed and handwritten variants)
 //! - `paddleocr-vl` — PaddleOCR-VL 0.9B (multi-task: OCR, tables, formulas, charts)
+//! - `got-ocr` — GOT-OCR 2.0 (structured document OCR with markdown output)
 //!
 //! ## Device acceleration
 //!
