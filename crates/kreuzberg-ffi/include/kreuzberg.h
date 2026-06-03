@@ -15329,7 +15329,7 @@ uintptr_t kreuzberg_list_validators_len(void);
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-int32_t kreuzberg_classify_pages(const KREUZBERGExtractionResult *result,
+int32_t kreuzberg_classify_pages(KREUZBERGExtractionResult *result,
                                  const KREUZBERGPageClassificationConfig *config);
 
 /**
@@ -15391,7 +15391,7 @@ uintptr_t kreuzberg_known_models_len(void);
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-int32_t kreuzberg_redact(const KREUZBERGExtractionResult *result,
+int32_t kreuzberg_redact(KREUZBERGExtractionResult *result,
                          const KREUZBERGRedactionConfig *config);
 
 /**
@@ -15443,7 +15443,7 @@ uintptr_t kreuzberg_scan_text_len(const char *_text,
 char *kreuzberg_apply_strategy(int32_t strategy,
                                const char *original,
                                const KREUZBERGPiiCategory *category,
-                               const KREUZBERGTokenCounter *counter);
+                               KREUZBERGTokenCounter *counter);
 
 /**
  * Return the byte length of the C string most recently returned by `kreuzberg_apply_strategy` on this
@@ -15528,7 +15528,7 @@ uintptr_t kreuzberg_summarize_with_llm_len(const char *_text,
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-int32_t kreuzberg_translate_result(const KREUZBERGExtractionResult *result,
+int32_t kreuzberg_translate_result(KREUZBERGExtractionResult *result,
                                    const KREUZBERGTranslationConfig *config);
 
 /**
