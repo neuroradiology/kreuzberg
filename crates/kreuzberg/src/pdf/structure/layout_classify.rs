@@ -429,9 +429,12 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             para.is_formula = true;
             para.heading_level = None;
         }
-        LayoutHintClass::ListItem => {
-            para.is_list_item = true;
-        }
+        LayoutHintClass::ListItem
+            // Only apply list-item styling if confidence is high. On OCR-rendered pages,
+            // low-confidence list classifications can drop marker content (category E).
+            if hint.confidence >= 0.8 => {
+                para.is_list_item = true;
+            }
         LayoutHintClass::PageHeader | LayoutHintClass::PageFooter => {
             // Only mark as furniture if confidence is high. On OCR-rendered pages,
             // furniture detection is unreliable and can drop valid body content
@@ -1133,6 +1136,72 @@ mod tests {
         assert!(
             !para.is_page_furniture,
             "Low-confidence PageFooter (0.6) should NOT mark paragraph as furniture"
+        );
+    }
+
+    #[test]
+    fn test_list_item_requires_high_confidence() {
+        // Low-confidence ListItem hints should NOT mark paragraphs as list items
+        // (fixes #936 category E: ListItem misclassification, marker digit loss).
+        let mut para = PdfParagraph {
+            text: "1. First item in list".to_string(),
+            lines: vec![],
+            dominant_font_size: 12.0,
+            heading_level: None,
+            is_bold: false,
+            is_list_item: false,
+            is_code_block: false,
+            is_formula: false,
+            is_page_furniture: false,
+            layout_class: None,
+            caption_for: None,
+            block_bbox: None,
+            word_count: 4,
+        };
+
+        // Test 1: confidence < 0.8 should NOT mark as list item
+        let low_conf_hint = LayoutHint {
+            class_name: LayoutHintClass::ListItem,
+            confidence: 0.7,
+            left: 0.0,
+            bottom: 0.0,
+            right: 100.0,
+            top: 50.0,
+        };
+        apply_hint_to_paragraph(&mut para, &low_conf_hint, None);
+        assert!(
+            !para.is_list_item,
+            "Low-confidence ListItem (0.7) should NOT mark paragraph as list item"
+        );
+
+        // Test 2: confidence >= 0.8 should mark as list item
+        let mut para2 = PdfParagraph {
+            text: "1. First item in list".to_string(),
+            lines: vec![],
+            dominant_font_size: 12.0,
+            heading_level: None,
+            is_bold: false,
+            is_list_item: false,
+            is_code_block: false,
+            is_formula: false,
+            is_page_furniture: false,
+            layout_class: None,
+            caption_for: None,
+            block_bbox: None,
+            word_count: 4,
+        };
+        let high_conf_hint = LayoutHint {
+            class_name: LayoutHintClass::ListItem,
+            confidence: 0.85,
+            left: 0.0,
+            bottom: 0.0,
+            right: 100.0,
+            top: 50.0,
+        };
+        apply_hint_to_paragraph(&mut para2, &high_conf_hint, None);
+        assert!(
+            para2.is_list_item,
+            "High-confidence ListItem (0.85) should mark paragraph as list item"
         );
     }
 }
