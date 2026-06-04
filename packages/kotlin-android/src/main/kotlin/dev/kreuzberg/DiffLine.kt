@@ -56,7 +56,10 @@ private class DiffLineDeserializer : com.fasterxml.jackson.databind.deser.std.St
             "added" -> DiffLine.Added(ctx.readTreeAsValue<String>(payload, String::class.java))
             "removed" -> DiffLine.Removed(ctx.readTreeAsValue<String>(payload, String::class.java))
             else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
-                parser, "Unknown DiffLine tag", tag, DiffLine::class.java,
+                parser,
+                "Unknown DiffLine tag",
+                tag,
+                DiffLine::class.java,
             )
         }
     }
@@ -70,23 +73,31 @@ private class DiffLineSerializer : com.fasterxml.jackson.databind.ser.std.StdSer
         provider: com.fasterxml.jackson.databind.SerializerProvider,
     ) {
         @Suppress("UNCHECKED_CAST")
-        val mapper = (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper) ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
+        val mapper =
+            (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper)
+                ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
         val node: com.fasterxml.jackson.databind.node.ObjectNode = when (value) {
             is DiffLine.Context -> {
                 @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value.value) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                    value.value
+                ) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("kind", "context")
                 n
             }
             is DiffLine.Added -> {
                 @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value.value) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                    value.value
+                ) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("kind", "added")
                 n
             }
             is DiffLine.Removed -> {
                 @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value.value) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                    value.value
+                ) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("kind", "removed")
                 n
             }

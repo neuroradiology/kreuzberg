@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **feat(core)**: expose `LlmBackend` (gated on `ner-llm`, non-Windows, non-WASM) and `TokenCounter` (gated on `redaction`) at crate root for binding re-use.
+- **chore(alef)**: pin to alef v0.22.28 (covers v0.22.20-28 cumulative fixes: scaffold/swift Package.swift binaryTarget, wasm cfg-feature serde-skip, scaffold/ruby rb_sys cargo pin, napi std::result::Result qualification, swift e2e import dedup, dart/frb async-injection multi-line guard).
+- **feat(windows)**: re-include liter-llm in Windows FFI feature set — VLM extraction now compiles on Windows after upstream aws-lc-sys MSVC fix.
 
 ### Fixed
 

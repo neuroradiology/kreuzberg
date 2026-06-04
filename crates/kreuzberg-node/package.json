@@ -1,52 +1,62 @@
 {
-  "name": "@kreuzberg/node",
-  "version": "5.0.0-rc.3",
-  "description": "High-performance document intelligence library",
-  "license": "Elastic-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzberg.git"
-  },
-  "main": "index.js",
-  "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "require": "./index.js",
-      "default": "./index.js"
-    }
-  },
-  "files": ["index.js", "index.d.ts", "*.node"],
-  "optionalDependencies": {
-    "@kreuzberg/node-linux-x64-gnu": "5.0.0-rc.3",
-    "@kreuzberg/node-linux-arm64-gnu": "5.0.0-rc.3",
-    "@kreuzberg/node-linux-x64-musl": "5.0.0-rc.3",
-    "@kreuzberg/node-linux-arm64-musl": "5.0.0-rc.3",
-    "@kreuzberg/node-darwin-x64": "5.0.0-rc.3",
-    "@kreuzberg/node-darwin-arm64": "5.0.0-rc.3",
-    "@kreuzberg/node-win32-x64-msvc": "5.0.0-rc.3",
-    "@kreuzberg/node-win32-arm64-msvc": "5.0.0-rc.3"
-  },
-  "napi": {
-    "packageName": "@kreuzberg/node",
-    "binaryName": "kreuzberg-node",
-    "targets": [
-      "x86_64-unknown-linux-gnu",
-      "aarch64-unknown-linux-gnu",
-      "x86_64-unknown-linux-musl",
-      "aarch64-unknown-linux-musl",
-      "x86_64-apple-darwin",
-      "aarch64-apple-darwin",
-      "x86_64-pc-windows-msvc",
-      "aarch64-pc-windows-msvc"
-    ]
-  },
-  "scripts": {
-    "build": "napi build --platform --release",
-    "artifacts": "napi artifacts",
-    "prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
-  },
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" },
-  "devDependencies": { "@napi-rs/cli": "^3.6.2" }
+	"name": "@kreuzberg/node",
+	"version": "5.0.0-rc.3",
+	"description": "High-performance document intelligence library",
+	"license": "Elastic-2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kreuzberg-dev/kreuzberg.git"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts",
+		"*.node"
+	],
+	"main": "index.js",
+	"types": "index.d.ts",
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"require": "./index.js",
+			"default": "./index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "napi build --platform --release",
+		"artifacts": "napi artifacts",
+		"prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
+	},
+	"devDependencies": {
+		"@napi-rs/cli": "^3.6.2"
+	},
+	"optionalDependencies": {
+		"@kreuzberg/node-darwin-arm64": "5.0.0-rc.3",
+		"@kreuzberg/node-darwin-x64": "5.0.0-rc.3",
+		"@kreuzberg/node-linux-arm64-gnu": "5.0.0-rc.3",
+		"@kreuzberg/node-linux-arm64-musl": "5.0.0-rc.3",
+		"@kreuzberg/node-linux-x64-gnu": "5.0.0-rc.3",
+		"@kreuzberg/node-linux-x64-musl": "5.0.0-rc.3",
+		"@kreuzberg/node-win32-arm64-msvc": "5.0.0-rc.3",
+		"@kreuzberg/node-win32-x64-msvc": "5.0.0-rc.3"
+	},
+	"napi": {
+		"binaryName": "kreuzberg-node",
+		"packageName": "@kreuzberg/node",
+		"targets": [
+			"x86_64-unknown-linux-gnu",
+			"aarch64-unknown-linux-gnu",
+			"x86_64-unknown-linux-musl",
+			"aarch64-unknown-linux-musl",
+			"x86_64-apple-darwin",
+			"aarch64-apple-darwin",
+			"x86_64-pc-windows-msvc",
+			"aarch64-pc-windows-msvc"
+		]
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

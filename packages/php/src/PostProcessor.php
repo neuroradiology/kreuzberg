@@ -12,7 +12,6 @@ namespace Kreuzberg;
  */
 interface PostProcessor
 {
-
     /**
      * Process an extraction result.
      *

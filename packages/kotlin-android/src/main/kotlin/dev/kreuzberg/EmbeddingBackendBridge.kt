@@ -5,18 +5,18 @@ package dev.kreuzberg
 object EmbeddingBackendBridge {
     private val registered = mutableMapOf<String, IEmbeddingBackend>()
 
-    fun register(impl: IEmbeddingBackend): Unit {
+    fun register(impl: IEmbeddingBackend) {
         val name = impl.name()
         registered[name] = impl
         KreuzbergBridge.nativeRegisterEmbeddingBackend(impl)
     }
 
-    fun unregister(name: String): Unit {
+    fun unregister(name: String) {
         registered.remove(name)
         KreuzbergBridge.nativeUnregisterEmbeddingBackend(name)
     }
 
-    fun clearAll(): Unit {
+    fun clearAll() {
         registered.clear()
         KreuzbergBridge.nativeClearEmbeddingBackends()
     }

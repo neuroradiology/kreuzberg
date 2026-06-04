@@ -27,20 +27,40 @@ class LlmBackend internal constructor(internal val handle: Long) : AutoCloseable
 
     suspend fun detect(text: String, categories: List<EntityCategory>): List<Entity> {
         return withContext(Dispatchers.IO) {
-            val responseJson = KreuzbergBridge.nativeLlmBackendDetect(handle, MAPPER.writeValueAsString(mapOf("text" to text, "categories" to categories)))
+            val responseJson = KreuzbergBridge.nativeLlmBackendDetect(
+                handle,
+                MAPPER.writeValueAsString(
+                    mapOf(
+                        "text" to text,
+                "categories" to categories
+                    )
+                )
+            )
             MAPPER.readValue(responseJson, object : TypeReference<List<Entity>>() {})
         }
     }
 
     suspend fun detectWithCustom(text: String, categories: List<EntityCategory>, customLabels: List<String>): List<Entity> {
         return withContext(Dispatchers.IO) {
-            val responseJson = KreuzbergBridge.nativeLlmBackendDetectWithCustom(handle, MAPPER.writeValueAsString(mapOf("text" to text, "categories" to categories, "customLabels" to customLabels)))
+            val responseJson = KreuzbergBridge.nativeLlmBackendDetectWithCustom(
+                handle,
+                MAPPER.writeValueAsString(
+                    mapOf(
+                        "text" to text,
+                "categories" to categories,
+                        "customLabels" to customLabels
+                    )
+                )
+            )
             MAPPER.readValue(responseJson, object : TypeReference<List<Entity>>() {})
         }
     }
 
-    override fun close() { KreuzbergBridge.nativeFreeLlmBackend(handle) }
+    override fun close() {
+        KreuzbergBridge.nativeFreeLlmBackend(handle)
+    }
 }
+
 @Suppress("TooManyFunctions")
 class TokenCounter internal constructor(internal val handle: Long) : AutoCloseable {
     companion object {
@@ -53,8 +73,18 @@ class TokenCounter internal constructor(internal val handle: Long) : AutoCloseab
     // Allocate the next token for `category` and `original`. If the original
     // has been seen before in this category, the same token is reused.
     fun nextToken(category: PiiCategory, original: String): String {
-        return KreuzbergBridge.nativeTokenCounterNextToken(handle, MAPPER.writeValueAsString(mapOf("category" to category, "original" to original)))
+        return KreuzbergBridge.nativeTokenCounterNextToken(
+            handle,
+            MAPPER.writeValueAsString(
+                mapOf(
+                    "category" to category,
+            "original" to original
+                )
+            )
+        )
     }
 
-    override fun close() { KreuzbergBridge.nativeFreeTokenCounter(handle) }
+    override fun close() {
+        KreuzbergBridge.nativeFreeTokenCounter(handle)
+    }
 }
