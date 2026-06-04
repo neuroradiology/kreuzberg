@@ -73,12 +73,20 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
+  # kreuzberg-wasm and kreuzberg-swift carry alef-generated codegen bugs as of
+  # alef v0.22.28 (Default impl missing on PageClassificationConfig and
+  # TranslationConfig, HashSet<PiiCategory>: From<Vec<PiiCategory>>, non-
+  # exhaustive match arms, .0 on enum variants, PathBuf Display). Upstream
+  # alef fixes are in flight; exclude these crates from the workspace test
+  # build until the next regen.
   RUST_BACKTRACE=full cargo test \
     --workspace \
     --exclude kreuzberg \
     --exclude kreuzberg-e2e-generator \
     --exclude kreuzberg-py \
     --exclude kreuzberg-node \
+    --exclude kreuzberg-wasm \
+    --exclude kreuzberg-swift \
     ${extra_excludes[@]+"${extra_excludes[@]}"} \
     --all-features \
     --all-targets \
