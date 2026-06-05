@@ -4,7 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "crates/**"
+      - "crates/kreuzberg/**"
+      - "crates/kreuzberg-ffi/**"
+      - "crates/kreuzberg-dart/**"
+      - "crates/kreuzberg-swift/**"
+      - "crates/kreuzberg-jni/**"
       - "packages/dart/**"
       - "packages/swift/**"
       - "packages/kotlin-android/**"
@@ -12,7 +16,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "crates/**"
+      - "crates/kreuzberg/**"
+      - "crates/kreuzberg-ffi/**"
+      - "crates/kreuzberg-dart/**"
+      - "crates/kreuzberg-swift/**"
+      - "crates/kreuzberg-jni/**"
       - "packages/dart/**"
       - "packages/swift/**"
       - "packages/kotlin-android/**"
