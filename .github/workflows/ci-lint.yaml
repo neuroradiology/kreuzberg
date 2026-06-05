@@ -3,8 +3,36 @@ name: CI Lint
 on:
   push:
     branches: [main]
+    paths:
+      - "crates/**"
+      - "packages/**"
+      - "e2e/**"
+      - "tools/**"
+      - "docs/**"
+      - "*.toml"
+      - "*.yaml"
+      - "*.yml"
+      - "*.md"
+      - ".github/**"
+      - "Taskfile.yml"
+      - "alef.toml"
+      - "pyproject.toml"
   pull_request:
     branches: [main]
+    paths:
+      - "crates/**"
+      - "packages/**"
+      - "e2e/**"
+      - "tools/**"
+      - "docs/**"
+      - "*.toml"
+      - "*.yaml"
+      - "*.yml"
+      - "*.md"
+      - ".github/**"
+      - "Taskfile.yml"
+      - "alef.toml"
+      - "pyproject.toml"
   workflow_dispatch:
 
 concurrency:
