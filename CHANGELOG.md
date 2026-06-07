@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ci**: override `ImageOS` environment variable in Elixir NIF build step to work around `erlef/setup-beam` hardcoded OS allowlist. GitHub's new `ubuntu-24.04-arm` runner sets `ImageOS=ubuntu24-arm64`, but the action only recognizes `ubuntu24`. Explicit override allows the step to complete on ARM runners.
+
 - **python**: fix maturin sdist build failure by switching `kreuzberg-py` to workspace-inherited version. Hardcoded version `"5.0.0-rc.5"` prevented maturin from resolving workspace member `kreuzberg-tesseract` during vendoring; workspace inheritance ensures consistent version resolution across all workspace crates.
 
 - **java**: exclude alef-generated sources from CPD (Copy-Paste Detector) analysis in Maven PMD. Alef's template-based polyglot code generation naturally produces duplications across record types (builders, getters, factory methods); these are structural artifacts of generation and not maintainability issues. Only hand-written code under `src/main/java/` is now subject to CPD enforcement.

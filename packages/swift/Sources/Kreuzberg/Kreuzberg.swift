@@ -6143,7 +6143,7 @@ public enum HtmlTheme: String, Codable, Sendable, Hashable {
     /// Sensible defaults: system font stack, neutral colours, readable line
     /// measure. CSS custom properties (`--kb-*`) are all defined so user CSS
     /// can override individual values.
-    case `default`
+    case default_ = "default"
     /// GitHub Markdown-inspired palette and spacing.
     case gitHub = "github"
     /// Dark background, light text.
@@ -6661,7 +6661,7 @@ public enum InlineType: String, Codable, Sendable, Hashable {
     case strong
     case emphasis
     case highlight
-    case `subscript`
+    case subscript_ = "subscript"
     case superscript
     case insert
     case delete
@@ -6965,7 +6965,7 @@ public enum AnnotationKind: Codable, Sendable, Hashable {
     case underline
     case strikethrough
     case code
-    case `subscript`
+    case subscript_
     case superscript
     case link(url: String, title: String?)
     /// Highlighted text (PDF highlights, HTML `<mark>`).
@@ -7000,7 +7000,7 @@ public enum AnnotationKind: Codable, Sendable, Hashable {
         case "code":
             self = .code
         case "subscript":
-            self = .`subscript`
+            self = .subscript_
         case "superscript":
             self = .superscript
         case "link":
@@ -7035,7 +7035,7 @@ public enum AnnotationKind: Codable, Sendable, Hashable {
             try container.encode("strikethrough", forKey: .annotation_type)
         case .code:
             try container.encode("code", forKey: .annotation_type)
-        case .`subscript`:
+        case .subscript_:
             try container.encode("subscript", forKey: .annotation_type)
         case .superscript:
             try container.encode("superscript", forKey: .annotation_type)
@@ -7268,7 +7268,7 @@ public enum LinkType: String, Codable, Sendable, Hashable {
     /// Anchor link (#section)
     case anchor
     /// Internal link (same domain)
-    case `internal`
+    case internal_ = "internal"
     /// External link (different domain)
     case external
     /// Email link (mailto:)
@@ -8833,8 +8833,9 @@ public func layoutClassFromJson(_ json: String) throws -> LayoutClass {
 /// println!("Content: {}", result.content);
 /// ```
 public func extractFileSync(path: String, mimeType: String? = nil, config: ExtractionConfig) throws -> ExtractionResult {
+        let _rb_path = RustString(path)
         let _rb_mimeType = mimeType.map { RustString($0) }
-    return try RustBridge.extractFileSync(path, _rb_mimeType, config)
+    return try RustBridge.extractFileSync(_rb_path, _rb_mimeType, config)
 }
 /// Synchronous wrapper for `extract_bytes`.
 ///
@@ -9257,7 +9258,7 @@ public func summarize(text: String, language: String? = nil, maxTokens: UInt32? 
 }
 /// Count whitespace-separated tokens (used for token-budget bookkeeping by
 /// callers).
-public func tokenCount(text: String) -> UInt32 {
+public func tokenCount(text: String) -> Int {
         let _rb_text = RustString(text)
     return RustBridge.tokenCount(_rb_text)
 }
@@ -9352,7 +9353,7 @@ public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionK
     return try await Task.detached(priority: .userInitiated) {
         let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
         let _rb_imageMime = RustString(imageMime)
-        let _rb_regionKind = try String(data: JSONEncoder().encode(regionKind), encoding: .utf8) ?? "null"
+        let _rb_regionKind = RustString(try String(data: JSONEncoder().encode(regionKind), encoding: .utf8) ?? "null")
         let _rb_llmConfig = try llmConfig.intoRust()
         let _rb_customPrompt = customPrompt.map { RustString($0) }
         let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, _rb_imageMime, _rb_regionKind, _rb_llmConfig, _rb_customPrompt)
@@ -9393,12 +9394,12 @@ public func detectMimeType(path: String, checkExists: Bool) throws -> String {
         let _rb_path = RustString(path)
     return try RustBridge.detectMimeType(_rb_path, checkExists).toString()
 }
-public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Float]] {
+public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Int]] {
     return try await Task.detached(priority: .userInitiated) {
         let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
         let _rb_result = try RustBridge.embedTextsAsync(_rb_texts, config).toString()
         let _rb_data = _rb_result.data(using: .utf8) ?? Data()
-        return try JSONDecoder().decode([[Float]].self, from: _rb_data)
+        return try JSONDecoder().decode([[Int]].self, from: _rb_data)
     }.value
 }
 

@@ -1121,6 +1121,8 @@ jobs:
         with:
           elixir-version: "1.17"
           otp-version: "27"
+        env:
+          ImageOS: ubuntu24
 
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
