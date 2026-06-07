@@ -37,22 +37,34 @@ use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::collections::HashMap;
 
+/// Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StructuredDataResult {
+    /// The extracted text content, formatted for readability.
     pub content: String,
+    /// The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`).
     pub format: Cow<'static, str>,
+    /// Key-value metadata extracted from recognized text fields.
     pub metadata: HashMap<String, String>,
+    /// JSON paths of fields that were classified as text-bearing.
     pub text_fields: Vec<String>,
 }
 
+/// Configuration options for JSON extraction behaviour.
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonExtractionConfig {
+    /// When `true`, a JSON schema summary is generated and stored in metadata.
     pub extract_schema: bool,
+    /// Maximum object/array nesting depth before extraction stops recursing.
     pub max_depth: usize,
+    /// Maximum number of array items to process per array node.
     pub array_item_limit: usize,
+    /// When `true`, field values are annotated with their JSON type.
     pub include_type_info: bool,
+    /// When `true`, nested objects are flattened into dot-separated key paths.
     pub flatten_nested_objects: bool,
+    /// Additional field-name patterns (exact match, case-insensitive) treated as text fields.
     pub custom_text_field_patterns: Vec<String>,
 }
 

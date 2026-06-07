@@ -80,34 +80,77 @@ impl Default for SecurityLimits {
 pub enum SecurityError {
     /// Potential ZIP bomb detected
     ZipBombDetected {
+        /// Compressed size in bytes.
         compressed_size: u64,
+        /// Uncompressed size in bytes.
         uncompressed_size: u64,
+        /// Observed compression ratio (uncompressed / compressed).
         ratio: f64,
     },
 
     /// Archive exceeds maximum size
-    ArchiveTooLarge { size: u64, max: usize },
+    ArchiveTooLarge {
+        /// Total uncompressed size in bytes.
+        size: u64,
+        /// Configured maximum in bytes.
+        max: usize,
+    },
 
     /// Archive contains too many files
-    TooManyFiles { count: usize, max: usize },
+    TooManyFiles {
+        /// Number of files found in the archive.
+        count: usize,
+        /// Configured maximum file count.
+        max: usize,
+    },
 
     /// Nesting too deep
-    NestingTooDeep { depth: usize, max: usize },
+    NestingTooDeep {
+        /// Current nesting depth reached.
+        depth: usize,
+        /// Configured maximum depth.
+        max: usize,
+    },
 
     /// Content exceeds maximum size
-    ContentTooLarge { size: usize, max: usize },
+    ContentTooLarge {
+        /// Accumulated content size in bytes.
+        size: usize,
+        /// Configured maximum in bytes.
+        max: usize,
+    },
 
     /// Entity/string too long
-    EntityTooLong { length: usize, max: usize },
+    EntityTooLong {
+        /// Length of the offending entity in bytes.
+        length: usize,
+        /// Configured maximum entity length in bytes.
+        max: usize,
+    },
 
     /// Too many iterations
-    TooManyIterations { count: usize, max: usize },
+    TooManyIterations {
+        /// Current iteration count.
+        count: usize,
+        /// Configured maximum iteration count.
+        max: usize,
+    },
 
     /// XML depth exceeded
-    XmlDepthExceeded { depth: usize, max: usize },
+    XmlDepthExceeded {
+        /// Current XML element depth.
+        depth: usize,
+        /// Configured maximum XML depth.
+        max: usize,
+    },
 
     /// Too many table cells
-    TooManyCells { cells: usize, max: usize },
+    TooManyCells {
+        /// Accumulated cell count.
+        cells: usize,
+        /// Configured maximum cell count.
+        max: usize,
+    },
 }
 
 impl std::fmt::Display for SecurityError {
