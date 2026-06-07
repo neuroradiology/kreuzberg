@@ -1,3 +1,5 @@
+package dev.kreuzberg.benchmark;
+
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.ocr.TesseractOCRConfig;
@@ -96,7 +98,7 @@ public final class TikaExtract {
             if (debug) {
                 debugLog("Starting extraction", "");
             }
-            data = extractFile(path.toFile(), ocrEnabled, debug);
+            data = extractFile(path.toFile(), ocrEnabled);
             if (debug) {
                 debugLog("Extraction completed", "");
             }
@@ -133,7 +135,7 @@ public final class TikaExtract {
             try {
                 Path path = Path.of(filePath);
                 long start = System.nanoTime();
-                ExtractionData data = extractFile(path.toFile(), ocrEnabled, debug);
+                ExtractionData data = extractFile(path.toFile(), ocrEnabled);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
 
                 if (!first) {
@@ -158,7 +160,6 @@ public final class TikaExtract {
             }
         }
 
-        double totalBatchMs = (System.nanoTime() - batchStart) / NANOS_IN_MILLISECOND;
         jsonArray.append(']');
 
         if (first) {
@@ -186,7 +187,7 @@ public final class TikaExtract {
         System.out.println("READY");
         System.out.flush();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
         String line;
         while ((line = reader.readLine()) != null) {
             String filePath = line.trim();
@@ -200,7 +201,7 @@ public final class TikaExtract {
             try {
                 Path path = Path.of(filePath);
                 long start = System.nanoTime();
-                ExtractionData data = extractFileWithParser(path.toFile(), sharedParser, sharedOcrConfig, debug);
+                ExtractionData data = extractFileWithParser(path.toFile(), sharedParser, sharedOcrConfig);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
                 String json = toJson(data, elapsedMs, ocrEnabled);
                 System.out.println(json);
@@ -213,10 +214,11 @@ public final class TikaExtract {
                 System.out.flush();
             }
         }
+        }
     }
 
     private static ExtractionData extractFileWithParser(
-            File file, AutoDetectParser parser, TesseractOCRConfig ocrConfig, boolean debug) throws Exception {
+            File file, AutoDetectParser parser, TesseractOCRConfig ocrConfig) throws Exception {
         if (!file.exists()) {
             throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
         }
@@ -240,7 +242,7 @@ public final class TikaExtract {
         return new ExtractionData(content, mimeType);
     }
 
-    private static ExtractionData extractFile(File file, boolean ocrEnabled, boolean debug) throws Exception {
+    private static ExtractionData extractFile(File file, boolean ocrEnabled) throws Exception {
         if (!file.exists()) {
             throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
         }
