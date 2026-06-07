@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **r**: drop ORT-dependent features (`paddle-ocr`, `layout-detection`, `embeddings`, `auto-rotate`) from R extension. The R binding links a static Rust library but does not have access to ORT's dynamic libraries at runtime, causing undefined symbol errors (`OrtGetApiBase`). R uses only document format extraction and API/MCP features, which are ORT-free. New feature set: `no-ort-target + api + mcp`.
+
 ## [5.0.0-rc.5] - 2026-06-07
 
 ### Changed
