@@ -4,7 +4,7 @@ defmodule Kreuzberg.MixProject do
   def project do
     [
       app: :kreuzberg,
-      version: "5.0.0-rc.7",
+      version: "5.0.0-rc.8",
       elixir: "~> 1.14",
       elixirc_paths: ["lib", Path.expand("../../packages/elixir/native/kreuzberg_nif/src", __DIR__)],
       rustler_crates: [
@@ -29,7 +29,7 @@ defmodule Kreuzberg.MixProject do
       licenses: ["Elastic-2.0"],
       links: %{"GitHub" => "https://github.com/kreuzberg-dev/kreuzberg"},
       files:
-        ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/kreuzberg_nif/Cargo.toml native/kreuzberg_nif/Cargo.lock ../../packages/elixir/native/kreuzberg_nif/src)
+        ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/kreuzberg_nif/Cargo.toml native/kreuzberg_nif/Cargo.lock native/kreuzberg_nif/src)
     ]
   end
 

@@ -9,8 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.8] - 2026-06-08
+
 ### Fixed
 
+- **Zig bindings: surface NULL `to_json` pointers as `error.Serialization` instead of crashing.**
+  alef 0.23.47 corrects the Zig null-guard error name in the named-JSON return block so
+  it's a member of the `KreuzbergError` set. Prior to this, the codegen used a made-up
+  `error.SerializationFailed` and broke 8 kreuzberg e2e suites (smoke, contract, code,
+  async, embeddings, error, format_specific, summarization).
+- **PHP bindings: nullable params on non-tail-optional positions.** alef 0.23.46 emits
+  `?T $param = null` when the parameter slot is optional but a later required slot follows.
 - **Maven publish suppresses CPD/PMD via property-level skips.** The
   `publish` profile in `packages/java/pom.xml` now sets `<cpd.skip>true</cpd.skip>`
   and `<pmd.skip>true</pmd.skip>` in its `<properties>` block. The previous
