@@ -1,5 +1,7 @@
 package dev.kreuzberg;
 
+import java.util.List;
+
 /**
  * Path A Bridge implementation for IDocumentExtractor.
  *
@@ -34,18 +36,18 @@ public final class DocumentExtractorAdapter implements IDocumentExtractor {
     }
 
     @Override
-    public String extractBytes(byte[] content, String mime_type, ExtractionConfig config) throws Exception {
-        return impl.extractBytes(content, mime_type, config);
+    public String extract_bytes(byte[] content, String mime_type, ExtractionConfig config) throws Exception {
+        return impl.extract_bytes(content, mime_type, config);
     }
 
     @Override
-    public String extractFile(java.nio.file.Path path, String mime_type, ExtractionConfig config) throws Exception {
-        return impl.extractFile(path, mime_type, config);
+    public String extract_file(java.nio.file.Path path, String mime_type, ExtractionConfig config) throws Exception {
+        return impl.extract_file(path, mime_type, config);
     }
 
     @Override
-    public List<String> supportedMimeTypes() throws Exception {
-        return impl.supportedMimeTypes();
+    public List<String> supported_mime_types() throws Exception {
+        return impl.supported_mime_types();
     }
 
     @Override
@@ -54,8 +56,8 @@ public final class DocumentExtractorAdapter implements IDocumentExtractor {
     }
 
     @Override
-    public boolean canHandle(java.nio.file.Path _path, String _mime_type) throws Exception {
-        return impl.canHandle(_path, _mime_type);
+    public boolean can_handle(java.nio.file.Path _path, String _mime_type) throws Exception {
+        return impl.can_handle(_path, _mime_type);
     }
 
 

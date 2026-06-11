@@ -1,5 +1,7 @@
 package dev.kreuzberg;
 
+import java.util.List;
+
 /**
  * Path A Bridge implementation for IEmbeddingBackend.
  *

@@ -5592,6 +5592,9 @@ sealed class FormatMetadata with _$FormatMetadata {
   /// Metadata extracted from an audio or video file.
   const factory FormatMetadata.audio({required AudioMetadata field0}) =
       FormatMetadata_Audio;
+
+  /// Code metadata (tree-sitter analysis results).
+  const factory FormatMetadata.code() = FormatMetadata_Code;
 }
 
 /// Block-level element in a Djot document.

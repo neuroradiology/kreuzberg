@@ -5864,6 +5864,7 @@ type-safe, clean metadata without nested optionals.
 | `EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `EpubMetadata` |
 | `PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `PstMetadata` |
 | `AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `AudioMetadata` |
+| `CODE` | Code metadata (tree-sitter analysis results). |
 
 ---
 

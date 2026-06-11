@@ -5782,6 +5782,7 @@ type-safe, clean metadata without nested optionals.
 | `KREUZBERG_EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `KreuzbergEpubMetadata` |
 | `KREUZBERG_PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `KreuzbergPstMetadata` |
 | `KREUZBERG_AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `KreuzbergAudioMetadata` |
+| `KREUZBERG_CODE` | Code metadata (tree-sitter analysis results). |
 
 ---
 

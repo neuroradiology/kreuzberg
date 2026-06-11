@@ -39,8 +39,8 @@ public final class ValidatorAdapter implements IValidator {
     }
 
     @Override
-    public boolean shouldValidate(ExtractionResult _result, ExtractionConfig _config) throws Exception {
-        return impl.shouldValidate(_result, _config);
+    public boolean should_validate(ExtractionResult _result, ExtractionConfig _config) throws Exception {
+        return impl.should_validate(_result, _config);
     }
 
     @Override

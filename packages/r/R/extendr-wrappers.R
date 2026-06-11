@@ -3581,6 +3581,7 @@ EntityCategory <- new.env(parent = emptyenv())
 #' @field Epub Metadata extracted from an EPUB e-book.
 #' @field Pst Metadata extracted from an Outlook PST archive.
 #' @field Audio Metadata extracted from an audio or video file.
+#' @field Code Code metadata (tree-sitter analysis results).
 #' @export
 FormatMetadata <- new.env(parent = emptyenv())
 #' @export

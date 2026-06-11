@@ -7,6 +7,7 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run tests");
     const ffi_path = b.option([]const u8, "ffi_path", "Path to directory containing libkreuzberg_ffi") orelse "../../target/release";
     const ffi_include = b.option([]const u8, "ffi_include_path", "Path to directory containing FFI header") orelse "../../crates/kreuzberg-ffi/include";
+    const ffi_path_abs = b.pathFromRoot(ffi_path);
 
     const kreuzberg_module = b.addModule("kreuzberg", .{
         .root_source_file = b.path("../../packages/zig/src/kreuzberg.zig"),
@@ -17,7 +18,7 @@ pub fn build(b: *std.Build) void {
     kreuzberg_module.addLibraryPath(.{ .cwd_relative = ffi_path });
     kreuzberg_module.addIncludePath(.{ .cwd_relative = ffi_include });
     kreuzberg_module.linkSystemLibrary("kreuzberg_ffi", .{});
-    kreuzberg_module.addRPath(.{ .cwd_relative = ffi_path });
+    kreuzberg_module.addRPath(.{ .cwd_relative = ffi_path_abs });
 
     const async_module = b.createModule(.{
         .root_source_file = b.path("src/async_test.zig"),
@@ -31,6 +32,7 @@ pub fn build(b: *std.Build) void {
         .root_module = async_module,
         .use_llvm = true,
     });
+    async_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const async_run = b.addRunArtifact(async_tests);
     async_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&async_run.step);
@@ -47,6 +49,7 @@ pub fn build(b: *std.Build) void {
         .root_module = batch_module,
         .use_llvm = true,
     });
+    batch_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const batch_run = b.addRunArtifact(batch_tests);
     batch_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&batch_run.step);
@@ -63,6 +66,7 @@ pub fn build(b: *std.Build) void {
         .root_module = contract_module,
         .use_llvm = true,
     });
+    contract_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const contract_run = b.addRunArtifact(contract_tests);
     contract_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&contract_run.step);
@@ -79,6 +83,7 @@ pub fn build(b: *std.Build) void {
         .root_module = detection_module,
         .use_llvm = true,
     });
+    detection_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const detection_run = b.addRunArtifact(detection_tests);
     detection_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&detection_run.step);
@@ -95,6 +100,7 @@ pub fn build(b: *std.Build) void {
         .root_module = document_extractor_management_module,
         .use_llvm = true,
     });
+    document_extractor_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const document_extractor_management_run = b.addRunArtifact(document_extractor_management_tests);
     document_extractor_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&document_extractor_management_run.step);
@@ -111,6 +117,7 @@ pub fn build(b: *std.Build) void {
         .root_module = embed_async_pending_module,
         .use_llvm = true,
     });
+    embed_async_pending_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embed_async_pending_run = b.addRunArtifact(embed_async_pending_tests);
     embed_async_pending_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embed_async_pending_run.step);
@@ -127,6 +134,7 @@ pub fn build(b: *std.Build) void {
         .root_module = embed_extra_module,
         .use_llvm = true,
     });
+    embed_extra_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embed_extra_run = b.addRunArtifact(embed_extra_tests);
     embed_extra_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embed_extra_run.step);
@@ -143,6 +151,7 @@ pub fn build(b: *std.Build) void {
         .root_module = embedding_backend_management_module,
         .use_llvm = true,
     });
+    embedding_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embedding_backend_management_run = b.addRunArtifact(embedding_backend_management_tests);
     embedding_backend_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embedding_backend_management_run.step);
@@ -159,6 +168,7 @@ pub fn build(b: *std.Build) void {
         .root_module = embeddings_module,
         .use_llvm = true,
     });
+    embeddings_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embeddings_run = b.addRunArtifact(embeddings_tests);
     embeddings_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embeddings_run.step);
@@ -175,6 +185,7 @@ pub fn build(b: *std.Build) void {
         .root_module = error_module,
         .use_llvm = true,
     });
+    error_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const error_run = b.addRunArtifact(error_tests);
     error_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&error_run.step);
@@ -191,6 +202,7 @@ pub fn build(b: *std.Build) void {
         .root_module = format_specific_module,
         .use_llvm = true,
     });
+    format_specific_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const format_specific_run = b.addRunArtifact(format_specific_tests);
     format_specific_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&format_specific_run.step);
@@ -207,6 +219,7 @@ pub fn build(b: *std.Build) void {
         .root_module = mime_utilities_module,
         .use_llvm = true,
     });
+    mime_utilities_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const mime_utilities_run = b.addRunArtifact(mime_utilities_tests);
     mime_utilities_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&mime_utilities_run.step);
@@ -223,6 +236,7 @@ pub fn build(b: *std.Build) void {
         .root_module = ocr_backend_management_module,
         .use_llvm = true,
     });
+    ocr_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const ocr_backend_management_run = b.addRunArtifact(ocr_backend_management_tests);
     ocr_backend_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&ocr_backend_management_run.step);
@@ -239,6 +253,7 @@ pub fn build(b: *std.Build) void {
         .root_module = pdf_module,
         .use_llvm = true,
     });
+    pdf_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const pdf_run = b.addRunArtifact(pdf_tests);
     pdf_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&pdf_run.step);
@@ -255,6 +270,7 @@ pub fn build(b: *std.Build) void {
         .root_module = plugin_api_module,
         .use_llvm = true,
     });
+    plugin_api_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const plugin_api_run = b.addRunArtifact(plugin_api_tests);
     plugin_api_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&plugin_api_run.step);
@@ -271,6 +287,7 @@ pub fn build(b: *std.Build) void {
         .root_module = post_processor_management_module,
         .use_llvm = true,
     });
+    post_processor_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const post_processor_management_run = b.addRunArtifact(post_processor_management_tests);
     post_processor_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&post_processor_management_run.step);
@@ -287,6 +304,7 @@ pub fn build(b: *std.Build) void {
         .root_module = registry_module,
         .use_llvm = true,
     });
+    registry_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const registry_run = b.addRunArtifact(registry_tests);
     registry_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&registry_run.step);
@@ -303,6 +321,7 @@ pub fn build(b: *std.Build) void {
         .root_module = registry_operations_module,
         .use_llvm = true,
     });
+    registry_operations_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const registry_operations_run = b.addRunArtifact(registry_operations_tests);
     registry_operations_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&registry_operations_run.step);
@@ -319,6 +338,7 @@ pub fn build(b: *std.Build) void {
         .root_module = renderer_management_module,
         .use_llvm = true,
     });
+    renderer_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const renderer_management_run = b.addRunArtifact(renderer_management_tests);
     renderer_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&renderer_management_run.step);
@@ -335,6 +355,7 @@ pub fn build(b: *std.Build) void {
         .root_module = smoke_module,
         .use_llvm = true,
     });
+    smoke_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const smoke_run = b.addRunArtifact(smoke_tests);
     smoke_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&smoke_run.step);
@@ -351,6 +372,7 @@ pub fn build(b: *std.Build) void {
         .root_module = summarization_module,
         .use_llvm = true,
     });
+    summarization_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const summarization_run = b.addRunArtifact(summarization_tests);
     summarization_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&summarization_run.step);
@@ -367,6 +389,7 @@ pub fn build(b: *std.Build) void {
         .root_module = validator_management_module,
         .use_llvm = true,
     });
+    validator_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const validator_management_run = b.addRunArtifact(validator_management_tests);
     validator_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&validator_management_run.step);

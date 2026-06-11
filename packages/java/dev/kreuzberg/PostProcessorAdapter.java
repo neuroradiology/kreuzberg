@@ -39,18 +39,18 @@ public final class PostProcessorAdapter implements IPostProcessor {
     }
 
     @Override
-    public String processingStage() throws Exception {
-        return impl.processingStage();
+    public String processing_stage() throws Exception {
+        return impl.processing_stage();
     }
 
     @Override
-    public boolean shouldProcess(ExtractionResult _result, ExtractionConfig _config) throws Exception {
-        return impl.shouldProcess(_result, _config);
+    public boolean should_process(ExtractionResult _result, ExtractionConfig _config) throws Exception {
+        return impl.should_process(_result, _config);
     }
 
     @Override
-    public long estimatedDurationMs(ExtractionResult _result) throws Exception {
-        return impl.estimatedDurationMs(_result);
+    public long estimated_duration_ms(ExtractionResult _result) throws Exception {
+        return impl.estimated_duration_ms(_result);
     }
 
     @Override

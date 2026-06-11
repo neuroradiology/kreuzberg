@@ -1,5 +1,7 @@
 package dev.kreuzberg;
 
+import java.util.List;
+
 /**
  * Path A Bridge implementation for IOcrBackend.
  *
@@ -34,43 +36,43 @@ public final class OcrBackendAdapter implements IOcrBackend {
     }
 
     @Override
-    public ExtractionResult processImage(byte[] image_bytes, OcrConfig config) throws Exception {
-        return impl.processImage(image_bytes, config);
+    public ExtractionResult process_image(byte[] image_bytes, OcrConfig config) throws Exception {
+        return impl.process_image(image_bytes, config);
     }
 
     @Override
-    public ExtractionResult processImageFile(java.nio.file.Path path, OcrConfig config) throws Exception {
-        return impl.processImageFile(path, config);
+    public ExtractionResult process_image_file(java.nio.file.Path path, OcrConfig config) throws Exception {
+        return impl.process_image_file(path, config);
     }
 
     @Override
-    public boolean supportsLanguage(String lang) throws Exception {
-        return impl.supportsLanguage(lang);
+    public boolean supports_language(String lang) throws Exception {
+        return impl.supports_language(lang);
     }
 
     @Override
-    public String backendType() throws Exception {
-        return impl.backendType();
+    public String backend_type() throws Exception {
+        return impl.backend_type();
     }
 
     @Override
-    public List<String> supportedLanguages() throws Exception {
-        return impl.supportedLanguages();
+    public List<String> supported_languages() throws Exception {
+        return impl.supported_languages();
     }
 
     @Override
-    public boolean supportsTableDetection() throws Exception {
-        return impl.supportsTableDetection();
+    public boolean supports_table_detection() throws Exception {
+        return impl.supports_table_detection();
     }
 
     @Override
-    public boolean supportsDocumentProcessing() throws Exception {
-        return impl.supportsDocumentProcessing();
+    public boolean supports_document_processing() throws Exception {
+        return impl.supports_document_processing();
     }
 
     @Override
-    public ExtractionResult processDocument(java.nio.file.Path _path, OcrConfig _config) throws Exception {
-        return impl.processDocument(_path, _config);
+    public ExtractionResult process_document(java.nio.file.Path _path, OcrConfig _config) throws Exception {
+        return impl.process_document(_path, _config);
     }
 
 

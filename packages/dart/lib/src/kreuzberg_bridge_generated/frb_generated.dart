@@ -22,7 +22,6 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static final instance = RustLib._();
 
   RustLib._();
-
   /// Resolve the prebuilt native library from environment variable,
   /// package-relative location, or defer to flutter_rust_bridge's default loader.
   /// Returns `null` to defer to flutter_rust_bridge's default loader.
@@ -50,8 +49,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
       // Check FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR env var first.
       // This allows test harnesses to override library location for development.
-      final envDir =
-          Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
+      final envDir = Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
       if (envDir != null && envDir.isNotEmpty) {
         final libDir = Directory(envDir);
         if (libDir.existsSync()) {
@@ -90,9 +88,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
       final rid = computeRid();
       if (rid != null) {
-        final packageRoot = await Isolate.resolvePackageUri(
-          _DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'),
-        );
+        final packageRoot =
+            await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
         if (packageRoot != null) {
           final ridDir = packageRoot.resolve('src/native/$rid/');
           for (final candidate in candidates) {
@@ -105,9 +102,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
       }
 
       // Check legacy package-installed location as fallback.
-      final packageRoot = await Isolate.resolvePackageUri(
-        _DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'),
-      );
+      final packageRoot =
+          await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
       if (packageRoot != null) {
         final libDir = packageRoot.resolve('src/kreuzberg_bridge_generated/');
         for (final candidate in candidates) {
@@ -11969,6 +11965,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return FormatMetadata_Audio(
           field0: dco_decode_box_autoadd_audio_metadata(raw[1]),
         );
+      case 20:
+        return FormatMetadata_Code();
       default:
         throw Exception("unreachable");
     }
@@ -17757,6 +17755,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 19:
         var var_field0 = sse_decode_box_autoadd_audio_metadata(deserializer);
         return FormatMetadata_Audio(field0: var_field0);
+      case 20:
+        return FormatMetadata_Code();
       default:
         throw UnimplementedError('');
     }
@@ -24861,6 +24861,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case FormatMetadata_Audio(field0: final field0):
         sse_encode_i_32(19, serializer);
         sse_encode_box_autoadd_audio_metadata(field0, serializer);
+      case FormatMetadata_Code():
+        sse_encode_i_32(20, serializer);
     }
   }
 

@@ -1068,12 +1068,14 @@ result_is_json_struct = true
 # instead of extractFile (path string). The file_path arg type generates readAsBytesSync().
 function = "extractBytes"
 arg_name_map = { path = "content" }
+options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_file]
 function = "extract_file"
 module = "kreuzberg"
 async = true
 returns_result = true
+options_type = "ExtractionConfig"
 # kreuzberg's `chunks` is a plain `Vec<TextChunk>` field on `ExtractionResult`,
 # not a streaming channel. Without this opt-out, alef's streaming auto-detect
 # triggers on any assertion targeting `chunks` / `chunks.length` and emits
