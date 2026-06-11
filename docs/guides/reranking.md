@@ -1,6 +1,6 @@
 # Reranking
 
-!!! tip "New in v5.0.0"
+!!! Tip "New in v5.0.0"
     Cross-encoder reranking is a new feature for query-time document reordering.
 
 Rerank candidate documents by joint relevance scoring. After vector retrieval returns top-K candidates, rerank to surface the most relevant documents for LLM context.

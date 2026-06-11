@@ -3535,6 +3535,459 @@ public static class RendererRegistry {
     }
 }
 
+/// <summary>
+/// Bridge interface for RerankerBackend trait implementation via native FFI
+/// </summary>
+public interface IRerankerBackend {
+
+    /// <summary>Get the plugin name.</summary>
+    string Name { get; }
+
+    /// <summary>Get the plugin version.</summary>
+    string Version { get; }
+
+    /// <summary>Initialize the plugin.</summary>
+    void Initialize();
+
+    /// <summary>Shut down the plugin.</summary>
+    void Shutdown();
+
+    /// <summary>rerank</summary>
+    List<float> Rerank(string Query, List<string> Documents);
+}
+
+/// <summary>
+/// Manages the FFI vtable and delegates for a RerankerBackend implementation
+/// </summary>
+public sealed class RerankerBackendBridge : IDisposable {
+
+    internal readonly IRerankerBackend _impl;
+    private readonly GCHandle _implHandle;
+    internal IntPtr _vtable;
+    private bool _disposed;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
+    internal readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
+
+    // Static registry: maps bridge ID (IntPtr) to bridge instance
+    // This prevents GC while Rust holds the bridge ID as userData.
+    internal static readonly Dictionary<IntPtr, RerankerBackendBridge> _bridgeRegistry = new();
+    internal static int _nextBridgeId = 1;
+    internal static readonly object _registryLock = new();
+
+    // Vtable slot delegates (7)
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int NameFn(IntPtr userData, out IntPtr outName, out IntPtr outError);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int VersionFn(IntPtr userData, out IntPtr outVersion, out IntPtr outError);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int InitializeFn(IntPtr userData, out IntPtr outError);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int ShutdownFn(IntPtr userData, out IntPtr outError);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int RerankFn(IntPtr userData, IntPtr query, IntPtr documents, out IntPtr outResult, out IntPtr outError);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void FreeStringFn(IntPtr ptr);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void FreeUserDataFn(IntPtr userData);
+
+    public RerankerBackendBridge(IRerankerBackend impl) {
+        _impl = impl ?? throw new ArgumentNullException(nameof(impl));
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(7);
+        _vtable = IntPtr.Zero;
+        _disposed = false;
+        // Allocate unique bridge ID for registry lookup during callbacks
+        lock (_registryLock) {
+            _bridgeId = new IntPtr(_nextBridgeId++);
+        }
+        BuildVtable();
+    }
+
+    private void BuildVtable() {
+        // Allocate unmanaged vtable struct (array of function pointers)
+        _vtable = global::System.Runtime.InteropServices.Marshal.AllocHGlobal(IntPtr.Size * 7);
+
+        // Slot 0: name_fn
+        var nameFn = new NameFn(NameFnCallback);
+        _delegateRoots.Add(nameFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
+
+        // Slot 1: version_fn
+        var versionFn = new VersionFn(VersionFnCallback);
+        _delegateRoots.Add(versionFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
+
+        // Slot 2: initialize_fn
+        var initFn = new InitializeFn(InitializeFnCallback);
+        _delegateRoots.Add(initFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
+
+        // Slot 3: shutdown_fn
+        var shutdownFn = new ShutdownFn(ShutdownFnCallback);
+        _delegateRoots.Add(shutdownFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
+
+        // Slot 4: rerank_fn
+        var rerankFn = new RerankFn(RerankFnCallback);
+        _delegateRoots.Add(rerankFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(rerankFn));
+
+        // Slot 5: free_string
+        var freeStringFn = new FreeStringFn(FreeStringCallback);
+        _delegateRoots.Add(freeStringFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
+
+        // Slot 6: free_user_data
+        var freeFn = new FreeUserDataFn(FreeUserDataCallback);
+        _delegateRoots.Add(freeFn);
+        global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
+
+    }
+
+    private static string ToJsonString<T>(T value) {
+        return JsonSerializer.Serialize(value, FfiJsonExtensions.FfiJsonOptions);
+    }
+
+    /// <summary>Called by Rust via FreeUserDataCallback when done with this bridge</summary>
+    internal static void FreeUserData(IntPtr bridgeId) {
+        lock (_registryLock) {
+            // Mark bridge as disposed but DON'T remove from registry yet.
+            // Callbacks in flight will still be able to look it up and execute safely.
+            // The bridge will stay alive as long as _callbackRefCount > 0.
+            if (_bridgeRegistry.TryGetValue(bridgeId, out var bridge)) {
+                bridge._disposed = true;
+            }
+        }
+    }
+
+    private void IncrementCallbackRef() {
+        lock (_registryLock) {
+            _callbackRefCount++;
+        }
+    }
+
+    private void DecrementCallbackRef() {
+        lock (_registryLock) {
+            if (_callbackRefCount > 0) {
+                _callbackRefCount--;
+            }
+            // Once refcount reaches 0 and bridge is disposed, remove from registry
+            if (_callbackRefCount == 0 && _disposed) {
+                _bridgeRegistry.Remove(_bridgeId);
+            }
+        }
+    }
+
+    private int NameFnCallback(IntPtr userData, out IntPtr outName, out IntPtr outError) {
+        try {
+            outError = IntPtr.Zero;
+            string _name = null!;
+            lock (RerankerBackendBridge._registryLock) {
+                if (!RerankerBackendBridge._bridgeRegistry.TryGetValue(userData, out var bridge)) {
+                    outName = IntPtr.Zero;
+                    return 1;
+                }
+                _name = bridge._impl.Name;
+            }
+            outName = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(_name);
+            return 0;
+        } catch (Exception ex) {
+            outName = IntPtr.Zero;
+            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            return 1;
+        }
+    }
+
+    private int VersionFnCallback(IntPtr userData, out IntPtr outVersion, out IntPtr outError) {
+        try {
+            outError = IntPtr.Zero;
+            string _version = null!;
+            lock (RerankerBackendBridge._registryLock) {
+                if (!RerankerBackendBridge._bridgeRegistry.TryGetValue(userData, out var bridge)) {
+                    outVersion = IntPtr.Zero;
+                    return 1;
+                }
+                _version = bridge._impl.Version;
+            }
+            outVersion = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(_version);
+            return 0;
+        } catch (Exception ex) {
+            outVersion = IntPtr.Zero;
+            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            return 1;
+        }
+    }
+
+    private int InitializeFnCallback(IntPtr userData, out IntPtr outError) {
+        try {
+            lock (RerankerBackendBridge._registryLock) {
+                if (!RerankerBackendBridge._bridgeRegistry.TryGetValue(userData, out var bridge)) {
+                    outError = IntPtr.Zero;
+                    return 1;
+                }
+                bridge._impl.Initialize();
+            }
+            outError = IntPtr.Zero;
+            return 0;
+        } catch (Exception ex) {
+            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            return 1;
+        }
+    }
+
+    private int ShutdownFnCallback(IntPtr userData, out IntPtr outError) {
+        try {
+            lock (RerankerBackendBridge._registryLock) {
+                if (!RerankerBackendBridge._bridgeRegistry.TryGetValue(userData, out var bridge)) {
+                    outError = IntPtr.Zero;
+                    return 1;
+                }
+                bridge._impl.Shutdown();
+            }
+            outError = IntPtr.Zero;
+            return 0;
+        } catch (Exception ex) {
+            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            return 1;
+        }
+    }
+
+    private int RerankFnCallback(IntPtr userData, IntPtr query, IntPtr documents, out IntPtr outResult, out IntPtr outError) {
+        RerankerBackendBridge? _bridgeFromRegistry = null;
+        lock (RerankerBackendBridge._registryLock) {
+            if (RerankerBackendBridge._bridgeRegistry.TryGetValue(userData, out var bridgeFromRegistry)) {
+                _bridgeFromRegistry = bridgeFromRegistry;
+                // Increment callback refcount to prevent GC while callback executes
+                _bridgeFromRegistry.IncrementCallbackRef();
+            }
+        }
+        if (_bridgeFromRegistry == null) {
+            outResult = IntPtr.Zero;
+            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8($"Bridge not found for userData (likely unregistered): {userData}");
+            return 1;
+        }
+        try {
+            var bridge = _bridgeFromRegistry!;
+            var managed_query = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(query) ?? string.Empty;
+            var json_documents = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(documents) ?? "{}";
+            var managed_documents = JsonSerializer.Deserialize<List<string>>(json_documents, FfiJsonExtensions.FfiJsonOptions)!;
+            var methodResult = bridge._impl.Rerank(managed_query, managed_documents);
+            try {
+                string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
+                outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(__result_str);
+            } catch {
+                outResult = IntPtr.Zero;
+                throw;
+            }
+            outError = IntPtr.Zero;
+            return 0;
+        } catch (Exception ex) {
+            outResult = IntPtr.Zero;
+            outError = IntPtr.Zero;
+            // Attempt to marshal exception message, but on ANY failure just leave outError null
+            try {
+                string _errMsg = null!;
+                try {
+                    _errMsg = ex?.Message ?? ex?.GetType()?.Name ?? "Unknown exception";
+                } catch {
+                    _errMsg = "Callback failed";
+                }
+                if (!string.IsNullOrEmpty(_errMsg)) {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(_errMsg);
+                }
+            } catch {
+                // Marshalling failed; outError stays null — Rust will see return code 1
+            }
+            return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
+        }
+    }
+
+    private void FreeStringCallback(IntPtr ptr) {
+        if (ptr != IntPtr.Zero) {
+            global::System.Runtime.InteropServices.Marshal.FreeCoTaskMem(ptr);
+        }
+    }
+
+    private void FreeUserDataCallback(IntPtr userData) {
+        if (userData != IntPtr.Zero) {
+            RerankerBackendBridge.FreeUserData(userData);
+        }
+    }
+
+
+    public void Dispose() {
+        if (_disposed) return;
+        _disposed = true;
+
+        if (_vtable != IntPtr.Zero) {
+            global::System.Runtime.InteropServices.Marshal.FreeHGlobal(_vtable);
+            _vtable = IntPtr.Zero;
+        }
+
+        if (_implHandle.IsAllocated) {
+            _implHandle.Free();
+        }
+
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
+    }
+
+    /// <summary>Register a RerankerBackend implementation and return its native handle</summary>
+    public static IntPtr Register(IRerankerBackend impl) {
+        if (impl == null)
+            throw new ArgumentNullException(nameof(impl));
+
+        var name = impl.Name;
+
+
+        var bridge = new RerankerBackendBridge(impl);
+
+        try {
+            // Register bridge in the static registry using its unique ID.
+            // This keeps the bridge alive while Rust holds the ID (userData).
+            lock (_registryLock) {
+                _bridgeRegistry[bridge._bridgeId] = bridge;
+            }
+
+            var vtablePtr = bridge._vtable;
+            var userData = bridge._bridgeId;
+
+            var result = NativeMethods.RegisterRerankerBackend(name, vtablePtr, userData, out var outError);
+            if (result != 0) {
+                lock (_registryLock) {
+                    _bridgeRegistry.Remove(bridge._bridgeId);
+                }
+                bridge.Dispose();
+                var errorMsg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(outError) ?? "Unknown error";
+                global::System.Runtime.InteropServices.Marshal.FreeCoTaskMem(outError);
+                throw new InvalidOperationException($"Failed to register {name}: {errorMsg}");
+            }
+
+            // Return the bridge ID (userData).
+            // The FFI layer holds this ID and will call FreeUserDataCallback with it when done.
+            return userData;
+        } catch {
+            lock (_registryLock) {
+                _bridgeRegistry.Remove(bridge._bridgeId);
+            }
+            bridge.Dispose();
+            throw;
+        }
+    }
+}
+
+/// <summary>Static helpers for registering trait implementations</summary>
+public static class RerankerBackendRegistry {
+
+    private static readonly ConcurrentDictionary<string, RerankerBackendBridge> _bridges =
+        new ConcurrentDictionary<string, RerankerBackendBridge>();
+
+    /// <summary>Register a RerankerBackend implementation and return its native handle</summary>
+    public static IntPtr RegisterRerankerBackend(IRerankerBackend impl) {
+        if (impl == null)
+            throw new ArgumentNullException(nameof(impl));
+
+        var bridge = new RerankerBackendBridge(impl);
+        var userData = bridge._bridgeId;
+        var name = impl.Name;
+
+        lock (RerankerBackendBridge._registryLock) {
+            RerankerBackendBridge._bridgeRegistry[userData] = bridge;
+        }
+        return userData;
+    }
+
+    /// <summary>Register a RerankerBackend implementation and return its native handle</summary>
+
+    public static IntPtr Register(IRerankerBackend impl) {
+        if (impl == null)
+            throw new ArgumentNullException(nameof(impl));
+
+        var name = impl.Name;
+
+
+        var bridge = new RerankerBackendBridge(impl);
+
+        try {
+            var userData = bridge._bridgeId;
+            var vtablePtr = bridge._vtable;
+
+            // Register bridge in the static registry using its unique ID.
+            // This keeps the bridge alive while Rust holds the ID (userData).
+            lock (RerankerBackendBridge._registryLock) {
+                RerankerBackendBridge._bridgeRegistry[userData] = bridge;
+            }
+
+            var result = NativeMethods.RegisterRerankerBackend(name, vtablePtr, userData, out var outError);
+            if (result != 0) {
+                lock (RerankerBackendBridge._registryLock) {
+                    RerankerBackendBridge._bridgeRegistry.Remove(userData);
+                }
+                bridge.Dispose();
+                var errorMsg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(outError) ?? "Unknown error";
+                global::System.Runtime.InteropServices.Marshal.FreeCoTaskMem(outError);
+                throw new InvalidOperationException($"Failed to register {name}: {errorMsg}");
+            }
+
+            return userData;
+        } catch {
+            lock (RerankerBackendBridge._registryLock) {
+                RerankerBackendBridge._bridgeRegistry.Remove(bridge._bridgeId);
+            }
+            bridge.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>Unregister a RerankerBackend implementation</summary>
+    public static void Unregister(string name) {
+        if (string.IsNullOrEmpty(name))
+            throw new ArgumentException("Name cannot be empty", nameof(name));
+
+        var result = NativeMethods.UnregisterRerankerBackend(name, out var outError);
+        if (result != 0) {
+            var errorMsg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(outError) ?? "Unknown error";
+            global::System.Runtime.InteropServices.Marshal.FreeCoTaskMem(outError);
+            throw new InvalidOperationException($"Failed to unregister {name}: {errorMsg}");
+        }
+
+        if (_bridges.TryRemove(name, out var bridge)) {
+            bridge.Dispose();
+        }
+    }
+
+    /// <summary>Clear all registered RerankerBackend implementations</summary>
+    public static void Clear() {
+        var result = NativeMethods.ClearRerankerBackend(out var outError);
+        if (result != 0) {
+            var errorMsg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(outError) ?? "Unknown error";
+            global::System.Runtime.InteropServices.Marshal.FreeCoTaskMem(outError);
+            throw new InvalidOperationException($"Failed to clear RerankerBackend registry: {errorMsg}");
+        }
+
+        _bridges.Clear();
+    }
+}
+
 /// <summary>FFI JSON serialization extension methods and options</summary>
 internal static class FfiJsonExtensions {
 

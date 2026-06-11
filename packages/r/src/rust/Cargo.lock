@@ -4044,9 +4044,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.61"
+version = "0.3.63"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5b2e1871e9ab73de8873f9cb57f7f5e66cd072ea1361d5dfbbe89c52d6affa2"
+checksum = "6f0b90c85ca0756d2bfa358a033c24d1546ba7ce4324f5a98956250323f0fb26"
 dependencies = [
  "aes 0.9.1",
  "base64 0.22.1",
@@ -6275,9 +6275,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.9.0-rc.30"
+version = "1.9.0-rc.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7f2ab6930da8302faf571bcb8d6685386042a76a54b0e15deb948852a71381c"
+checksum = "bce05c94cf75d860915af390265cb77e969f11f932973883676aff436f23911f"
 dependencies = [
  "ahash",
  "cc",

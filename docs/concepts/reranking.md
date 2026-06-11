@@ -1,6 +1,6 @@
 # Reranking
 
-!!! tip "New in v5.0.0"
+!!! Tip "New in v5.0.0"
     Cross-encoder reranking is a new feature for query-time document reordering.
 
 Reranking takes a query and a list of candidate documents, then scores them jointly to reorder by relevance. Unlike vector similarity, which independently embeds the query and documents, reranking models score the `(query, document)` pair together. This yields significantly better ranking quality at the cost of higher latency.

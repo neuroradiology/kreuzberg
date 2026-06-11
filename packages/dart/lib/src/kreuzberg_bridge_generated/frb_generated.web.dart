@@ -41,6 +41,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync;
 
   CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_ArcRerankerBackendPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync;
+
+  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_ArcValidatorPtr => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync;
 
@@ -67,6 +71,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_RendererDartImplPtr => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_RerankerBackendDartImplPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl;
 
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_TokenCounterPtr => wire
@@ -106,6 +114,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   ArcRenderer
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    dynamic raw,
+  );
+
+  @protected
+  ArcRerankerBackend
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
     dynamic raw,
   );
 
@@ -152,6 +166,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RerankerBackendDartImpl
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
   TokenCounter
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
     dynamic raw,
@@ -190,6 +210,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   RendererDartImpl
   dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  RerankerBackendDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     dynamic raw,
   );
 
@@ -236,6 +262,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RerankerBackendDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
   ValidatorDartImpl
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     dynamic raw,
@@ -254,6 +286,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   FutureOr<InternalDocumentBridge> Function(String, String, ExtractionConfig)
   dco_decode_DartFn_Inputs_String_String_extraction_config_Output_internal_document_bridge_AnyhowException(
+    dynamic raw,
+  );
+
+  @protected
+  FutureOr<Float64List> Function(String, List<String>)
+  dco_decode_DartFn_Inputs_String_list_String_Output_list_prim_f_64_strict_AnyhowException(
     dynamic raw,
   );
 
@@ -377,6 +415,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ArcRerankerBackend
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    dynamic raw,
+  );
+
+  @protected
   ArcValidator
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     dynamic raw,
@@ -415,6 +459,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   RendererDartImpl
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  RerankerBackendDartImpl
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     dynamic raw,
   );
 
@@ -695,6 +745,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RedactionReport dco_decode_box_autoadd_redaction_report(dynamic raw);
+
+  @protected
+  RerankerConfig dco_decode_box_autoadd_reranker_config(dynamic raw);
+
+  @protected
+  RerankerPreset dco_decode_box_autoadd_reranker_preset(dynamic raw);
 
   @protected
   ResultFormat dco_decode_box_autoadd_result_format(dynamic raw);
@@ -1246,7 +1302,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<RedactionTerm> dco_decode_list_redaction_term(dynamic raw);
 
   @protected
+  List<RerankedDocument> dco_decode_list_reranked_document(dynamic raw);
+
+  @protected
   List<StructuredData> dco_decode_list_structured_data(dynamic raw);
+
+  @protected
+  List<SupportedFormat> dco_decode_list_supported_format(dynamic raw);
 
   @protected
   List<Table> dco_decode_list_table(dynamic raw);
@@ -1521,6 +1583,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RedactionReport? dco_decode_opt_box_autoadd_redaction_report(dynamic raw);
 
   @protected
+  RerankerPreset? dco_decode_opt_box_autoadd_reranker_preset(dynamic raw);
+
+  @protected
   ResultFormat? dco_decode_opt_box_autoadd_result_format(dynamic raw);
 
   @protected
@@ -1767,6 +1832,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RelationshipKind dco_decode_relationship_kind(dynamic raw);
 
   @protected
+  RerankedDocument dco_decode_reranked_document(dynamic raw);
+
+  @protected
+  RerankerConfig dco_decode_reranker_config(dynamic raw);
+
+  @protected
+  RerankerModelType dco_decode_reranker_model_type(dynamic raw);
+
+  @protected
+  RerankerPreset dco_decode_reranker_preset(dynamic raw);
+
+  @protected
   ResultFormat dco_decode_result_format(dynamic raw);
 
   @protected
@@ -1925,6 +2002,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ArcRerankerBackend
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ArcValidator
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
@@ -1963,6 +2046,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   RendererDartImpl
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerBackendDartImpl
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     SseDeserializer deserializer,
   );
 
@@ -2009,6 +2098,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RerankerBackendDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ValidatorDartImpl
   sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     SseDeserializer deserializer,
@@ -2047,6 +2142,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   RendererDartImpl
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerBackendDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     SseDeserializer deserializer,
   );
 
@@ -2110,6 +2211,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ArcRerankerBackend
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ArcValidator
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
@@ -2148,6 +2255,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   RendererDartImpl
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerBackendDartImpl
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     SseDeserializer deserializer,
   );
 
@@ -2512,6 +2625,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RedactionReport sse_decode_box_autoadd_redaction_report(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerConfig sse_decode_box_autoadd_reranker_config(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerPreset sse_decode_box_autoadd_reranker_preset(
     SseDeserializer deserializer,
   );
 
@@ -3187,7 +3310,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<RerankedDocument> sse_decode_list_reranked_document(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<StructuredData> sse_decode_list_structured_data(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<SupportedFormat> sse_decode_list_supported_format(
     SseDeserializer deserializer,
   );
 
@@ -3552,6 +3685,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RerankerPreset? sse_decode_opt_box_autoadd_reranker_preset(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ResultFormat? sse_decode_opt_box_autoadd_result_format(
     SseDeserializer deserializer,
   );
@@ -3860,6 +3998,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RelationshipKind sse_decode_relationship_kind(SseDeserializer deserializer);
 
   @protected
+  RerankedDocument sse_decode_reranked_document(SseDeserializer deserializer);
+
+  @protected
+  RerankerConfig sse_decode_reranker_config(SseDeserializer deserializer);
+
+  @protected
+  RerankerModelType sse_decode_reranker_model_type(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RerankerPreset sse_decode_reranker_preset(SseDeserializer deserializer);
+
+  @protected
   ResultFormat sse_decode_result_format(SseDeserializer deserializer);
 
   @protected
@@ -4049,6 +4201,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    ArcRerankerBackend self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     ArcValidator self,
     SseSerializer serializer,
@@ -4093,6 +4252,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
     RendererDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    RerankerBackendDartImpl self,
     SseSerializer serializer,
   );
 
@@ -4147,6 +4313,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    RerankerBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     ValidatorDartImpl self,
     SseSerializer serializer,
@@ -4196,6 +4369,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    RerankerBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     ValidatorDartImpl self,
     SseSerializer serializer,
@@ -4218,6 +4398,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   sse_encode_DartFn_Inputs_String_String_extraction_config_Output_internal_document_bridge_AnyhowException(
     FutureOr<InternalDocumentBridge> Function(String, String, ExtractionConfig)
     self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_DartFn_Inputs_String_list_String_Output_list_prim_f_64_strict_AnyhowException(
+    FutureOr<Float64List> Function(String, List<String>) self,
     SseSerializer serializer,
   );
 
@@ -4375,6 +4562,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    ArcRerankerBackend self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     ArcValidator self,
     SseSerializer serializer,
@@ -4419,6 +4613,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
     RendererDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    RerankerBackendDartImpl self,
     SseSerializer serializer,
   );
 
@@ -4901,6 +5102,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_redaction_report(
     RedactionReport self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_reranker_config(
+    RerankerConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_reranker_preset(
+    RerankerPreset self,
     SseSerializer serializer,
   );
 
@@ -5781,8 +5994,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_reranked_document(
+    List<RerankedDocument> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_structured_data(
     List<StructuredData> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_supported_format(
+    List<SupportedFormat> self,
     SseSerializer serializer,
   );
 
@@ -6222,6 +6447,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_reranker_preset(
+    RerankerPreset? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_result_format(
     ResultFormat? self,
     SseSerializer serializer,
@@ -6624,6 +6855,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_reranked_document(
+    RerankedDocument self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_reranker_config(
+    RerankerConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_reranker_model_type(
+    RerankerModelType self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_reranker_preset(
+    RerankerPreset self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_result_format(ResultFormat self, SseSerializer serializer);
 
   @protected
@@ -6896,6 +7151,22 @@ class RustLibWire implements BaseWire {
       );
 
   void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+        ptr,
+      );
+
+  void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   ) => wasmModule
@@ -7008,6 +7279,22 @@ class RustLibWire implements BaseWire {
       );
 
   void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+        ptr,
+      );
+
+  void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    int ptr,
+  ) => wasmModule
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+        ptr,
+      );
+
+  void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
     int ptr,
   ) => wasmModule
@@ -7097,6 +7384,16 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
   );
 
   external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    int ptr,
+  );
+
+  external void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   );
@@ -7163,6 +7460,16 @@ extension type RustLibWasmModule._(JSObject _) implements JSObject {
 
   external void
   rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    int ptr,
+  );
+
+  external void
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    int ptr,
+  );
+
+  external void
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
     int ptr,
   );
 

@@ -456,9 +456,7 @@ fn download_model_files(
         } else {
             String::new()
         };
-        crate::KreuzbergError::reranking(format!(
-            "Failed to download {model_file} from {repo_name}: {e}{hint}"
-        ))
+        crate::KreuzbergError::reranking(format!("Failed to download {model_file} from {repo_name}: {e}{hint}"))
     })?;
 
     // Sibling files (e.g. `model.onnx.data`) must be present in the same cache

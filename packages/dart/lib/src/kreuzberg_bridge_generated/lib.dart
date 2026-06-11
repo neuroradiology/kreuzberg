@@ -8,8 +8,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -221,6 +221,21 @@ Future<String> detectMimeTypeFromBytes({required List<int> content}) =>
 Future<List<String>> getExtensionsForMime({required String mimeType}) =>
     RustLib.instance.api.crateGetExtensionsForMime(mimeType: mimeType);
 
+/// List all supported document formats.
+///
+/// Returns every file extension Kreuzberg recognizes together with its
+/// corresponding MIME type, derived from the central format registry.
+/// Formats that have no registered file extension (such as source code,
+/// which is detected dynamically) are not included.
+///
+/// The list is sorted alphabetically by file extension.
+///
+/// **Returns:**
+///
+/// A vector of `SupportedFormat` entries sorted by extension.
+Future<List<SupportedFormat>> listSupportedFormats() =>
+    RustLib.instance.api.crateListSupportedFormats();
+
 /// Detect QR codes in the bytes of an `ExtractedImage`.
 ///
 /// `format_hint` is currently unused — the `image` crate auto-detects the
@@ -297,6 +312,15 @@ Future<List<String>> listPostProcessors() =>
 Future<List<String>> listRenderers() =>
     RustLib.instance.api.crateListRenderers();
 
+/// List the names of all registered reranker backends.
+///
+/// Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+/// bindings.
+///
+/// Since v5.0.0.
+Future<List<String>> listRerankerBackends() =>
+    RustLib.instance.api.crateListRerankerBackends();
+
 /// List names of all registered validators.
 Future<List<String>> listValidators() =>
     RustLib.instance.api.crateListValidators();
@@ -315,6 +339,21 @@ Future<void> classifyPages({
   required ExtractionResult result,
   required PageClassificationConfig config,
 }) => RustLib.instance.api.crateClassifyPages(result: result, config: config);
+
+/// Classify a single piece of text without requiring an `ExtractionResult`.
+///
+/// Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+/// receiving documents off a queue) and wants a label list back without
+/// manufacturing extractor-side metadata.
+///
+/// **Errors:**
+///
+/// Same as `classify_pages`: a validation error when `config.labels` is empty,
+/// or any error returned by prompt rendering or the underlying LLM call.
+Future<List<ClassificationLabel>> classifyText({
+  required String text,
+  required PageClassificationConfig config,
+}) => RustLib.instance.api.crateClassifyText(text: text, config: config);
 
 /// Eagerly download a NER model into the kreuzberg cache.
 ///
@@ -423,6 +462,26 @@ Future<String> extractRegionWithVlm({
   customPrompt: customPrompt,
 );
 
+/// Extract keywords from text using the specified algorithm.
+///
+/// This is the unified entry point for keyword extraction. The algorithm
+/// used is determined by `config.algorithm`.
+///
+/// **Returns:**
+///
+/// A vector of keywords sorted by relevance (highest score first).
+///
+/// **Errors:**
+///
+/// Returns an error if:
+///
+/// - The specified algorithm feature is not enabled
+/// - Keyword extraction fails
+Future<List<Keyword>> extractKeywords({
+  required String text,
+  required KeywordConfig config,
+}) => RustLib.instance.api.crateExtractKeywords(text: text, config: config);
+
 /// Render a single PDF page to PNG bytes.
 ///
 /// Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -477,6 +536,58 @@ Future<EmbeddingPreset?> getEmbeddingPreset({required String name}) =>
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
 Future<List<String>> listEmbeddingPresets() =>
     RustLib.instance.api.crateListEmbeddingPresets();
+
+/// Rerank a list of documents by relevance to a query.
+///
+/// Returns documents sorted descending by score. Applies `top_k` truncation if
+/// configured.
+///
+/// **Errors:**
+///
+/// - `KreuzbergError.Validation` if `query` is empty or blank.
+/// - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
+/// - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+///
+/// Since v5.0.0.
+Future<List<RerankedDocument>> rerank({
+  required String query,
+  required List<String> documents,
+  required RerankerConfig config,
+}) => RustLib.instance.api.crateRerank(
+  query: query,
+  documents: documents,
+  config: config,
+);
+
+/// Stub for builds without the `reranker` feature.
+///
+/// Since v5.0.0.
+Future<List<RerankedDocument>> rerankAsync({
+  required String query,
+  required List<String> documents,
+  required RerankerConfig config,
+}) => RustLib.instance.api.crateRerankAsync(
+  query: query,
+  documents: documents,
+  config: config,
+);
+
+/// Get a reranker preset by name.
+///
+/// Returns `null` if no preset with the given name exists. Returns an owned
+/// clone so the value is safe to pass across FFI boundaries.
+///
+/// Since v5.0.0.
+Future<RerankerPreset?> getRerankerPreset({required String name}) =>
+    RustLib.instance.api.crateGetRerankerPreset(name: name);
+
+/// List the names of all available reranker presets.
+///
+/// Returns owned `String`s so the values are safe to pass across FFI boundaries.
+///
+/// Since v5.0.0.
+Future<List<String>> listRerankerPresets() =>
+    RustLib.instance.api.crateListRerankerPresets();
 
 Future<CacheStats> createCacheStatsFromJson({required String json}) =>
     RustLib.instance.api.crateCreateCacheStatsFromJson(json: json);
@@ -592,6 +703,9 @@ Future<RedactionTerm> createRedactionTermFromJson({required String json}) =>
 Future<RedactionPattern> createRedactionPatternFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateRedactionPatternFromJson(json: json);
+
+Future<RerankerConfig> createRerankerConfigFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateRerankerConfigFromJson(json: json);
 
 Future<SummarizationConfig> createSummarizationConfigFromJson({
   required String json,
@@ -974,6 +1088,13 @@ Future<EmbeddedDiff> createEmbeddedDiffFromJson({required String json}) =>
 Future<EmbeddingPreset> createEmbeddingPresetFromJson({required String json}) =>
     RustLib.instance.api.crateCreateEmbeddingPresetFromJson(json: json);
 
+Future<RerankedDocument> createRerankedDocumentFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateRerankedDocumentFromJson(json: json);
+
+Future<RerankerPreset> createRerankerPresetFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateRerankerPresetFromJson(json: json);
+
 Future<YakeParams> createYakeParamsFromJson({required String json}) =>
     RustLib.instance.api.crateCreateYakeParamsFromJson(json: json);
 
@@ -1281,6 +1402,42 @@ Future<void> unregisterRenderer({required String name}) =>
 /// Removes every plugin from `kreuzberg::plugins::registry::get_renderer_registry()` and stringifies any host error.
 Future<void> clearRenderers() => RustLib.instance.api.crateClearRenderers();
 
+/// Construct a `RerankerBackendDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+Future<RerankerBackendDartImpl> createRerankerBackendDartImpl({
+  required String pluginName,
+  required String pluginVersion,
+  required FutureOr<Float64List> Function(String, List<String>) rerank,
+}) => RustLib.instance.api.crateCreateRerankerBackendDartImpl(
+  pluginName: pluginName,
+  pluginVersion: pluginVersion,
+  rerank: rerank,
+);
+
+/// Register a Dart implementation as a `RerankerBackend` plugin.
+///
+/// Forwards the `Arc<dyn RerankerBackend>` wrapped by `RerankerBackendDartImpl` to
+/// `kreuzberg::plugins::registry::get_reranker_backend_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
+Future<void> registerRerankerBackend({required RerankerBackendDartImpl impl}) =>
+    RustLib.instance.api.crateRegisterRerankerBackend(impl: impl);
+
+/// Unregister a previously-registered `RerankerBackend` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_reranker_backend_registry()` and stringifies any host error.
+Future<void> unregisterRerankerBackend({required String name}) =>
+    RustLib.instance.api.crateUnregisterRerankerBackend(name: name);
+
+/// Clear all registered `RerankerBackend` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_reranker_backend_registry()` and stringifies any host error.
+Future<void> clearRerankerBackends() =>
+    RustLib.instance.api.crateClearRerankerBackends();
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>
 abstract class ArcDocumentExtractor implements RustOpaqueInterface {}
 
@@ -1295,6 +1452,9 @@ abstract class ArcPostProcessor implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>
 abstract class ArcRenderer implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn RerankerBackend + Send + Sync >>>
+abstract class ArcRerankerBackend implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>
 abstract class ArcValidator implements RustOpaqueInterface {}
@@ -1350,6 +1510,13 @@ abstract class RendererDartImpl implements RustOpaqueInterface {
   ArcRenderer get field0;
 
   set field0(ArcRenderer field0);
+}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RerankerBackendDartImpl>>
+abstract class RerankerBackendDartImpl implements RustOpaqueInterface {
+  ArcRerankerBackend get field0;
+
+  set field0(ArcRerankerBackend field0);
 }
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TokenCounter>>
@@ -5592,9 +5759,6 @@ sealed class FormatMetadata with _$FormatMetadata {
   /// Metadata extracted from an audio or video file.
   const factory FormatMetadata.audio({required AudioMetadata field0}) =
       FormatMetadata_Audio;
-
-  /// Code metadata (tree-sitter analysis results).
-  const factory FormatMetadata.code() = FormatMetadata_Code;
 }
 
 /// Block-level element in a Djot document.
@@ -6766,6 +6930,12 @@ sealed class KreuzbergError with _$KreuzbergError {
   /// The embedding model or embedding pipeline returned an error.
   const factory KreuzbergError.embedding({required String message}) =
       KreuzbergError_Embedding;
+
+  /// The reranker model or reranking pipeline returned an error.
+  ///
+  /// Since v5.0.0.
+  const factory KreuzbergError.reranking({required String message}) =
+      KreuzbergError_Reranking;
 
   /// Audio/video transcription failed.
   const factory KreuzbergError.transcription({required String message}) =
@@ -10196,6 +10366,242 @@ enum RelationshipKind {
 
   /// Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field).
   crossReference,
+}
+
+/// A single document returned by the reranker, with its position in the input and score.
+///
+/// `index` maps back to the caller's original document list, so metadata arrays
+/// (e.g. IDs, paths) can be reordered without passing them through the reranker.
+///
+/// Since v5.0.0.
+class RerankedDocument {
+  /// Position of this document in the original input `documents` slice.
+  final PlatformInt64 index;
+
+  /// Relevance score in `[0, 1]`. Higher means more relevant to the query.
+  final double score;
+
+  /// The document text.
+  final String document;
+
+  const RerankedDocument({
+    required this.index,
+    required this.score,
+    required this.document,
+  });
+
+  @override
+  int get hashCode => index.hashCode ^ score.hashCode ^ document.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RerankedDocument &&
+          runtimeType == other.runtimeType &&
+          index == other.index &&
+          score == other.score &&
+          document == other.document;
+}
+
+/// Configuration for the reranking pipeline.
+///
+/// Controls which model to use, how many results to return, and download/cache
+/// behavior for local ONNX models.
+///
+/// Since v5.0.0.
+class RerankerConfig {
+  /// The reranker model to use (defaults to "balanced" preset if not specified).
+  final RerankerModelType model;
+
+  /// Return at most this many documents. `None` returns all.
+  ///
+  /// Applied after sorting by score, so the highest-scoring documents are kept.
+  final PlatformInt64? topK;
+
+  /// Batch size for local ONNX cross-encoder inference.
+  final PlatformInt64 batchSize;
+
+  /// Show model download progress (local ONNX path only).
+  final bool showDownloadProgress;
+
+  /// Custom cache directory for model files.
+  ///
+  /// Defaults to `~/.cache/kreuzberg/rerankers/` if not specified.
+  final String? cacheDir;
+
+  /// Hardware acceleration for the reranker ONNX model.
+  ///
+  /// Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for
+  /// local inference. Defaults to `None` (auto-select per platform).
+  final AccelerationConfig? acceleration;
+
+  /// Maximum wall-clock duration (in seconds) for a single `rerank()` call when
+  /// using [`RerankerModelType::Plugin`].
+  ///
+  /// Applies only to the in-process plugin path — protects against hung
+  /// host-language backends. On timeout, the dispatcher returns
+  /// `Plugin` instead of blocking forever.
+  ///
+  /// `None` disables the timeout. The default (60 seconds) is conservative
+  /// for common in-process inference; increase for large document sets on slow
+  /// hardware.
+  final PlatformInt64? maxRerankDurationSecs;
+
+  const RerankerConfig({
+    required this.model,
+    this.topK,
+    required this.batchSize,
+    required this.showDownloadProgress,
+    this.cacheDir,
+    this.acceleration,
+    this.maxRerankDurationSecs,
+  });
+
+  @override
+  int get hashCode =>
+      model.hashCode ^
+      topK.hashCode ^
+      batchSize.hashCode ^
+      showDownloadProgress.hashCode ^
+      cacheDir.hashCode ^
+      acceleration.hashCode ^
+      maxRerankDurationSecs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RerankerConfig &&
+          runtimeType == other.runtimeType &&
+          model == other.model &&
+          topK == other.topK &&
+          batchSize == other.batchSize &&
+          showDownloadProgress == other.showDownloadProgress &&
+          cacheDir == other.cacheDir &&
+          acceleration == other.acceleration &&
+          maxRerankDurationSecs == other.maxRerankDurationSecs;
+}
+
+@freezed
+sealed class RerankerModelType with _$RerankerModelType {
+  const RerankerModelType._();
+
+  /// Use a preset cross-encoder model (recommended).
+  const factory RerankerModelType.preset({
+    /// Preset name (e.g. "balanced", "fast", "quality", "multilingual").
+    required String name,
+  }) = RerankerModelType_Preset;
+
+  /// Use a custom ONNX cross-encoder from HuggingFace.
+  const factory RerankerModelType.custom({
+    /// HuggingFace model repository ID (e.g. "cross-encoder/ms-marco-MiniLM-L-6-v2").
+    required String modelId,
+
+    /// Path to the ONNX file within the repo.
+    ///
+    /// Defaults to `"onnx/model.onnx"` when `None`. Override for repos that
+    /// place the weight elsewhere (e.g. `"model.onnx"` for `rozgo/bge-reranker-v2-m3`,
+    /// `"onnx/model_quantized.onnx"` for int8 variants).
+    required String modelFile,
+
+    /// Sibling files that must be downloaded alongside `model_file`.
+    ///
+    /// Empty for most repos. Set to e.g. `vec!["model.onnx.data".into()]` for
+    /// `rozgo/bge-reranker-v2-m3`, which ships the weights in a co-located
+    /// `model.onnx.data` blob.
+    required List<String> additionalFiles,
+
+    /// Maximum token sequence length for the tokenizer.
+    ///
+    /// Stored as `i64` for FFI compatibility across language bindings.
+    /// Treated as a non-negative value; negative values are clamped to the model default.
+    required PlatformInt64 maxLength,
+  }) = RerankerModelType_Custom;
+
+  /// Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage).
+  ///
+  /// The model in the nested `LlmConfig` must be a rerank-capable model ID
+  /// (e.g. `"cohere/rerank-english-v3.0"`).
+  const factory RerankerModelType.llm({
+    /// LLM provider configuration specifying the model and API credentials.
+    required LlmConfig llm,
+  }) = RerankerModelType_Llm;
+
+  /// In-process reranker registered via the plugin system.
+  ///
+  /// The caller registers a `RerankerBackend` once (e.g. a
+  /// wrapper around a `sentence-transformers` cross-encoder or a provider client),
+  /// then references it by name in config. Kreuzberg calls back into the registered
+  /// backend — no HuggingFace download, no ONNX Runtime requirement.
+  ///
+  /// When this variant is selected, only `max_rerank_duration_secs` applies.
+  /// Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`,
+  /// `acceleration`) are ignored — the host owns the model lifecycle.
+  ///
+  /// See `register_reranker_backend`.
+  const factory RerankerModelType.plugin({
+    /// Name the backend was registered under via `register_reranker_backend`.
+    required String name,
+  }) = RerankerModelType_Plugin;
+}
+
+/// Metadata for a bundled reranker preset.
+///
+/// All string fields are owned `String` for FFI compatibility — instances are
+/// safe to clone and pass across language boundaries.
+///
+/// Since v5.0.0.
+class RerankerPreset {
+  /// Short identifier (catalog name, e.g. `"bge-reranker-base"`).
+  final String name;
+
+  /// HuggingFace repository name for the model.
+  final String modelRepo;
+
+  /// Path to the ONNX model file within the repo.
+  final String modelFile;
+
+  /// Sibling files that must be downloaded alongside `model_file`.
+  ///
+  /// Empty for most presets. Used by repos that split the weight blob —
+  /// e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a
+  /// co-located `model.onnx.data` payload.
+  final List<String> additionalFiles;
+
+  /// Maximum token sequence length the model supports.
+  final PlatformInt64 maxLength;
+
+  /// Human-readable description of the preset's intended use case.
+  final String description;
+
+  const RerankerPreset({
+    required this.name,
+    required this.modelRepo,
+    required this.modelFile,
+    required this.additionalFiles,
+    required this.maxLength,
+    required this.description,
+  });
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      modelRepo.hashCode ^
+      modelFile.hashCode ^
+      additionalFiles.hashCode ^
+      maxLength.hashCode ^
+      description.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RerankerPreset &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          modelRepo == other.modelRepo &&
+          modelFile == other.modelFile &&
+          additionalFiles == other.additionalFiles &&
+          maxLength == other.maxLength &&
+          description == other.description;
 }
 
 /// Result-shape selection for extraction results.

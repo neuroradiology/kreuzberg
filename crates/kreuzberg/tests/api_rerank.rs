@@ -123,11 +123,7 @@ async fn test_rerank_happy_path_sorted_descending() {
         "sigmoid(-2.0) should be < 0.5, got {}",
         score_for(0)
     );
-    assert!(
-        score_for(1) > 0.9,
-        "sigmoid(3.0) should be > 0.9, got {}",
-        score_for(1)
-    );
+    assert!(score_for(1) > 0.9, "sigmoid(3.0) should be > 0.9, got {}", score_for(1));
 
     let _ = clear_reranker_backends();
 }

@@ -3365,6 +3365,24 @@ KREUZBERGExtractionConfig *kreuzberg_extraction_config_default(void);
  * For text-only extractions (no OCR, no image extraction), skipping image
  * decompression can improve CPU utilization by 5-10% by avoiding wasteful
  * image I/O and processing when results won't be used.
+ * Returns `true` when image binary data should be extracted.
+ *
+ * True when `config.images.extract_images` is set **or** when captioning is
+ * configured â captioning requires image bytes regardless of whether the caller
+ * also requested `images` extraction.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+int32_t kreuzberg_extraction_config_needs_image_data(const KREUZBERGExtractionConfig *this_);
+
+/**
+ * Returns `true` when any image processing is needed during extraction.
+ *
+ * # Optimization Impact
+ *
+ * For text-only extractions (no OCR, no image extraction, no captioning), skipping
+ * image decompression can improve CPU utilization by 5-10% by avoiding wasteful
+ * image I/O and processing when results won't be used.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
@@ -12667,6 +12685,13 @@ char *kreuzberg_reranker_preset_model_repo(const KREUZBERGRerankerPreset *ptr);
 char *kreuzberg_reranker_preset_model_file(const KREUZBERGRerankerPreset *ptr);
 
 /**
+ * Get the `additional_files` field from a `RerankerPreset`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_reranker_preset_additional_files(const KREUZBERGRerankerPreset *ptr);
+
+/**
  * Get the `max_length` field from a `RerankerPreset`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -15670,6 +15695,37 @@ char *kreuzberg_get_extensions_for_mime(const char *mime_type);
 uintptr_t kreuzberg_get_extensions_for_mime_len(const char *_mime_type);
 
 /**
+ * List all supported document formats.
+ *
+ * Returns every file extension Kreuzberg recognizes together with its
+ * corresponding MIME type, derived from the central format registry.
+ * Formats that have no registered file extension (such as source code,
+ * which is detected dynamically) are not included.
+ *
+ * The list is sorted alphabetically by file extension.
+ * \return A vector of `SupportedFormat` entries sorted by extension.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * use kreuzberg::core::mime::list_supported_formats;
+ *
+ * let formats = list_supported_formats();
+ * assert!(!formats.is_empty());
+ * assert!(formats.iter().any(|f| f.extension == "pdf"));
+ * \endcode
+ */
+char *kreuzberg_list_supported_formats(void);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_list_supported_formats`
+ * on this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_list_supported_formats`.
+ */
+uintptr_t kreuzberg_list_supported_formats_len(void);
+
+/**
  * Detect QR codes in the bytes of an `ExtractedImage`.
  *
  * `format_hint` is currently unused â the `image` crate auto-detects the
@@ -15880,6 +15936,30 @@ int32_t kreuzberg_classify_pages(KREUZBERGExtractionResult *result,
                                  const KREUZBERGPageClassificationConfig *config);
 
 /**
+ * Classify a single piece of text without requiring an `ExtractionResult`.
+ *
+ * Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+ * receiving documents off a queue) and wants a label list back without
+ * manufacturing extractor-side metadata.
+ * \note Same as `classify_pages`: a validation error when `config.labels` is empty,
+ * or any error returned by prompt rendering or the underlying LLM call.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+char *kreuzberg_classify_text(const char *text,
+                              const KREUZBERGPageClassificationConfig *config);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_classify_text` on this
+ * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
+ * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_classify_text`.
+ */
+uintptr_t kreuzberg_classify_text_len(const char *_text,
+                                      const KREUZBERGPageClassificationConfig *_config);
+
+/**
  * Eagerly download a NER model into the kreuzberg cache.
  *
  * `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
@@ -16071,6 +16151,45 @@ uintptr_t kreuzberg_extract_region_with_vlm_len(const uint8_t *_image_bytes,
                                                 int32_t _region_kind,
                                                 const KREUZBERGLlmConfig *_llm_config,
                                                 const char *_custom_prompt);
+
+/**
+ * Extract keywords from text using the specified algorithm.
+ *
+ * This is the unified entry point for keyword extraction. The algorithm
+ * used is determined by `config.algorithm`.
+ * \param text The text to extract keywords from
+ * \param config Keyword extraction configuration
+ * \return A vector of keywords sorted by relevance (highest score first).
+ * \note Returns an error if:
+ * - The specified algorithm feature is not enabled
+ * - Keyword extraction fails
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = "Document intelligence with Rust provides memory safety.";
+ * let config = KeywordConfig::default()
+ *     .with_max_keywords(10)
+ *     .with_language("en");
+ *
+ * let keywords = extract_keywords(text, &config)?;
+ *
+ * for keyword in keywords {
+ *     println!("{}: {:.3}", keyword.text, keyword.score);
+ * }
+ * \endcode
+ */
+char *kreuzberg_extract_keywords(const char *text,
+                                 const KREUZBERGKeywordConfig *config);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_extract_keywords` on
+ * this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_extract_keywords`.
+ */
+uintptr_t kreuzberg_extract_keywords_len(const char *_text,
+                                         const KREUZBERGKeywordConfig *_config);
 
 /**
  * Render a single PDF page to PNG bytes.

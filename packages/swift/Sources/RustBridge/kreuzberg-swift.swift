@@ -37,6 +37,9 @@ public func detectMimeTypeFromBytes(_ content: RustVec<UInt8>) throws -> RustStr
 public func getExtensionsForMime<GenericIntoRustString: IntoRustString>(_ mime_type: GenericIntoRustString) throws -> RustVec<RustString> {
     try { let val = __swift_bridge__$get_extensions_for_mime({ let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func listSupportedFormats() -> RustVec<SupportedFormat> {
+    RustVec(ptr: __swift_bridge__$list_supported_formats())
+}
 public func detectQrCodes<GenericIntoRustString: IntoRustString>(_ image_bytes: RustVec<UInt8>, _ format_hint: Optional<GenericIntoRustString>) -> RustVec<QrCode> {
     RustVec(ptr: __swift_bridge__$detect_qr_codes({ let val = image_bytes; val.isOwned = false; return val.ptr }(), { if let rustString = optionalStringIntoRustString(format_hint) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
 }
@@ -58,11 +61,17 @@ public func listPostProcessors() throws -> RustVec<RustString> {
 public func listRenderers() throws -> RustVec<RustString> {
     try { let val = __swift_bridge__$list_renderers(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func listRerankerBackends() throws -> RustVec<RustString> {
+    try { let val = __swift_bridge__$list_reranker_backends(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 public func listValidators() throws -> RustVec<RustString> {
     try { let val = __swift_bridge__$list_validators(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func classifyPages(_ result: ExtractionResult, _ config: PageClassificationConfig) throws -> () {
     try { let val = __swift_bridge__$classify_pages({result.isOwned = false; return result.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val != nil { throw RustString(ptr: val!) } else { return } }()
+}
+public func classifyText<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString, _ config: PageClassificationConfig) throws -> RustVec<ClassificationLabel> {
+    try { let val = __swift_bridge__$classify_text({ let rustString = text.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func defaultModelName() -> RustString {
     RustString(ptr: __swift_bridge__$default_model_name())
@@ -88,6 +97,9 @@ public func compare(_ a: ExtractionResult, _ b: ExtractionResult, _ opts: DiffOp
 public func extractRegionWithVlm<GenericIntoRustString: IntoRustString>(_ image_bytes: RustVec<UInt8>, _ image_mime: GenericIntoRustString, _ region_kind: GenericIntoRustString, _ llm_config: LlmConfig, _ custom_prompt: Optional<GenericIntoRustString>) throws -> RustString {
     try { let val = __swift_bridge__$extract_region_with_vlm({ let val = image_bytes; val.isOwned = false; return val.ptr }(), { let rustString = image_mime.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = region_kind.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {llm_config.isOwned = false; return llm_config.ptr;}(), { if let rustString = optionalStringIntoRustString(custom_prompt) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func extractKeywords<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString, _ config: KeywordConfig) throws -> RustVec<Keyword> {
+    try { let val = __swift_bridge__$extract_keywords({ let rustString = text.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 public func renderPdfPageToPng<GenericIntoRustString: IntoRustString>(_ pdf_bytes: RustVec<UInt8>, _ page_index: UInt, _ dpi: Optional<Int32>, _ password: Optional<GenericIntoRustString>) throws -> RustVec<UInt8> {
     try { let val = __swift_bridge__$render_pdf_page_to_png({ let val = pdf_bytes; val.isOwned = false; return val.ptr }(), page_index, dpi.intoFfiRepr(), { if let rustString = optionalStringIntoRustString(password) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -102,6 +114,18 @@ public func getEmbeddingPreset<GenericIntoRustString: IntoRustString>(_ name: Ge
 }
 public func listEmbeddingPresets() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$list_embedding_presets())
+}
+public func rerank<GenericIntoRustString: IntoRustString>(_ query: GenericIntoRustString, _ documents: RustVec<GenericIntoRustString>, _ config: RerankerConfig) throws -> RustVec<RerankedDocument> {
+    try { let val = __swift_bridge__$rerank({ let rustString = query.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = documents; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func rerankAsync<GenericIntoRustString: IntoRustString>(_ query: GenericIntoRustString, _ documents: RustVec<GenericIntoRustString>, _ config: RerankerConfig) throws -> RustVec<RerankedDocument> {
+    try { let val = __swift_bridge__$rerank_async({ let rustString = query.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = documents; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func getRerankerPreset<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) -> Optional<RerankerPreset> {
+    { let val = __swift_bridge__$get_reranker_preset({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { return RerankerPreset(ptr: val!) } else { return nil } }()
+}
+public func listRerankerPresets() -> RustVec<RustString> {
+    RustVec(ptr: __swift_bridge__$list_reranker_presets())
 }
 public func alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
     RustVec(ptr: __swift_bridge__$alef_phantom_vec_ocr_backend())
@@ -153,6 +177,12 @@ public func alef_phantom_vec_renderer() -> RustVec<RendererBox> {
 }
 public func renderer_call_render<GenericIntoRustString: IntoRustString>(_ this: RendererBoxRef, _ doc: GenericIntoRustString) -> RustString {
     RustString(ptr: __swift_bridge__$renderer_call_render(this.ptr, { let rustString = doc.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+}
+public func alef_phantom_vec_reranker_backend() -> RustVec<RerankerBackendBox> {
+    RustVec(ptr: __swift_bridge__$alef_phantom_vec_reranker_backend())
+}
+public func reranker_backend_call_rerank<GenericIntoRustString: IntoRustString>(_ this: RerankerBackendBoxRef, _ query: GenericIntoRustString, _ documents: RustVec<GenericIntoRustString>) -> RustString {
+    RustString(ptr: __swift_bridge__$reranker_backend_call_rerank(this.ptr, { let rustString = query.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = documents; val.isOwned = false; return val.ptr }()))
 }
 public func registerOcrBackend(_ swift_box: SwiftOcrBackendBox) throws -> () {
     try { let val = __swift_bridge__$register_ocr_backend(Unmanaged.passRetained(swift_box).toOpaque()); if val != nil { throw RustString(ptr: val!) } else { return } }()
@@ -207,6 +237,15 @@ public func unregisterRenderer<GenericIntoRustString: IntoRustString>(_ name: Ge
 }
 public func clearRenderers() throws -> () {
     try { let val = __swift_bridge__$clear_renderers(); if val != nil { throw RustString(ptr: val!) } else { return } }()
+}
+public func registerRerankerBackend(_ swift_box: SwiftRerankerBackendBox) throws -> () {
+    try { let val = __swift_bridge__$register_reranker_backend(Unmanaged.passRetained(swift_box).toOpaque()); if val != nil { throw RustString(ptr: val!) } else { return } }()
+}
+public func unregisterRerankerBackend<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) throws -> () {
+    try { let val = __swift_bridge__$unregister_reranker_backend({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { throw RustString(ptr: val!) } else { return } }()
+}
+public func clearRerankerBackends() throws -> () {
+    try { let val = __swift_bridge__$clear_reranker_backends(); if val != nil { throw RustString(ptr: val!) } else { return } }()
 }
 @_cdecl("__swift_bridge__$SwiftOcrBackendBox$alef_name")
 func __swift_bridge__SwiftOcrBackendBox_alef_name (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
@@ -448,6 +487,31 @@ func __swift_bridge__SwiftRendererBox_alef_render (_ this: UnsafeMutableRawPoint
     { let rustString = Unmanaged<SwiftRendererBox>.fromOpaque(this).takeUnretainedValue().alef_render(doc: RustString(ptr: doc)).intoRustString(); rustString.isOwned = false; return rustString.ptr }()
 }
 
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$alef_name")
+func __swift_bridge__SwiftRerankerBackendBox_alef_name (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+    { let rustString = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(this).takeUnretainedValue().alef_name().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
+}
+
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$alef_version")
+func __swift_bridge__SwiftRerankerBackendBox_alef_version (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+    { let rustString = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(this).takeUnretainedValue().alef_version().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
+}
+
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$alef_initialize")
+func __swift_bridge__SwiftRerankerBackendBox_alef_initialize (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+    { let rustString = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(this).takeUnretainedValue().alef_initialize().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
+}
+
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$alef_shutdown")
+func __swift_bridge__SwiftRerankerBackendBox_alef_shutdown (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+    { let rustString = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(this).takeUnretainedValue().alef_shutdown().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
+}
+
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$alef_rerank")
+func __swift_bridge__SwiftRerankerBackendBox_alef_rerank (_ this: UnsafeMutableRawPointer, _ query: UnsafeMutableRawPointer, _ documents: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+    { let rustString = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(this).takeUnretainedValue().alef_rerank(query: RustString(ptr: query), documents: RustVec(ptr: documents)).intoRustString(); rustString.isOwned = false; return rustString.ptr }()
+}
+
 public func pageClassificationConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> PageClassificationConfig {
     try { let val = __swift_bridge__$page_classification_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return PageClassificationConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -472,6 +536,9 @@ public func embeddingConfigFromJson<GenericIntoRustString: IntoRustString>(_ jso
 public func redactionConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RedactionConfig {
     try { let val = __swift_bridge__$redaction_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RedactionConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func rerankerConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RerankerConfig {
+    try { let val = __swift_bridge__$reranker_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RerankerConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 public func translationConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> TranslationConfig {
     try { let val = __swift_bridge__$translation_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return TranslationConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -483,6 +550,9 @@ public func ocrExtractionResultFromJson<GenericIntoRustString: IntoRustString>(_
 }
 public func diffOptionsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> DiffOptions {
     try { let val = __swift_bridge__$diff_options_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return DiffOptions(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func keywordConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> KeywordConfig {
+    try { let val = __swift_bridge__$keyword_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return KeywordConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func cacheStatsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CacheStats {
     try { let val = __swift_bridge__$cache_stats_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CacheStats(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -886,14 +956,17 @@ public func embeddedDiffFromJson<GenericIntoRustString: IntoRustString>(_ json: 
 public func embeddingPresetFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> EmbeddingPreset {
     try { let val = __swift_bridge__$embedding_preset_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return EmbeddingPreset(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func rerankedDocumentFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RerankedDocument {
+    try { let val = __swift_bridge__$reranked_document_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RerankedDocument(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func rerankerPresetFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RerankerPreset {
+    try { let val = __swift_bridge__$reranker_preset_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RerankerPreset(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 public func yakeParamsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> YakeParams {
     try { let val = __swift_bridge__$yake_params_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return YakeParams(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func rakeParamsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RakeParams {
     try { let val = __swift_bridge__$rake_params_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RakeParams(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func keywordConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> KeywordConfig {
-    try { let val = __swift_bridge__$keyword_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return KeywordConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func keywordFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> Keyword {
     try { let val = __swift_bridge__$keyword_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return Keyword(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -951,6 +1024,9 @@ public func chunkSizingFromJson<GenericIntoRustString: IntoRustString>(_ json: G
 }
 public func embeddingModelTypeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> EmbeddingModelType {
     try { let val = __swift_bridge__$embedding_model_type_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return EmbeddingModelType(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func rerankerModelTypeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RerankerModelType {
+    try { let val = __swift_bridge__$reranker_model_type_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RerankerModelType(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func whisperModelFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> WhisperModel {
     try { let val = __swift_bridge__$whisper_model_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return WhisperModel(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -1158,6 +1234,9 @@ public func __alef_phantom_vec_redaction_term() -> RustVec<RedactionTerm> {
 }
 public func __alef_phantom_vec_redaction_pattern() -> RustVec<RedactionPattern> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_redaction_pattern())
+}
+public func __alef_phantom_vec_reranker_config() -> RustVec<RerankerConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_config())
 }
 public func __alef_phantom_vec_summarization_config() -> RustVec<SummarizationConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_summarization_config())
@@ -1510,6 +1589,12 @@ public func __alef_phantom_vec_embedded_diff() -> RustVec<EmbeddedDiff> {
 public func __alef_phantom_vec_embedding_preset() -> RustVec<EmbeddingPreset> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedding_preset())
 }
+public func __alef_phantom_vec_reranked_document() -> RustVec<RerankedDocument> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranked_document())
+}
+public func __alef_phantom_vec_reranker_preset() -> RustVec<RerankerPreset> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_preset())
+}
 public func __alef_phantom_vec_yake_params() -> RustVec<YakeParams> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_yake_params())
 }
@@ -1575,6 +1660,9 @@ public func __alef_phantom_vec_chunk_sizing() -> RustVec<ChunkSizing> {
 }
 public func __alef_phantom_vec_embedding_model_type() -> RustVec<EmbeddingModelType> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedding_model_type())
+}
+public func __alef_phantom_vec_reranker_model_type() -> RustVec<RerankerModelType> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_model_type())
 }
 public func __alef_phantom_vec_whisper_model() -> RustVec<WhisperModel> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_whisper_model())
@@ -5036,6 +5124,115 @@ extension RedactionPattern: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_RedactionPattern$len(vecPtr)
+    }
+}
+
+
+public class RerankerConfig: RerankerConfigRefMut {
+    public var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$RerankerConfig$_free(ptr)
+        }
+    }
+}
+extension RerankerConfig {
+    public convenience init<GenericIntoRustString: IntoRustString>(_ model: RerankerModelType, _ top_k: Optional<UInt>, _ batch_size: UInt, _ show_download_progress: Bool, _ cache_dir: Optional<GenericIntoRustString>, _ acceleration: Optional<AccelerationConfig>, _ max_rerank_duration_secs: Optional<UInt64>) {
+        self.init(ptr: __swift_bridge__$RerankerConfig$new({model.isOwned = false; return model.ptr;}(), top_k.intoFfiRepr(), batch_size, show_download_progress, { if let rustString = optionalStringIntoRustString(cache_dir) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), max_rerank_duration_secs.intoFfiRepr()))
+    }
+}
+public class RerankerConfigRefMut: RerankerConfigRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class RerankerConfigRef {
+    public var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension RerankerConfigRef {
+    public func model() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerConfig$model(ptr))
+    }
+
+    public func topK() -> Optional<UInt> {
+        __swift_bridge__$RerankerConfig$top_k(ptr).intoSwiftRepr()
+    }
+
+    public func batchSize() -> UInt {
+        __swift_bridge__$RerankerConfig$batch_size(ptr)
+    }
+
+    public func showDownloadProgress() -> Bool {
+        __swift_bridge__$RerankerConfig$show_download_progress(ptr)
+    }
+
+    public func cacheDir() -> Optional<RustString> {
+        { let val = __swift_bridge__$RerankerConfig$cache_dir(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func acceleration() -> Optional<AccelerationConfig> {
+        { let val = __swift_bridge__$RerankerConfig$acceleration(ptr); if val != nil { return AccelerationConfig(ptr: val!) } else { return nil } }()
+    }
+
+    public func maxRerankDurationSecs() -> Optional<UInt64> {
+        __swift_bridge__$RerankerConfig$max_rerank_duration_secs(ptr).intoSwiftRepr()
+    }
+}
+extension RerankerConfig: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_RerankerConfig$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_RerankerConfig$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RerankerConfig) {
+        __swift_bridge__$Vec_RerankerConfig$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_RerankerConfig$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (RerankerConfig(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerConfigRef> {
+        let pointer = __swift_bridge__$Vec_RerankerConfig$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerConfigRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerConfigRefMut> {
+        let pointer = __swift_bridge__$Vec_RerankerConfig$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerConfigRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RerankerConfigRef> {
+        UnsafePointer<RerankerConfigRef>(OpaquePointer(__swift_bridge__$Vec_RerankerConfig$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_RerankerConfig$len(vecPtr)
     }
 }
 
@@ -16725,6 +16922,194 @@ extension EmbeddingPreset: Vectorizable {
 }
 
 
+public class RerankedDocument: RerankedDocumentRefMut {
+    public var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$RerankedDocument$_free(ptr)
+        }
+    }
+}
+public class RerankedDocumentRefMut: RerankedDocumentRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class RerankedDocumentRef {
+    public var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension RerankedDocumentRef {
+    public func index() -> UInt {
+        __swift_bridge__$RerankedDocument$index(ptr)
+    }
+
+    public func score() -> Float {
+        __swift_bridge__$RerankedDocument$score(ptr)
+    }
+
+    public func document() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankedDocument$document(ptr))
+    }
+}
+extension RerankedDocument: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_RerankedDocument$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_RerankedDocument$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RerankedDocument) {
+        __swift_bridge__$Vec_RerankedDocument$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_RerankedDocument$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (RerankedDocument(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankedDocumentRef> {
+        let pointer = __swift_bridge__$Vec_RerankedDocument$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankedDocumentRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankedDocumentRefMut> {
+        let pointer = __swift_bridge__$Vec_RerankedDocument$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankedDocumentRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RerankedDocumentRef> {
+        UnsafePointer<RerankedDocumentRef>(OpaquePointer(__swift_bridge__$Vec_RerankedDocument$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_RerankedDocument$len(vecPtr)
+    }
+}
+
+
+public class RerankerPreset: RerankerPresetRefMut {
+    public var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$RerankerPreset$_free(ptr)
+        }
+    }
+}
+public class RerankerPresetRefMut: RerankerPresetRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class RerankerPresetRef {
+    public var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension RerankerPresetRef {
+    public func name() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerPreset$name(ptr))
+    }
+
+    public func modelRepo() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerPreset$model_repo(ptr))
+    }
+
+    public func modelFile() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerPreset$model_file(ptr))
+    }
+
+    public func additionalFiles() -> RustVec<RustString> {
+        RustVec(ptr: __swift_bridge__$RerankerPreset$additional_files(ptr))
+    }
+
+    public func maxLength() -> UInt {
+        __swift_bridge__$RerankerPreset$max_length(ptr)
+    }
+
+    public func description() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerPreset$description(ptr))
+    }
+}
+extension RerankerPreset: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_RerankerPreset$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_RerankerPreset$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RerankerPreset) {
+        __swift_bridge__$Vec_RerankerPreset$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_RerankerPreset$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (RerankerPreset(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerPresetRef> {
+        let pointer = __swift_bridge__$Vec_RerankerPreset$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerPresetRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerPresetRefMut> {
+        let pointer = __swift_bridge__$Vec_RerankerPreset$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerPresetRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RerankerPresetRef> {
+        UnsafePointer<RerankerPresetRef>(OpaquePointer(__swift_bridge__$Vec_RerankerPreset$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_RerankerPreset$len(vecPtr)
+    }
+}
+
+
 public class YakeParams: YakeParamsRefMut {
     public var isOwned: Bool = true
 
@@ -18680,6 +19065,86 @@ extension EmbeddingModelType: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_EmbeddingModelType$len(vecPtr)
+    }
+}
+
+
+public class RerankerModelType: RerankerModelTypeRefMut {
+    public var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$RerankerModelType$_free(ptr)
+        }
+    }
+}
+public class RerankerModelTypeRefMut: RerankerModelTypeRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class RerankerModelTypeRef {
+    public var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension RerankerModelTypeRef {
+    public func to_string() -> RustString {
+        RustString(ptr: __swift_bridge__$RerankerModelType$to_string(ptr))
+    }
+}
+extension RerankerModelType: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_RerankerModelType$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_RerankerModelType$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RerankerModelType) {
+        __swift_bridge__$Vec_RerankerModelType$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_RerankerModelType$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (RerankerModelType(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerModelTypeRef> {
+        let pointer = __swift_bridge__$Vec_RerankerModelType$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerModelTypeRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerModelTypeRefMut> {
+        let pointer = __swift_bridge__$Vec_RerankerModelType$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerModelTypeRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RerankerModelTypeRef> {
+        UnsafePointer<RerankerModelTypeRef>(OpaquePointer(__swift_bridge__$Vec_RerankerModelType$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_RerankerModelType$len(vecPtr)
     }
 }
 
@@ -22254,6 +22719,81 @@ extension RendererBox: Vectorizable {
 }
 
 
+public class RerankerBackendBox: RerankerBackendBoxRefMut {
+    public var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$RerankerBackendBox$_free(ptr)
+        }
+    }
+}
+public class RerankerBackendBoxRefMut: RerankerBackendBoxRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class RerankerBackendBoxRef {
+    public var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension RerankerBackendBox: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_RerankerBackendBox$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_RerankerBackendBox$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RerankerBackendBox) {
+        __swift_bridge__$Vec_RerankerBackendBox$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_RerankerBackendBox$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (RerankerBackendBox(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerBackendBoxRef> {
+        let pointer = __swift_bridge__$Vec_RerankerBackendBox$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerBackendBoxRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RerankerBackendBoxRefMut> {
+        let pointer = __swift_bridge__$Vec_RerankerBackendBox$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return RerankerBackendBoxRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RerankerBackendBoxRef> {
+        UnsafePointer<RerankerBackendBoxRef>(OpaquePointer(__swift_bridge__$Vec_RerankerBackendBox$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_RerankerBackendBox$len(vecPtr)
+    }
+}
+
+
 @_cdecl("__swift_bridge__$SwiftOcrBackendBox$_free")
 func __swift_bridge__SwiftOcrBackendBox__free (ptr: UnsafeMutableRawPointer) {
     let _ = Unmanaged<SwiftOcrBackendBox>.fromOpaque(ptr).takeRetainedValue()
@@ -22287,4 +22827,10 @@ func __swift_bridge__SwiftDocumentExtractorBox__free (ptr: UnsafeMutableRawPoint
 @_cdecl("__swift_bridge__$SwiftRendererBox$_free")
 func __swift_bridge__SwiftRendererBox__free (ptr: UnsafeMutableRawPointer) {
     let _ = Unmanaged<SwiftRendererBox>.fromOpaque(ptr).takeRetainedValue()
+}
+
+
+@_cdecl("__swift_bridge__$SwiftRerankerBackendBox$_free")
+func __swift_bridge__SwiftRerankerBackendBox__free (ptr: UnsafeMutableRawPointer) {
+    let _ = Unmanaged<SwiftRerankerBackendBox>.fromOpaque(ptr).takeRetainedValue()
 }

@@ -20,6 +20,7 @@ namespace Kreuzberg;
 // - _EmbeddingBackendBridgeAdapter → "csharp-bridge-embedding_backend-adapter"
 // - _DocumentExtractorBridgeAdapter → "csharp-bridge-document_extractor-adapter"
 // - _RendererBridgeAdapter → "csharp-bridge-renderer-adapter"
+// - _RerankerBackendBridgeAdapter → "csharp-bridge-reranker_backend-adapter"
 //
 // These names are used by e2e test cleanup to unregister adapters after each test.
 
@@ -325,6 +326,44 @@ public sealed class _RendererBridgeAdapter : IRenderer
     public string Render(string Doc)
     {
         return _impl.Render(Doc);
+    }
+
+}
+
+/// <summary>
+/// Adapter bridge for RerankerBackend trait implementation.
+/// Wraps a user-provided IRerankerBackend implementation and delegates all method calls.
+/// </summary>
+public sealed class _RerankerBackendBridgeAdapter : IRerankerBackend
+{
+    private readonly IRerankerBackend _impl;
+
+    /// <summary>Create an adapter around a user-provided RerankerBackend implementation.</summary>
+    public _RerankerBackendBridgeAdapter(IRerankerBackend impl)
+    {
+        _impl = impl ?? throw new ArgumentNullException(nameof(impl));
+    }
+
+    // MARK: - Plugin lifecycle (if present)
+
+    /// <summary>Get the plugin name.</summary>
+    public string Name => _impl.Name;
+
+    /// <summary>Get the plugin version.</summary>
+    public string Version => _impl.Version;
+
+    /// <summary>Initialize the plugin.</summary>
+    public void Initialize() => _impl.Initialize();
+
+    /// <summary>Shut down the plugin.</summary>
+    public void Shutdown() => _impl.Shutdown();
+
+    // MARK: - Trait methods
+
+    /// <summary></summary>
+    public List<float> Rerank(string Query, List<string> Documents)
+    {
+        return _impl.Rerank(Query, Documents);
     }
 
 }

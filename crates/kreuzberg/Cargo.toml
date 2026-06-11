@@ -485,7 +485,7 @@ pulldown-cmark = { version = "0.13" }
 quick-xml = { version = "0.40.1", features = ["serialize"], optional = true }
 rake = { version = "0.3.6", optional = true }
 rayon = { workspace = true }
-regex = "1.12.3"
+regex = "1.12.4"
 rmcp = { version = "1.7.0", features = [
     "server",
     "macros",

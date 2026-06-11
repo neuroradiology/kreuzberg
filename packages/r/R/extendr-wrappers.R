@@ -150,6 +150,17 @@ detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_f
 #' @return A vector of file extensions (without leading dot) for the MIME type.
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
+#' List all supported document formats
+#'
+#' Returns every file extension Kreuzberg recognizes together with its
+#' corresponding MIME type, derived from the central format registry.
+#' Formats that have no registered file extension (such as source code,
+#' which is detected dynamically) are not included.
+#'
+#' The list is sorted alphabetically by file extension.
+#' @return A vector of [`SupportedFormat`] entries sorted by extension.
+#' @export
+list_supported_formats <- function() .Call("wrap__list_supported_formats", PACKAGE = "kreuzberg")
 #' List the names of all registered embedding backends
 #'
 #' Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
@@ -192,6 +203,15 @@ list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE =
 #' Returns an error if the registry lock is poisoned.
 #' @export
 list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg")
+#' List the names of all registered reranker backends
+#'
+#' Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+#' bindings.
+#'
+#' Since v5.0.0.
+#' @return List of character string.
+#' @export
+list_reranker_backends <- function() .Call("wrap__list_reranker_backends", PACKAGE = "kreuzberg")
 #' List names of all registered validators
 #' @return List of character string.
 #' @export
@@ -210,6 +230,20 @@ list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzber
 #' a half-populated vector.
 #' @export
 classify_pages <- function(result = ExtractionResult$default(), config) .Call("wrap__classify_pages", result, config, PACKAGE = "kreuzberg")
+#' Classify a single piece of text without requiring an `ExtractionResult`
+#'
+#' Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+#' receiving documents off a queue) and wants a label list back without
+#' manufacturing extractor-side metadata.
+#' @param text Character string.
+#' @param config PageClassificationConfig object (list with class attribute).
+#' @return List of classificationlabel object (list with class attribute).
+#'
+#' @section Errors:
+#' Same as [`classify_pages`]: a validation error when `config.labels` is empty,
+#' or any error returned by prompt rendering or the underlying LLM call.
+#' @export
+classify_text <- function(text, config) .Call("wrap__classify_text", text, config, PACKAGE = "kreuzberg")
 #' Eagerly download a NER model into the kreuzberg cache
 #'
 #' `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
@@ -293,6 +327,20 @@ compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default
 #'   be initialised.
 #' @export
 extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
+#' Extract keywords from text using the specified algorithm
+#'
+#' This is the unified entry point for keyword extraction. The algorithm
+#' used is determined by `config.algorithm`.
+#' @param text The text to extract keywords from.
+#' @param config Keyword extraction configuration.
+#' @return A vector of keywords sorted by relevance (highest score first).
+#'
+#' @section Errors:
+#' Returns an error if:
+#' - The specified algorithm feature is not enabled
+#' - Keyword extraction fails
+#' @export
+extract_keywords <- function(text, config = KeywordConfig$default()) .Call("wrap__extract_keywords", text, config, PACKAGE = "kreuzberg")
 #' Render a single PDF page to PNG bytes
 #'
 #' Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -341,6 +389,50 @@ get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name,
 #' @return List of character string.
 #' @export
 list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
+#' Rerank a list of documents by relevance to a query
+#'
+#' Returns documents sorted descending by score. Applies `top_k` truncation if
+#' configured.
+#' @param query Character string.
+#' @param documents List of character string.
+#' @param config RerankerConfig object (list with class attribute).
+#' @return List of rerankeddocument object (list with class attribute).
+#'
+#' @section Errors:
+#' - [`KreuzbergError::Validation`] if `query` is empty or blank.
+#' - [`KreuzbergError::MissingDependency`] if ONNX Runtime is not installed (ONNX path).
+#' - [`KreuzbergError::Reranking`] if the preset is unknown or model download fails.
+#'
+#' Since v5.0.0.
+#' @export
+rerank <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank", query, documents, config, PACKAGE = "kreuzberg")
+#' Stub for builds without the `reranker` feature
+#'
+#' Since v5.0.0.
+#' @param _query Character string.
+#' @param _documents List of character string.
+#' @param _config RerankerConfig object (list with class attribute).
+#' @return List of rerankeddocument object (list with class attribute).
+#' @export
+rerank_async <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank_async", query, documents, config, PACKAGE = "kreuzberg")
+#' Get a reranker preset by name
+#'
+#' Returns `None` if no preset with the given name exists. Returns an owned
+#' clone so the value is safe to pass across FFI boundaries.
+#'
+#' Since v5.0.0.
+#' @param name Character string.
+#' @return Optional RerankerPreset object (list with class attribute). Defaults to NULL.
+#' @export
+get_reranker_preset <- function(name) .Call("wrap__get_reranker_preset", name, PACKAGE = "kreuzberg")
+#' List the names of all available reranker presets
+#'
+#' Returns owned `String`s so the values are safe to pass across FFI boundaries.
+#'
+#' Since v5.0.0.
+#' @return List of character string.
+#' @export
+list_reranker_presets <- function() .Call("wrap__list_reranker_presets", PACKAGE = "kreuzberg")
 #' register_ocr_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -497,6 +589,32 @@ unregister_renderer <- function(name) .Call("wrap__unregister_renderer", name, P
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
 clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzberg")
+#' register_reranker_backend
+#'
+#' Register an R-side plugin implementation. Pass a named list whose entries
+#' implement the trait's required methods (e.g. `list(name = function() "my", ...)`).
+#'
+#' @param r_backend Named list of R closures implementing the trait surface.
+#'
+#' @return Invisible NULL on success; raises an R error on failure.
+#' @export
+register_reranker_backend <- function(r_backend) .Call("wrap__register_reranker_backend", r_backend, PACKAGE = "kreuzberg")
+#' unregister_reranker_backend
+#'
+#' Unregister a previously registered plugin by name.
+#'
+#' @param name Plugin name string as returned by the backend's `name()` method.
+#'
+#' @return Invisible NULL on success; raises an R error on failure.
+#' @export
+unregister_reranker_backend <- function(name) .Call("wrap__unregister_reranker_backend", name, PACKAGE = "kreuzberg")
+#' clear_reranker_backends
+#'
+#' Remove every registered plugin of this type. Typically used in test teardown.
+#'
+#' @return Invisible NULL on success; raises an R error on failure.
+#' @export
+clear_reranker_backends <- function() .Call("wrap__clear_reranker_backends", PACKAGE = "kreuzberg")
 #' Aggregate statistics for a kreuzberg cache directory
 #' @field total_files Total number of files currently in the cache directory.
 #' @field total_size_mb Combined size of all cache files in megabytes.
@@ -667,6 +785,7 @@ EmailConfig$from_json <- function(json) {
 #' @export
 ExtractionConfig <- new.env(parent = emptyenv())
 ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "kreuzberg")
+ExtractionConfig$needs_image_data <- function(self) .Call("wrap__ExtractionConfig__needs_image_data", self, PACKAGE = "kreuzberg")
 ExtractionConfig$needs_image_processing <- function(self) .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "kreuzberg")
 ExtractionConfig$from_json <- function(json) {
   .Call("wrap__ExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -682,6 +801,8 @@ ExtractionConfig$from_json <- function(json) {
 }
 #' @export
 `[[.ExtractionConfig` <- `$.ExtractionConfig`
+#' @export
+needs_image_data.ExtractionConfig <- function(x, ...) x$needs_image_data(...)
 #' @export
 needs_image_processing.ExtractionConfig <- function(x, ...) x$needs_image_processing(...)
 #' Per-file extraction configuration overrides for batch processing
@@ -1280,6 +1401,36 @@ RedactionPattern$labeled <- function(label, pattern) .Call("wrap__RedactionPatte
 }
 #' @export
 `[[.RedactionPattern` <- `$.RedactionPattern`
+#' Configuration for the reranking pipeline
+#'
+#' Controls which model to use, how many results to return, and download/cache
+#' behavior for local ONNX models.
+#'
+#' Since v5.0.0.
+#' @field model The reranker model to use (defaults to "balanced" preset if not specified).
+#' @field top_k Return at most this many documents. `None` returns all.
+#' @field batch_size Batch size for local ONNX cross-encoder inference.
+#' @field show_download_progress Show model download progress (local ONNX path only).
+#' @field cache_dir Custom cache directory for model files.
+#' @field acceleration Hardware acceleration for the reranker ONNX model.
+#' @field max_rerank_duration_secs Maximum wall-clock duration (in seconds) for a single `rerank()` call when using
+#' @export
+RerankerConfig <- new.env(parent = emptyenv())
+RerankerConfig$default <- function() .Call("wrap__RerankerConfig__default", PACKAGE = "kreuzberg")
+RerankerConfig$from_json <- function(json) {
+  .Call("wrap__RerankerConfig__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.RerankerConfig` <- function(self, name) {
+  func <- RerankerConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RerankerConfig` <- `$.RerankerConfig`
 #' Configuration for the summarisation post-processor
 #' @field strategy Summarisation strategy.
 #' @field max_tokens Maximum summary length in tokens. `None` lets the backend pick a default.
@@ -3211,6 +3362,53 @@ EmbeddingPreset <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.EmbeddingPreset` <- `$.EmbeddingPreset`
+#' A single document returned by the reranker, with its position in the input and score
+#'
+#' `index` maps back to the caller's original document list, so metadata arrays
+#' (e.g. IDs, paths) can be reordered without passing them through the reranker.
+#'
+#' Since v5.0.0.
+#' @field index Position of this document in the original input `documents` slice.
+#' @field score Relevance score in `[0, 1]`. Higher means more relevant to the query.
+#' @field document The document text.
+#' @export
+RerankedDocument <- new.env(parent = emptyenv())
+#' @export
+`$.RerankedDocument` <- function(self, name) {
+  func <- RerankedDocument[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RerankedDocument` <- `$.RerankedDocument`
+#' Metadata for a bundled reranker preset
+#'
+#' All string fields are owned `String` for FFI compatibility — instances are
+#' safe to clone and pass across language boundaries.
+#'
+#' Since v5.0.0.
+#' @field name Short identifier (catalog name, e.g. `"bge-reranker-base"`).
+#' @field model_repo HuggingFace repository name for the model.
+#' @field model_file Path to the ONNX model file within the repo.
+#' @field additional_files Sibling files that must be downloaded alongside `model_file`.
+#' @field max_length Maximum token sequence length the model supports.
+#' @field description Human-readable description of the preset's intended use case.
+#' @export
+RerankerPreset <- new.env(parent = emptyenv())
+#' @export
+`$.RerankerPreset` <- function(self, name) {
+  func <- RerankerPreset[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RerankerPreset` <- `$.RerankerPreset`
 #' YAKE-specific parameters
 #' @field window_size Window size for co-occurrence analysis (default: 2).
 #' @export
@@ -3581,7 +3779,6 @@ EntityCategory <- new.env(parent = emptyenv())
 #' @field Epub Metadata extracted from an EPUB e-book.
 #' @field Pst Metadata extracted from an Outlook PST archive.
 #' @field Audio Metadata extracted from an audio or video file.
-#' @field Code Code metadata (tree-sitter analysis results).
 #' @export
 FormatMetadata <- new.env(parent = emptyenv())
 #' @export
@@ -3934,6 +4131,24 @@ EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__
 }
 #' @export
 `[[.EmbeddingModelType` <- `$.EmbeddingModelType`
+#' Reranker model types supported by Kreuzberg
+#'
+#' Since v5.0.0.
+#' @export
+RerankerModelType <- new.env(parent = emptyenv())
+RerankerModelType$default <- function() .Call("wrap__RerankerModelType__default", PACKAGE = "kreuzberg")
+RerankerModelType$from_json <- function(json) .Call("wrap__RerankerModelType__from_json", json, PACKAGE = "kreuzberg")
+#' @export
+`$.RerankerModelType` <- function(self, name) {
+  func <- RerankerModelType[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.RerankerModelType` <- `$.RerankerModelType`
 #' Tagged enum for node content. Each variant carries only type-specific data
 #'
 #' Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
@@ -4020,6 +4235,8 @@ listen_addr <- function(x, ...) UseMethod("listen_addr")
 max_multipart_field_mb <- function(x, ...) UseMethod("max_multipart_field_mb")
 #' @export
 max_request_body_mb <- function(x, ...) UseMethod("max_request_body_mb")
+#' @export
+needs_image_data <- function(x, ...) UseMethod("needs_image_data")
 #' @export
 needs_image_processing <- function(x, ...) UseMethod("needs_image_processing")
 #' @export

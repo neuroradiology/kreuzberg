@@ -114,17 +114,17 @@ impl RerankerBackendRegistry {
         let mut first_error: Option<crate::KreuzbergError> = None;
 
         for name in names {
-            if let Some(backend) = self.backends.remove(&name) {
-                if let Err(err) = backend.shutdown() {
-                    if first_error.is_none() {
-                        first_error = Some(err);
-                    } else {
-                        tracing::warn!(
-                            backend = %name,
-                            error = %err,
-                            "Reranker backend shutdown failed during shutdown_all (already surfacing an earlier error)",
-                        );
-                    }
+            if let Some(backend) = self.backends.remove(&name)
+                && let Err(err) = backend.shutdown()
+            {
+                if first_error.is_none() {
+                    first_error = Some(err);
+                } else {
+                    tracing::warn!(
+                        backend = %name,
+                        error = %err,
+                        "Reranker backend shutdown failed during shutdown_all (already surfacing an earlier error)",
+                    );
                 }
             }
         }

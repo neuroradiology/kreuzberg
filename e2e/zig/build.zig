@@ -343,6 +343,57 @@ pub fn build(b: *std.Build) void {
     renderer_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&renderer_management_run.step);
 
+    const rerank_module = b.createModule(.{
+        .root_source_file = b.path("src/rerank_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    rerank_module.addImport("kreuzberg", kreuzberg_module);
+    const rerank_tests = b.addTest(.{
+        .name = "rerank_test",
+        .root_module = rerank_module,
+        .use_llvm = true,
+    });
+    rerank_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
+    const rerank_run = b.addRunArtifact(rerank_tests);
+    rerank_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&rerank_run.step);
+
+    const rerank_async_pending_module = b.createModule(.{
+        .root_source_file = b.path("src/rerank_async_pending_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    rerank_async_pending_module.addImport("kreuzberg", kreuzberg_module);
+    const rerank_async_pending_tests = b.addTest(.{
+        .name = "rerank_async_pending_test",
+        .root_module = rerank_async_pending_module,
+        .use_llvm = true,
+    });
+    rerank_async_pending_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
+    const rerank_async_pending_run = b.addRunArtifact(rerank_async_pending_tests);
+    rerank_async_pending_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&rerank_async_pending_run.step);
+
+    const reranker_backend_management_module = b.createModule(.{
+        .root_source_file = b.path("src/reranker_backend_management_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    reranker_backend_management_module.addImport("kreuzberg", kreuzberg_module);
+    const reranker_backend_management_tests = b.addTest(.{
+        .name = "reranker_backend_management_test",
+        .root_module = reranker_backend_management_module,
+        .use_llvm = true,
+    });
+    reranker_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
+    const reranker_backend_management_run = b.addRunArtifact(reranker_backend_management_tests);
+    reranker_backend_management_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&reranker_backend_management_run.step);
+
     const smoke_module = b.createModule(.{
         .root_source_file = b.path("src/smoke_test.zig"),
         .target = target,

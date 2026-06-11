@@ -106,7 +106,8 @@ fn assert_scores_in_unit_interval(results: &[kreuzberg::RerankedDocument], conte
 fn assert_top_is_expected(results: &[kreuzberg::RerankedDocument], expected_top: usize, suite_id: &str, preset: &str) {
     let actual_top = results.first().expect("non-empty results").index;
     assert_eq!(
-        actual_top, expected_top,
+        actual_top,
+        expected_top,
         "preset {preset} on suite {suite_id}: expected top document index {expected_top}, got {actual_top}. Full ordering: {:?}",
         results.iter().map(|r| (r.index, r.score)).collect::<Vec<_>>(),
     );
@@ -131,7 +132,11 @@ async fn bge_reranker_base_english_top_ranks_first() {
             .await
             .unwrap_or_else(|e| panic!("bge-reranker-base on {}: {e}", suite.id));
 
-        assert_eq!(results.len(), suite.documents.len(), "result count must match input count");
+        assert_eq!(
+            results.len(),
+            suite.documents.len(),
+            "result count must match input count"
+        );
         assert_scores_in_unit_interval(&results, &format!("bge-reranker-base / {}", suite.id));
         assert_top_is_expected(&results, suite.expected_top_index, &suite.id, "bge-reranker-base");
     }
@@ -156,7 +161,12 @@ async fn jina_reranker_v1_turbo_en_english_top_ranks_first() {
             .unwrap_or_else(|e| panic!("jina-reranker-v1-turbo-en on {}: {e}", suite.id));
 
         assert_scores_in_unit_interval(&results, &format!("jina-v1-turbo / {}", suite.id));
-        assert_top_is_expected(&results, suite.expected_top_index, &suite.id, "jina-reranker-v1-turbo-en");
+        assert_top_is_expected(
+            &results,
+            suite.expected_top_index,
+            &suite.id,
+            "jina-reranker-v1-turbo-en",
+        );
     }
 }
 
@@ -222,14 +232,13 @@ async fn bge_reranker_v2_m3_loads_via_additional_files() {
         .await
         .unwrap_or_else(|e| panic!("bge-reranker-v2-m3 download/load failed: {e}"));
 
-    assert_eq!(results.len(), suite.documents.len(), "result count must match input count");
-    assert_scores_in_unit_interval(&results, "bge-reranker-v2-m3 / english_basic");
-    assert_top_is_expected(
-        &results,
-        suite.expected_top_index,
-        &suite.id,
-        "bge-reranker-v2-m3",
+    assert_eq!(
+        results.len(),
+        suite.documents.len(),
+        "result count must match input count"
     );
+    assert_scores_in_unit_interval(&results, "bge-reranker-v2-m3 / english_basic");
+    assert_top_is_expected(&results, suite.expected_top_index, &suite.id, "bge-reranker-v2-m3");
 }
 
 /// `Preset { name: "..." }` and `Custom { model_id: "<same_repo>", ... }`
