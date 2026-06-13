@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.14"
+alef_version = "0.24.15"
 languages = [
   "python",
   "node",
@@ -274,13 +274,6 @@ exclude_functions = [
 [crates.elixir]
 app_name = "kreuzberg"
 exclude_functions = [
-  # batch_extract_* take Vec<(PathBuf, Option<FileExtractionConfig>)> or
-  # Vec<(Vec<u8>, String, Option<...>)> which codegen maps to Vec<String> —
-  # type mismatch; no safe tuple-marshalling across NIF boundary
-  "batch_extract_files_sync",
-  "batch_extract_bytes_sync",
-  "batch_extract_files",
-  "batch_extract_bytes",
   "calculate_quality_score",
   "embed_texts",
 ]
@@ -978,6 +971,13 @@ fields_array = [
   "metadata.sheet_names",
   "metadata.format.excel.sheet_names",
   "document.node_types",
+]
+# Enum-typed fields on the result tree. Typed bindings (C#, Java, Kotlin,
+# Elixir atoms, etc.) emit enum variants for these, so the e2e codegen must
+# avoid string-only assertion helpers (e.g. `.Trim()`, `String.trim/1`) and
+# compare against the serde-wire string form instead.
+fields_enum = [
+  "summary.strategy",
 ]
 # Kreuzberg's `ExtractionResult` exposes every result field as a `pub <field>:`
 # struct field. The Rust e2e renderer in alef uses `fields_method_calls` to
