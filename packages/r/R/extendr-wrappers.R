@@ -3689,7 +3689,7 @@ PdfMetadata$from_json <- function(json) {
 #' @field Native Preserve whatever format the extractor produced (default).
 #' @field Png Re-encode all extracted images as PNG (lossless).
 #' @field Jpeg Re-encode all extracted images as JPEG at the given quality level.
-#' @field WebP Re-encode all extracted images as WebP at the given quality level.
+#' @field Webp Re-encode all extracted images as WebP at the given quality level.
 #' @field Heif Re-encode all extracted images as HEIF/HEIC at the given quality level.
 #' @export
 ImageOutputFormat <- new.env(parent = emptyenv())

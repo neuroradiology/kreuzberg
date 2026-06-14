@@ -6539,10 +6539,10 @@ sealed class ImageOutputFormat with _$ImageOutputFormat {
   ///
   /// `quality` must be in `1..=100`. Values outside this range are clamped
   /// and a warning is emitted. 80 is a reasonable default.
-  const factory ImageOutputFormat.webP({
+  const factory ImageOutputFormat.webp({
     /// WebP quality (1–100, default 80).
     required PlatformInt64 quality,
-  }) = ImageOutputFormat_WebP;
+  }) = ImageOutputFormat_Webp;
 
   /// Re-encode all extracted images as HEIF/HEIC at the given quality level.
   ///

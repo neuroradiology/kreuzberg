@@ -8240,7 +8240,7 @@ const _: fn() = || {
         crate::ImageOutputFormat::Jpeg { quality } => {
             let _: i64 = quality;
         }
-        crate::ImageOutputFormat::WebP { quality } => {
+        crate::ImageOutputFormat::Webp { quality } => {
             let _: i64 = quality;
         }
         crate::ImageOutputFormat::Heif { quality } => {
@@ -12099,7 +12099,7 @@ impl SseDecode for crate::ImageOutputFormat {
             }
             3 => {
                 let mut var_quality = <i64>::sse_decode(deserializer);
-                return crate::ImageOutputFormat::WebP { quality: var_quality };
+                return crate::ImageOutputFormat::Webp { quality: var_quality };
             }
             4 => {
                 let mut var_quality = <i64>::sse_decode(deserializer);
@@ -18918,7 +18918,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageOutputFormat> {
             crate::ImageOutputFormat::Jpeg { quality } => {
                 [2.into_dart(), quality.into_into_dart().into_dart()].into_dart()
             }
-            crate::ImageOutputFormat::WebP { quality } => {
+            crate::ImageOutputFormat::Webp { quality } => {
                 [3.into_dart(), quality.into_into_dart().into_dart()].into_dart()
             }
             crate::ImageOutputFormat::Heif { quality } => {
@@ -23268,7 +23268,7 @@ impl SseEncode for crate::ImageOutputFormat {
                 <i32>::sse_encode(2, serializer);
                 <i64>::sse_encode(quality, serializer);
             }
-            crate::ImageOutputFormat::WebP { quality } => {
+            crate::ImageOutputFormat::Webp { quality } => {
                 <i32>::sse_encode(3, serializer);
                 <i64>::sse_encode(quality, serializer);
             }

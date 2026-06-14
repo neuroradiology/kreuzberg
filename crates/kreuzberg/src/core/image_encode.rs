@@ -117,7 +117,7 @@ fn target_matches_format(target: ImageOutputFormat, format: &str) -> bool {
         ImageOutputFormat::Native => true, // guarded at call site; included for exhaustiveness
         ImageOutputFormat::Png => format.eq_ignore_ascii_case("png"),
         ImageOutputFormat::Jpeg { .. } => format.eq_ignore_ascii_case("jpeg") || format.eq_ignore_ascii_case("jpg"),
-        ImageOutputFormat::WebP { .. } => format.eq_ignore_ascii_case("webp"),
+        ImageOutputFormat::Webp { .. } => format.eq_ignore_ascii_case("webp"),
         #[cfg(feature = "heic")]
         ImageOutputFormat::Heif { .. } => {
             format.eq_ignore_ascii_case("heif")
@@ -265,7 +265,7 @@ fn encode_to_target(img: &DynamicImage, target: ImageOutputFormat) -> Result<(Ve
             let bytes = encode_jpeg(img, clamped)?;
             Ok((bytes, "jpeg"))
         }
-        ImageOutputFormat::WebP { quality: _ } => {
+        ImageOutputFormat::Webp { quality: _ } => {
             // The `image` 0.25 crate's built-in WebP encoder supports lossless
             // encoding only (VP8L).  Lossy WebP would require an additional
             // dependency (`webp` crate / libwebp FFI), which is not included to
@@ -333,7 +333,7 @@ fn encode_jpeg(img: &DynamicImage, quality: u8) -> Result<Vec<u8>, EncodeWarning
 
 /// Encode `img` as lossless WebP using the `image` crate's built-in VP8L encoder.
 ///
-/// The `quality` field from [`ImageOutputFormat::WebP`] is intentionally ignored:
+/// The `quality` field from [`ImageOutputFormat::Webp`] is intentionally ignored:
 /// `image` 0.25 exposes only lossless WebP (VP8L) via `WebPEncoder::new_lossless`.
 /// Lossy encoding would require the `webp` crate (libwebp FFI) or a future `image`
 /// release that exposes a quality knob on its VP8 encode path.
@@ -515,7 +515,7 @@ mod tests {
     #[test]
     fn png_to_webp() {
         let mut image = make_image(make_png_bytes(), "png");
-        let result = re_encode(&mut image, ImageOutputFormat::WebP { quality: 80 });
+        let result = re_encode(&mut image, ImageOutputFormat::Webp { quality: 80 });
         assert!(
             matches!(result, Ok(true)),
             "png→webp must return Ok(true); got {result:?}"

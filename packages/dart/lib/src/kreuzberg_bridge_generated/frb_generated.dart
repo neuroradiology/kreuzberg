@@ -13023,7 +13023,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return ImageOutputFormat_Jpeg(quality: dco_decode_i_64(raw[1]));
       case 3:
-        return ImageOutputFormat_WebP(quality: dco_decode_i_64(raw[1]));
+        return ImageOutputFormat_Webp(quality: dco_decode_i_64(raw[1]));
       case 4:
         return ImageOutputFormat_Heif(quality: dco_decode_i_64(raw[1]));
       default:
@@ -19060,7 +19060,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return ImageOutputFormat_Jpeg(quality: var_quality);
       case 3:
         var var_quality = sse_decode_i_64(deserializer);
-        return ImageOutputFormat_WebP(quality: var_quality);
+        return ImageOutputFormat_Webp(quality: var_quality);
       case 4:
         var var_quality = sse_decode_i_64(deserializer);
         return ImageOutputFormat_Heif(quality: var_quality);
@@ -26357,7 +26357,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case ImageOutputFormat_Jpeg(quality: final quality):
         sse_encode_i_32(2, serializer);
         sse_encode_i_64(quality, serializer);
-      case ImageOutputFormat_WebP(quality: final quality):
+      case ImageOutputFormat_Webp(quality: final quality):
         sse_encode_i_32(3, serializer);
         sse_encode_i_64(quality, serializer);
       case ImageOutputFormat_Heif(quality: final quality):

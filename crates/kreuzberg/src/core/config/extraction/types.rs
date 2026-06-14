@@ -54,7 +54,7 @@ pub enum ImageOutputFormat {
     ///
     /// `quality` must be in `1..=100`. Values outside this range are clamped
     /// and a warning is emitted. 80 is a reasonable default.
-    WebP {
+    Webp {
         /// WebP quality (1–100, default 80).
         #[serde(default = "default_webp_quality")]
         quality: u8,
@@ -488,18 +488,29 @@ mod tests {
 
     #[test]
     fn test_output_format_webp_roundtrips_via_json() {
-        let fmt = ImageOutputFormat::WebP { quality: 75 };
+        let fmt = ImageOutputFormat::Webp { quality: 75 };
         let json = serde_json::to_string(&fmt).unwrap();
         let back: ImageOutputFormat = serde_json::from_str(&json).unwrap();
-        assert_eq!(back, ImageOutputFormat::WebP { quality: 75 });
+        assert_eq!(back, ImageOutputFormat::Webp { quality: 75 });
     }
 
     #[test]
     fn test_output_format_webp_default_quality_applied_when_field_absent() {
         // Omitting "quality" from the JSON object should yield the default (80).
-        let json = r#"{"type":"web_p"}"#;
+        let json = r#"{"type":"webp"}"#;
         let fmt: ImageOutputFormat = serde_json::from_str(json).unwrap();
-        assert_eq!(fmt, ImageOutputFormat::WebP { quality: 80 });
+        assert_eq!(fmt, ImageOutputFormat::Webp { quality: 80 });
+    }
+
+    #[test]
+    fn test_output_format_webp_wire_value_is_lowercase_webp() {
+        // The variant is spelled `Webp` (not `WebP`) so serde's default
+        // snake_case rendering produces the industry-standard single-word
+        // `"webp"` wire tag, and alef-derived binding method/constant names
+        // (`fn webp`, `Webp`, `WEBP`) match.
+        let fmt = ImageOutputFormat::Webp { quality: 80 };
+        let json = serde_json::to_string(&fmt).unwrap();
+        assert_eq!(json, r#"{"type":"webp","quality":80}"#);
     }
 
     #[cfg(feature = "heic")]

@@ -4133,14 +4133,14 @@ extension ImageOutputFormatPatterns on ImageOutputFormat {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ImageOutputFormat_Native value)?  native,TResult Function( ImageOutputFormat_Png value)?  png,TResult Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult Function( ImageOutputFormat_WebP value)?  webP,TResult Function( ImageOutputFormat_Heif value)?  heif,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ImageOutputFormat_Native value)?  native,TResult Function( ImageOutputFormat_Png value)?  png,TResult Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult Function( ImageOutputFormat_Webp value)?  webp,TResult Function( ImageOutputFormat_Heif value)?  heif,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native(_that);case ImageOutputFormat_Png() when png != null:
 return png(_that);case ImageOutputFormat_Jpeg() when jpeg != null:
-return jpeg(_that);case ImageOutputFormat_WebP() when webP != null:
-return webP(_that);case ImageOutputFormat_Heif() when heif != null:
+return jpeg(_that);case ImageOutputFormat_Webp() when webp != null:
+return webp(_that);case ImageOutputFormat_Heif() when heif != null:
 return heif(_that);case _:
   return orElse();
 
@@ -4159,14 +4159,14 @@ return heif(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ImageOutputFormat_Native value)  native,required TResult Function( ImageOutputFormat_Png value)  png,required TResult Function( ImageOutputFormat_Jpeg value)  jpeg,required TResult Function( ImageOutputFormat_WebP value)  webP,required TResult Function( ImageOutputFormat_Heif value)  heif,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ImageOutputFormat_Native value)  native,required TResult Function( ImageOutputFormat_Png value)  png,required TResult Function( ImageOutputFormat_Jpeg value)  jpeg,required TResult Function( ImageOutputFormat_Webp value)  webp,required TResult Function( ImageOutputFormat_Heif value)  heif,}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native():
 return native(_that);case ImageOutputFormat_Png():
 return png(_that);case ImageOutputFormat_Jpeg():
-return jpeg(_that);case ImageOutputFormat_WebP():
-return webP(_that);case ImageOutputFormat_Heif():
+return jpeg(_that);case ImageOutputFormat_Webp():
+return webp(_that);case ImageOutputFormat_Heif():
 return heif(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -4181,14 +4181,14 @@ return heif(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ImageOutputFormat_Native value)?  native,TResult? Function( ImageOutputFormat_Png value)?  png,TResult? Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult? Function( ImageOutputFormat_WebP value)?  webP,TResult? Function( ImageOutputFormat_Heif value)?  heif,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ImageOutputFormat_Native value)?  native,TResult? Function( ImageOutputFormat_Png value)?  png,TResult? Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult? Function( ImageOutputFormat_Webp value)?  webp,TResult? Function( ImageOutputFormat_Heif value)?  heif,}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native(_that);case ImageOutputFormat_Png() when png != null:
 return png(_that);case ImageOutputFormat_Jpeg() when jpeg != null:
-return jpeg(_that);case ImageOutputFormat_WebP() when webP != null:
-return webP(_that);case ImageOutputFormat_Heif() when heif != null:
+return jpeg(_that);case ImageOutputFormat_Webp() when webp != null:
+return webp(_that);case ImageOutputFormat_Heif() when heif != null:
 return heif(_that);case _:
   return null;
 
@@ -4206,13 +4206,13 @@ return heif(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  native,TResult Function()?  png,TResult Function( PlatformInt64 quality)?  jpeg,TResult Function( PlatformInt64 quality)?  webP,TResult Function( PlatformInt64 quality)?  heif,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  native,TResult Function()?  png,TResult Function( PlatformInt64 quality)?  jpeg,TResult Function( PlatformInt64 quality)?  webp,TResult Function( PlatformInt64 quality)?  heif,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native();case ImageOutputFormat_Png() when png != null:
 return png();case ImageOutputFormat_Jpeg() when jpeg != null:
-return jpeg(_that.quality);case ImageOutputFormat_WebP() when webP != null:
-return webP(_that.quality);case ImageOutputFormat_Heif() when heif != null:
+return jpeg(_that.quality);case ImageOutputFormat_Webp() when webp != null:
+return webp(_that.quality);case ImageOutputFormat_Heif() when heif != null:
 return heif(_that.quality);case _:
   return orElse();
 
@@ -4231,13 +4231,13 @@ return heif(_that.quality);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  native,required TResult Function()  png,required TResult Function( PlatformInt64 quality)  jpeg,required TResult Function( PlatformInt64 quality)  webP,required TResult Function( PlatformInt64 quality)  heif,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  native,required TResult Function()  png,required TResult Function( PlatformInt64 quality)  jpeg,required TResult Function( PlatformInt64 quality)  webp,required TResult Function( PlatformInt64 quality)  heif,}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native():
 return native();case ImageOutputFormat_Png():
 return png();case ImageOutputFormat_Jpeg():
-return jpeg(_that.quality);case ImageOutputFormat_WebP():
-return webP(_that.quality);case ImageOutputFormat_Heif():
+return jpeg(_that.quality);case ImageOutputFormat_Webp():
+return webp(_that.quality);case ImageOutputFormat_Heif():
 return heif(_that.quality);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -4252,13 +4252,13 @@ return heif(_that.quality);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  native,TResult? Function()?  png,TResult? Function( PlatformInt64 quality)?  jpeg,TResult? Function( PlatformInt64 quality)?  webP,TResult? Function( PlatformInt64 quality)?  heif,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  native,TResult? Function()?  png,TResult? Function( PlatformInt64 quality)?  jpeg,TResult? Function( PlatformInt64 quality)?  webp,TResult? Function( PlatformInt64 quality)?  heif,}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native();case ImageOutputFormat_Png() when png != null:
 return png();case ImageOutputFormat_Jpeg() when jpeg != null:
-return jpeg(_that.quality);case ImageOutputFormat_WebP() when webP != null:
-return webP(_that.quality);case ImageOutputFormat_Heif() when heif != null:
+return jpeg(_that.quality);case ImageOutputFormat_Webp() when webp != null:
+return webp(_that.quality);case ImageOutputFormat_Heif() when heif != null:
 return heif(_that.quality);case _:
   return null;
 
@@ -4401,8 +4401,8 @@ as PlatformInt64,
 /// @nodoc
 
 
-class ImageOutputFormat_WebP extends ImageOutputFormat {
-  const ImageOutputFormat_WebP({required this.quality}): super._();
+class ImageOutputFormat_Webp extends ImageOutputFormat {
+  const ImageOutputFormat_Webp({required this.quality}): super._();
   
 
 /// WebP quality (1–100, default 80).
@@ -4412,13 +4412,13 @@ class ImageOutputFormat_WebP extends ImageOutputFormat {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$ImageOutputFormat_WebPCopyWith<ImageOutputFormat_WebP> get copyWith => _$ImageOutputFormat_WebPCopyWithImpl<ImageOutputFormat_WebP>(this, _$identity);
+$ImageOutputFormat_WebpCopyWith<ImageOutputFormat_Webp> get copyWith => _$ImageOutputFormat_WebpCopyWithImpl<ImageOutputFormat_Webp>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageOutputFormat_WebP&&(identical(other.quality, quality) || other.quality == quality));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageOutputFormat_Webp&&(identical(other.quality, quality) || other.quality == quality));
 }
 
 
@@ -4427,15 +4427,15 @@ int get hashCode => Object.hash(runtimeType,quality);
 
 @override
 String toString() {
-  return 'ImageOutputFormat.webP(quality: $quality)';
+  return 'ImageOutputFormat.webp(quality: $quality)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $ImageOutputFormat_WebPCopyWith<$Res> implements $ImageOutputFormatCopyWith<$Res> {
-  factory $ImageOutputFormat_WebPCopyWith(ImageOutputFormat_WebP value, $Res Function(ImageOutputFormat_WebP) _then) = _$ImageOutputFormat_WebPCopyWithImpl;
+abstract mixin class $ImageOutputFormat_WebpCopyWith<$Res> implements $ImageOutputFormatCopyWith<$Res> {
+  factory $ImageOutputFormat_WebpCopyWith(ImageOutputFormat_Webp value, $Res Function(ImageOutputFormat_Webp) _then) = _$ImageOutputFormat_WebpCopyWithImpl;
 @useResult
 $Res call({
  PlatformInt64 quality
@@ -4446,17 +4446,17 @@ $Res call({
 
 }
 /// @nodoc
-class _$ImageOutputFormat_WebPCopyWithImpl<$Res>
-    implements $ImageOutputFormat_WebPCopyWith<$Res> {
-  _$ImageOutputFormat_WebPCopyWithImpl(this._self, this._then);
+class _$ImageOutputFormat_WebpCopyWithImpl<$Res>
+    implements $ImageOutputFormat_WebpCopyWith<$Res> {
+  _$ImageOutputFormat_WebpCopyWithImpl(this._self, this._then);
 
-  final ImageOutputFormat_WebP _self;
-  final $Res Function(ImageOutputFormat_WebP) _then;
+  final ImageOutputFormat_Webp _self;
+  final $Res Function(ImageOutputFormat_Webp) _then;
 
 /// Create a copy of ImageOutputFormat
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? quality = null,}) {
-  return _then(ImageOutputFormat_WebP(
+  return _then(ImageOutputFormat_Webp(
 quality: null == quality ? _self.quality : quality // ignore: cast_nullable_to_non_nullable
 as PlatformInt64,
   ));

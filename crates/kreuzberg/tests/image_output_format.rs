@@ -226,7 +226,7 @@ fn pdf_force_webp() {
         return;
     }
 
-    let config = config_with_output_format(ImageOutputFormat::WebP { quality: 80 });
+    let config = config_with_output_format(ImageOutputFormat::Webp { quality: 80 });
     let result = extract_file_sync(&path, None, &config).expect("WebP extraction must succeed");
 
     let images = result
