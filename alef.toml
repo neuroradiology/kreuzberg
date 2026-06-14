@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.17"
+alef_version = "0.25.0"
 languages = [
   "python",
   "node",
@@ -220,6 +220,13 @@ reexported_types = [
 [crates.python.stubs]
 output = "packages/python/kreuzberg/"
 
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the PyO3 cdylib drops `heic` along with the ORT-dependent features.
+[[crates.python.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
+
 [crates.node]
 package_name = "@kreuzberg/node"
 exclude_types = [
@@ -237,6 +244,13 @@ exclude_functions = [
 # fields (e.g. binary cache maps). Not added by alef-backend-napi automatically.
 serde_with = "3"
 
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the NAPI-RS cdylib drops `heic` along with the ORT-dependent features.
+[[crates.node.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
+
 [crates.ruby]
 gem_name = "kreuzberg"
 exclude_functions = [
@@ -246,6 +260,13 @@ exclude_functions = [
 
 [crates.ruby.stubs]
 output = "packages/ruby/sig/"
+
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the Magnus cdylib drops `heic` along with the ORT-dependent features.
+[[crates.ruby.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
 
 [crates.php]
 extension_name = "kreuzberg"
@@ -272,6 +293,13 @@ exclude_functions = [
   "embed_texts",
 ]
 
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the ext-php-rs cdylib drops `heic` along with the ORT-dependent features.
+[[crates.php.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
+
 [crates.elixir]
 app_name = "kreuzberg"
 exclude_functions = [
@@ -282,6 +310,13 @@ exclude_types = [
   # Trait types cannot be FFI-bound
   "Recyclable",
 ]
+
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the Rustler NIF drops `heic` along with the ORT-dependent features.
+[[crates.elixir.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
 
 [crates.wasm]
 package_name = "@kreuzberg/wasm"
@@ -386,53 +421,33 @@ exclude_functions = [
   "embed_texts",
 ]
 
-# x86_64-linux-android (emulator) lacks a pyke ORT prebuilt. The C FFI cdylib is
-# embedded into Android app builds via jniLibs/x86_64/, so the kreuzberg-ffi
-# crate must drop ORT-dependent features on that target. All other targets
-# (incl. arm64 Android phones) keep the full ORT-enabled feature set.
+# Android (any arch). Cross-compiling libheif-sys + ORT to NDK targets is
+# unsupported, so the C FFI cdylib drops native-C / ORT features on every
+# Android arch. Was previously narrowed to `target_arch = "x86_64"` on the
+# assumption that arm64 prebuilts would let aarch64-linux-android use the full
+# set, but libheif-sys still blocks cross-compile there.
 [[crates.ffi.target_dep_overrides]]
-cfg = 'all(target_os = "android", target_arch = "x86_64")'
+cfg = 'target_os = "android"'
 features = ["android-target"]
+default_features = false
 
-# Windows now supports liter-llm after aws-lc-sys MSVC fixes. Exclude only ORT-dependent
-# features (paddle-ocr, layout-detection, embeddings, reranker) from Windows FFI.
+# iOS (any arch). Same native-C / ORT cross-compile constraint as Android;
+# reuse `android-target`'s pure-Rust + ORT-where-prebuilt-exists feature set.
+[[crates.ffi.target_dep_overrides]]
+cfg = 'target_os = "ios"'
+features = ["android-target"]
+default_features = false
+
+# Windows: use the shared `windows-target` aggregate (defined in
+# crates/kreuzberg/Cargo.toml). Excludes ORT-dependent features (paddle-ocr,
+# layout-detection, embeddings, reranker, ner-llm) and `heic` because the
+# standard `windows-latest` runner image does not ship libheif on the
+# pkg-config path. Type-only features (layout-types, paddle-ocr-types,
+# embedding-presets, reranker-presets, ner-llm-types) stay in the aggregate
+# for public-API compatibility.
 [[crates.ffi.target_dep_overrides]]
 cfg = 'target_os = "windows"'
-# Curated Windows feature set: excludes paddle-ocr, paddle-ocr-types, layout-detection,
-# layout-types, embeddings, embedding-presets, reranker, ner-llm. Type-only features
-# (layout-types, paddle-ocr-types, embedding-presets, reranker-presets, ner-llm-types)
-# are included for compatibility with public APIs.
-features = [
-  "pdf",
-  "ocr",
-  "chunking",
-  "keywords-yake",
-  "keywords-rake",
-  "language-detection",
-  "html",
-  "tree-sitter",
-  "office",
-  "email",
-  "archives",
-  "stopwords",
-  "auto-rotate-types",
-  "layout-types",
-  "paddle-ocr-types",
-  "embedding-presets",
-  "reranker-presets",
-  "ner",
-  "ner-llm-types",
-  "redaction",
-  "diff",
-  "qr-codes",
-  "summarization",
-  "transcription-types",
-  "tokio-runtime",
-  "api",
-  "mcp",
-  "liter-llm",
-  "quality",
-]
+features = ["windows-target"]
 default_features = false
 
 [crates.go]
@@ -498,6 +513,13 @@ exclude_functions = [
   "embed_texts",
 ]
 
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the Panama / JNI cdylib drops `heic` along with the ORT-dependent features.
+[[crates.java.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
+
 [crates.dart]
 pubspec_name = "kreuzberg"
 lib_name = "kreuzberg"
@@ -508,14 +530,26 @@ exclude_functions = [
   "embed_texts",
 ]
 
-# x86_64-linux-android (emulator) and x86_64-apple-ios (deprecated intel iOS
-# simulator) both lack a pyke ORT prebuilt and there is no path to one short
-# of compiling ORT from source for those triples. All other targets (incl.
-# arm64 Android phones and arm64 iOS device/sim via pyke prebuilts) keep
-# the full ORT-enabled feature set.
+# Android (any arch) and iOS: libheif-sys + ORT do not cross-compile to mobile
+# NDK/SDK targets. Use the `android-target` aggregate (pure-Rust base + excel +
+# tree-sitter + ocr + api + mcp). Previously narrowed to
+# `target_arch = "x86_64"` for Android only.
 [[crates.dart.target_dep_overrides]]
-cfg = 'all(target_os = "android", target_arch = "x86_64")'
+cfg = 'target_os = "android"'
 features = ["android-target"]
+default_features = false
+
+[[crates.dart.target_dep_overrides]]
+cfg = 'target_os = "ios"'
+features = ["android-target"]
+default_features = false
+
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the Dart server native cdylib drops `heic` along with the ORT-dependent
+# features (same shape the kreuzberg-ffi crate uses).
+[[crates.dart.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
 default_features = false
 
 [crates.kotlin_android]
@@ -548,6 +582,15 @@ exclude_functions = [
   "calculate_quality_score",
 ]
 
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the host-side JNI build (Kotlin AAR `:nativeTest`) drops `heic` along with
+# the ORT-dependent features. Android targets (aarch64-linux-android,
+# x86_64-linux-android) already get `android-target` via the FFI overrides.
+[[crates.kotlin_android.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
+
 [crates.jni]
 # JNI shim crate that emits Java_* symbols for all JNI functions and trait-bridge
 # registrations. Paired with kotlin_android backend to provide type-safe calling
@@ -574,6 +617,30 @@ exclude_functions = [
   # FFI-wrapped function whose RustString return is not properly converted
   "download_model",
 ]
+
+# iOS: libheif-sys + ORT do not cross-compile to the iOS SDK, so the
+# swift-bridge cdylib drops `heic` along with the ORT-dependent features.
+# `android-target` is a misnomer here but its feature set (pure-Rust base +
+# excel + tree-sitter + ocr + api + mcp) is what iOS can support today.
+[[crates.swift.target_dep_overrides]]
+cfg = 'target_os = "ios"'
+features = ["android-target"]
+default_features = false
+
+# Android: same native-C constraint. Included so cross-compiling kreuzberg-swift
+# to Android (e.g. via swift-bridge's Linux-host workflow) doesn't pull in
+# libheif-sys either.
+[[crates.swift.target_dep_overrides]]
+cfg = 'target_os = "android"'
+features = ["android-target"]
+default_features = false
+
+# Windows: libheif is not installed on the `windows-latest` runner image, so
+# the Swift-bridge cdylib drops `heic` along with the ORT-dependent features.
+[[crates.swift.target_dep_overrides]]
+cfg = 'target_os = "windows"'
+features = ["windows-target"]
+default_features = false
 
 [crates.csharp]
 namespace = "Kreuzberg"
@@ -968,8 +1035,6 @@ fields_optional = [
   "quality_score",
   "annotations",
   "summary",
-  "summary.text",
-  "summary.strategy",
   "translation",
   "page_classifications",
   "redaction_report",
@@ -999,12 +1064,15 @@ fields_enum = [
 ]
 # Kreuzberg's `ExtractionResult` exposes every result field as a `pub <field>:`
 # struct field. The Rust e2e renderer in alef uses `fields_method_calls` to
-# decide whether to append `()` after the accessor; leaving the list empty
-# means Rust e2e tests use the correct field-access form (`result.content`,
-# not `result.content()`). Java/Kotlin/Swift/Csharp generate their own
-# accessor shape via per-language backend conventions and do not consult
-# this set.
-fields_method_calls = []
+# decide whether to append `()` after the accessor. Most paths stay as plain
+# field access (`result.content`, not `result.content()`); entries here are the
+# Rust tagged-enum variant accessors (e.g. `FormatMetadata::excel()`) that take
+# `&self` and return `Option<&Variant>`. Java/Kotlin/Swift/Csharp generate
+# their own accessor shape via per-language backend conventions and do not
+# consult this set.
+fields_method_calls = [
+  "metadata.format.excel",
+]
 # result_fields enumerates root-type fields of the call's return value
 # (`ExtractionResult`). The PHP and Rust e2e codegens use this both to
 # validate assertion paths and to derive the root type — the unique TypeDef
@@ -3706,7 +3774,7 @@ path = "../../packages/zig"
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
 # https://github.com/kreuzberg-dev/kreuzberg/releases/download/v{version}/kreuzberg-zig-v{version}.tar.gz
-hash = "kreuzberg-5.0.0-rc.11-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "kreuzberg-5.0.0-rc.12-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements

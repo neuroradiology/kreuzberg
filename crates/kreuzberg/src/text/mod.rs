@@ -31,10 +31,20 @@ pub mod classification;
 #[cfg(not(feature = "classification"))]
 /// Page-classification API stub (classification feature not enabled on this target).
 pub mod classification {
-    use crate::{ExtractionResult, PageClassificationConfig, Result};
+    use crate::{ClassificationLabel, ExtractionResult, PageClassificationConfig, Result};
 
     /// Classify pages in an extraction result.
     pub async fn classify_pages(_result: &mut ExtractionResult, _config: &PageClassificationConfig) -> Result<()> {
+        Err(crate::KreuzbergError::Other(
+            "classification feature not available on this target".into(),
+        ))
+    }
+
+    /// Classify a free-form text string. Stub form mirrors the real
+    /// `classify_text` signature so language bindings keep compiling on
+    /// targets without the `classification` feature (e.g. `android-target`,
+    /// `wasm-target`).
+    pub async fn classify_text(_text: &str, _config: &PageClassificationConfig) -> Result<Vec<ClassificationLabel>> {
         Err(crate::KreuzbergError::Other(
             "classification feature not available on this target".into(),
         ))

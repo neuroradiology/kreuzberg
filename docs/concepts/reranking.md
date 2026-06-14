@@ -7,7 +7,7 @@ Reranking takes a query and a list of candidate documents, then scores them join
 
 ## Bi-encoders vs cross-encoders
 
-Bi-encoders (the embedding models used in [Embeddings](architecture.md#embeddings)) encode the query and each document independently, then compare via dot product or cosine similarity. They are fast and embarrassingly parallel — well suited to first-pass retrieval over millions of documents.
+Bi-encoders (the embedding models used for vector similarity) encode the query and each document independently, then compare via dot product or cosine similarity. They are fast and embarrassingly parallel — well suited to first-pass retrieval over millions of documents.
 
 Cross-encoders feed `(query, document)` pairs through a transformer that scores them together. The query and document attend to each other across every layer, producing dramatically more accurate relevance scores. The trade-off is computational cost: every candidate document requires a separate forward pass.
 

@@ -741,9 +741,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.63"
+version = "1.2.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "556e016178bb5662a08681bbe0f00f8e17631781a4dfc8c45e466e4b185ec27f"
+checksum = "dad887fd958be91b5098c0248def011f4523ab786cd411be668777e55063501f"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -2981,7 +2981,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0-rc.10"
+version = "5.0.0-rc.12"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3110,7 +3110,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-libheif"
-version = "5.0.0-rc.10"
+version = "5.0.0-rc.12"
 dependencies = [
  "cfg-if",
  "enumn",
@@ -3132,7 +3132,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.10"
+version = "5.0.0-rc.12"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3146,7 +3146,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-r"
-version = "5.0.0-rc.10"
+version = "5.0.0-rc.12"
 dependencies = [
  "async-trait",
  "extendr-api",
@@ -3158,7 +3158,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "5.0.0-rc.10"
+version = "5.0.0-rc.12"
 dependencies = [
  "cc",
  "cmake",
@@ -3522,9 +3522,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.8.1"
+version = "2.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b947ae49db0d222b1dbc6b113ce7248a3fc3a6ca21b696717bfc000ba4484d8"
+checksum = "88904434abc2901f197fe8cc55f0445e7ded921dba5911dad2e2b39b48e663c4"
 
 [[package]]
 name = "memmap2"
@@ -4108,9 +4108,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.63"
+version = "0.3.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f0b90c85ca0756d2bfa358a033c24d1546ba7ce4324f5a98956250323f0fb26"
+checksum = "fcf1a3d30b4765aec4483a9a4b445b2cf63d075123ab5a171edad0262dca6dbd"
 dependencies = [
  "aes 0.9.1",
  "base64 0.22.1",
@@ -6358,9 +6358,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.9.0-rc.32"
+version = "1.9.0-rc.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bce05c94cf75d860915af390265cb77e969f11f932973883676aff436f23911f"
+checksum = "794463a8bbb1e6ff41c564466ad7df908730dabd684ca60f3776cade801e5075"
 dependencies = [
  "ahash",
  "cc",

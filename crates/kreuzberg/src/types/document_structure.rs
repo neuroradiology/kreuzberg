@@ -290,13 +290,6 @@ pub enum ContentLayer {
     Footnote,
 }
 
-impl ContentLayer {
-    /// Check if this is the default content layer (Body).
-    pub(crate) fn is_default(&self) -> bool {
-        *self == ContentLayer::Body
-    }
-}
-
 // ============================================================================
 // Node Content (Tagged Enum)
 // ============================================================================

@@ -6,12 +6,12 @@
 //!
 //! Since v5.0.0.
 
-#[cfg(any(feature = "reranker-presets", feature = "reranker"))]
+#[cfg(feature = "reranker")]
 use liter_llm::{LlmClient, RerankDocument, RerankRequest};
 
-#[cfg(any(feature = "reranker-presets", feature = "reranker"))]
+#[cfg(feature = "reranker")]
 use crate::core::config::LlmConfig;
-#[cfg(any(feature = "reranker-presets", feature = "reranker"))]
+#[cfg(feature = "reranker")]
 use crate::reranking::RerankedDocument;
 
 /// Rerank documents using a provider-hosted model via liter-llm.
@@ -37,7 +37,7 @@ use crate::reranking::RerankedDocument;
 /// - `KreuzbergError::MissingDependency` if the liter-llm client cannot be created.
 ///
 /// Since v5.0.0.
-#[cfg(any(feature = "reranker-presets", feature = "reranker"))]
+#[cfg(feature = "reranker")]
 pub(crate) async fn rerank_via_llm(
     query: &str,
     documents: &[String],
@@ -107,7 +107,7 @@ pub(crate) async fn rerank_via_llm(
 ///
 /// liter-llm's `RerankResponse` stores usage in `meta` as an opaque JSON value.
 /// We attempt a best-effort parse; failures produce `None` rather than an error.
-#[cfg(any(feature = "reranker-presets", feature = "reranker"))]
+#[cfg(feature = "reranker")]
 fn extract_rerank_usage(response: &liter_llm::RerankResponse, model: &str) -> Option<crate::types::LlmUsage> {
     // Extract token counts from meta if the provider includes them.
     let (input_tokens, total_tokens) = response
@@ -132,7 +132,7 @@ fn extract_rerank_usage(response: &liter_llm::RerankResponse, model: &str) -> Op
     })
 }
 
-#[cfg(all(test, any(feature = "reranker-presets", feature = "reranker")))]
+#[cfg(all(test, feature = "reranker"))]
 mod tests {
     use super::*;
 

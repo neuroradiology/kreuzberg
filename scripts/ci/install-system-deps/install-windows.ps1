@@ -116,6 +116,41 @@ else {
   Write-Host "✓ LLVM/Clang found in cache"
 }
 
+# libheif via vcpkg. `libheif-sys` (transitively pulled by the `heic` feature)
+# does not use pkg-config on Windows — instead its build.rs calls
+# `vcpkg::Config::new().find_package("libheif")`. The `windows-latest` runner
+# image ships with vcpkg at C:\vcpkg, but the libheif port is not preinstalled.
+# Bindings that scaffolders don't yet gate behind `windows-target` (python,
+# node, ruby, php, elixir, swift, jni — alef target_dep_overrides only
+# emitted from the FFI and Dart scaffolders today) will still link
+# libheif-sys, so we install it here. x64-windows-static-md statically links
+# libheif while keeping the MSVC C runtime dynamic, matching `cargo build`'s
+# default MSVC toolchain.
+$libheifCacheHit = $env:LIBHEIF_CACHE_HIT -eq "true"
+if (-not $libheifCacheHit) {
+  Write-Host "libheif cache miss, installing via vcpkg..."
+  $vcpkgRoot = if ($env:VCPKG_INSTALLATION_ROOT) { $env:VCPKG_INSTALLATION_ROOT } else { "C:\vcpkg" }
+  $vcpkgExe = Join-Path $vcpkgRoot "vcpkg.exe"
+  if (-not (Test-Path $vcpkgExe)) {
+    Write-Host "::warning::vcpkg.exe not found at $vcpkgExe; skipping libheif install"
+  }
+  else {
+    if (-not (Retry-Command { & $vcpkgExe install "libheif:x64-windows-static-md" --recurse } -MaxAttempts 2)) {
+      Write-Host "::warning::Failed to install libheif via vcpkg after retries (Windows wheels for python/node/ruby/php/elixir/swift/jni may fail to link)"
+    }
+    else {
+      Write-Host "✓ libheif installed via vcpkg (x64-windows-static-md)"
+    }
+  }
+  # Expose VCPKG_ROOT so the libheif-sys build.rs uses our install.
+  Add-Content -Path $env:GITHUB_ENV -Value "VCPKG_ROOT=$vcpkgRoot"
+}
+else {
+  Write-Host "✓ libheif found in cache"
+  $vcpkgRoot = if ($env:VCPKG_INSTALLATION_ROOT) { $env:VCPKG_INSTALLATION_ROOT } else { "C:\vcpkg" }
+  Add-Content -Path $env:GITHUB_ENV -Value "VCPKG_ROOT=$vcpkgRoot"
+}
+
 Write-Host "Installing PHP..."
 $phpInstalled = $false
 try {

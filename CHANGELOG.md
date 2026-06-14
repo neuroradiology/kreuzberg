@@ -9,6 +9,169 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.12] - 2026-06-14
+
+### Added
+
+- **New `windows-target` aggregate feature in `crates/kreuzberg/Cargo.toml`.**
+  Mirrors the curated FFI-on-Windows list the publish workflow already used and drops `heic` along
+  with the ORT-dependent capabilities (paddle-ocr, layout-detection, embeddings, reranker, ner-llm).
+  The FFI and Dart Rust crates pick it up via per-crate
+  `[[crates.<x>.target_dep_overrides]] cfg = 'target_os = "windows"'` blocks in `alef.toml`.
+  The pyo3 / napi-rs / magnus / ext-php-rs / rustler / swift-bridge / jni scaffolders do not yet
+  honor `target_dep_overrides`, so the python/node/ruby/php/elixir/swift/kotlin_android Windows
+  wheels still need an alef-side scaffolder fix to drop `heic` on Windows. The alef.toml entries
+  for those crates are no-ops today but document the intent; they activate once the upstream
+  scaffolders pick up the override block.
+
+### Fixed
+
+- **Publish workflow: fixed dead-code warnings as errors on Windows / `reranker-presets`-only builds.**
+  `rerank_via_llm` and `extract_rerank_usage` in `crates/kreuzberg/src/llm/rerank.rs` were gated by
+  `any(feature = "reranker-presets", feature = "reranker")`, but every caller was gated by
+  `feature = "reranker"`. On the Windows feature combo (which uses `reranker-presets` + `liter-llm`
+  without `reranker`), the functions compiled but had no callers — clippy `-D warnings` failed every
+  Windows binding build (C#, Go, Java, CLI, Node, C FFI). Tightened the cfg to `feature = "reranker"`
+  on both functions, the related `use` statements, and the test module so the function tracks its
+  callers exactly. Also removed the orphaned `ContentLayer::is_default` helper (made dead by the
+  rc.11 removal of `#[serde(skip_serializing_if = ...)]` on `content_layer`).
+
+- **Publish workflow: install libheif on Linux + macOS runners.** `libheif-sys` is a transitive
+  dependency of `kreuzberg-libheif` (gated behind the `heic` feature, included in `full`), and the
+  publish workflow's per-language build jobs (Swift / Zig / C-FFI / C# / Go / Java / Kotlin-Android /
+  CLI / Node / Dart / Python wheels) invoked `kreuzberg-dev/actions/build-*` without first installing
+  system dependencies. `libheif-sys`'s pkg-config probe then failed with `Package libheif was not
+  found in the pkg-config search path`. Added `libheif-dev` to
+  `scripts/ci/install-system-deps/install-linux.sh`, `brew install libheif` to
+  `install-macos.sh`, and injected a `./.github/actions/install-system-deps` step before every
+  `build-*` action invocation in `.github/workflows/publish.yaml` (17 sites + the `publish-crates`
+  job, since `kreuzberg-libheif` is also published from that job).
+
+- **Publish workflow: publish `kreuzberg-libheif` to crates.io.** The new path-only `kreuzberg-libheif`
+  crate is a build dependency of `kreuzberg` via the `heic` feature. Without publishing it first,
+  `cargo publish -p kreuzberg` aborts with `no matching package named 'kreuzberg-libheif' found
+  (location searched: crates.io index)`. Added it as the first entry in the `publish-crates`
+  invocation's `crates:` list so it lands on crates.io before `kreuzberg`.
+
+- **Android (any arch) + iOS: widened libheif/ORT exclusion gate.** The C FFI crate's
+  `target_dep_overrides` previously narrowed the `android-target` feature set to
+  `cfg(all(target_os = "android", target_arch = "x86_64"))`, on the assumption that
+  `aarch64-linux-android` could use the full ORT-enabled set via pyke prebuilts. In practice
+  `libheif-sys` still blocked the cross-compile on the NDK for both architectures, and iOS hit the
+  same wall. Widened the cfg to `target_os = "android"` (covers both arches) and added a parallel
+  `target_os = "ios"` override that also routes to `android-target`. Same treatment applied to the
+  Dart Rust crate (`packages/dart/rust/Cargo.toml`).
+
+- **Docs strict build: broken anchor in `docs/concepts/reranking.md:10`.** The opening "Bi-encoders
+  vs cross-encoders" paragraph linked `[Embeddings](architecture.md#embeddings)`, but `architecture.md`
+  has no `## Embeddings` heading — `task docs:build:strict` aborted with exit code 1. Reworded the
+  parenthetical to drop the link target.
+
+- **musl Docker builds: include `kreuzberg-libheif` crate + install `libheif-dev`.** The three
+  `docker/Dockerfile.musl-{ffi,rustler,build}` images each copy a subset of workspace crates into
+  the build context; the new `kreuzberg-libheif` crate (required transitively when `kreuzberg` is
+  built with the `full` features that include `heic`) was missing, so cargo aborted with
+  `failed to read /build/crates/kreuzberg-libheif/Cargo.toml`. Added the COPY entry to each
+  Dockerfile and added `libheif-dev` to the `apk add` list so libheif-sys's pkg-config probe finds
+  Alpine's package.
+
+- **CI Lint: install system dependencies before running clippy.** `ci-lint.yaml` set up the Rust
+  toolchain but never called `./.github/actions/install-system-deps`, so clippy on the Linux runner
+  failed to find `libheif.pc`. Added the install-system-deps step right after `setup-rust`.
+
+- **Windows binding wheels: install libheif via vcpkg.** `libheif-sys`'s build.rs uses
+  `vcpkg::Config::new().find_package("libheif")` on Windows MSVC. The `windows-latest` runner image
+  ships vcpkg pre-installed at `C:\vcpkg` but the libheif port is not. Added a vcpkg install step
+  (`vcpkg install libheif:x64-windows-static-md`) to
+  `scripts/ci/install-system-deps/install-windows.ps1`, exposed `VCPKG_ROOT` to the build
+  environment, and added an `actions/cache` entry on
+  `C:\vcpkg\installed\x64-windows-static-md` so subsequent runs hit the cache (~10s) instead of
+  the cold ~20-min vcpkg build. Unblocks Python / Node / Ruby / PHP / Elixir / Swift / JNI
+  Windows wheels which still use the `full` feature set because their alef scaffolders do not yet
+  honor `target_dep_overrides`.
+
+- **Elixir cargo `cc` version conflict.** The native Rustler NIF lockfile at
+  `packages/elixir/native/kreuzberg_nif/Cargo.lock` pinned `cc 1.2.63`, while
+  `kreuzberg-tesseract` requires `cc ^1.2.64`. Cargo failed to resolve. Ran `cargo update -p cc`
+  in that sub-project to lift it to `1.2.64`; this also picked up `html-to-markdown-rs 3.6.2`
+  and `pdf_oxide 0.3.64` in both lockfiles to keep them in sync.
+
+- **Rust e2e generator: enum variant accessors emit method-call syntax.** The fixture path
+  `metadata.format.excel.sheet_count` resolved against `FormatMetadata` (a tagged enum with a
+  `pub fn excel(&self) -> Option<&ExcelMetadata>` convenience accessor). The Rust e2e renderer
+  was emitting `result.metadata.format.as_ref().unwrap().excel.as_ref().unwrap().sheet_count`,
+  which is a compile error because `FormatMetadata` has no `excel` field. Added
+  `"metadata.format.excel"` to `fields_method_calls` in `alef.toml` so the Rust renderer (and
+  the Zig one) appends `()` after the segment instead of dot-accessing it as a field.
+
+- **Rust e2e generator: `not_empty` on `String` leaves the leaf concrete.** Fixed in alef
+  v0.25.0 (`src/e2e/codegen/rust/assertion_helpers.rs`). When a path like `summary.text` crosses
+  an `Option<Summary>` parent on the way down, the resolver registers the *path* as optional;
+  the renderer's `is_opt` branch previously emitted `accessor.is_some()`, but the accessor
+  already auto-unwrapped the parent (`...summary.as_ref().unwrap().text`), so the final
+  expression has type `String` and `.is_some()` is a compile error. The renderer now checks for
+  the trailing `.as_ref().unwrap().` marker and emits `!accessor.is_empty()` for the
+  concrete-leaf case while preserving `.is_some()` for true `Option<T>` leaves.
+
+- **Rust e2e generator: pre-assertion let-binding uses optional-aware accessor.** Fixed in alef
+  v0.25.0 (`src/e2e/field_access/resolver.rs::rust_unwrap_binding`). The pre-pass that lifts
+  string-equals assertions into local `let _name = result.<path>.as_ref().map(...).unwrap_or_default();`
+  bindings called the basic `render_accessor` instead of `render_rust_with_optionals`, so a path
+  like `summary.strategy` emitted `result.summary.strategy` — a compile error because
+  `Option<Summary>` has no `strategy` field. Switched the binding to
+  `render_rust_with_optionals` so intermediate optional segments produce `.as_ref().unwrap()`.
+
+- **Removed `summary.text` and `summary.strategy` from `fields_optional`.** They are *not*
+  optional on `DocumentSummary` (`pub text: String`, `pub strategy: SummaryStrategy`); only the
+  parent `summary: Option<DocumentSummary>` is. Listing the leaves as optional caused the e2e
+  renderer to emit `.as_ref()` and `.as_deref()` against concrete types. The parent stays in
+  the set.
+
+- **`SummaryStrategy` now implements `Display`** matching the snake-case serde wire form
+  (`extractive` / `abstractive`). The Rust e2e renderer's string-equality let-binding pre-pass
+  needs `to_string()` on the enum value to compare against the fixture's literal string. Added
+  a minimal `Display` impl.
+
+- **Dead-code `is_heif_container` and `extract_exif_data` under reranker-only builds.** The
+  `Live HF preset tests` CI job builds `kreuzberg` with `--features
+  "reranker,reranker-presets,tokio-runtime"`. The HEIF sniffer is always compiled by design
+  (12-byte magic check, zero deps) and EXIF extraction stubs out when no ocr/ocr-wasm/heic
+  feature is enabled, but with the reranker-only feature set every caller (in
+  `extraction::image` and `extractors::image`) is gated out — clippy `-D warnings` then
+  surfaced both functions as `dead_code`. Added `#[allow(dead_code)]` to both definitions
+  with comments documenting the unconditional-compile intent.
+
+- **`text::classification::classify_text` stub added.** The real implementation lives behind
+  the `classification` feature; alef-generated bindings call
+  `kreuzberg::text::classification::classify_text` unconditionally, so the existing stub
+  module needed a matching no-op for the path that returns
+  `Err(KreuzbergError::Other("classification feature not available on this target"))`.
+  Required for the iOS / Android `android-target` builds, which drop the classification
+  feature.
+
+- **`LlmBackend` and `GlineBackend` stubs widened to all non-ner-llm / non-ner-onnx targets.**
+  Both stubs previously listed an explicit Windows / wasm32 / `android+x86_64` triple cfg.
+  With the binding crates now widening their target gates to `target_os = "android"` and
+  `target_os = "ios"` (both arches), `aarch64-apple-ios` and `aarch64-linux-android` were
+  failing to compile against `kreuzberg::LlmBackend` / `kreuzberg::GlineBackend`. Simplified
+  the gate to `#[cfg(not(feature = "ner-llm"))]` and `#[cfg(not(feature = "ner-onnx"))]`
+  respectively — any config that drops the feature now gets the stub regardless of target.
+
+- **Swift Rust crate now honours `target_dep_overrides`.** The Swift cargo emitter
+  (`alef::backends::swift::gen_rust_crate::cargo::emit_cargo_toml`) called
+  `crate::scaffold::render_core_dep` directly, ignoring the
+  `[[crates.swift.target_dep_overrides]]` block. Extended `SwiftConfig` with a
+  `target_dep_overrides: Vec<SwiftTargetDepOverride>` field (mirrors
+  `DartTargetDepOverride`) and refactored `emit_cargo_toml` to emit
+  `[target.'cfg(not(any(...)))'.dependencies]` + per-override
+  `[target.'cfg(...)'.dependencies]` blocks when overrides are present, matching the FFI and
+  Dart patterns. With `alef.toml` now declaring iOS, Android, and Windows overrides for
+  `[crates.swift]`, `packages/swift/rust/Cargo.toml` correctly routes iOS to
+  `android-target`, Android to `android-target`, Windows to `windows-target`, and the
+  default (macOS host) to the full feature set. Same `target_dep_overrides` config gap exists
+  for python / node / ruby / php / elixir / jni / kotlin_android scaffolders; addressing
+  those is tracked separately.
+
 ### Added
 
 - **`list_supported_formats()` is now part of the public crate root and
@@ -78,7 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   implicit `Item` wrapper instead of falling back onto the bare `List`, which violated
   CommonMark's `List → Item-only` constraint and panicked in debug builds.
   ([#1096](https://github.com/kreuzberg-dev/kreuzberg/issues/1096))
-  
+
 - **pdf: `result.pages[*].isBlank` now reflects OCR content for scanned/rasterized PDFs.**
   When OCR (including VLM) wrote text into existing `PageContent` entries, `is_blank` was
   never recalculated — it retained the stale value from native text extraction, which is

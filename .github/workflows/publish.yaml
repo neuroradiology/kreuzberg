@@ -507,6 +507,9 @@ jobs:
       # Default package-dir=packages/python triggers the split-layout fallback
       # which cd's into the package dir; maturin resolves manifest-path from
       # pyproject.toml's [tool.maturin] section itself.
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-python-sdist@v1
         with:
           output-dir: dist
@@ -592,6 +595,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-wasm-package@v1
         with:
           crate-dir: crates/kreuzberg-wasm
@@ -642,6 +648,9 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: false
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-ruby-gem@v1
         with:
           package-dir: packages/ruby
@@ -690,6 +699,9 @@ jobs:
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.platform.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-php-extension@v1
         with:
@@ -742,6 +754,9 @@ jobs:
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-rust-cli@v1
         id: build
@@ -848,6 +863,9 @@ jobs:
         with:
           target: ${{ matrix.target }}
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-go-ffi@v1
         with:
           target: ${{ matrix.target }}
@@ -887,6 +905,9 @@ jobs:
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-rust-ffi@v1
         with:
@@ -941,6 +962,9 @@ jobs:
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-java-natives@v1
         with:
@@ -1012,6 +1036,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-android-natives@v1
         with:
           crate-name: kreuzberg-ffi
@@ -1051,6 +1078,9 @@ jobs:
         uses: ./.github/actions/setup-onnx-runtime
         with:
           ort-version: "1.24.2"
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-csharp-natives@v1
         with:
@@ -1139,16 +1169,35 @@ jobs:
           fetch-depth: 0
 
           submodules: recursive
+      - name: Override ImageOS on ARM Linux runners
+        # erlef/setup-beam@v1 maps ImageOS env to its package index. On
+        # `ubuntu-24.04-arm` the runner reports `ImageOS=ubuntu24-arm64`,
+        # which setup-beam does not recognize. Force it to `ubuntu24` —
+        # the OTP packages are arch-aware via setup-beam's separate logic.
+        if: matrix.os == 'ubuntu-24.04-arm'
+        shell: bash
+        run: echo "ImageOS=ubuntu24" >> "$GITHUB_ENV"
+
+      - name: Override ImageOS on Windows runners
+        # erlef/setup-beam@v1 maps ImageOS env to its package index. On
+        # `windows-latest` the runner reports `ImageOS=win25-vs2026`,
+        # which setup-beam does not recognize. Force it to `win25` —
+        # the OTP package selection only varies by major Windows release.
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "ImageOS=win25" >> "$GITHUB_ENV"
+
       - uses: erlef/setup-beam@v1.24.0
         with:
           elixir-version: "1.17"
           otp-version: "27"
-        env:
-          ImageOS: ubuntu24
 
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-elixir-natives@v1
         with:
@@ -1239,6 +1288,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-android-natives@v1
         with:
           crate-name: kreuzberg-dart
@@ -1262,6 +1314,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-ios-xcframework@v1
         with:
           crate-name: kreuzberg-dart
@@ -1350,6 +1405,9 @@ jobs:
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-dart-package@v1
         with:
           # flutter_rust_bridge.yaml lives in packages/dart/rust/, where rust_root: .
@@ -1374,6 +1432,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-swift-artifactbundle@v1
         id: bundle
         with:
@@ -1402,6 +1463,9 @@ jobs:
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/build-swift-package@v1
         with:
           package-dir: packages/swift
@@ -1426,6 +1490,9 @@ jobs:
 
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
 
       - uses: kreuzberg-dev/actions/build-zig-package@v1
         with:
@@ -1647,9 +1714,12 @@ jobs:
           submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - uses: kreuzberg-dev/actions/publish-crates@v1
         with:
-          crates: kreuzberg-tesseract kreuzberg-paddle-ocr kreuzberg kreuzberg-cli
+          crates: kreuzberg-libheif kreuzberg-tesseract kreuzberg-paddle-ocr kreuzberg kreuzberg-cli
           version: ${{ needs.prepare.outputs.version }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
 

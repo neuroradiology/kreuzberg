@@ -67,6 +67,25 @@ else
   echo "✓ libmagic already installed"
 fi
 
+if ! brew list libheif &>/dev/null; then
+  echo "Installing libheif..."
+  retry_with_backoff brew install libheif || {
+    echo "::warning::Failed to install libheif after retries"
+  }
+else
+  echo "✓ libheif already installed"
+fi
+
+if ! brew list pkg-config &>/dev/null; then
+  echo "Installing pkg-config..."
+  retry_with_backoff brew install pkg-config || {
+    echo "::error::Failed to install pkg-config after retries"
+    exit 1
+  }
+else
+  echo "✓ pkg-config already installed"
+fi
+
 if ! brew list php &>/dev/null; then
   echo "Installing PHP..."
   retry_with_backoff brew install php || {
@@ -122,6 +141,17 @@ fi
 echo ""
 echo "Available languages:"
 tesseract --list-langs | head -5
+
+echo ""
+echo "pkg-config:"
+if command -v pkg-config >/dev/null 2>&1; then
+  pkg-config --version
+  echo "✓ pkg-config available"
+else
+  echo "::error::pkg-config not found on PATH after installation"
+  echo "PATH=$PATH"
+  exit 1
+fi
 
 echo ""
 echo "PHP:"

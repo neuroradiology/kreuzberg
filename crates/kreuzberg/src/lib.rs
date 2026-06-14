@@ -189,22 +189,18 @@ pub use text::ner::llm::LlmBackend;
 #[cfg(feature = "ner-llm")]
 pub use text::ner::NerBackend;
 
-// Stub for targets without ner-llm (Windows, Android x86_64, WASM), so alef-generated bindings compile.
-#[cfg(any(
-    all(not(feature = "ner-llm"), target_arch = "wasm32"),
-    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
-    all(not(feature = "ner-llm"), target_os = "windows")
-))]
+// Stub for every config that drops ner-llm: WASM, all Android arches, all iOS
+// arches, Windows. Previously narrowed to (wasm32 OR android x86_64 OR windows)
+// — but with the iOS/Android-wide target gates added to the binding crates,
+// aarch64-apple-ios and aarch64-linux-android would hit the missing-symbol
+// error too. Simplest gate: any target compiled WITHOUT `ner-llm`.
+#[cfg(not(feature = "ner-llm"))]
 #[derive(Clone, Debug)]
 pub struct LlmBackend {
     _config: LlmConfig,
 }
 
-#[cfg(any(
-    all(not(feature = "ner-llm"), target_arch = "wasm32"),
-    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
-    all(not(feature = "ner-llm"), target_os = "windows")
-))]
+#[cfg(not(feature = "ner-llm"))]
 impl LlmBackend {
     pub fn new(config: LlmConfig) -> Self {
         Self { _config: config }
@@ -234,12 +230,11 @@ impl LlmBackend {
 #[cfg(feature = "ner-onnx")]
 pub use text::ner::gline::GlineBackend;
 
-// Stub for targets without ner-onnx (Android x86_64, Windows, WASM), so alef-generated bindings compile.
-#[cfg(any(
-    all(not(feature = "ner-onnx"), target_os = "windows"),
-    all(not(feature = "ner-onnx"), target_arch = "wasm32"),
-    all(not(feature = "ner-onnx"), all(target_os = "android", target_arch = "x86_64"))
-))]
+// Stub for every config that drops ner-onnx so alef-generated bindings keep
+// compiling (Windows, all Android arches, all iOS arches, WASM). Previously
+// narrowed to (Windows OR wasm32 OR android x86_64); broadened to match the
+// iOS/Android-wide target gates added to the binding crates.
+#[cfg(not(feature = "ner-onnx"))]
 #[derive(Clone, Debug)]
 pub struct GlineBackend {
     pub repo_id: String,
@@ -247,11 +242,7 @@ pub struct GlineBackend {
     pub tokenizer_path: std::path::PathBuf,
 }
 
-#[cfg(any(
-    all(not(feature = "ner-onnx"), target_os = "windows"),
-    all(not(feature = "ner-onnx"), target_arch = "wasm32"),
-    all(not(feature = "ner-onnx"), all(target_os = "android", target_arch = "x86_64"))
-))]
+#[cfg(not(feature = "ner-onnx"))]
 impl GlineBackend {
     pub fn new(_repo_id: Option<&str>) -> Result<Self> {
         Err(crate::KreuzbergError::Other(

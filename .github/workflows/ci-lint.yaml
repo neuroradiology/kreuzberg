@@ -61,6 +61,9 @@ jobs:
         with:
           cache-key-prefix: lint
 
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
       - name: Setup Python
         uses: kreuzberg-dev/actions/setup-python-env@v1
         with:

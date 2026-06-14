@@ -33,3 +33,12 @@ pub enum SummaryStrategy {
     /// [`ExtractionResult::llm_usage`](super::extraction::ExtractionResult::llm_usage).
     Abstractive,
 }
+
+impl std::fmt::Display for SummaryStrategy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Extractive => f.write_str("extractive"),
+            Self::Abstractive => f.write_str("abstractive"),
+        }
+    }
+}

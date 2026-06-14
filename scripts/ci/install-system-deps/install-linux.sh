@@ -27,6 +27,7 @@ packages=(
   cmake
   libmagic-dev
   libuv1-dev
+  libheif-dev
   php-cli
   php-dev
 )

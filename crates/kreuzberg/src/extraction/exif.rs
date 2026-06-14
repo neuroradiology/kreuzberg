@@ -125,7 +125,12 @@ pub(crate) fn extract_exif_data(bytes: &[u8]) -> HashMap<String, String> {
 }
 
 /// Stub EXIF extraction when no EXIF-capable feature is active.
+///
+/// Compiled under any feature combination so the rest of the image path keeps
+/// the same signature, but reranker-only builds — which drop every caller —
+/// would surface it as `dead_code` without the `#[allow]`.
 #[cfg(not(any(feature = "ocr", feature = "ocr-wasm", feature = "heic")))]
+#[allow(dead_code)]
 pub(crate) fn extract_exif_data(_bytes: &[u8]) -> HashMap<String, String> {
     HashMap::new()
 }

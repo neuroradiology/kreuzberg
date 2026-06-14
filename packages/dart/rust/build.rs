@@ -80,7 +80,7 @@ const FRB_INIT_REPLACEMENT: &str = r#"  /// Resolve the prebuilt native library 
       for (final dir in searchDirs) {
         for (final name in libNames) {
           final libPath = dir.resolve(name).toFilePath();
-          if (File(libPath).existsSync()) {
+          if (File(libPath).existsSync() || Directory(libPath).existsSync()) {
             return ExternalLibrary.open(libPath);
           }
         }
@@ -112,7 +112,7 @@ const FRB_INIT_REPLACEMENT: &str = r#"  /// Resolve the prebuilt native library 
     // — list that first so the loader finds it before the bare dylib.
     if (Platform.isMacOS)
       return const [
-        'kreuzberg_dart.framework/kreuzberg_dart',
+        'kreuzberg_dart.framework',
         'libkreuzberg_dart.dylib',
       ];
     if (Platform.isWindows) return const ['kreuzberg_dart.dll'];

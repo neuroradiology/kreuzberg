@@ -11,6 +11,12 @@ use crate::error::{KreuzbergError, Result};
 /// Detect a HEIF-family container (HEIC / HEIF / AVIF / HEICS / AVCS) by
 /// sniffing the `ftyp` box brand at offset 4..8 with one of the known major
 /// brands at 8..12.
+///
+/// The function is always compiled (12-byte magic check, zero deps), but every
+/// caller lives behind one of the OCR features. Reranker-only builds without
+/// any OCR feature would surface this as `dead_code`; the `#[allow]` keeps the
+/// unconditional definition stance documented in the module doc.
+#[allow(dead_code)]
 pub(crate) fn is_heif_container(bytes: &[u8]) -> bool {
     if bytes.len() < 12 || &bytes[4..8] != b"ftyp" {
         return false;

@@ -95,6 +95,23 @@ runs:
           C:\ProgramData\chocolatey\lib\cmake
         key: cmake-windows-${{ runner.arch }}-v1
 
+    - name: Cache libheif vcpkg (Windows)
+      if: runner.os == 'Windows'
+      id: cache-libheif-windows
+      uses: actions/cache@v5
+      with:
+        # libheif vcpkg port + its built artifacts. Statically-linked port
+        # (x64-windows-static-md) keeps the MSVC C runtime dynamic so it
+        # matches cargo's default MSVC toolchain.
+        path: |
+          C:\vcpkg\installed\x64-windows-static-md
+          C:\vcpkg\buildtrees\libheif
+          C:\vcpkg\buildtrees\libde265
+          C:\vcpkg\buildtrees\libaom
+        key: libheif-windows-${{ runner.arch }}-vcpkg-v1
+        restore-keys: |
+          libheif-windows-${{ runner.arch }}-vcpkg-
+
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
@@ -102,4 +119,5 @@ runs:
         TESSERACT_CACHE_HIT: ${{ steps.cache-tesseract-windows.outputs.cache-hit }}
         LLVM_CACHE_HIT: ${{ steps.cache-llvm-windows.outputs.cache-hit }}
         CMAKE_CACHE_HIT: ${{ steps.cache-cmake-windows.outputs.cache-hit }}
+        LIBHEIF_CACHE_HIT: ${{ steps.cache-libheif-windows.outputs.cache-hit }}
       run: pwsh -File scripts/ci/install-system-deps/install-windows.ps1
