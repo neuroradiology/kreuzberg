@@ -45,18 +45,6 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
   Register custom extractors, OCR backends, post-processors, and validators. Plugin authoring is primarily supported in Python; all bindings can consume registered plugins.
 
-- :material-server:{ .lg .middle } **Flexible Deployment**
-
-  Use as a library, CLI tool, REST API server, MCP server, or Docker container. Pick what fits your stack.
-
-- :material-shield-account:{ .lg .middle } **Redaction & Anonymisation**
-
-  Strip PII before extracted content leaves the pipeline. Pattern engine covers emails, phones, IBANs, SSNs, credit cards; pair with NER for names, organisations, and locations.
-
-- :material-tag-text:{ .lg .middle } **Named-Entity Recognition**
-
-  Detect people, organisations, locations, dates, money, and caller-supplied zero-shot labels in extracted text. ONNX (gline-rs) or LLM backend.
-
 </div>
 
 → **[See all features](features.md)**
@@ -91,6 +79,56 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
     **`@kreuzberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
 
     **`@kreuzberg/wasm`** — Use for browsers, Cloudflare Workers, Deno, Bun, and serverless environments (60-80% speed, cross-platform).
+
+---
+
+## Quick Example
+
+=== "Python"
+
+    --8<-- "snippets/python/api/extract_file_sync.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
+
+=== "Rust"
+
+    --8<-- "snippets/rust/api/extract_file_sync.md"
+
+---
+
+## Part of Kreuzberg.dev
+
+Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://kreuzberg.dev) ecosystem.
+
+<div class="grid cards" markdown>
+
+- :material-cloud:{ .lg .middle } **[Kreuzberg Cloud](https://docs.kreuzberg.cloud)**
+
+  Managed extraction API with SDKs, dashboards, and observability.
+
+- :material-spider-web:{ .lg .middle } **[kreuzcrawl](https://docs.kreuzcrawl.kreuzberg.dev)**
+
+  Web crawling and scraping with HTML to Markdown and headless-Chrome fallback.
+
+- :material-language-html5:{ .lg .middle } **[html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev)**
+
+  Fast, lossless HTML to Markdown engine.
+
+- :material-robot-outline:{ .lg .middle } **[liter-llm](https://docs.liter-llm.kreuzberg.dev)**
+
+  Universal LLM API client with native bindings for 14 languages and 143 providers.
+
+- :material-code-tags:{ .lg .middle } **[tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev)**
+
+  Tree-sitter grammars and code-intelligence primitives.
+
+- :fontawesome-brands-discord:{ .lg .middle } **[Discord](https://discord.gg/xt9WY3GnKR)**
+
+  Community chat for Kreuzberg.dev users and contributors.
+
+</div>
 
 ---
 
