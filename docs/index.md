@@ -1,10 +1,10 @@
 ---
-description: "Kreuzberg – Extract text, tables, and metadata from 96 file formats with a Rust core and native bindings for 17 languages. No GPU required."
+description: "Kreuzberg – Extract text, tables, and metadata from 96 file formats with a Rust core and polyglot SDKs. No GPU required."
 ---
 
 # Kreuzberg
 
-Document intelligence with a Rust core and native bindings for 17 languages. Extract text, tables, and metadata from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
+Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, and metadata from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
 
 <div class="hero-badges" markdown>
 
@@ -23,19 +23,19 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
 - :material-flash:{ .lg .middle } **High Performance**
 
-  Rust core with native PDFium, SIMD optimizations, and full parallelism. Process thousands of documents per minute without a GPU.
+  Rust core with pdf_oxide PDF extraction, SIMD optimizations, and full parallelism. Process thousands of documents per minute without a GPU.
 
-- :material-file-document-multiple:{ .lg .middle } **90+ File Formats**
+- :material-file-document-multiple:{ .lg .middle } **96 File Formats**
 
   PDF, DOCX, XLSX, PPTX, images, HTML, XML, emails, archives, academic formats — one API handles them all.
 
 - :material-eye:{ .lg .middle } **Multi-Engine OCR**
 
-  Tesseract and PaddleOCR work across all language bindings. EasyOCR is available for Python only.
+  Tesseract works across native and Wasm targets. PaddleOCR is available on native ONNX Runtime builds; EasyOCR is Python-only.
 
-- :material-translate:{ .lg .middle } **16 Language Bindings**
+- :material-translate:{ .lg .middle } **Polyglot SDKs**
 
-  Native bindings for Python, TypeScript, Rust, Go, Java, Kotlin, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly.
+  SDKs for Python, TypeScript, Rust, Go, Java, Kotlin Android, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly. Kotlin/JVM consumers use the Java artifact.
 
 - :material-code-tags:{ .lg .middle } **Code Intelligence**
 
@@ -43,7 +43,7 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
 - :material-puzzle:{ .lg .middle } **Plugin System**
 
-  Register custom extractors, OCR backends, post-processors, and validators. Plugin authoring is primarily supported in Python; all bindings can consume registered plugins.
+  Register custom extractors, OCR backends, reranker backends, validators, post-processors, and renderers.
 
 </div>
 
@@ -60,12 +60,12 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 | **TypeScript (WASM)**   | `npm install @kreuzberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
 | **Rust**                | `cargo add kreuzberg`                          | [API Reference](reference/api-rust.md)       |
 | **Go**                  | `go get github.com/kreuzberg-dev/kreuzberg/v5` | [API Reference](reference/api-go.md)         |
-| **Java**                | Maven Central `dev.kreuzberg:kreuzberg`        | [API Reference](reference/api-java.md)       |
-| **Kotlin**              | Maven Central `dev.kreuzberg:kreuzberg-kotlin` | [API Reference](reference/api-kotlin.md)     |
+| **Java / Kotlin JVM**   | Maven Central `dev.kreuzberg:kreuzberg`        | [API Reference](reference/api-java.md)       |
+| **Kotlin Android**      | Maven Central `dev.kreuzberg:kreuzberg-android` | [API Reference](reference/api-kotlin-android.md) |
 | **C#**                  | `dotnet add package Kreuzberg`                 | [API Reference](reference/api-csharp.md)     |
 | **Ruby**                | `gem install kreuzberg`                        | [API Reference](reference/api-ruby.md)       |
 | **PHP**                 | `composer require kreuzberg/kreuzberg`         | [API Reference](reference/api-php.md)        |
-| **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.1"}`                | [API Reference](reference/api-elixir.md)     |
+| **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.16"}`               | [API Reference](reference/api-elixir.md)     |
 | **R**                   | r-universe `kreuzberg`                         | [API Reference](reference/api-r.md)          |
 | **Dart / Flutter**      | `dart pub add kreuzberg`                       | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                          | [API Reference](reference/api-swift.md)      |
@@ -170,9 +170,10 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://kreuz
 
 - :material-swap-horizontal:{ .lg .middle } **Migration**
 
-  Migrate from Unstructured or other document extraction libraries.
+  Migrate from Unstructured or other document extraction libraries, including the v5 image-index change.
 
   [:octicons-arrow-right-24: Migration Guides](migration/from-unstructured.md)
+  [:octicons-arrow-right-24: v5 Image Indices](migration/v5.0-image-indices.md)
 
 </div>
 

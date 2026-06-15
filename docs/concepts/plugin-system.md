@@ -6,8 +6,9 @@ registers itself into a typed registry. The pipeline queries these registries
 at each stage to find the right handler. You extend Kreuzberg by writing your
 own plugin and registering it. The pipeline picks it up automatically.
 
-This page explains the five plugin types, the registry mechanism, the plugin
-lifecycle, and how plugins work across language boundaries.
+This page explains the six plugin categories, the registry mechanism, the plugin
+lifecycle, and how plugins work across language boundaries. `RerankerBackend`
+plugins serve query-time ranking; the other categories participate in extraction.
 
 ---
 
@@ -23,6 +24,7 @@ flowchart TB
         direction LR
         E["DocumentExtractor\n<i>Handles a file format</i>"]
         O["OcrBackend\n<i>Runs OCR on images</i>"]
+        RB["RerankerBackend\n<i>Scores search results</i>"]
         V["Validator\n<i>Rejects bad results</i>"]
         P["PostProcessor\n<i>Transforms results</i>"]
         R["Renderer\n<i>Formats output</i>"]
@@ -32,6 +34,7 @@ flowchart TB
         direction LR
         ER["Extractor Registry\n<i>MIME type → extractor</i>"]
         OR["OCR Registry\n<i>name → backend</i>"]
+        RBR["Reranker Registry\n<i>name → backend</i>"]
         VR["Validator Registry\n<i>name → validator</i>"]
         PR["Processor Registry\n<i>stage → processors</i>"]
         RR["Renderer Registry\n<i>name → renderer</i>"]
@@ -44,10 +47,12 @@ flowchart TB
         P3["Validation"]
         P4["Post-\nprocessing"]
         P5["Rendering"]
+        P6["Reranking"]
     end
 
     E --> ER
     O --> OR
+    RB --> RBR
     V --> VR
     P --> PR
     R --> RR
@@ -57,10 +62,12 @@ flowchart TB
     VR --> P3
     PR --> P4
     RR --> P5
+    RBR --> P6
 
     style ER fill:#bbdefb,stroke:#1565c0
     style OR fill:#c8e6c9,stroke:#2e7d32
     style VR fill:#ffccbc,stroke:#d84315
+    style RBR fill:#d7ccc8,stroke:#5d4037
     style PR fill:#fff9c4,stroke:#f9a825
     style RR fill:#e1bee7,stroke:#7b1fa2
 ```
@@ -71,7 +78,7 @@ boilerplate.
 
 ---
 
-## The Five Plugin Types
+## The Six Plugin Categories
 
 ### DocumentExtractor
 

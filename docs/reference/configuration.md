@@ -90,7 +90,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `OcrConfig \| None` | `None` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `False` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `list[int] \| None` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `True`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.0.* |
+| `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.* |
 | `chunking` | `ChunkingConfig \| None` | `None` | Text chunking configuration (None = chunking disabled) |
 | `content_filter` | `ContentFilterConfig \| None` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `ImageExtractionConfig \| None` | `None` | Image extraction configuration (None = no image extraction) |
@@ -525,7 +525,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1539,6 +1539,32 @@ are at the `Metadata` level.
 
 ---
 
+### ClassificationEnrichmentConfig
+
+Classification enrichment knob: how to label the document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `config` | `PageClassificationConfig` | — | Label set and LLM settings for the classification stage. |
+
+---
+
+### CaptioningEnrichmentConfig
+
+Captioning enrichment knob: which LLM to use for image captions.
+
+The enrichment stage calls `caption_image` for every
+image in `ExtractionResult.images` that has non-empty `data`. Images with
+empty byte data (e.g. reference-only images populated via `source_path`) are
+skipped rather than forwarded to the VLM.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `config` | `LlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
+| `custom_prompt` | `str \| None` | `None` | Optional custom prompt override forwarded to every `caption_image` call. `None` uses the default `RegionKind.Caption` prompt. |
+
+---
+
 ### Enums
 
 #### ChunkSizing
@@ -1905,7 +1931,7 @@ Intensity level for the token-reduction pipeline.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|

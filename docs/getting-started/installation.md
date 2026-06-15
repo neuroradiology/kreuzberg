@@ -1,10 +1,10 @@
 ---
-description: "Install Kreuzberg — pick Python, TypeScript, Rust, Go, CLI/Docker, or any of 12 supported languages."
+description: "Install Kreuzberg — pick Python, TypeScript, Rust, Go, Java/Kotlin, CLI/Docker, or another supported SDK."
 ---
 
 # Installation
 
-Native bindings for 17 languages plus a standalone CLI. Every package ships **prebuilt binaries** for Linux (x86_64/aarch64), macOS (Apple Silicon), and Windows — no compile step needed.
+Polyglot SDKs plus a standalone CLI. Most packages ship **prebuilt binaries** for Linux (x86_64/aarch64), macOS, and Windows — no compile step needed.
 
 <div class="cli-hero" markdown>
 
@@ -121,21 +121,21 @@ No SDK, no code — just your terminal.
   ***
 
   ```gradle
-  implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.1'
+  implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.16'
   ```
 
   [API Reference](../reference/api-java.md){ .install-api-link }
   [:material-lightning-bolt: Quick Start](#java){ .install-btn .install-btn--solid .install-btn--sm }
 
-- :fontawesome-brands-kotlin:{ .lg .middle } **Kotlin**
+- :fontawesome-brands-kotlin:{ .lg .middle } **Kotlin Android**
 
   ***
 
   ```kotlin
-  implementation("dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.1")
+  implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.16")
   ```
 
-  [API Reference](../reference/api-kotlin.md){ .install-api-link }
+  [API Reference](../reference/api-kotlin-android.md){ .install-api-link }
   [:material-lightning-bolt: Quick Start](#kotlin){ .install-btn .install-btn--solid .install-btn--sm }
 
 - :material-language-ruby:{ .lg .middle } **Ruby**
@@ -154,7 +154,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```swift
-  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.1")
+  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.16")
   ```
 
   [API Reference](../reference/api-swift.md){ .install-api-link }
@@ -187,7 +187,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```elixir
-  {:kreuzberg, "~> 5.0.0-rc.1"}
+  {:kreuzberg, "~> 5.0.0-rc.16"}
   ```
 
   [API Reference](../reference/api-elixir.md){ .install-api-link }
@@ -232,7 +232,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.1.tar.gz
+  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.16.tar.gz
   ```
 
   [API Reference](../reference/api-zig.md){ .install-api-link }
@@ -253,7 +253,8 @@ Only relevant if building from source or enabling OCR:
 | C/C++ compiler            | Building native bindings (Xcode command-line tools / `build-essential` / MSVC)         |
 | Tesseract OCR             | Optional — `brew install tesseract` / `apt install tesseract-ocr`                      |
 | libheif (HEIC / HEIF / AVIF) | Optional — `brew install libheif` / `apt install libheif-dev` / `dnf install libheif-devel` |
-| PDFium                    | Auto-fetched during builds                                                             |
+
+PDF extraction uses pdf_oxide and has no external PDF runtime dependency.
 
 The Wasm package (`@kreuzberg/wasm`) has **zero** system dependencies.
 
@@ -278,7 +279,7 @@ kreuzberg = { version = "5", features = ["heic", "ocr"] }
 **not available** on `wasm-target` or `android-target` (libheif is a C library
 with no working WASM/Android build story). EXIF metadata extraction from HEIC
 / HEIF / AVIF works on **every** target via the pure-Rust `nom-exif`
-integration that ships with the OCR pipeline.
+integration.
 
 ### GPU Acceleration
 
@@ -369,11 +370,14 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
     The Wasm binding does not support:
 
     - **Layout detection** (RT-DETR model inference requires ONNX Runtime unavailable in WebAssembly)
+    - **PaddleOCR, embeddings, reranking, auto-rotate, and transcription inference** (all require ONNX Runtime)
+    - **LLM/VLM features** (liter-llm is not part of the `wasm-target` feature set)
     - **Hardware acceleration config** (single-threaded WASM, no GPU access)
-    - **Concurrency config** (single-threaded environment, `maxThreads` is ignored)
+    - **Native server features** (`api`, `mcp`, CLI binary)
+    - **Browser filesystem paths** (`extractBytes`/`extractFromFile` are portable; path APIs require Node/Deno/Bun filesystem access)
     - **Email codepage config** (EmailConfig not available)
 
-    All other features (text extraction, OCR via Tesseract WASM, chunking, embeddings, metadata, tables, language detection, image extraction) work fully in WASM. See the [WASM API Reference](../reference/api-wasm.md) for details.
+    Pure-Rust extraction formats, OCR via Tesseract WASM, chunking, metadata, tables, language detection, SVG handling, redaction, summarization, QR-code detection, and image extraction work in WASM. See the [WASM API Reference](../reference/api-wasm.md) for details.
 
 ### Java
 
@@ -383,14 +387,14 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
     <dependency>
         <groupId>dev.kreuzberg</groupId>
         <artifactId>kreuzberg</artifactId>
-        <version>5.0.0-rc.1</version>
+        <version>5.0.0-rc.16</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```gradle
-    implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.1'
+    implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.16'
     ```
 
 Requires Java 25+ (FFM/Panama API). Native libraries are bundled in the JAR.
@@ -402,7 +406,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:kreuzberg, "~> 5.0.0-rc.1"}
+    {:kreuzberg, "~> 5.0.0-rc.16"}
   ]
 end
 ```
@@ -437,8 +441,8 @@ Enable features selectively in `Cargo.toml`:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "4", features = ["tokio-runtime"] }
-# Optional features: pdf, ocr, chunking
+kreuzberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
+# Default features are tokio-runtime + simd-utf8; format and analysis features are opt-in.
 ```
 
 ### C / C++
@@ -480,7 +484,9 @@ Pure-Dart and Flutter consumers share the same package. Dart SDK 3.0 or higher i
 
 ### Kotlin { #kotlin }
 
-The Kotlin module sits on top of the Java facade and reuses its Foreign Function & Memory native loader, so the same bundled binaries serve both bindings. Requires JDK 25 or higher. Use the Kotlin DSL block above for `build.gradle.kts` consumers; Maven and Groovy DSL are also supported — see the README at packages/kotlin/ for both.
+Kotlin/JVM consumers use the Java artifact (`dev.kreuzberg:kreuzberg`) directly; Kotlin interoperates with the generated Java records and static facade.
+
+Kotlin Android uses the Android AAR (`dev.kreuzberg:kreuzberg-android`). It embeds JNI libraries for `arm64-v8a` and `x86_64`, targets Android API 21+, and uses the `android-target` feature set, which excludes ORT-dependent inference features.
 
 ### Swift { #swift }
 

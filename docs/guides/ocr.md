@@ -72,7 +72,7 @@ tesseract --list-langs
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "4.0", features = ["paddle-ocr"] }
+    kreuzberg = { version = "5", features = ["paddle-ocr"] }
     ```
 
 === "Python"
@@ -222,7 +222,7 @@ Process PDFs with OCR even when they have a text layer:
 
 ### Disable OCR
 
-!!! Info "Added in v4.7.0"
+!!! Info "Added in v4.7"
 
 When `disable_ocr` is set, image files return empty content instead of raising `MissingDependencyError`:
 

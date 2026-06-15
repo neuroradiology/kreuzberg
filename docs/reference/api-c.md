@@ -2,7 +2,7 @@
 title: "C API Reference"
 ---
 
-## C API Reference <span class="version-badge">v5.0.0-rc.15</span>
+## C API Reference <span class="version-badge">v5.0.0-rc.16</span>
 
 ### Functions
 
@@ -649,7 +649,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -669,7 +669,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -768,6 +768,43 @@ KreuzbergClassificationLabel* kreuzberg_classify_text(const char* text, Kreuzber
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text |
 | `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergClassificationLabel*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_classify_document()
+
+Classify a single document (as multiple pages or a single text block).
+
+Aggregates classifications across all pages in the provided text, returning
+a combined label set that represents the document as a whole.
+
+  using the configured LLM, and results are aggregated.
+
+- `config` - Classification configuration including labels and LLM settings.
+
+**Returns:**
+
+A vector of `ClassificationLabel` entries representing the document's overall classification.
+
+**Errors:**
+
+Returns an error if `config.labels` is empty or if LLM calls fail.
+
+**Signature:**
+
+```c
+KreuzbergClassificationLabel* kreuzberg_classify_document(const char** pages, KreuzbergPageClassificationConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pages` | `const char**` | Yes | Slice of page texts to classify. Each page is classified independently |
+| `config` | `KreuzbergPageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `KreuzbergClassificationLabel*`
 **Errors:** Returns `NULL` on error.
@@ -1061,6 +1098,73 @@ const uint8_t* kreuzberg_render_pdf_page_to_png(const uint8_t* pdf_bytes, uintpt
 
 ---
 
+#### kreuzberg_caption_image()
+
+Caption a single image from bytes.
+
+  `RegionKind.Caption` prompt when `NULL`.
+
+**Returns:**
+
+The generated caption text.
+
+**Errors:**
+
+Returns an error if the VLM call fails or if image format detection fails.
+
+**Signature:**
+
+```c
+const char* kreuzberg_caption_image(const uint8_t* image_bytes, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `const uint8_t*` | Yes | The image data. |
+| `llm_config` | `KreuzbergLlmConfig` | Yes | LLM configuration for the VLM call. |
+| `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_caption_image_file()
+
+Caption a single image from a file path.
+
+  `RegionKind.Caption` prompt when `NULL`.
+
+**Returns:**
+
+The generated caption text.
+
+**Errors:**
+
+Returns an error if the file cannot be read, if image format detection fails,
+or if the VLM call fails.
+
+**Signature:**
+
+```c
+const char* kreuzberg_caption_image_file(const char* path, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | Path to the image file. |
+| `llm_config` | `KreuzbergLlmConfig` | Yes | LLM configuration for the VLM call. |
+| `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
+
+**Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_detect_mime_type()
 
 Detect the MIME type of a file at the given path.
@@ -1158,7 +1262,7 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1183,7 +1287,7 @@ KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** docu
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1211,7 +1315,7 @@ Get a reranker preset by name.
 Returns `NULL` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1235,7 +1339,7 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1397,7 +1501,7 @@ Aggregate statistics for a kreuzberg cache directory.
 
 #### KreuzbergCaptioningConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the VLM captioning post-processor.
 
@@ -1406,6 +1510,22 @@ Configuration for the VLM captioning post-processor.
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `const char**` | `NULL` | Optional custom caption prompt. `NULL` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
 | `min_image_area` | `uint32_t` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+
+---
+
+#### KreuzbergCaptioningEnrichmentConfig
+
+Captioning enrichment knob: which LLM to use for image captions.
+
+The enrichment stage calls `caption_image` for every
+image in `ExtractionResult.images` that has non-empty `data`. Images with
+empty byte data (e.g. reference-only images populated via `source_path`) are
+skipped rather than forwarded to the VLM.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `config` | `KreuzbergLlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
+| `custom_prompt` | `const char**` | `NULL` | Optional custom prompt override forwarded to every `caption_image` call. `NULL` uses the default `RegionKind.Caption` prompt. |
 
 ---
 
@@ -1506,6 +1626,16 @@ Citation file metadata (RIS, PubMed, EndNote).
 | `year_range` | `KreuzbergYearRange*` | `NULL` | Earliest and latest publication years found in the file. |
 | `dois` | `const char**` | `NULL` | DOI identifiers found in the citation records. |
 | `keywords` | `const char**` | `NULL` | Keywords collected from all citation records. |
+
+---
+
+#### KreuzbergClassificationEnrichmentConfig
+
+Classification enrichment knob: how to label the document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `config` | `KreuzbergPageClassificationConfig` | — | Label set and LLM settings for the classification stage. |
 
 ---
 
@@ -2457,7 +2587,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `KreuzbergOcrConfig*` | `NULL` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `uint32_t**` | `NULL` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
+| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
 | `chunking` | `KreuzbergChunkingConfig*` | `NULL` | Text chunking configuration (None = chunking disabled) |
 | `content_filter` | `KreuzbergContentFilterConfig*` | `NULL` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `KreuzbergImageExtractionConfig*` | `NULL` | Image extraction configuration (None = no image extraction) |
@@ -3265,15 +3395,9 @@ Combined paths to all models needed for OCR (backward compatibility).
 
 ---
 
-#### KreuzbergNerBackend
-
-NER backend trait (stub for Android x86_64).
-
----
-
 #### KreuzbergNerConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the NER post-processor.
 
@@ -3837,7 +3961,7 @@ Classification result for a single page.
 
 #### KreuzbergPageClassificationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the page-classification post-processor.
 
@@ -4487,7 +4611,7 @@ the type in their own code.
 
 #### KreuzbergRedactionConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the redaction post-processor.
 
@@ -4671,7 +4795,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4727,7 +4851,7 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.0.
+Since v5.0.
 
 ### Methods
 
@@ -4759,7 +4883,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4790,7 +4914,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4988,7 +5112,7 @@ returning structured data that conforms to the schema.
 
 #### KreuzbergSummarizationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the summarisation post-processor.
 
@@ -5326,7 +5450,7 @@ than duplicated here.
 
 #### KreuzbergTranslationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the translation post-processor.
 
@@ -5853,7 +5977,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6600,7 +6724,7 @@ and provides context for debugging.
 | `KREUZBERG_LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `KREUZBERG_UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
 | `KREUZBERG_EMBEDDING` | The embedding model or embedding pipeline returned an error. |
-| `KREUZBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
+| `KREUZBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0. |
 | `KREUZBERG_TRANSCRIPTION` | Audio/video transcription failed. |
 | `KREUZBERG_TIMEOUT` | The extraction operation exceeded the configured time limit. |
 | `KREUZBERG_CANCELLED` | The extraction was cancelled via a `CancellationToken`. |

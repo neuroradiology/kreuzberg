@@ -2,7 +2,7 @@
 title: "Go API Reference"
 ---
 
-## Go API Reference <span class="version-badge">v5.0.0-rc.15</span>
+## Go API Reference <span class="version-badge">v5.0.0-rc.16</span>
 
 ### Functions
 
@@ -649,7 +649,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -669,7 +669,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -768,6 +768,43 @@ func ClassifyText(text string, config PageClassificationConfig) ([]Classificatio
 |------|------|----------|-------------|
 | `Text` | `string` | Yes | The text |
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `[]ClassificationLabel`
+**Errors:** Returns `error`.
+
+---
+
+#### ClassifyDocument()
+
+Classify a single document (as multiple pages or a single text block).
+
+Aggregates classifications across all pages in the provided text, returning
+a combined label set that represents the document as a whole.
+
+  using the configured LLM, and results are aggregated.
+
+- `config` - Classification configuration including labels and LLM settings.
+
+**Returns:**
+
+A vector of `ClassificationLabel` entries representing the document's overall classification.
+
+**Errors:**
+
+Returns an error if `config.labels` is empty or if LLM calls fail.
+
+**Signature:**
+
+```go
+func ClassifyDocument(pages []string, config PageClassificationConfig) ([]ClassificationLabel, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Pages` | `[]string` | Yes | Slice of page texts to classify. Each page is classified independently |
+| `Config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `[]ClassificationLabel`
 **Errors:** Returns `error`.
@@ -1061,6 +1098,73 @@ func RenderPdfPageToPng(pdfBytes []byte, pageIndex int, dpi int32, password stri
 
 ---
 
+#### CaptionImage()
+
+Caption a single image from bytes.
+
+  `RegionKind.Caption` prompt when `nil`.
+
+**Returns:**
+
+The generated caption text.
+
+**Errors:**
+
+Returns an error if the VLM call fails or if image format detection fails.
+
+**Signature:**
+
+```go
+func CaptionImage(imageBytes []byte, llmConfig LlmConfig, customPrompt string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `[]byte` | Yes | The image data. |
+| `LlmConfig` | `LlmConfig` | Yes | LLM configuration for the VLM call. |
+| `CustomPrompt` | `*string` | No | Optional custom caption prompt. Uses the default |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
+#### CaptionImageFile()
+
+Caption a single image from a file path.
+
+  `RegionKind.Caption` prompt when `nil`.
+
+**Returns:**
+
+The generated caption text.
+
+**Errors:**
+
+Returns an error if the file cannot be read, if image format detection fails,
+or if the VLM call fails.
+
+**Signature:**
+
+```go
+func CaptionImageFile(path string, llmConfig LlmConfig, customPrompt string) (string, error)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to the image file. |
+| `LlmConfig` | `LlmConfig` | Yes | LLM configuration for the VLM call. |
+| `CustomPrompt` | `*string` | No | Optional custom caption prompt. Uses the default |
+
+**Returns:** `string`
+**Errors:** Returns `error`.
+
+---
+
 #### DetectMimeType()
 
 Detect the MIME type of a file at the given path.
@@ -1158,7 +1262,7 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1183,7 +1287,7 @@ func Rerank(query string, documents []string, config RerankerConfig) ([]Reranked
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1211,7 +1315,7 @@ Get a reranker preset by name.
 Returns `nil` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1235,7 +1339,7 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1397,7 +1501,7 @@ Aggregate statistics for a kreuzberg cache directory.
 
 #### CaptioningConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the VLM captioning post-processor.
 
@@ -1406,6 +1510,22 @@ Configuration for the VLM captioning post-processor.
 | `Llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
 | `Prompt` | `*string` | `nil` | Optional custom caption prompt. `nil` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
 | `MinImageArea` | `uint32` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+
+---
+
+#### CaptioningEnrichmentConfig
+
+Captioning enrichment knob: which LLM to use for image captions.
+
+The enrichment stage calls `caption_image` for every
+image in `ExtractionResult.images` that has non-empty `data`. Images with
+empty byte data (e.g. reference-only images populated via `source_path`) are
+skipped rather than forwarded to the VLM.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Config` | `LlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
+| `CustomPrompt` | `*string` | `nil` | Optional custom prompt override forwarded to every `caption_image` call. `nil` uses the default `RegionKind.Caption` prompt. |
 
 ---
 
@@ -1506,6 +1626,16 @@ Citation file metadata (RIS, PubMed, EndNote).
 | `YearRange` | `*YearRange` | `nil` | Earliest and latest publication years found in the file. |
 | `Dois` | `[]string` | `nil` | DOI identifiers found in the citation records. |
 | `Keywords` | `[]string` | `nil` | Keywords collected from all citation records. |
+
+---
+
+#### ClassificationEnrichmentConfig
+
+Classification enrichment knob: how to label the document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Config` | `PageClassificationConfig` | — | Label set and LLM settings for the classification stage. |
 
 ---
 
@@ -2457,7 +2587,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `Ocr` | `*OcrConfig` | `nil` | OCR configuration (None = OCR disabled) |
 | `ForceOcr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `ForceOcrPages` | `*[]uint32` | `nil` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
+| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
 | `Chunking` | `*ChunkingConfig` | `nil` | Text chunking configuration (None = chunking disabled) |
 | `ContentFilter` | `*ContentFilterConfig` | `nil` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `Images` | `*ImageExtractionConfig` | `nil` | Image extraction configuration (None = no image extraction) |
@@ -3265,15 +3395,9 @@ Combined paths to all models needed for OCR (backward compatibility).
 
 ---
 
-#### NerBackend
-
-NER backend trait (stub for Android x86_64).
-
----
-
 #### NerConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the NER post-processor.
 
@@ -3837,7 +3961,7 @@ Classification result for a single page.
 
 #### PageClassificationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the page-classification post-processor.
 
@@ -4487,7 +4611,7 @@ the type in their own code.
 
 #### RedactionConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the redaction post-processor.
 
@@ -4671,7 +4795,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4727,7 +4851,7 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.0.
+Since v5.0.
 
 ### Methods
 
@@ -4759,7 +4883,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4790,7 +4914,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4988,7 +5112,7 @@ returning structured data that conforms to the schema.
 
 #### SummarizationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the summarisation post-processor.
 
@@ -5326,7 +5450,7 @@ than duplicated here.
 
 #### TranslationConfig
 
-**Since:** `v5.0.0`
+**Since:** `v5.0`
 
 Configuration for the translation post-processor.
 
@@ -5853,7 +5977,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6600,7 +6724,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

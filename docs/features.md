@@ -117,6 +117,21 @@ For the full format matrix with MIME types, extraction methods, and special capa
 
 ---
 
+## Feature Availability
+
+Use these labels when matching docs to deployed packages. Labels use major.minor only.
+
+| Version | Feature area |
+| ------- | ------------ |
+| <span class="version-badge">v4.0</span> | HTML metadata extraction and the pdf_oxide PDF provider. |
+| <span class="version-badge">v4.3</span> | LibreOffice-free extraction for legacy `.doc` and `.ppt` files. |
+| <span class="version-badge">v4.5</span> | OCR pipeline fallback, layout detection, and document-level OCR. |
+| <span class="version-badge">v4.6</span> | PDF page rendering. |
+| <span class="version-badge">v4.8</span> | LLM/VLM intelligence through liter-llm. |
+| <span class="version-badge">v5.0</span> | Image-index references, SVG/image output normalization, HEIC aggregate formats, `list_supported_formats`, reranking, NER, redaction, summarization, translation, page classification, image captions, QR-code detection, and the `windows-target` feature aggregate. |
+
+---
+
 ## Extraction Pipeline
 
 Every file flows through the same multi-stage pipeline:
@@ -133,7 +148,7 @@ flowchart LR
 ```
 
 1. **MIME detection** -- Kreuzberg identifies the file type from magic bytes and extension, then selects the matching native extractor from the registry.
-2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdf_oxide (pure Rust); Office formats use streaming XML parsers; images pass directly to OCR.
+2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdf_oxide (pure Rust); Office formats use native XML or OLE/CFB parsers; images pass directly to OCR.
 3. **OCR** -- When the extractor finds no text layer (or `force_ocr` is set), the file is routed to the configured OCR backend. The OCR result replaces or supplements the extracted text.
 4. **Post-processing** -- Validators, quality processing, chunking, embeddings, keyword extraction, and any registered post-processor plugins run in sequence.
 5. **Caching** -- If caching is enabled, results are stored keyed by a content hash so repeated extractions skip the entire pipeline.
@@ -156,14 +171,14 @@ Three OCR backends, usable individually or chained into a quality-driven fallbac
 | ------------------ | ---------------------------------------- | ------------------------------------------------------------------ | -------------------------------- |
 | **Languages**      | 100+                                     | 80+ (11 script families)                                           | 80+                              |
 | **Best for**       | General purpose, broad language coverage | CJK, complex scripts, high accuracy                                | GPU-accelerated workloads        |
-| **Platform**       | All bindings including WASM              | All non-WASM bindings                                              | Python only                      |
-| **Install**        | System package (`tesseract-ocr`)         | Cargo feature `paddle-ocr` (bundled in Python package since 4.8.5) | `pip install kreuzberg[easyocr]` |
+| **Platform**       | Native and WASM targets                  | Native ONNX Runtime builds                                         | Python only                      |
+| **Install**        | System package (`tesseract-ocr`)         | Cargo feature `paddle-ocr` (bundled in Python package by v4.8)     | `pip install kreuzberg[easyocr]` |
 | **Runtime**        | C library (Tesseract 4.0+)               | ONNX Runtime (models downloaded on first use)                      | PyTorch (optional CUDA)          |
 | **Python version** | Any                                      | Any                                                                | Any                              |
 
 ### Multi-Backend Pipeline
 
-!!! Info "Added in v4.5.0"
+!!! Info "Available by v4.5"
 
 When the `paddle-ocr` feature is enabled, Kreuzberg automatically constructs a fallback pipeline: Tesseract runs first, and if the output falls below configurable quality thresholds (16 tunable parameters), PaddleOCR takes over. You can also define a custom ordering across all three backends.
 
@@ -182,7 +197,7 @@ flowchart TD
 
 ### Document-Level Optimization
 
-!!! Info "Added in v4.5.3"
+!!! Info "Available by v4.5"
 
 Some OCR backends (including EasyOCR) now support **document-level processing**. When a file path is provided, the extractor can bypass the expensive page-by-page rendering stage and delegate the entire document to the OCR engine. This significantly reduces memory overhead and improves throughput for large PDFs and multi-page images.
 
@@ -204,13 +219,11 @@ Optional post-extraction steps, each configured independently through `Extractio
 
 **PDF Hierarchy Detection** -- Detect document structure from PDFs using K-means clustering on block characteristics (font size, weight, indentation, position). Blocks are assigned to semantic levels (title, section, subsection, paragraph) without relying on explicit heading tags. See the [Output Formats Guide](guides/output-formats.md#pdf-hierarchy-detection).
 
-**PDF Page Rendering** -- Render individual PDF pages as PNG images for thumbnails, vision model input, or custom processing pipelines. Memory-efficient iterator renders one page at a time. Configurable DPI (default 150). Available across all language bindings. See [Extraction Guide](guides/extraction.md#pdf-page-rendering).
-
-!!! Info "Added in v4.6.2"
+**PDF Page Rendering** <span class="version-badge">v4.6</span> -- Render individual PDF pages as PNG images for thumbnails, vision model input, or custom processing pipelines. Memory-efficient iterator renders one page at a time. Configurable DPI (default 150). Available across all language bindings. See [Extraction Guide](guides/extraction.md#pdf-page-rendering).
 
 ### LLM-Powered Intelligence
 
-!!! Info "Added in v4.8.0"
+!!! Info "Available by v4.8"
 
 Kreuzberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
 
@@ -266,7 +279,7 @@ Customize the prompts sent to LLMs with Minijinja templates. Available variables
 
 ### Document Enrichment
 
-!!! Info "Added in v5.0.0-rc.3"
+!!! Info "Available by v5.0"
 
 **Named-Entity Recognition** -- Detect people, organisations, locations, dates, money, percentages, emails, phones, URLs, and caller-supplied zero-shot labels via gline-rs (ONNX) or any liter-llm provider. Results populate `ExtractionResult.entities`. See the [NER Guide](guides/ner.md).
 
@@ -306,7 +319,7 @@ Customize the prompts sent to LLMs with Minijinja templates. Available variables
 
 ## Layout Detection
 
-!!! Info "Added in v4.5.0"
+!!! Info "Available by v4.5"
 
 Detect and classify document regions using ONNX-based deep learning. Layout detection identifies 17 element types (text, tables, figures, headers, code, forms, captions, and more), enabling accurate region-aware extraction and structured table recovery.
 
@@ -320,7 +333,7 @@ Detect and classify document regions using ONNX-based deep learning. Layout dete
 
 GPU acceleration via ONNX Runtime (CUDA, CoreML, TensorRT) significantly reduces inference time. Models are automatically downloaded and cached on first use.
 
-**Availability:** All language bindings **except WebAssembly** — WASM does not support layout detection because ONNX Runtime is unavailable in browser environments.
+**Availability:** Native builds that include ONNX Runtime. It is excluded from `wasm-target`, `android-target`, and the curated `windows-target` aggregate.
 
 For configuration and usage, see the [Layout Detection Guide](guides/layout-detection.md).
 
@@ -328,7 +341,7 @@ For configuration and usage, see the [Layout Detection Guide](guides/layout-dete
 
 ## Plugin System
 
-The extraction pipeline is extensible through four plugin types, each hooking into a different stage:
+The extraction pipeline and query-time APIs are extensible through six plugin categories:
 
 ```mermaid
 flowchart LR
@@ -336,17 +349,22 @@ flowchart LR
     B --> C[OCR Backend Plugin]
     C --> D[Validator Plugin]
     D --> E[Post-Processor Plugin]
-    E --> F[Output]
+    E --> F[Renderer Plugin]
+    F --> G[Output]
+    H[Query + Documents] --> I[Reranker Backend Plugin]
+    I --> J[Reranked Documents]
 ```
 
 | Plugin Type             | Purpose                                                  | Example                        |
 | ----------------------- | -------------------------------------------------------- | ------------------------------ |
 | **Document Extractors** | Add support for custom file formats or override defaults | Proprietary format parser      |
 | **OCR Backends**        | Integrate cloud OCR services or custom engines           | AWS Textract, Google Vision    |
+| **Reranker Backends**   | Score query/document pairs for search ranking            | Cross-encoder or provider API  |
 | **Validators**          | Enforce quality standards on extraction results          | Minimum word count check       |
 | **Post-Processors**     | Transform or enrich results after extraction             | PII redaction, custom metadata |
+| **Renderers**           | Convert document structures into output formats          | Custom Markdown or HTML writer |
 
-Plugins are registered with a priority value that determines execution order. Discovery works through Python entry points, configuration files, or environment variables.
+Plugins are registered programmatically through typed registries. Built-in plugins register at initialization when their Cargo feature is active; runtime configuration selects registered backends and processors.
 
 For the architecture overview, see [Plugin System](concepts/plugin-system.md). For implementation guidance, see [Creating Plugins](guides/plugins.md).
 
@@ -356,7 +374,7 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 
 | Mode           | When to Use                                            | Details                                                                                  |
 | -------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Ruby, C#, Java, PHP, Elixir, R, or C |
+| **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, Ruby, C#, PHP, Elixir, R, Dart, Swift, Zig, C, or Wasm |
 | **CLI**        | One-off extractions, scripting, CI pipelines           | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
 | **REST API**   | Multi-service architectures, language-agnostic access  | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
 | **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
@@ -366,33 +384,34 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 
 ## Language Bindings
 
-12 native bindings share the Rust core and produce identical results.
+Polyglot bindings share the Rust core and expose the same generated types where the target platform supports the underlying feature.
 
 ### Binding Tiers
 
-**Full feature parity with async API** -- Python (PyO3), TypeScript/Node.js (NAPI-RS), Rust
+**Full feature parity with async API** -- Rust, Python (PyO3), TypeScript/Node.js (NAPI-RS)
 
-**Full features, synchronous API** -- Go, Ruby, C#, Java
+**Full features, synchronous API** -- Go, Ruby, C#, Java, PHP, Elixir
 
-**Subset or constrained environments** -- PHP, Elixir, R, C (FFI)
+**Native FFI surfaces** -- C, R, Dart, Swift, Zig, Kotlin Android
 
 **TypeScript: Two flavors**
 
 - **Native** (`@kreuzberg/node`) — Full speed, complete feature parity (servers, plugins, config file discovery)
-- **WASM** (`@kreuzberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent (paddle-ocr, layout detection, embeddings, auto-rotate), server modes (api/mcp), CLI binary, and filesystem-dependent paths. All formats including email (.eml/.msg), PDF, all office formats (DOCX/XLSX/PPTX/ODT/RTF/EPUB/iWork/HWP), archives, plus Tesseract OCR (via the kreuzberg-tesseract WASI build), chunking, keywords, language detection, stopwords, tree-sitter, and liter-llm are supported.
+- **WASM** (`@kreuzberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent inference (`paddle-ocr`, layout detection, embeddings, reranker, auto-rotate, transcription), liter-llm/VLM features, server modes (`api`/`mcp`), CLI binary, and browser filesystem paths. Pure-Rust extraction formats, Tesseract WASM OCR, chunking, keywords, language detection, stopwords, tree-sitter, redaction, summarization, SVG, and QR-code detection are supported.
 
 Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
 
 ### Rust Feature Flags
 
-Rust builds are modular through Cargo features. Nothing is enabled by default:
+Rust builds are modular through Cargo features. The default feature set is `tokio-runtime` plus `simd-utf8`; enable format and analysis features explicitly for the surface you need.
 
 | Category              | Features                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| **Format extractors** | `pdf`, `excel`, `office`, `email`, `html`, `xml`, `archives`, `markdown`, `djot`, `mdx`                 |
-| **Processing**        | `ocr`, `paddle-ocr`, `language-detection`, `chunking`, `embeddings`, `quality`, `keywords`, `stopwords` |
-| **Servers**           | `api`, `mcp`                                                                                            |
-| **Bundles**           | `full` (all extractors + processing), `server`, `cli`                                                   |
+| **Format extractors** | `pdf`, `excel`, `office`, `hwp`, `hwpx`, `iwork`, `email`, `html`, `xml`, `archives`, `mdx`, `svg`, `heic` |
+| **OCR and ML**        | `ocr`, `ocr-wasm`, `paddle-ocr`, `layout-detection`, `embeddings`, `reranker`, `transcription`, `liter-llm` |
+| **Text analysis**     | `language-detection`, `chunking`, `quality`, `keywords`, `stopwords`, `diff`, `ner`, `redaction`, `summarization`, `translation`, `classification`, `captioning`, `qr-codes` |
+| **Servers**           | `api`, `mcp`, `mcp-http`, `otel`                                                                        |
+| **Bundles**           | `formats`, `analysis`, `services`, `full`, `server`, `cli`, `wasm-target`, `android-target`, `windows-target` |
 
 ### Package Installation
 
@@ -415,7 +434,7 @@ Rust builds are modular through Cargo features. Nothing is enabled by default:
 
     ```toml
     [dependencies]
-    kreuzberg = { version = "4.0", features = ["pdf", "ocr", "chunking"] }
+    kreuzberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
     ```
 
 === "Other"
@@ -423,7 +442,7 @@ Rust builds are modular through Cargo features. Nothing is enabled by default:
     ```bash
     gem install kreuzberg                  # Ruby
     go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5  # Go
-    dotnet add package kreuzberg.dev       # C#
+    dotnet add package Kreuzberg           # C#
     ```
 
 For API details per language, see the [API Reference](reference/api-python.md).
@@ -447,7 +466,7 @@ For the full configuration schema and examples, see the [Configuration Guide](gu
 
 ## AI Coding Assistants
 
-!!! Info "Added in v4.2.15"
+!!! Info "Added in v4.2"
 
 Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
 

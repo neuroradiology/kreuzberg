@@ -1,14 +1,16 @@
 # Format Support
 
-Kreuzberg supports 96 file formats across major categories, providing comprehensive document intelligence capabilities through native Rust extractors.
+Kreuzberg supports 96 file formats across major categories through native Rust extractors.
 
 ## Overview
 
-Kreuzberg v4 uses a high-performance Rust core with two extraction methods:
+Kreuzberg uses a high-performance Rust core with one registry-backed extraction path:
 
 - **Native Rust Extractors**: Fast, memory-efficient extractors for all supported formats
 
-> **Note:** LibreOffice was a required system dependency for legacy .doc/.ppt extraction in Kreuzberg < 4.3. Since 4.3, these formats are extracted natively without any external tools.
+PDF extraction uses the pdf_oxide provider <span class="version-badge">v4.0</span>. Legacy `.doc` and `.ppt` extraction no longer requires LibreOffice <span class="version-badge">v4.3</span>; those formats are parsed through native OLE/CFB extractors.
+
+Call `list_supported_formats()` in SDKs or the REST/API layer to inspect the runtime registry, including MIME types, extensions, and enabled capabilities <span class="version-badge">v5.0</span>.
 
 All formats support async/await and batch processing. Image formats and PDFs support optional OCR when configured.
 
@@ -81,6 +83,8 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | JPEG 2000  | `.jp2`, `.jpx`, `.jpm`, `.mj2` | `image/jp2`, `image/jpx`, `image/jpm`, `image/mj2` | Native Rust (hayro-jpeg2000) | Yes         | OCR: Pure Rust, memory-safe decoder for JP2 container and J2K codestream formats, table detection, format-specific metadata |
 | JBIG2      | `.jbig2`, `.jb2`               | `image/x-jbig2`                                    | Native Rust (hayro-jbig2)    | Yes         | OCR: Pure Rust bi-level decoder, commonly found in scanned PDFs                                                             |
 | PNM Family | `.pnm`, `.pbm`, `.pgm`, `.ppm` | `image/x-portable-anymap`, and so on.              | Native Rust (image-rs)       | Yes         | NetPBM formats                                                                                                              |
+| HEIC / HEIF | `.heic`, `.heics`, `.heif`    | `image/heic`, `image/heif`, `image/heic-sequence`  | Native libheif binding       | Yes         | Pixel decoding requires `heic` and libheif; EXIF metadata is pure Rust                                                       |
+| AVIF / AVCS | `.avif`, `.avcs`              | `image/avif`, `image/avif-sequence`                | Native libheif binding       | Yes         | Available through the HEIC-family aggregate <span class="version-badge">v5.0</span>                                         |
 
 ### Archives
 
@@ -196,30 +200,31 @@ graph TD
 
 ## Feature Flags
 
-Kreuzberg uses Cargo feature flags to enable optional format support:
+Kreuzberg uses Cargo feature flags to enable optional format and processing support. The default feature set is `tokio-runtime` plus `simd-utf8`; format support is opt-in for Rust consumers.
 
-| Feature Flag | Formats Enabled                   | Default |
-| ------------ | --------------------------------- | ------- |
-| `pdf`        | PDF documents                     | No      |
-| `excel`      | Excel spreadsheets (all variants) | No      |
-| `office`     | PowerPoint and Office formats     | No      |
-| `ocr`        | OCR for images and PDFs           | No      |
-| `email`      | EML, MSG email formats            | No      |
-| `html`       | HTML to Markdown conversion       | No      |
-| `xml`        | XML document parsing              | No      |
-| `archives`   | ZIP, TAR, 7z archive support      | No      |
-| `markdown`   | Markdown documents                | No      |
-| `djot`       | Djot documents                    | No      |
-| `mdx`        | MDX documents                     | No      |
-
-**Note:** No features are enabled by default (`default = []`). You must explicitly enable the features you need.
+| Feature Flag | Enables |
+| ------------ | ------- |
+| `pdf`        | PDF extraction through pdf_oxide, PDF images, PDF rendering helpers |
+| `excel` / `excel-wasm` | Excel spreadsheets through calamine |
+| `office`     | DOCX/PPTX, legacy `.doc`/`.ppt`, OpenDocument, dBASE, academic citation formats |
+| `hwp` / `hwpx` | Hangul Word Processor formats |
+| `iwork`      | Apple Pages, Numbers, and Keynote |
+| `email`      | EML, MSG, and PST-backed Outlook metadata |
+| `html`       | HTML/XHTML conversion with metadata extraction <span class="version-badge">v4.0</span> |
+| `xml`        | XML and XML-derived document parsing |
+| `archives`   | ZIP, TAR, Gzip, and 7-Zip archives |
+| `mdx`        | MDX documents |
+| `svg`        | SVG parse/sanitize/rasterize and normalized image output <span class="version-badge">v5.0</span> |
+| `heic`       | HEIC/HEIF/AVIF/AVCS pixel decoding through libheif <span class="version-badge">v5.0</span> |
+| `formats`    | Aggregate for document/image/archive format extractors |
+| `wasm-target` / `android-target` / `windows-target` | Platform-specific pure-Rust or reduced-native feature sets <span class="version-badge">v5.0</span> |
 
 To enable specific features:
 
 ```toml title="Cargo.toml"
 [dependencies]
 # Enable only PDF and Excel format support
-kreuzberg = { version = "4.0", features = ["pdf", "excel"] }
+kreuzberg = { version = "5", features = ["pdf", "excel"] }
 ```
 
 To enable all features with `--all-features`:
@@ -235,26 +240,26 @@ All format extraction features (no server components):
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "4.0", features = ["full"] }
+kreuzberg = { version = "5", features = ["full"] }
 ```
 
 Server features (API, MCP) with common format support:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "4.0", features = ["server"] }
+kreuzberg = { version = "5", features = ["server"] }
 ```
 
 CLI features with commonly used formats:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "4.0", features = ["cli"] }
+kreuzberg = { version = "5", features = ["cli"] }
 ```
 
 ## System Dependencies
 
-Some formats require external system tools:
+Some optional capabilities require external system libraries:
 
 ### Tesseract OCR (Optional)
 
@@ -276,13 +281,19 @@ scoop install tesseract
 
 **Docker Note**: All system dependencies are pre-installed in official Kreuzberg Docker images.
 
+### HEIC / HEIF / AVIF (Optional)
+
+Pixel decoding for HEIC-family formats requires the `heic` feature and libheif at build and runtime. The Windows target aggregate omits `heic` because the standard Windows runner image does not provide libheif. Metadata extraction from HEIC-family files still works through the pure-Rust EXIF path.
+
 ## Format Detection
 
 Kreuzberg automatically detects file formats using:
 
-1. **File Extension Mapping**: 85+ formats mapped to MIME types
+1. **File Extension Mapping**: the supported-format registry maps extensions to MIME types
 2. **mime_guess Crate**: Fallback for unknown extensions
 3. **Manual Override**: Explicit MIME type can be provided
+
+Use `list_supported_formats()` when you need the exact enabled registry for the current build.
 
 Example with manual override:
 

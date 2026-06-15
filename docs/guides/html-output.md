@@ -1,6 +1,6 @@
 # HTML Output
 
-!!! Info "Added in v4.8.1"
+!!! Info "Added in v4.8"
 
 Render extracted document content as styled HTML with semantic `kb-*` CSS classes, configurable themes, and full CSS customization.
 
