@@ -33,6 +33,18 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 pub async fn extract_bytes(content: &[u8], mime_type: &str, config: ExtractionConfig) -> Result<ExtractionResult, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::extract_bytes;
+use kreuzberg::core::config::ExtractionConfig;
+
+let config = ExtractionConfig::default();
+let bytes = b"Hello, world!";
+let result = extract_bytes(bytes, "text/plain", &config).await?;
+println!("Content: {}", result.content);
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +54,7 @@ pub async fn extract_bytes(content: &[u8], mime_type: &str, config: ExtractionCo
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -74,6 +87,17 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 pub async fn extract_file(path: PathBuf, mime_type: Option<String>, config: ExtractionConfig) -> Result<ExtractionResult, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::extract_file;
+use kreuzberg::core::config::ExtractionConfig;
+
+let config = ExtractionConfig::default();
+let result = extract_file("document.pdf", None, &config).await?;
+println!("Content: {}", result.content);
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +107,7 @@ pub async fn extract_file(path: PathBuf, mime_type: Option<String>, config: Extr
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -106,6 +131,17 @@ use a truly synchronous extraction approach instead.
 pub fn extract_file_sync(path: PathBuf, mime_type: Option<String>, config: ExtractionConfig) -> Result<ExtractionResult, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::extract_file_sync;
+use kreuzberg::core::config::ExtractionConfig;
+
+let config = ExtractionConfig::default();
+let result = extract_file_sync("document.pdf", None, &config)?;
+println!("Content: {}", result.content);
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +151,7 @@ pub fn extract_file_sync(path: PathBuf, mime_type: Option<String>, config: Extra
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -135,6 +172,18 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 pub fn extract_bytes_sync(content: &[u8], mime_type: &str, config: ExtractionConfig) -> Result<ExtractionResult, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::extract_bytes_sync;
+use kreuzberg::core::config::ExtractionConfig;
+
+let config = ExtractionConfig::default();
+let bytes = b"Hello, world!";
+let result = extract_bytes_sync(bytes, "text/plain", &config)?;
+println!("Content: {}", result.content);
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +193,7 @@ pub fn extract_bytes_sync(content: &[u8], mime_type: &str, config: ExtractionCon
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -161,6 +211,23 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 pub fn batch_extract_files_sync(items: Vec<BatchFileItem>, config: ExtractionConfig) -> Result<Vec<ExtractionResult>, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_files_sync;
+use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchFileItem {
+        path: "doc1.pdf".into(),
+        config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+    },
+    BatchFileItem { path: "doc2.pdf".into(), config: None },
+];
+let results = batch_extract_files_sync(items, &config)?;
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +236,7 @@ pub fn batch_extract_files_sync(items: Vec<BatchFileItem>, config: ExtractionCon
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<ExtractionResult>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -188,6 +256,24 @@ that iterates through items and calls `extract_bytes_sync()`.
 pub fn batch_extract_bytes_sync(items: Vec<BatchBytesItem>, config: ExtractionConfig) -> Result<Vec<ExtractionResult>, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_bytes_sync;
+use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+    BatchBytesItem {
+        content: b"other".to_vec(),
+        mime_type: "text/plain".to_string(),
+        config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+    },
+];
+let results = batch_extract_bytes_sync(items, &config)?;
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +282,7 @@ pub fn batch_extract_bytes_sync(items: Vec<BatchBytesItem>, config: ExtractionCo
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<ExtractionResult>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -237,6 +324,42 @@ Per-file configuration overrides:
 pub async fn batch_extract_files(items: Vec<BatchFileItem>, config: ExtractionConfig) -> Result<Vec<ExtractionResult>, Error>
 ```
 
+**Example:**
+
+Simple usage with no per-file overrides:
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_files;
+use kreuzberg::core::config::{ExtractionConfig, BatchFileItem};
+use std::path::PathBuf;
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchFileItem { path: "doc1.pdf".into(), config: None },
+    BatchFileItem { path: "doc2.pdf".into(), config: None },
+];
+let results = batch_extract_files(items, &config).await?;
+println!("Processed {} files", results.len());
+```rust
+
+Per-file configuration overrides:
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_files;
+use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
+use std::path::PathBuf;
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchFileItem {
+        path: "scan.pdf".into(),
+        config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+    },
+    BatchFileItem { path: "notes.txt".into(), config: None },
+];
+let results = batch_extract_files(items, &config).await?;
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +368,7 @@ pub async fn batch_extract_files(items: Vec<BatchFileItem>, config: ExtractionCo
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `Vec<ExtractionResult>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -280,6 +404,41 @@ Per-item configuration overrides:
 pub async fn batch_extract_bytes(items: Vec<BatchBytesItem>, config: ExtractionConfig) -> Result<Vec<ExtractionResult>, Error>
 ```
 
+**Example:**
+
+Simple usage with no per-item overrides:
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_bytes;
+use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem};
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchBytesItem { content: b"content 1".to_vec(), mime_type: "text/plain".to_string(), config: None },
+    BatchBytesItem { content: b"content 2".to_vec(), mime_type: "text/plain".to_string(), config: None },
+];
+let results = batch_extract_bytes(items, &config).await?;
+println!("Processed {} items", results.len());
+```rust
+
+Per-item configuration overrides:
+
+```rust,no_run
+use kreuzberg::core::extractor::batch_extract_bytes;
+use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
+
+let config = ExtractionConfig::default();
+let items = vec![
+    BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+    BatchBytesItem {
+        content: b"<html>test</html>".to_vec(),
+        mime_type: "text/html".to_string(),
+        config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+    },
+];
+let results = batch_extract_bytes(items, &config).await?;
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +447,7 @@ pub async fn batch_extract_bytes(items: Vec<BatchBytesItem>, config: ExtractionC
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `Vec<ExtractionResult>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -316,6 +476,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 pub fn detect_mime_type_from_bytes(content: &[u8]) -> Result<String, Error>
 ```
 
+**Example:**
+
+```rust
+let result = detect_mime_type_from_bytes(b"data")?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +489,7 @@ pub fn detect_mime_type_from_bytes(content: &[u8]) -> Result<String, Error>
 | `content` | `Vec<u8>` | Yes | Raw file bytes |
 
 **Returns:** `String`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -343,6 +510,18 @@ A vector of file extensions (without leading dot) for the MIME type.
 pub fn get_extensions_for_mime(mime_type: &str) -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+use kreuzberg::core::mime::get_extensions_for_mime;
+
+let extensions = get_extensions_for_mime("application/pdf").unwrap();
+assert_eq!(extensions, vec!["pdf"]);
+
+let doc_extensions = get_extensions_for_mime("application/vnd.openxmlformats-officedocument.wordprocessingml.document").unwrap();
+assert!(doc_extensions.contains(&"docx".to_string()));
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +529,7 @@ pub fn get_extensions_for_mime(mime_type: &str) -> Result<Vec<String>, Error>
 | `mime_type` | `String` | Yes | The MIME type to look up |
 
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -374,6 +554,16 @@ A vector of `SupportedFormat` entries sorted by extension.
 ```rust
 pub fn list_supported_formats() -> Vec<SupportedFormat>
 ```
+
+**Example:**
+
+```rust
+use kreuzberg::core::mime::list_supported_formats;
+
+let formats = list_supported_formats();
+assert!(!formats.is_empty());
+assert!(formats.iter().any(|f| f.extension == "pdf"));
+```rust
 
 **Returns:** `Vec<SupportedFormat>`
 
@@ -406,6 +596,12 @@ from the four corner points of the grid.
 pub fn detect_qr_codes(image_bytes: &[u8], format_hint: Option<String>) -> Vec<QrCode>
 ```
 
+**Example:**
+
+```rust
+let result = detect_qr_codes(b"data", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +630,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 pub fn clear_embedding_backends() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_embedding_backends()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -452,7 +655,14 @@ bindings.
 pub fn list_embedding_backends() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = list_embedding_backends()?;
+```
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -467,7 +677,14 @@ List names of all registered document extractors.
 pub fn list_document_extractors() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = list_document_extractors()?;
+```
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -489,7 +706,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 pub fn clear_document_extractors() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_document_extractors()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -510,7 +734,19 @@ A vector of OCR backend names.
 pub fn list_ocr_backends() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+use kreuzberg::plugins::list_ocr_backends;
+
+let backends = list_ocr_backends()?;
+for name in backends {
+    println!("Registered OCR backend: {}", name);
+}
+```rust
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -532,7 +768,16 @@ Removes all OCR backends and calls their `shutdown()` methods.
 pub fn clear_ocr_backends() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+use kreuzberg::plugins::clear_ocr_backends;
+
+clear_ocr_backends()?;
+```rust
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -553,7 +798,14 @@ safe to call on any target.
 pub fn register_builtin() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+register_builtin()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -576,7 +828,19 @@ global registry.
 pub fn list_post_processors() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+use kreuzberg::plugins::list_post_processors;
+
+let processors = list_post_processors()?;
+for name in processors {
+    println!("Registered post-processor: {}", name);
+}
+```rust
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -591,7 +855,14 @@ Remove all registered post-processors.
 pub fn clear_post_processors() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_post_processors()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -610,7 +881,14 @@ Returns an error if the registry lock is poisoned.
 pub fn list_renderers() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = list_renderers()?;
+```
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -633,7 +911,14 @@ Returns an error if the registry lock is poisoned.
 pub fn clear_renderers() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_renderers()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -649,7 +934,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +942,14 @@ Since v5.0.
 pub fn clear_reranker_backends() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_reranker_backends()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -669,7 +961,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +969,14 @@ Since v5.0.
 pub fn list_reranker_backends() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = list_reranker_backends()?;
+```
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -692,7 +991,14 @@ List names of all registered validators.
 pub fn list_validators() -> Result<Vec<String>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = list_validators()?;
+```
+
 **Returns:** `Vec<String>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -707,7 +1013,14 @@ Remove all registered validators.
 pub fn clear_validators() -> Result<(), Error>
 ```
 
-**Returns:** `()`
+**Example:**
+
+```rust
+clear_validators()?;
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -731,6 +1044,12 @@ a half-populated vector.
 pub async fn classify_pages(result: ExtractionResult, config: PageClassificationConfig) -> Result<(), Error>
 ```
 
+**Example:**
+
+```rust
+classify_pages(ExtractionResult::default(), PageClassificationConfig::default()).await?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +1057,8 @@ pub async fn classify_pages(result: ExtractionResult, config: PageClassification
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `()`
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -762,6 +1082,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 pub async fn classify_text(text: &str, config: PageClassificationConfig) -> Result<Vec<ClassificationLabel>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = classify_text("value", PageClassificationConfig::default()).await?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +1096,7 @@ pub async fn classify_text(text: &str, config: PageClassificationConfig) -> Resu
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<ClassificationLabel>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -799,6 +1126,24 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 pub async fn classify_document(pages: Vec<String>, config: PageClassificationConfig) -> Result<Vec<ClassificationLabel>, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::text::classification::classify_document;
+use kreuzberg::core::config::PageClassificationConfig;
+use kreuzberg::core::config::LlmConfig;
+
+let config = PageClassificationConfig {
+    labels: vec!["invoice".to_string(), "memo".to_string()],
+    llm: LlmConfig::default(),
+    prompt_template: None,
+    multi_label: false,
+};
+
+let pages = vec!["Page 1 content", "Page 2 content"];
+let labels = classify_document(&pages, &config).await?;
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1152,7 @@ pub async fn classify_document(pages: Vec<String>, config: PageClassificationCon
 | `config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `Vec<ClassificationLabel>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -824,6 +1170,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> Result<PathBuf, Error>
 ```
 
+**Example:**
+
+```rust
+let result = download_model("value", "value")?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1184,7 @@ pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> Result<PathBuf,
 | `cache_dir` | `Option<PathBuf>` | No | The cache dir |
 
 **Returns:** `PathBuf`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -846,6 +1199,12 @@ Pinned default NER model identifier.
 pub fn default_model_name() -> String
 ```
 
+**Example:**
+
+```rust
+let result = default_model_name();
+```
+
 **Returns:** `String`
 
 ---
@@ -858,6 +1217,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```rust
 pub fn known_models() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = known_models();
 ```
 
 **Returns:** `Vec<String>`
@@ -875,6 +1240,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 pub async fn redact(result: ExtractionResult, config: RedactionConfig) -> Result<(), Error>
 ```
 
+**Example:**
+
+```rust
+redact(ExtractionResult::default(), RedactionConfig::default()).await?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1253,8 @@ pub async fn redact(result: ExtractionResult, config: RedactionConfig) -> Result
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** `()`
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -895,6 +1267,12 @@ Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN).
 
 ```rust
 pub fn find_all(text: &str) -> Vec<PatternMatch>
+```
+
+**Example:**
+
+```rust
+let result = find_all("value");
 ```
 
 **Parameters:**
@@ -920,6 +1298,12 @@ they must be supplied by a NER backend through the redaction engine.
 
 ```rust
 pub fn scan_text(text: &str, categories: Vec<PiiCategory>) -> Vec<PatternMatch>
+```
+
+**Example:**
+
+```rust
+let result = scan_text("value", vec![]);
 ```
 
 **Parameters:**
@@ -948,6 +1332,12 @@ pass `None` (or an unknown code) to fall back to English.
 pub fn summarize(text: &str, language: Option<String>, max_tokens: Option<u32>) -> Option<String>
 ```
 
+**Example:**
+
+```rust
+let result = summarize("value", "value", 42);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -969,6 +1359,12 @@ callers).
 
 ```rust
 pub fn token_count(text: &str) -> u32
+```
+
+**Example:**
+
+```rust
+let result = token_count("value");
 ```
 
 **Parameters:**
@@ -996,6 +1392,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 pub async fn translate_result(result: ExtractionResult, config: TranslationConfig) -> Result<(), Error>
 ```
 
+**Example:**
+
+```rust
+translate_result(ExtractionResult::default(), TranslationConfig::default()).await?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1003,7 +1405,8 @@ pub async fn translate_result(result: ExtractionResult, config: TranslationConfi
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** `()`
+**Returns:** No return value.
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1020,6 +1423,20 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 ```rust
 pub fn compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> ExtractionDiff
 ```
+
+**Example:**
+
+```rust,no_run
+use kreuzberg::{ExtractionResult, diff::{compare, DiffOptions}};
+
+let mut a = ExtractionResult::default();
+let mut b = ExtractionResult::default();
+a.content = "Hello world".to_string();
+b.content = "Hello Rust".to_string();
+
+let diff = compare(&a, &b, &DiffOptions::default());
+assert_eq!(diff.content_diff.len(), 1);
+```rust
 
 **Parameters:**
 
@@ -1057,6 +1474,29 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 pub async fn extract_region_with_vlm(image_bytes: &[u8], image_mime: &str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: Option<String>) -> Result<String, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+use kreuzberg::llm::region_extractor::{RegionKind, extract_region_with_vlm};
+use kreuzberg::LlmConfig;
+
+let image_bytes: Vec<u8> = std::fs::read("cropped_figure.png")?;
+let config = LlmConfig {
+    model: "openai/gpt-4o-mini".to_string(),
+    base_url: Some("<http://localhost:9999".to_string(>)),
+    ..Default::default()
+};
+let markdown = extract_region_with_vlm(
+    &image_bytes,
+    "image/png",
+    RegionKind::Figure,
+    &config,
+    None,
+)
+.await?;
+println!("Extracted: {markdown}");
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1068,6 +1508,7 @@ pub async fn extract_region_with_vlm(image_bytes: &[u8], image_mime: &str, regio
 | `custom_prompt` | `Option<String>` | No | The custom prompt |
 
 **Returns:** `String`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1096,6 +1537,21 @@ Returns an error if:
 pub fn extract_keywords(text: &str, config: KeywordConfig) -> Result<Vec<Keyword>, Error>
 ```
 
+**Example:**
+
+```rust,no_run
+let text = "Document intelligence with Rust provides memory safety.";
+let config = KeywordConfig::default()
+    .with_max_keywords(10)
+    .with_language("en");
+
+let keywords = extract_keywords(text, &config)?;
+
+for keyword in keywords {
+    println!("{}: {:.3}", keyword.text, keyword.score);
+}
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1104,6 +1560,7 @@ pub fn extract_keywords(text: &str, config: KeywordConfig) -> Result<Vec<Keyword
 | `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `Vec<Keyword>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1130,6 +1587,12 @@ or rendered, or if `page_index` is out of range.
 pub fn render_pdf_page_to_png(pdf_bytes: &[u8], page_index: usize, dpi: Option<i32>, password: Option<String>) -> Result<Vec<u8>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = render_pdf_page_to_png(b"data", 42, 42, "value")?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1140,6 +1603,7 @@ pub fn render_pdf_page_to_png(pdf_bytes: &[u8], page_index: usize, dpi: Option<i
 | `password` | `Option<String>` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Vec<u8>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1164,6 +1628,23 @@ Returns an error if the VLM call fails or if image format detection fails.
 pub async fn caption_image(image_bytes: &[u8], llm_config: LlmConfig, custom_prompt: Option<String>) -> Result<String, Error>
 ```
 
+**Example:**
+
+```rust
+use kreuzberg::captioning::caption_image;
+use kreuzberg::LlmConfig;
+
+# async fn example() -> kreuzberg::Result<()> {
+let image_bytes = vec![0xFF, 0xD8]; // JPEG header
+let config = LlmConfig {
+    model: "anthropic/claude-3-5-sonnet".to_string(),
+    ..Default::default()
+};
+let caption = caption_image(&image_bytes, &config, None).await?;
+# Ok(())
+# }
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1173,6 +1654,7 @@ pub async fn caption_image(image_bytes: &[u8], llm_config: LlmConfig, custom_pro
 | `custom_prompt` | `Option<String>` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `String`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1198,6 +1680,22 @@ or if the VLM call fails.
 pub async fn caption_image_file(path: PathBuf, llm_config: LlmConfig, custom_prompt: Option<String>) -> Result<String, Error>
 ```
 
+**Example:**
+
+```rust
+use kreuzberg::captioning::caption_image_file;
+use kreuzberg::LlmConfig;
+
+# async fn example() -> kreuzberg::Result<()> {
+let config = LlmConfig {
+    model: "openai/gpt-4o-mini".to_string(),
+    ..Default::default()
+};
+let caption = caption_image_file("document_page_001.png", &config, None).await?;
+# Ok(())
+# }
+```rust
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1207,6 +1705,7 @@ pub async fn caption_image_file(path: PathBuf, llm_config: LlmConfig, custom_pro
 | `custom_prompt` | `Option<String>` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `String`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1224,6 +1723,12 @@ Set `check_exists` to `true` to verify the file exists before detection.
 pub fn detect_mime_type(path: &str, check_exists: bool) -> Result<String, Error>
 ```
 
+**Example:**
+
+```rust
+let result = detect_mime_type("value", true)?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1232,6 +1737,7 @@ pub fn detect_mime_type(path: &str, check_exists: bool) -> Result<String, Error>
 | `check_exists` | `bool` | Yes | The check exists |
 
 **Returns:** `String`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1248,6 +1754,12 @@ Returns a 2D vector where each inner vector is the embedding for the correspondi
 pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = embed_texts(vec![], EmbeddingConfig::default())?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1256,6 +1768,7 @@ pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Ve
 | `config` | `EmbeddingConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<Vec<f32>>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1268,6 +1781,12 @@ pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Ve
 pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
 ```
 
+**Example:**
+
+```rust
+let result = embed_texts_async(vec![], EmbeddingConfig::default()).await?;
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1276,6 +1795,7 @@ pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> R
 | `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `Vec<Vec<f32>>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1291,6 +1811,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```rust
 pub fn get_embedding_preset(name: &str) -> Option<EmbeddingPreset>
+```
+
+**Example:**
+
+```rust
+let result = get_embedding_preset("value");
 ```
 
 **Parameters:**
@@ -1315,6 +1841,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 pub fn list_embedding_presets() -> Vec<String>
 ```
 
+**Example:**
+
+```rust
+let result = list_embedding_presets();
+```
+
 **Returns:** `Vec<String>`
 
 ---
@@ -1332,12 +1864,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```rust
 pub fn rerank(query: &str, documents: Vec<String>, config: RerankerConfig) -> Result<Vec<RerankedDocument>, Error>
+```
+
+**Example:**
+
+```rust
+let result = rerank("value", vec![], RerankerConfig::default())?;
 ```
 
 **Parameters:**
@@ -1349,6 +1887,7 @@ pub fn rerank(query: &str, documents: Vec<String>, config: RerankerConfig) -> Re
 | `config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<RerankedDocument>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1357,12 +1896,18 @@ pub fn rerank(query: &str, documents: Vec<String>, config: RerankerConfig) -> Re
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```rust
 pub async fn rerank_async(query: &str, documents: Vec<String>, config: RerankerConfig) -> Result<Vec<RerankedDocument>, Error>
+```
+
+**Example:**
+
+```rust
+let result = rerank_async("value", vec![], RerankerConfig::default()).await?;
 ```
 
 **Parameters:**
@@ -1374,6 +1919,7 @@ pub async fn rerank_async(query: &str, documents: Vec<String>, config: RerankerC
 | `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `Vec<RerankedDocument>`
+
 **Errors:** Returns `Err(Error)`.
 
 ---
@@ -1385,12 +1931,18 @@ Get a reranker preset by name.
 Returns `None` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```rust
 pub fn get_reranker_preset(name: &str) -> Option<RerankerPreset>
+```
+
+**Example:**
+
+```rust
+let result = get_reranker_preset("value");
 ```
 
 **Parameters:**
@@ -1409,12 +1961,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```rust
 pub fn list_reranker_presets() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = list_reranker_presets();
 ```
 
 **Returns:** `Vec<String>`
@@ -1672,15 +2230,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prepend_heading_context` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topic_threshold` | `Option<f32>` | `None` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> ChunkingConfig
 ```
+
+**Example:**
+
+```rust
+let result = ChunkingConfig::default();
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1739,15 +2305,23 @@ default behavior unchanged.
 | `strip_repeating_text` | `bool` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `include_watermarks` | `bool` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> ContentFilterConfig
 ```
+
+**Example:**
+
+```rust
+let result = ContentFilterConfig::default();
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1873,15 +2447,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `include_embedded` | `bool` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `max_content_chars` | `Option<usize>` | `None` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `None` means no truncation. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> DiffOptions
 ```
+
+**Example:**
+
+```rust
+let result = DiffOptions::default();
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1967,9 +2549,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### extract_bytes()
+###### extract_bytes()
 
 Extract content from a byte array.
 
@@ -1990,10 +2572,28 @@ The pipeline will convert this into the public `ExtractionResult`.
 **Signature:**
 
 ```rust
-pub fn extract_bytes(&self, content: &[u8], mime_type: &str, config: ExtractionConfig) -> InternalDocument
+pub async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: ExtractionConfig) -> Result<InternalDocument, Error>
 ```
 
-#### extract_file()
+**Example:**
+
+```rust
+let result = instance.extract_bytes(b"data", "value", ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Vec<u8>` | Yes | Raw document bytes |
+| `mime_type` | `String` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Returns `Err(Error)`.
+
+###### extract_file()
 
 Extract content from a file.
 
@@ -2011,10 +2611,28 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```rust
-pub fn extract_file(&self, path: PathBuf, mime_type: &str, config: ExtractionConfig) -> InternalDocument
+pub async fn extract_file(&self, path: PathBuf, mime_type: &str, config: ExtractionConfig) -> Result<InternalDocument, Error>
 ```
 
-#### supported_mime_types()
+**Example:**
+
+```rust
+let result = instance.extract_file("value", "value", ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `PathBuf` | Yes | Path to the document file |
+| `mime_type` | `String` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Returns `Err(Error)`.
+
+###### supported_mime_types()
 
 Get the list of MIME types supported by this extractor.
 
@@ -2033,14 +2651,22 @@ A slice of MIME type strings.
 pub fn supported_mime_types(&self) -> Vec<String>
 ```
 
-#### priority()
+**Example:**
+
+```rust
+let result = instance.supported_mime_types();
+```
+
+**Returns:** `Vec<String>`
+
+###### priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -2058,7 +2684,15 @@ Priority value (default: 50)
 pub fn priority(&self) -> i32
 ```
 
-#### can_handle()
+**Example:**
+
+```rust
+let result = instance.priority();
+```
+
+**Returns:** `i32`
+
+###### can_handle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2074,6 +2708,21 @@ Defaults to `true` (rely on MIME type matching).
 ```rust
 pub fn can_handle(&self, path: PathBuf, mime_type: &str) -> bool
 ```
+
+**Example:**
+
+```rust
+let result = instance.can_handle("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `PathBuf` | Yes | The  path |
+| `mime_type` | `String` | Yes | The  mime type |
+
+**Returns:** `bool`
 
 ---
 
@@ -2151,9 +2800,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `Vec<DocumentRelationship>` | `vec![]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `Vec<String>` | `vec![]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### finalize_node_types()
+###### finalize_node_types()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2166,7 +2815,35 @@ construction paths (builder, derivation) call this automatically.
 pub fn finalize_node_types(&self)
 ```
 
-#### is_empty()
+**Example:**
+
+```rust
+use kreuzberg::types::document_structure::{DocumentStructure, DocumentNode, NodeContent, NodeId};
+
+let mut structure = DocumentStructure {
+    nodes: vec![DocumentNode {
+        id: NodeId::from("n1"),
+        content: NodeContent::Paragraph { text: "Hello".into() },
+        parent: None,
+        children: vec![],
+        content_layer: Default::default(),
+        page: None,
+        page_end: None,
+        bbox: None,
+        annotations: vec![],
+        attributes: None,
+    }],
+    source_format: None,
+    relationships: vec![],
+    node_types: vec![],
+};
+structure.finalize_node_types();
+assert!(structure.node_types.contains(&"paragraph".to_string()));
+```rust
+
+**Returns:** No return value.
+
+###### is_empty()
 
 Check if the document structure is empty.
 
@@ -2176,13 +2853,29 @@ Check if the document structure is empty.
 pub fn is_empty(&self) -> bool
 ```
 
-#### default()
+**Example:**
+
+```rust
+let result = instance.is_empty();
+```
+
+**Returns:** `bool`
+
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> DocumentStructure
 ```
+
+**Example:**
+
+```rust
+let result = DocumentStructure::default();
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2425,9 +3118,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### dimensions()
+###### dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2438,7 +3131,15 @@ every vector returned by `embed`.
 pub fn dimensions(&self) -> usize
 ```
 
-#### embed()
+**Example:**
+
+```rust
+let result = instance.dimensions();
+```
+
+**Returns:** `usize`
+
+###### embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2451,8 +3152,24 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```rust
-pub fn embed(&self, texts: Vec<String>) -> Vec<Vec<f32>>
+pub async fn embed(&self, texts: Vec<String>) -> Result<Vec<Vec<f32>>, Error>
 ```
+
+**Example:**
+
+```rust
+let result = instance.embed(vec![]).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Vec<String>` | Yes | The texts |
+
+**Returns:** `Vec<Vec<f32>>`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -2473,15 +3190,23 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 | `max_embed_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> EmbeddingConfig
 ```
+
+**Example:**
+
+```rust
+let result = EmbeddingConfig::default();
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2657,7 +3382,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `Option<OcrConfig>` | `None` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `Option<Vec<u32>>` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `chunking` | `Option<ChunkingConfig>` | `None` | Text chunking configuration (None = chunking disabled) |
 | `content_filter` | `Option<ContentFilterConfig>` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `Option<ImageExtractionConfig>` | `None` | Image extraction configuration (None = no image extraction) |
@@ -2695,9 +3420,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `qr_codes` | `Option<bool>` | `None` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancel_token` | `Option<String>` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -2705,7 +3430,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 pub fn default() -> ExtractionConfig
 ```
 
-#### needs_image_data()
+**Example:**
+
+```rust
+let result = ExtractionConfig::default();
+```
+
+**Returns:** `ExtractionConfig`
+
+###### needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2714,7 +3447,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2730,11 +3463,19 @@ also requested `images` extraction.
 pub fn needs_image_data(&self) -> bool
 ```
 
-#### needs_image_processing()
+**Example:**
+
+```rust
+let result = instance.needs_image_data();
+```
+
+**Returns:** `bool`
+
+###### needs_image_processing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2745,6 +3486,14 @@ image I/O and processing when results won't be used.
 ```rust
 pub fn needs_image_processing(&self) -> bool
 ```
+
+**Example:**
+
+```rust
+let result = instance.needs_image_processing();
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2802,9 +3551,9 @@ This is the main result type returned by all extraction functions.
 | `formatted_content` | `Option<String>` | `Default::default()` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `Option<String>` | `Default::default()` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### from_ocr()
+###### from_ocr()
 
 Convert from an OCR result.
 
@@ -2813,6 +3562,20 @@ Convert from an OCR result.
 ```rust
 pub fn from_ocr(ocr: OcrExtractionResult) -> ExtractionResult
 ```
+
+**Example:**
+
+```rust
+let result = ExtractionResult::from_ocr(OcrExtractionResult::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2987,15 +3750,23 @@ included in page content.
 | `include_bbox` | `bool` | `true` | Include bounding box information in hierarchy blocks |
 | `ocr_coverage_threshold` | `Option<f32>` | `None` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> HierarchyConfig
 ```
+
+**Example:**
+
+```rust
+let result = HierarchyConfig::default();
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -3043,15 +3814,23 @@ the plain comrak-based renderer.
 | `class_prefix` | `String` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> HtmlOutputConfig
 ```
+
+**Example:**
+
+```rust
+let result = HtmlOutputConfig::default();
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3076,15 +3855,23 @@ Image extraction configuration.
 | `append_ocr_text` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `ImageOutputFormat` | `ImageOutputFormat::Native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> ImageExtractionConfig
 ```
+
+**Example:**
+
+```rust
+let result = ImageExtractionConfig::default();
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3136,15 +3923,23 @@ for different document types.
 | `binarization_method` | `String` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invert_colors` | `bool` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> ImagePreprocessingConfig
 ```
+
+**Example:**
+
+```rust
+let result = ImagePreprocessingConfig::default();
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3227,15 +4022,23 @@ Keyword extraction configuration.
 | `yake_params` | `Option<YakeParams>` | `None` | YAKE-specific tuning parameters. |
 | `rake_params` | `Option<RakeParams>` | `None` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> KeywordConfig
 ```
+
+**Example:**
+
+```rust
+let result = KeywordConfig::default();
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3249,15 +4052,23 @@ Language detection configuration.
 | `min_confidence` | `f64` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detect_multiple` | `bool` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> LanguageDetectionConfig
 ```
+
+**Example:**
+
+```rust
+let result = LanguageDetectionConfig::default();
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3288,15 +4099,23 @@ is enabled for PDF extraction.
 | `table_model` | `TableModel` | `TableModel::Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> LayoutDetectionConfig
 ```
+
+**Example:**
+
+```rust
+let result = LayoutDetectionConfig::default();
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3336,9 +4155,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3348,21 +4167,70 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 pub fn new(config: LlmConfig) -> LlmBackend
 ```
 
-#### detect()
+**Example:**
+
+```rust
+let result = LlmBackend::new(LlmConfig::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### detect()
 
 **Signature:**
 
 ```rust
-pub fn detect(&self, text: &str, categories: Vec<EntityCategory>) -> Vec<Entity>
+pub async fn detect(&self, text: &str, categories: Vec<EntityCategory>) -> Result<Vec<Entity>, Error>
 ```
 
-#### detect_with_custom()
+**Example:**
+
+```rust
+let result = instance.detect("value", vec![]).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `categories` | `Vec<EntityCategory>` | Yes | The categories |
+
+**Returns:** `Vec<Entity>`
+
+**Errors:** Returns `Err(Error)`.
+
+###### detect_with_custom()
 
 **Signature:**
 
 ```rust
-pub fn detect_with_custom(&self, text: &str, categories: Vec<EntityCategory>, custom_labels: Vec<String>) -> Vec<Entity>
+pub async fn detect_with_custom(&self, text: &str, categories: Vec<EntityCategory>, custom_labels: Vec<String>) -> Result<Vec<Entity>, Error>
 ```
+
+**Example:**
+
+```rust
+let result = instance.detect_with_custom("value", vec![], vec![]).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `categories` | `Vec<EntityCategory>` | Yes | The categories |
+| `custom_labels` | `Vec<String>` | Yes | The custom labels |
+
+**Returns:** `Vec<Entity>`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -3437,9 +4305,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocr_used` | `bool` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### is_empty()
+###### is_empty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3449,6 +4317,14 @@ additional postprocessor fields are populated.
 ```rust
 pub fn is_empty(&self) -> bool
 ```
+
+**Example:**
+
+```rust
+let result = instance.is_empty();
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -3495,9 +4371,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### process_image()
+###### process_image()
 
 Process an image and extract text via OCR.
 
@@ -3511,7 +4387,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3520,10 +4396,27 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```rust
-pub fn process_image(&self, image_bytes: &[u8], config: OcrConfig) -> ExtractionResult
+pub async fn process_image(&self, image_bytes: &[u8], config: OcrConfig) -> Result<ExtractionResult, Error>
 ```
 
-#### process_image_file()
+**Example:**
+
+```rust
+let result = instance.process_image(b"data", OcrConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `Vec<u8>` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `Err(Error)`.
+
+###### process_image_file()
 
 Process a file and extract text via OCR.
 
@@ -3537,10 +4430,27 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```rust
-pub fn process_image_file(&self, path: PathBuf, config: OcrConfig) -> ExtractionResult
+pub async fn process_image_file(&self, path: PathBuf, config: OcrConfig) -> Result<ExtractionResult, Error>
 ```
 
-#### supports_language()
+**Example:**
+
+```rust
+let result = instance.process_image_file("value", OcrConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `PathBuf` | Yes | Path to the image file |
+| `config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `Err(Error)`.
+
+###### supports_language()
 
 Check if this backend supports a given language code.
 
@@ -3554,7 +4464,23 @@ Check if this backend supports a given language code.
 pub fn supports_language(&self, lang: &str) -> bool
 ```
 
-#### backend_type()
+**Example:**
+
+```rust
+fn supports_language(&self, lang: &str) -> bool {
+    self.languages.contains(&lang.to_string())
+}
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lang` | `String` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `bool`
+
+###### backend_type()
 
 Get the backend type identifier.
 
@@ -3568,7 +4494,17 @@ The backend type enum value.
 pub fn backend_type(&self) -> OcrBackendType
 ```
 
-#### supported_languages()
+**Example:**
+
+```rust
+fn backend_type(&self) -> OcrBackendType {
+    OcrBackendType::Tesseract
+}
+```rust
+
+**Returns:** `OcrBackendType`
+
+###### supported_languages()
 
 Optional: Get a list of all supported languages.
 
@@ -3580,7 +4516,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 pub fn supported_languages(&self) -> Vec<String>
 ```
 
-#### supports_table_detection()
+**Example:**
+
+```rust
+let result = instance.supported_languages();
+```
+
+**Returns:** `Vec<String>`
+
+###### supports_table_detection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3592,7 +4536,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 pub fn supports_table_detection(&self) -> bool
 ```
 
-#### supports_document_processing()
+**Example:**
+
+```rust
+let result = instance.supports_table_detection();
+```
+
+**Returns:** `bool`
+
+###### supports_document_processing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3604,7 +4556,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 pub fn supports_document_processing(&self) -> bool
 ```
 
-#### process_document()
+**Example:**
+
+```rust
+let result = instance.supports_document_processing();
+```
+
+**Returns:** `bool`
+
+###### process_document()
 
 Process a document file directly via OCR.
 
@@ -3613,8 +4573,25 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```rust
-pub fn process_document(&self, path: PathBuf, config: OcrConfig) -> ExtractionResult
+pub async fn process_document(&self, path: PathBuf, config: OcrConfig) -> Result<ExtractionResult, Error>
 ```
+
+**Example:**
+
+```rust
+let result = instance.process_document("value", OcrConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `PathBuf` | Yes | The  path |
+| `config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -3655,15 +4632,23 @@ OCR configuration.
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `Option<HashMap<String, Vec<u8>>>` | `None` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> OcrConfig
 ```
+
+**Example:**
+
+```rust
+let result = OcrConfig::default();
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3794,15 +4779,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnum_ws_ratio_threshold` | `f64` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipeline_min_quality` | `f64` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> OcrQualityThresholds
 ```
+
+**Example:**
+
+```rust
+let result = OcrQualityThresholds::default();
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3878,9 +4871,9 @@ Uses a builder pattern for convenient configuration.
 | `drop_score` | `f32` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `model_tier` | `String` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### with_cache_dir()
+###### with_cache_dir()
 
 Sets a custom cache directory for model files.
 
@@ -3890,7 +4883,25 @@ Sets a custom cache directory for model files.
 pub fn with_cache_dir(&self, path: PathBuf) -> PaddleOcrConfig
 ```
 
-#### with_table_detection()
+**Example:**
+
+```rust
+use kreuzberg::PaddleOcrConfig;
+use std::path::PathBuf;
+
+let config = PaddleOcrConfig::new("en")
+    .with_cache_dir(PathBuf::from("/tmp/paddle-cache"));
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `PathBuf` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_table_detection()
 
 Enables or disables table structure detection.
 
@@ -3900,7 +4911,24 @@ Enables or disables table structure detection.
 pub fn with_table_detection(&self, enable: bool) -> PaddleOcrConfig
 ```
 
-#### with_angle_cls()
+**Example:**
+
+```rust
+use kreuzberg::PaddleOcrConfig;
+
+let config = PaddleOcrConfig::new("en")
+    .with_table_detection(true);
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_angle_cls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3910,7 +4938,21 @@ Enables or disables angle classification for rotated text.
 pub fn with_angle_cls(&self, enable: bool) -> PaddleOcrConfig
 ```
 
-#### with_det_db_thresh()
+**Example:**
+
+```rust
+let result = instance.with_angle_cls(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_thresh()
 
 Sets the database threshold for text detection.
 
@@ -3920,7 +4962,21 @@ Sets the database threshold for text detection.
 pub fn with_det_db_thresh(&self, threshold: f32) -> PaddleOcrConfig
 ```
 
-#### with_det_db_box_thresh()
+**Example:**
+
+```rust
+let result = instance.with_det_db_thresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `f32` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_box_thresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3930,7 +4986,21 @@ Sets the box threshold for text bounding box refinement.
 pub fn with_det_db_box_thresh(&self, threshold: f32) -> PaddleOcrConfig
 ```
 
-#### with_det_db_unclip_ratio()
+**Example:**
+
+```rust
+let result = instance.with_det_db_box_thresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `f32` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_unclip_ratio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3940,7 +5010,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 pub fn with_det_db_unclip_ratio(&self, ratio: f32) -> PaddleOcrConfig
 ```
 
-#### with_det_limit_side_len()
+**Example:**
+
+```rust
+let result = instance.with_det_db_unclip_ratio(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ratio` | `f32` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_limit_side_len()
 
 Sets the maximum side length for detection images.
 
@@ -3950,7 +5034,21 @@ Sets the maximum side length for detection images.
 pub fn with_det_limit_side_len(&self, length: u32) -> PaddleOcrConfig
 ```
 
-#### with_rec_batch_num()
+**Example:**
+
+```rust
+let result = instance.with_det_limit_side_len(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `length` | `u32` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_rec_batch_num()
 
 Sets the batch size for recognition inference.
 
@@ -3960,7 +5058,21 @@ Sets the batch size for recognition inference.
 pub fn with_rec_batch_num(&self, batch_size: u32) -> PaddleOcrConfig
 ```
 
-#### with_drop_score()
+**Example:**
+
+```rust
+let result = instance.with_rec_batch_num(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `batch_size` | `u32` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_drop_score()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3970,7 +5082,21 @@ Sets the minimum recognition confidence threshold.
 pub fn with_drop_score(&self, score: f32) -> PaddleOcrConfig
 ```
 
-#### with_padding()
+**Example:**
+
+```rust
+let result = instance.with_drop_score(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `score` | `f32` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_padding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3980,7 +5106,21 @@ Sets padding in pixels added around images before detection.
 pub fn with_padding(&self, padding: u32) -> PaddleOcrConfig
 ```
 
-#### with_model_tier()
+**Example:**
+
+```rust
+let result = instance.with_padding(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `padding` | `u32` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_model_tier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3990,7 +5130,21 @@ Sets the model tier controlling detection/recognition model size.
 pub fn with_model_tier(&self, tier: &str) -> PaddleOcrConfig
 ```
 
-#### default()
+**Example:**
+
+```rust
+let result = instance.with_model_tier("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tier` | `String` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### default()
 
 Creates a default configuration with English language support.
 
@@ -3999,6 +5153,14 @@ Creates a default configuration with English language support.
 ```rust
 pub fn default() -> PaddleOcrConfig
 ```
+
+**Example:**
+
+```rust
+let result = PaddleOcrConfig::default();
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -4060,15 +5222,23 @@ when page boundaries are available and chunking is configured.
 | `insert_page_markers` | `bool` | `false` | Insert page markers in main content string |
 | `marker_format` | `String` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> PageConfig
 ```
+
+**Example:**
+
+```rust
+let result = PageConfig::default();
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4198,15 +5368,23 @@ PDF-specific configuration.
 | `allow_single_column_tables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> PdfConfig
 ```
+
+**Example:**
+
+```rust
+let result = PdfConfig::default();
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4240,9 +5418,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### name()
+###### name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4258,7 +5436,17 @@ The name should be:
 pub fn name(&self) -> String
 ```
 
-#### version()
+**Example:**
+
+```rust
+fn name(&self) -> &str {
+    "pdf-extractor"
+}
+```rust
+
+**Returns:** `String`
+
+###### version()
 
 Returns the semantic version of this plugin.
 
@@ -4272,7 +5460,19 @@ Defaults to the kreuzberg crate version.
 pub fn version(&self) -> String
 ```
 
-#### initialize()
+**Example:**
+
+```rust
+fn version(&self) -> String {
+    "1.2.3".to_string()
+}
+```rust
+
+Defaults to the kreuzberg crate version.
+
+**Returns:** `String`
+
+###### initialize()
 
 Initialize the plugin.
 
@@ -4282,7 +5482,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4298,10 +5498,31 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```rust
-pub fn initialize(&self)
+pub fn initialize(&self) -> Result<(), Error>
 ```
 
-#### shutdown()
+**Example:**
+
+```rust
+fn initialize(&self) -> Result<()> {
+    // Load configuration using interior mutability
+    let mut config = self.config.lock().unwrap();
+    *config = Some("loaded".to_string());
+
+    // Perform any initialization work
+    println!("Plugin initialized successfully");
+
+    Ok(())
+}
+```rust
+
+Defaults to a no-op for stateless plugins.
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
+
+###### shutdown()
 
 Shutdown the plugin.
 
@@ -4312,7 +5533,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4327,10 +5548,30 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```rust
-pub fn shutdown(&self)
+pub fn shutdown(&self) -> Result<(), Error>
 ```
 
-#### description()
+**Example:**
+
+```rust
+fn shutdown(&self) -> Result<()> {
+    // Flush caches using interior mutability
+    let mut cache = self.cache.lock().unwrap();
+    if let Some(data) = cache.take() {
+        // Persist cache to disk
+    }
+
+    Ok(())
+}
+```rust
+
+Defaults to a no-op for stateless plugins.
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
+
+###### description()
 
 Optional plugin description for debugging and logging.
 
@@ -4342,7 +5583,15 @@ Defaults to empty string if not overridden.
 pub fn description(&self) -> String
 ```
 
-#### author()
+**Example:**
+
+```rust
+let result = instance.description();
+```
+
+**Returns:** `String`
+
+###### author()
 
 Optional plugin author information.
 
@@ -4353,6 +5602,14 @@ Defaults to empty string if not overridden.
 ```rust
 pub fn author(&self) -> String
 ```
+
+**Example:**
+
+```rust
+let result = instance.author();
+```
+
+**Returns:** `String`
 
 ---
 
@@ -4388,9 +5645,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### process()
+###### process()
 
 Process an extraction result.
 
@@ -4409,15 +5666,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4436,10 +5693,27 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 **Signature:**
 
 ```rust
-pub fn process(&self, result: ExtractionResult, config: ExtractionConfig)
+pub async fn process(&self, result: ExtractionResult, config: ExtractionConfig) -> Result<(), Error>
 ```
 
-#### processing_stage()
+**Example:**
+
+```rust
+instance.process(ExtractionResult::default(), ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
+
+###### processing_stage()
 
 Get the processing stage for this post-processor.
 
@@ -4455,7 +5729,17 @@ The `ProcessingStage` (Early, Middle, or Late).
 pub fn processing_stage(&self) -> ProcessingStage
 ```
 
-#### should_process()
+**Example:**
+
+```rust
+fn processing_stage(&self) -> ProcessingStage {
+    ProcessingStage::Early  // Run before other processors
+}
+```rust
+
+**Returns:** `ProcessingStage`
+
+###### should_process()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4472,7 +5756,25 @@ Defaults to `true` (always run).
 pub fn should_process(&self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 
-#### estimated_duration_ms()
+**Example:**
+
+```rust
+/// Only process PDF documents
+fn should_process(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    result.mime_type == "application/pdf"
+}
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### estimated_duration_ms()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4488,7 +5790,21 @@ Estimated processing time in milliseconds.
 pub fn estimated_duration_ms(&self, result: ExtractionResult) -> u64
 ```
 
-#### priority()
+**Example:**
+
+```rust
+let result = instance.estimated_duration_ms(ExtractionResult::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `u64`
+
+###### priority()
 
 Execution priority within the processing stage.
 
@@ -4501,6 +5817,14 @@ for high-priority processors that should run early in their stage.
 ```rust
 pub fn priority(&self) -> i32
 ```
+
+**Example:**
+
+```rust
+let result = instance.priority();
+```
+
+**Returns:** `i32`
 
 ---
 
@@ -4516,15 +5840,23 @@ Post-processor configuration.
 | `enabled_set` | `Option<Vec<String>>` | `None` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabled_set` | `Option<Vec<String>>` | `None` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> PostProcessorConfig
 ```
+
+**Example:**
+
+```rust
+let result = PostProcessorConfig::default();
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4650,15 +5982,23 @@ RAKE-specific parameters.
 | `min_word_length` | `usize` | `1` | Minimum word length to consider (default: 1). |
 | `max_words_per_phrase` | `usize` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> RakeParams
 ```
+
+**Example:**
+
+```rust
+let result = RakeParams::default();
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4694,9 +6034,9 @@ Configuration for the redaction post-processor.
 | `custom_terms` | `Vec<RedactionTerm>` | `vec![]` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `custom_patterns` | `Vec<RedactionPattern>` | `vec![]` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4704,7 +6044,15 @@ Configuration for the redaction post-processor.
 pub fn default() -> RedactionConfig
 ```
 
-#### validate()
+**Example:**
+
+```rust
+let result = RedactionConfig::default();
+```
+
+**Returns:** `RedactionConfig`
+
+###### validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4717,8 +6065,18 @@ still rejects empty values to avoid degenerate zero-length matches.
 **Signature:**
 
 ```rust
-pub fn validate(&self)
+pub fn validate(&self) -> Result<(), Error>
 ```
+
+**Example:**
+
+```rust
+instance.validate()?;
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -4750,9 +6108,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `pattern` | `String` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### labeled()
+###### labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4761,6 +6119,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```rust
 pub fn labeled(label: &str, pattern: &str) -> RedactionPattern
 ```
+
+**Example:**
+
+```rust
+let result = RedactionPattern::labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `String` | Yes | The label |
+| `pattern` | `String` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4794,9 +6167,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `value` | `String` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### literal()
+###### literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4806,7 +6179,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 pub fn literal(value: &str) -> RedactionTerm
 ```
 
-#### labeled()
+**Example:**
+
+```rust
+let result = RedactionTerm::literal("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `String` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### labeled()
 
 Build a term with a custom label.
 
@@ -4815,6 +6202,21 @@ Build a term with a custom label.
 ```rust
 pub fn labeled(label: &str, value: &str) -> RedactionTerm
 ```
+
+**Example:**
+
+```rust
+let result = RedactionTerm::labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `String` | Yes | The label |
+| `value` | `String` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4836,9 +6238,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### render()
+###### render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4853,8 +6255,24 @@ Returns an error if rendering fails.
 **Signature:**
 
 ```rust
-pub fn render(&self, doc: InternalDocument) -> String
+pub fn render(&self, doc: InternalDocument) -> Result<String, Error>
 ```
+
+**Example:**
+
+```rust
+let result = instance.render(InternalDocument::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `String`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -4865,7 +6283,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4921,11 +6339,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### rerank()
+###### rerank()
 
 Score a list of documents against a query.
 
@@ -4941,8 +6359,25 @@ against `documents.len()` before sorting.
 **Signature:**
 
 ```rust
-pub fn rerank(&self, query: &str, documents: Vec<String>) -> Vec<f32>
+pub async fn rerank(&self, query: &str, documents: Vec<String>) -> Result<Vec<f32>, Error>
 ```
+
+**Example:**
+
+```rust
+let result = instance.rerank("value", vec![]).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `Vec<String>` | Yes | The documents |
+
+**Returns:** `Vec<f32>`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -4953,7 +6388,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4965,15 +6400,23 @@ Since v5.0.
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `None` (auto-select per platform). |
 | `max_rerank_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> RerankerConfig
 ```
+
+**Example:**
+
+```rust
+let result = RerankerConfig::default();
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4984,7 +6427,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -5032,15 +6475,23 @@ while still supporting legitimate documents.
 | `max_xml_depth` | `usize` | `1024` | Maximum XML depth (100 levels) |
 | `max_table_cells` | `usize` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> SecurityLimits
 ```
+
+**Example:**
+
+```rust
+let result = SecurityLimits::default();
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -5067,9 +6518,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `max_request_body_bytes` | `usize` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `usize` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5077,7 +6528,15 @@ including host/port settings, CORS configuration, and upload limits.
 pub fn default() -> ServerConfig
 ```
 
-#### listen_addr()
+**Example:**
+
+```rust
+let result = ServerConfig::default();
+```
+
+**Returns:** `ServerConfig`
+
+###### listen_addr()
 
 Get the server listen address (host:port).
 
@@ -5087,7 +6546,18 @@ Get the server listen address (host:port).
 pub fn listen_addr(&self) -> String
 ```
 
-#### cors_allows_all()
+**Example:**
+
+```rust
+use kreuzberg::core::ServerConfig;
+
+let config = ServerConfig::default();
+assert_eq!(config.listen_addr(), "127.0.0.1:8000");
+```rust
+
+**Returns:** `String`
+
+###### cors_allows_all()
 
 Check if CORS allows all origins.
 
@@ -5100,7 +6570,21 @@ are allowed. Returns `false` if specific origins are configured.
 pub fn cors_allows_all(&self) -> bool
 ```
 
-#### is_origin_allowed()
+**Example:**
+
+```rust
+use kreuzberg::core::ServerConfig;
+
+let mut config = ServerConfig::default();
+assert!(config.cors_allows_all());
+
+config.cors_origins.push("<https://example.com".to_string(>));
+assert!(!config.cors_allows_all());
+```rust
+
+**Returns:** `bool`
+
+###### is_origin_allowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5115,7 +6599,28 @@ Returns `true` if:
 pub fn is_origin_allowed(&self, origin: &str) -> bool
 ```
 
-#### max_request_body_mb()
+**Example:**
+
+```rust
+use kreuzberg::core::ServerConfig;
+
+let mut config = ServerConfig::default();
+assert!(config.is_origin_allowed("<https://example.com">));
+
+config.cors_origins.push("<https://allowed.com".to_string(>));
+assert!(config.is_origin_allowed("<https://allowed.com">));
+assert!(!config.is_origin_allowed("<https://denied.com">));
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `origin` | `String` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `bool`
+
+###### max_request_body_mb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5125,7 +6630,18 @@ Get maximum request body size in megabytes (rounded up).
 pub fn max_request_body_mb(&self) -> usize
 ```
 
-#### max_multipart_field_mb()
+**Example:**
+
+```rust
+use kreuzberg::core::ServerConfig;
+
+let mut config = ServerConfig::default();
+assert_eq!(config.max_request_body_mb(), 100);
+```rust
+
+**Returns:** `usize`
+
+###### max_multipart_field_mb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5134,6 +6650,17 @@ Get maximum multipart field size in megabytes (rounded up).
 ```rust
 pub fn max_multipart_field_mb(&self) -> usize
 ```
+
+**Example:**
+
+```rust
+use kreuzberg::core::ServerConfig;
+
+let mut config = ServerConfig::default();
+assert_eq!(config.max_multipart_field_mb(), 100);
+```rust
+
+**Returns:** `usize`
 
 ---
 
@@ -5221,15 +6748,23 @@ Used via `ImageExtractionConfig.svg`.
 | `sanitize` | `bool` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `render_dpi` | `f32` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> SvgOptions
 ```
+
+**Example:**
+
+```rust
+let result = SvgOptions::default();
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5322,15 +6857,23 @@ for specific document types (invoices, handwriting, etc.).
 | `textord_space_size_is_variable` | `bool` | `true` | Variable-width space detection |
 | `thresholding_method` | `bool` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TesseractConfig
 ```
+
+**Example:**
+
+```rust
+let result = TesseractConfig::default();
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5390,9 +6933,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a fresh counter with no previous state.
 
@@ -5401,6 +6944,14 @@ Create a fresh counter with no previous state.
 ```rust
 pub fn new() -> TokenCounter
 ```
+
+**Example:**
+
+```rust
+let result = TokenCounter::new();
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5422,15 +6973,23 @@ Configuration for the token-reduction pipeline.
 | `target_reduction` | `Option<f32>` | `None` | Target fraction of text to retain (0.0–1.0); `None` = no fixed target. |
 | `enable_semantic_clustering` | `bool` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TokenReductionConfig
 ```
+
+**Example:**
+
+```rust
+let result = TokenReductionConfig::default();
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5443,15 +7002,23 @@ Token reduction configuration.
 | `mode` | `String` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserve_important_words` | `bool` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TokenReductionOptions
 ```
+
+**Example:**
+
+```rust
+let result = TokenReductionOptions::default();
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5488,15 +7055,23 @@ model = "tiny"
 | `allow_network` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verify_hash` | `bool` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TranscriptionConfig
 ```
+
+**Example:**
+
+```rust
+let result = TranscriptionConfig::default();
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5560,15 +7135,23 @@ docstrings = true
 | `groups` | `Option<Vec<String>>` | `None` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TreeSitterConfig
 ```
+
+**Example:**
+
+```rust
+let result = TreeSitterConfig::default();
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5590,15 +7173,23 @@ Controls which analysis features are enabled when extracting code files.
 | `chunk_max_size` | `Option<usize>` | `None` | Maximum chunk size in bytes. `None` disables chunking. |
 | `content_mode` | `CodeContentMode` | `CodeContentMode::Chunks` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> TreeSitterProcessConfig
 ```
+
+**Example:**
+
+```rust
+let result = TreeSitterProcessConfig::default();
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5629,9 +7220,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### validate()
+###### validate()
 
 Validate an extraction result.
 
@@ -5648,7 +7239,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5673,7 +7264,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5696,7 +7287,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5718,10 +7309,27 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 **Signature:**
 
 ```rust
-pub fn validate(&self, result: ExtractionResult, config: ExtractionConfig)
+pub async fn validate(&self, result: ExtractionResult, config: ExtractionConfig) -> Result<(), Error>
 ```
 
-#### should_validate()
+**Example:**
+
+```rust
+instance.validate(ExtractionResult::default(), ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
+
+###### should_validate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5738,7 +7346,25 @@ Defaults to `true` (always run).
 pub fn should_validate(&self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 
-#### priority()
+**Example:**
+
+```rust
+/// Only validate PDF documents
+fn should_validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    result.mime_type == "application/pdf"
+}
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### priority()
 
 Optional: Get the validation priority.
 
@@ -5756,6 +7382,17 @@ Priority value (higher = runs earlier).
 ```rust
 pub fn priority(&self) -> i32
 ```
+
+**Example:**
+
+```rust
+/// Run this validator first (it's fast)
+fn priority(&self) -> i32 {
+    100
+}
+```rust
+
+**Returns:** `i32`
 
 ---
 
@@ -5815,15 +7452,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `window_size` | `usize` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```rust
 pub fn default() -> YakeParams
 ```
+
+**Example:**
+
+```rust
+let result = YakeParams::default();
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -6047,7 +7692,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6794,7 +8439,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

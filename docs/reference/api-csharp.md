@@ -33,6 +33,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 public static async Task<ExtractionResult> ExtractBytesAsync(byte[] content, string mimeType, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await ExtractBytes(System.Text.Encoding.UTF8.GetBytes("data"), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +48,7 @@ public static async Task<ExtractionResult> ExtractBytesAsync(byte[] content, str
 | `Config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -74,6 +81,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 public static async Task<ExtractionResult> ExtractFileAsync(string path, string? mimeType = null, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await ExtractFile("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +96,7 @@ public static async Task<ExtractionResult> ExtractFileAsync(string path, string?
 | `Config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -106,6 +120,12 @@ use a truly synchronous extraction approach instead.
 public static ExtractionResult ExtractFileSync(string path, string? mimeType = null, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = ExtractFileSync("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +135,7 @@ public static ExtractionResult ExtractFileSync(string path, string? mimeType = n
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -135,6 +156,12 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 public static ExtractionResult ExtractBytesSync(byte[] content, string mimeType, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = ExtractBytesSync(System.Text.Encoding.UTF8.GetBytes("data"), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +171,7 @@ public static ExtractionResult ExtractBytesSync(byte[] content, string mimeType,
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -161,6 +189,12 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 public static List<ExtractionResult> BatchExtractFilesSync(List<BatchFileItem> items, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = BatchExtractFilesSync(new List<object>(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +203,7 @@ public static List<ExtractionResult> BatchExtractFilesSync(List<BatchFileItem> i
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -188,6 +223,12 @@ that iterates through items and calls `extract_bytes_sync()`.
 public static List<ExtractionResult> BatchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = BatchExtractBytesSync(new List<object>(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +237,7 @@ public static List<ExtractionResult> BatchExtractBytesSync(List<BatchBytesItem> 
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -237,6 +279,12 @@ Per-file configuration overrides:
 public static async Task<List<ExtractionResult>> BatchExtractFilesAsync(List<BatchFileItem> items, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await BatchExtractFiles(new List<object>(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +293,7 @@ public static async Task<List<ExtractionResult>> BatchExtractFilesAsync(List<Bat
 | `Config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -280,6 +329,12 @@ Per-item configuration overrides:
 public static async Task<List<ExtractionResult>> BatchExtractBytesAsync(List<BatchBytesItem> items, ExtractionConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await BatchExtractBytes(new List<object>(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +343,7 @@ public static async Task<List<ExtractionResult>> BatchExtractBytesAsync(List<Bat
 | `Config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -316,6 +372,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 public static string DetectMimeTypeFromBytes(byte[] content)
 ```
 
+**Example:**
+
+```csharp
+var result = DetectMimeTypeFromBytes(System.Text.Encoding.UTF8.GetBytes("data"));
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +385,7 @@ public static string DetectMimeTypeFromBytes(byte[] content)
 | `Content` | `byte[]` | Yes | Raw file bytes |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -343,6 +406,12 @@ A vector of file extensions (without leading dot) for the MIME type.
 public static List<string> GetExtensionsForMime(string mimeType)
 ```
 
+**Example:**
+
+```csharp
+var result = GetExtensionsForMime("value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +419,7 @@ public static List<string> GetExtensionsForMime(string mimeType)
 | `MimeType` | `string` | Yes | The MIME type to look up |
 
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -373,6 +443,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```csharp
 public static List<SupportedFormat> ListSupportedFormats()
+```
+
+**Example:**
+
+```csharp
+var result = ListSupportedFormats();
 ```
 
 **Returns:** `List<SupportedFormat>`
@@ -406,6 +482,12 @@ from the four corner points of the grid.
 public static List<QrCode> DetectQrCodes(byte[] imageBytes, string? formatHint = null)
 ```
 
+**Example:**
+
+```csharp
+var result = DetectQrCodes(System.Text.Encoding.UTF8.GetBytes("data"), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +516,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 public static void ClearEmbeddingBackends()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearEmbeddingBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -452,7 +541,14 @@ bindings.
 public static List<string> ListEmbeddingBackends()
 ```
 
+**Example:**
+
+```csharp
+var result = ListEmbeddingBackends();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -467,7 +563,14 @@ List names of all registered document extractors.
 public static List<string> ListDocumentExtractors()
 ```
 
+**Example:**
+
+```csharp
+var result = ListDocumentExtractors();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -489,7 +592,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 public static void ClearDocumentExtractors()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearDocumentExtractors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -510,7 +620,14 @@ A vector of OCR backend names.
 public static List<string> ListOcrBackends()
 ```
 
+**Example:**
+
+```csharp
+var result = ListOcrBackends();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -532,7 +649,14 @@ Removes all OCR backends and calls their `shutdown()` methods.
 public static void ClearOcrBackends()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearOcrBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -553,7 +677,14 @@ safe to call on any target.
 public static void RegisterBuiltin()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+RegisterBuiltin();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -576,7 +707,14 @@ global registry.
 public static List<string> ListPostProcessors()
 ```
 
+**Example:**
+
+```csharp
+var result = ListPostProcessors();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -591,7 +729,14 @@ Remove all registered post-processors.
 public static void ClearPostProcessors()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearPostProcessors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -610,7 +755,14 @@ Returns an error if the registry lock is poisoned.
 public static List<string> ListRenderers()
 ```
 
+**Example:**
+
+```csharp
+var result = ListRenderers();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -633,7 +785,14 @@ Returns an error if the registry lock is poisoned.
 public static void ClearRenderers()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearRenderers();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -649,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +816,14 @@ Since v5.0.
 public static void ClearRerankerBackends()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearRerankerBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -669,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +843,14 @@ Since v5.0.
 public static List<string> ListRerankerBackends()
 ```
 
+**Example:**
+
+```csharp
+var result = ListRerankerBackends();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -692,7 +865,14 @@ List names of all registered validators.
 public static List<string> ListValidators()
 ```
 
+**Example:**
+
+```csharp
+var result = ListValidators();
+```
+
 **Returns:** `List<string>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -707,7 +887,14 @@ Remove all registered validators.
 public static void ClearValidators()
 ```
 
-**Returns:** `void`
+**Example:**
+
+```csharp
+ClearValidators();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -731,6 +918,12 @@ a half-populated vector.
 public static async Task ClassifyPagesAsync(ExtractionResult result, PageClassificationConfig config)
 ```
 
+**Example:**
+
+```csharp
+await ClassifyPages(new ExtractionResult(), new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +931,8 @@ public static async Task ClassifyPagesAsync(ExtractionResult result, PageClassif
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -762,6 +956,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 public static async Task<List<ClassificationLabel>> ClassifyTextAsync(string text, PageClassificationConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await ClassifyText("value", new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +970,7 @@ public static async Task<List<ClassificationLabel>> ClassifyTextAsync(string tex
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `List<ClassificationLabel>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -799,6 +1000,12 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 public static async Task<List<ClassificationLabel>> ClassifyDocumentAsync(List<string> pages, PageClassificationConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await ClassifyDocument(new List<object>(), new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1014,7 @@ public static async Task<List<ClassificationLabel>> ClassifyDocumentAsync(List<s
 | `Config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `List<ClassificationLabel>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -824,6 +1032,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 public static string DownloadModel(string name, string? cacheDir = null)
 ```
 
+**Example:**
+
+```csharp
+var result = DownloadModel("value", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1046,7 @@ public static string DownloadModel(string name, string? cacheDir = null)
 | `CacheDir` | `string?` | No | The cache dir |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -846,6 +1061,12 @@ Pinned default NER model identifier.
 public static string DefaultModelName()
 ```
 
+**Example:**
+
+```csharp
+var result = DefaultModelName();
+```
+
 **Returns:** `string`
 
 ---
@@ -858,6 +1079,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```csharp
 public static List<string> KnownModels()
+```
+
+**Example:**
+
+```csharp
+var result = KnownModels();
 ```
 
 **Returns:** `List<string>`
@@ -875,6 +1102,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 public static async Task RedactAsync(ExtractionResult result, RedactionConfig config)
 ```
 
+**Example:**
+
+```csharp
+await Redact(new ExtractionResult(), new RedactionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1115,8 @@ public static async Task RedactAsync(ExtractionResult result, RedactionConfig co
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -900,6 +1134,12 @@ pass `null` (or an unknown code) to fall back to English.
 
 ```csharp
 public static string? Summarize(string text, string? language = null, uint? maxTokens = null)
+```
+
+**Example:**
+
+```csharp
+var result = Summarize("value", "value", 42);
 ```
 
 **Parameters:**
@@ -923,6 +1163,12 @@ callers).
 
 ```csharp
 public static uint TokenCount(string text)
+```
+
+**Example:**
+
+```csharp
+var result = TokenCount("value");
 ```
 
 **Parameters:**
@@ -950,6 +1196,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 public static async Task TranslateResultAsync(ExtractionResult result, TranslationConfig config)
 ```
 
+**Example:**
+
+```csharp
+await TranslateResult(new ExtractionResult(), new TranslationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -957,7 +1209,8 @@ public static async Task TranslateResultAsync(ExtractionResult result, Translati
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error`.
 
 ---
@@ -973,6 +1226,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```csharp
 public static ExtractionDiff Compare(ExtractionResult a, ExtractionResult b, DiffOptions opts)
+```
+
+**Example:**
+
+```csharp
+var result = Compare(new ExtractionResult(), new ExtractionResult(), new DiffOptions());
 ```
 
 **Parameters:**
@@ -1011,6 +1270,12 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 public static async Task<string> ExtractRegionWithVlmAsync(byte[] imageBytes, string imageMime, RegionKind regionKind, LlmConfig llmConfig, string? customPrompt = null)
 ```
 
+**Example:**
+
+```csharp
+var result = await ExtractRegionWithVlm(System.Text.Encoding.UTF8.GetBytes("data"), "value", new RegionKind(), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1022,6 +1287,7 @@ public static async Task<string> ExtractRegionWithVlmAsync(byte[] imageBytes, st
 | `CustomPrompt` | `string?` | No | The custom prompt |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1050,6 +1316,12 @@ Returns an error if:
 public static List<Keyword> ExtractKeywords(string text, KeywordConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = ExtractKeywords("value", new KeywordConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1058,6 +1330,7 @@ public static List<Keyword> ExtractKeywords(string text, KeywordConfig config)
 | `Config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `List<Keyword>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1084,6 +1357,12 @@ or rendered, or if `page_index` is out of range.
 public static byte[] RenderPdfPageToPng(byte[] pdfBytes, nuint pageIndex, int? dpi = null, string? password = null)
 ```
 
+**Example:**
+
+```csharp
+var result = RenderPdfPageToPng(System.Text.Encoding.UTF8.GetBytes("data"), 42, 42, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1094,6 +1373,7 @@ public static byte[] RenderPdfPageToPng(byte[] pdfBytes, nuint pageIndex, int? d
 | `Password` | `string?` | No | Optional password for encrypted PDFs |
 
 **Returns:** `byte[]`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1118,6 +1398,12 @@ Returns an error if the VLM call fails or if image format detection fails.
 public static async Task<string> CaptionImageAsync(byte[] imageBytes, LlmConfig llmConfig, string? customPrompt = null)
 ```
 
+**Example:**
+
+```csharp
+var result = await CaptionImage(System.Text.Encoding.UTF8.GetBytes("data"), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1127,6 +1413,7 @@ public static async Task<string> CaptionImageAsync(byte[] imageBytes, LlmConfig 
 | `CustomPrompt` | `string?` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1152,6 +1439,12 @@ or if the VLM call fails.
 public static async Task<string> CaptionImageFileAsync(string path, LlmConfig llmConfig, string? customPrompt = null)
 ```
 
+**Example:**
+
+```csharp
+var result = await CaptionImageFile("value", new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1161,6 +1454,7 @@ public static async Task<string> CaptionImageFileAsync(string path, LlmConfig ll
 | `CustomPrompt` | `string?` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1178,6 +1472,12 @@ Set `check_exists` to `true` to verify the file exists before detection.
 public static string DetectMimeType(string path, bool checkExists)
 ```
 
+**Example:**
+
+```csharp
+var result = DetectMimeType("value", true);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1186,6 +1486,7 @@ public static string DetectMimeType(string path, bool checkExists)
 | `CheckExists` | `bool` | Yes | The check exists |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1198,6 +1499,12 @@ public static string DetectMimeType(string path, bool checkExists)
 public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, EmbeddingConfig config)
 ```
 
+**Example:**
+
+```csharp
+var result = await EmbedTextsAsync(new List<object>(), new EmbeddingConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1206,6 +1513,7 @@ public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, 
 | `Config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `List<List<float>>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1221,6 +1529,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```csharp
 public static EmbeddingPreset? GetEmbeddingPreset(string name)
+```
+
+**Example:**
+
+```csharp
+var result = GetEmbeddingPreset("value");
 ```
 
 **Parameters:**
@@ -1245,6 +1559,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 public static List<string> ListEmbeddingPresets()
 ```
 
+**Example:**
+
+```csharp
+var result = ListEmbeddingPresets();
+```
+
 **Returns:** `List<string>`
 
 ---
@@ -1262,12 +1582,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```csharp
 public static List<RerankedDocument> Rerank(string query, List<string> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = Rerank("value", new List<object>(), new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1279,6 +1605,7 @@ public static List<RerankedDocument> Rerank(string query, List<string> documents
 | `Config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `List<RerankedDocument>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1287,12 +1614,18 @@ public static List<RerankedDocument> Rerank(string query, List<string> documents
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```csharp
 public static async Task<List<RerankedDocument>> RerankAsync(string query, List<string> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = await RerankAsync("value", new List<object>(), new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1304,6 +1637,7 @@ public static async Task<List<RerankedDocument>> RerankAsync(string query, List<
 | `Config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
+
 **Errors:** Throws `Error`.
 
 ---
@@ -1315,12 +1649,18 @@ Get a reranker preset by name.
 Returns `null` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```csharp
 public static RerankerPreset? GetRerankerPreset(string name)
+```
+
+**Example:**
+
+```csharp
+var result = GetRerankerPreset("value");
 ```
 
 **Parameters:**
@@ -1339,12 +1679,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```csharp
 public static List<string> ListRerankerPresets()
+```
+
+**Example:**
+
+```csharp
+var result = ListRerankerPresets();
 ```
 
 **Returns:** `List<string>`
@@ -1602,15 +1948,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `PrependHeadingContext` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `TopicThreshold` | `float?` | `null` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public ChunkingConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = ChunkingConfig.CreateDefault();
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1669,15 +2023,23 @@ default behavior unchanged.
 | `StripRepeatingText` | `bool` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `IncludeWatermarks` | `bool` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public ContentFilterConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = ContentFilterConfig.CreateDefault();
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1803,15 +2165,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `IncludeEmbedded` | `bool` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `MaxContentChars` | `nuint?` | `null` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `null` means no truncation. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public DiffOptions CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = DiffOptions.CreateDefault();
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1897,9 +2267,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### ExtractBytes()
+###### ExtractBytes()
 
 Extract content from a byte array.
 
@@ -1923,7 +2293,25 @@ The pipeline will convert this into the public `ExtractionResult`.
 public async Task<InternalDocument> ExtractBytesAsync(byte[] content, string mimeType, ExtractionConfig config)
 ```
 
-#### ExtractFile()
+**Example:**
+
+```csharp
+var result = await instance.ExtractBytes(System.Text.Encoding.UTF8.GetBytes("data"), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Content` | `byte[]` | Yes | Raw document bytes |
+| `MimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `Error`.
+
+###### ExtractFile()
 
 Extract content from a file.
 
@@ -1944,7 +2332,25 @@ Same as `extract_bytes`, plus file I/O errors.
 public async Task<InternalDocument> ExtractFileAsync(string path, string mimeType, ExtractionConfig config)
 ```
 
-#### SupportedMimeTypes()
+**Example:**
+
+```csharp
+var result = await instance.ExtractFile("value", "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to the document file |
+| `MimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `Error`.
+
+###### SupportedMimeTypes()
 
 Get the list of MIME types supported by this extractor.
 
@@ -1963,14 +2369,22 @@ A slice of MIME type strings.
 public List<string> SupportedMimeTypes()
 ```
 
-#### Priority()
+**Example:**
+
+```csharp
+var result = instance.SupportedMimeTypes();
+```
+
+**Returns:** `List<string>`
+
+###### Priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -1988,7 +2402,15 @@ Priority value (default: 50)
 public int Priority()
 ```
 
-#### CanHandle()
+**Example:**
+
+```csharp
+var result = instance.Priority();
+```
+
+**Returns:** `int`
+
+###### CanHandle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2004,6 +2426,21 @@ Defaults to `true` (rely on MIME type matching).
 ```csharp
 public bool CanHandle(string path, string mimeType)
 ```
+
+**Example:**
+
+```csharp
+var result = instance.CanHandle("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | The  path |
+| `MimeType` | `string` | Yes | The  mime type |
+
+**Returns:** `bool`
 
 ---
 
@@ -2081,9 +2518,9 @@ and parent-child relationships are bidirectionally consistent.
 | `Relationships` | `List<DocumentRelationship>` | `new List<DocumentRelationship>()` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `NodeTypes` | `List<string>` | `new List<string>()` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### FinalizeNodeTypes()
+###### FinalizeNodeTypes()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2096,7 +2533,15 @@ construction paths (builder, derivation) call this automatically.
 public void FinalizeNodeTypes()
 ```
 
-#### IsEmpty()
+**Example:**
+
+```csharp
+instance.FinalizeNodeTypes();
+```
+
+**Returns:** No return value.
+
+###### IsEmpty()
 
 Check if the document structure is empty.
 
@@ -2106,13 +2551,29 @@ Check if the document structure is empty.
 public bool IsEmpty()
 ```
 
-#### CreateDefault()
+**Example:**
+
+```csharp
+var result = instance.IsEmpty();
+```
+
+**Returns:** `bool`
+
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public DocumentStructure CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = DocumentStructure.CreateDefault();
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2355,9 +2816,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### Dimensions()
+###### Dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2368,7 +2829,15 @@ every vector returned by `embed`.
 public nuint Dimensions()
 ```
 
-#### Embed()
+**Example:**
+
+```csharp
+var result = instance.Dimensions();
+```
+
+**Returns:** `nuint`
+
+###### Embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2383,6 +2852,22 @@ backend-specific failures. The dispatcher layers its own validation
 ```csharp
 public async Task<List<List<float>>> EmbedAsync(List<string> texts)
 ```
+
+**Example:**
+
+```csharp
+var result = await instance.Embed(new List<object>());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Texts` | `List<string>` | Yes | The texts |
+
+**Returns:** `List<List<float>>`
+
+**Errors:** Throws `Error`.
 
 ---
 
@@ -2403,15 +2888,23 @@ Requires the `embeddings` feature to be enabled.
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 | `MaxEmbedDurationSecs` | `ulong?` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public EmbeddingConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = EmbeddingConfig.CreateDefault();
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2587,7 +3080,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `Ocr` | `OcrConfig?` | `null` | OCR configuration (None = OCR disabled) |
 | `ForceOcr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `ForceOcrPages` | `List<uint>?` | `null` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `Chunking` | `ChunkingConfig?` | `null` | Text chunking configuration (None = chunking disabled) |
 | `ContentFilter` | `ContentFilterConfig?` | `null` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `Images` | `ImageExtractionConfig?` | `null` | Image extraction configuration (None = no image extraction) |
@@ -2625,9 +3118,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `QrCodes` | `bool?` | `null` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `CancelToken` | `string?` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
@@ -2635,7 +3128,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 public ExtractionConfig CreateDefault()
 ```
 
-#### NeedsImageData()
+**Example:**
+
+```csharp
+var result = ExtractionConfig.CreateDefault();
+```
+
+**Returns:** `ExtractionConfig`
+
+###### NeedsImageData()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2644,7 +3145,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2660,11 +3161,19 @@ also requested `images` extraction.
 public bool NeedsImageData()
 ```
 
-#### NeedsImageProcessing()
+**Example:**
+
+```csharp
+var result = instance.NeedsImageData();
+```
+
+**Returns:** `bool`
+
+###### NeedsImageProcessing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2675,6 +3184,14 @@ image I/O and processing when results won't be used.
 ```csharp
 public bool NeedsImageProcessing()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.NeedsImageProcessing();
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2732,9 +3249,9 @@ This is the main result type returned by all extraction functions.
 | `FormattedContent` | `string?` | `null` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `OcrInternalDocument` | `string?` | `null` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### FromOcr()
+###### FromOcr()
 
 Convert from an OCR result.
 
@@ -2743,6 +3260,20 @@ Convert from an OCR result.
 ```csharp
 public ExtractionResult FromOcr(OcrExtractionResult ocr)
 ```
+
+**Example:**
+
+```csharp
+var result = ExtractionResult.FromOcr(new OcrExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2917,15 +3448,23 @@ included in page content.
 | `IncludeBbox` | `bool` | `true` | Include bounding box information in hierarchy blocks |
 | `OcrCoverageThreshold` | `float?` | `null` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public HierarchyConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = HierarchyConfig.CreateDefault();
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -2973,15 +3512,23 @@ the plain comrak-based renderer.
 | `ClassPrefix` | `string` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `EmbedCss` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public HtmlOutputConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = HtmlOutputConfig.CreateDefault();
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3006,15 +3553,23 @@ Image extraction configuration.
 | `AppendOcrText` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `OutputFormat` | `ImageOutputFormat` | `ImageOutputFormat.Native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public ImageExtractionConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = ImageExtractionConfig.CreateDefault();
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3066,15 +3621,23 @@ for different document types.
 | `BinarizationMethod` | `string` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `InvertColors` | `bool` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public ImagePreprocessingConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = ImagePreprocessingConfig.CreateDefault();
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3157,15 +3720,23 @@ Keyword extraction configuration.
 | `YakeParams` | `YakeParams?` | `null` | YAKE-specific tuning parameters. |
 | `RakeParams` | `RakeParams?` | `null` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public KeywordConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = KeywordConfig.CreateDefault();
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3179,15 +3750,23 @@ Language detection configuration.
 | `MinConfidence` | `double` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `DetectMultiple` | `bool` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public LanguageDetectionConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = LanguageDetectionConfig.CreateDefault();
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3218,15 +3797,23 @@ is enabled for PDF extraction.
 | `TableModel` | `TableModel` | `TableModel.Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public LayoutDetectionConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = LayoutDetectionConfig.CreateDefault();
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3266,9 +3853,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### New()
+###### New()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3278,7 +3865,21 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 public LlmBackend New(LlmConfig config)
 ```
 
-#### Detect()
+**Example:**
+
+```csharp
+var result = LlmBackend.New(new LlmConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### Detect()
 
 **Signature:**
 
@@ -3286,13 +3887,48 @@ public LlmBackend New(LlmConfig config)
 public async Task<List<Entity>> DetectAsync(string text, List<EntityCategory> categories)
 ```
 
-#### DetectWithCustom()
+**Example:**
+
+```csharp
+var result = await instance.Detect("value", new List<object>());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Categories` | `List<EntityCategory>` | Yes | The categories |
+
+**Returns:** `List<Entity>`
+
+**Errors:** Throws `Error`.
+
+###### DetectWithCustom()
 
 **Signature:**
 
 ```csharp
 public async Task<List<Entity>> DetectWithCustomAsync(string text, List<EntityCategory> categories, List<string> customLabels)
 ```
+
+**Example:**
+
+```csharp
+var result = await instance.DetectWithCustom("value", new List<object>(), new List<object>());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Categories` | `List<EntityCategory>` | Yes | The categories |
+| `CustomLabels` | `List<string>` | Yes | The custom labels |
+
+**Returns:** `List<Entity>`
+
+**Errors:** Throws `Error`.
 
 ---
 
@@ -3367,9 +4003,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `OcrUsed` | `bool` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `Additional` | `Dictionary<string, object>` | `new Dictionary<string, object>()` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### IsEmpty()
+###### IsEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3379,6 +4015,14 @@ additional postprocessor fields are populated.
 ```csharp
 public bool IsEmpty()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.IsEmpty();
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -3425,9 +4069,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### ProcessImage()
+###### ProcessImage()
 
 Process an image and extract text via OCR.
 
@@ -3441,7 +4085,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3453,7 +4097,24 @@ so multiple backends can coexist in a pipeline without key conflicts.
 public async Task<ExtractionResult> ProcessImageAsync(byte[] imageBytes, OcrConfig config)
 ```
 
-#### ProcessImageFile()
+**Example:**
+
+```csharp
+var result = await instance.ProcessImage(System.Text.Encoding.UTF8.GetBytes("data"), new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `byte[]` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `Config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+###### ProcessImageFile()
 
 Process a file and extract text via OCR.
 
@@ -3470,7 +4131,24 @@ Same as `process_image`, plus file I/O errors.
 public async Task<ExtractionResult> ProcessImageFileAsync(string path, OcrConfig config)
 ```
 
-#### SupportsLanguage()
+**Example:**
+
+```csharp
+var result = await instance.ProcessImageFile("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to the image file |
+| `Config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+###### SupportsLanguage()
 
 Check if this backend supports a given language code.
 
@@ -3484,7 +4162,21 @@ Check if this backend supports a given language code.
 public bool SupportsLanguage(string lang)
 ```
 
-#### BackendType()
+**Example:**
+
+```csharp
+var result = instance.SupportsLanguage("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Lang` | `string` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `bool`
+
+###### BackendType()
 
 Get the backend type identifier.
 
@@ -3498,7 +4190,15 @@ The backend type enum value.
 public OcrBackendType BackendType()
 ```
 
-#### SupportedLanguages()
+**Example:**
+
+```csharp
+var result = instance.BackendType();
+```
+
+**Returns:** `OcrBackendType`
+
+###### SupportedLanguages()
 
 Optional: Get a list of all supported languages.
 
@@ -3510,7 +4210,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 public List<string> SupportedLanguages()
 ```
 
-#### SupportsTableDetection()
+**Example:**
+
+```csharp
+var result = instance.SupportedLanguages();
+```
+
+**Returns:** `List<string>`
+
+###### SupportsTableDetection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3522,7 +4230,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 public bool SupportsTableDetection()
 ```
 
-#### SupportsDocumentProcessing()
+**Example:**
+
+```csharp
+var result = instance.SupportsTableDetection();
+```
+
+**Returns:** `bool`
+
+###### SupportsDocumentProcessing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3534,7 +4250,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 public bool SupportsDocumentProcessing()
 ```
 
-#### ProcessDocument()
+**Example:**
+
+```csharp
+var result = instance.SupportsDocumentProcessing();
+```
+
+**Returns:** `bool`
+
+###### ProcessDocument()
 
 Process a document file directly via OCR.
 
@@ -3545,6 +4269,23 @@ Only called if `supports_document_processing` returns `true`.
 ```csharp
 public async Task<ExtractionResult> ProcessDocumentAsync(string path, OcrConfig config)
 ```
+
+**Example:**
+
+```csharp
+var result = await instance.ProcessDocument("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | The  path |
+| `Config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
 
 ---
 
@@ -3585,15 +4326,23 @@ OCR configuration.
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `TessdataBytes` | `Dictionary<string, byte[]>?` | `null` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public OcrConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = OcrConfig.CreateDefault();
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3724,15 +4473,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `AlnumWsRatioThreshold` | `double` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `PipelineMinQuality` | `double` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public OcrQualityThresholds CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = OcrQualityThresholds.CreateDefault();
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3808,9 +4565,9 @@ Uses a builder pattern for convenient configuration.
 | `DropScore` | `float` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `ModelTier` | `string` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### WithCacheDir()
+###### WithCacheDir()
 
 Sets a custom cache directory for model files.
 
@@ -3820,7 +4577,21 @@ Sets a custom cache directory for model files.
 public PaddleOcrConfig WithCacheDir(string path)
 ```
 
-#### WithTableDetection()
+**Example:**
+
+```csharp
+var result = instance.WithCacheDir("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithTableDetection()
 
 Enables or disables table structure detection.
 
@@ -3830,7 +4601,21 @@ Enables or disables table structure detection.
 public PaddleOcrConfig WithTableDetection(bool enable)
 ```
 
-#### WithAngleCls()
+**Example:**
+
+```csharp
+var result = instance.WithTableDetection(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Enable` | `bool` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithAngleCls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3840,7 +4625,21 @@ Enables or disables angle classification for rotated text.
 public PaddleOcrConfig WithAngleCls(bool enable)
 ```
 
-#### WithDetDbThresh()
+**Example:**
+
+```csharp
+var result = instance.WithAngleCls(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Enable` | `bool` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbThresh()
 
 Sets the database threshold for text detection.
 
@@ -3850,7 +4649,21 @@ Sets the database threshold for text detection.
 public PaddleOcrConfig WithDetDbThresh(float threshold)
 ```
 
-#### WithDetDbBoxThresh()
+**Example:**
+
+```csharp
+var result = instance.WithDetDbThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Threshold` | `float` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbBoxThresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3860,7 +4673,21 @@ Sets the box threshold for text bounding box refinement.
 public PaddleOcrConfig WithDetDbBoxThresh(float threshold)
 ```
 
-#### WithDetDbUnclipRatio()
+**Example:**
+
+```csharp
+var result = instance.WithDetDbBoxThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Threshold` | `float` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbUnclipRatio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3870,7 +4697,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 public PaddleOcrConfig WithDetDbUnclipRatio(float ratio)
 ```
 
-#### WithDetLimitSideLen()
+**Example:**
+
+```csharp
+var result = instance.WithDetDbUnclipRatio(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Ratio` | `float` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetLimitSideLen()
 
 Sets the maximum side length for detection images.
 
@@ -3880,7 +4721,21 @@ Sets the maximum side length for detection images.
 public PaddleOcrConfig WithDetLimitSideLen(uint length)
 ```
 
-#### WithRecBatchNum()
+**Example:**
+
+```csharp
+var result = instance.WithDetLimitSideLen(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Length` | `uint` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithRecBatchNum()
 
 Sets the batch size for recognition inference.
 
@@ -3890,7 +4745,21 @@ Sets the batch size for recognition inference.
 public PaddleOcrConfig WithRecBatchNum(uint batchSize)
 ```
 
-#### WithDropScore()
+**Example:**
+
+```csharp
+var result = instance.WithRecBatchNum(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `BatchSize` | `uint` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDropScore()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3900,7 +4769,21 @@ Sets the minimum recognition confidence threshold.
 public PaddleOcrConfig WithDropScore(float score)
 ```
 
-#### WithPadding()
+**Example:**
+
+```csharp
+var result = instance.WithDropScore(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Score` | `float` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithPadding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3910,7 +4793,21 @@ Sets padding in pixels added around images before detection.
 public PaddleOcrConfig WithPadding(uint padding)
 ```
 
-#### WithModelTier()
+**Example:**
+
+```csharp
+var result = instance.WithPadding(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Padding` | `uint` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithModelTier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3920,7 +4817,21 @@ Sets the model tier controlling detection/recognition model size.
 public PaddleOcrConfig WithModelTier(string tier)
 ```
 
-#### CreateDefault()
+**Example:**
+
+```csharp
+var result = instance.WithModelTier("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Tier` | `string` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### CreateDefault()
 
 Creates a default configuration with English language support.
 
@@ -3929,6 +4840,14 @@ Creates a default configuration with English language support.
 ```csharp
 public PaddleOcrConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = PaddleOcrConfig.CreateDefault();
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -3990,15 +4909,23 @@ when page boundaries are available and chunking is configured.
 | `InsertPageMarkers` | `bool` | `false` | Insert page markers in main content string |
 | `MarkerFormat` | `string` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public PageConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = PageConfig.CreateDefault();
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4128,15 +5055,23 @@ PDF-specific configuration.
 | `AllowSingleColumnTables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `OcrInlineImages` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `null` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public PdfConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = PdfConfig.CreateDefault();
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4170,9 +5105,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### Name()
+###### Name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4188,7 +5123,15 @@ The name should be:
 public string Name()
 ```
 
-#### Version()
+**Example:**
+
+```csharp
+var result = instance.Name();
+```
+
+**Returns:** `string`
+
+###### Version()
 
 Returns the semantic version of this plugin.
 
@@ -4202,7 +5145,15 @@ Defaults to the kreuzberg crate version.
 public string Version()
 ```
 
-#### Initialize()
+**Example:**
+
+```csharp
+var result = instance.Version();
+```
+
+**Returns:** `string`
+
+###### Initialize()
 
 Initialize the plugin.
 
@@ -4212,7 +5163,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4231,7 +5182,17 @@ Defaults to a no-op for stateless plugins.
 public void Initialize()
 ```
 
-#### Shutdown()
+**Example:**
+
+```csharp
+instance.Initialize();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error`.
+
+###### Shutdown()
 
 Shutdown the plugin.
 
@@ -4242,7 +5203,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4260,7 +5221,17 @@ Defaults to a no-op for stateless plugins.
 public void Shutdown()
 ```
 
-#### Description()
+**Example:**
+
+```csharp
+instance.Shutdown();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error`.
+
+###### Description()
 
 Optional plugin description for debugging and logging.
 
@@ -4272,7 +5243,15 @@ Defaults to empty string if not overridden.
 public string Description()
 ```
 
-#### Author()
+**Example:**
+
+```csharp
+var result = instance.Description();
+```
+
+**Returns:** `string`
+
+###### Author()
 
 Optional plugin author information.
 
@@ -4283,6 +5262,14 @@ Defaults to empty string if not overridden.
 ```csharp
 public string Author()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.Author();
+```
+
+**Returns:** `string`
 
 ---
 
@@ -4318,9 +5305,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### Process()
+###### Process()
 
 Process an extraction result.
 
@@ -4339,15 +5326,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4369,7 +5356,24 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 public async Task ProcessAsync(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### ProcessingStage()
+**Example:**
+
+```csharp
+await instance.Process(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error`.
+
+###### ProcessingStage()
 
 Get the processing stage for this post-processor.
 
@@ -4385,7 +5389,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 public ProcessingStage ProcessingStage()
 ```
 
-#### ShouldProcess()
+**Example:**
+
+```csharp
+var result = instance.ProcessingStage();
+```
+
+**Returns:** `ProcessingStage`
+
+###### ShouldProcess()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4402,7 +5414,22 @@ Defaults to `true` (always run).
 public bool ShouldProcess(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### EstimatedDurationMs()
+**Example:**
+
+```csharp
+var result = instance.ShouldProcess(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### EstimatedDurationMs()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4418,7 +5445,21 @@ Estimated processing time in milliseconds.
 public ulong EstimatedDurationMs(ExtractionResult result)
 ```
 
-#### Priority()
+**Example:**
+
+```csharp
+var result = instance.EstimatedDurationMs(new ExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `ulong`
+
+###### Priority()
 
 Execution priority within the processing stage.
 
@@ -4431,6 +5472,14 @@ for high-priority processors that should run early in their stage.
 ```csharp
 public int Priority()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.Priority();
+```
+
+**Returns:** `int`
 
 ---
 
@@ -4446,15 +5495,23 @@ Post-processor configuration.
 | `EnabledSet` | `List<string>?` | `null` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `DisabledSet` | `List<string>?` | `null` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public PostProcessorConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = PostProcessorConfig.CreateDefault();
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4580,15 +5637,23 @@ RAKE-specific parameters.
 | `MinWordLength` | `nuint` | `1` | Minimum word length to consider (default: 1). |
 | `MaxWordsPerPhrase` | `nuint` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public RakeParams CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = RakeParams.CreateDefault();
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4624,9 +5689,9 @@ Configuration for the redaction post-processor.
 | `CustomTerms` | `List<RedactionTerm>` | `new List<RedactionTerm>()` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `CustomPatterns` | `List<RedactionPattern>` | `new List<RedactionPattern>()` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
@@ -4634,7 +5699,15 @@ Configuration for the redaction post-processor.
 public RedactionConfig CreateDefault()
 ```
 
-#### Validate()
+**Example:**
+
+```csharp
+var result = RedactionConfig.CreateDefault();
+```
+
+**Returns:** `RedactionConfig`
+
+###### Validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4649,6 +5722,16 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```csharp
 public void Validate()
 ```
+
+**Example:**
+
+```csharp
+instance.Validate();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error`.
 
 ---
 
@@ -4680,9 +5763,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `Pattern` | `string` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### Labeled()
+###### Labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4691,6 +5774,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```csharp
 public RedactionPattern Labeled(string label, string pattern)
 ```
+
+**Example:**
+
+```csharp
+var result = RedactionPattern.Labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Label` | `string` | Yes | The label |
+| `Pattern` | `string` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4724,9 +5822,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `Value` | `string` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### Literal()
+###### Literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4736,7 +5834,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 public RedactionTerm Literal(string value)
 ```
 
-#### Labeled()
+**Example:**
+
+```csharp
+var result = RedactionTerm.Literal("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### Labeled()
 
 Build a term with a custom label.
 
@@ -4745,6 +5857,21 @@ Build a term with a custom label.
 ```csharp
 public RedactionTerm Labeled(string label, string value)
 ```
+
+**Example:**
+
+```csharp
+var result = RedactionTerm.Labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Label` | `string` | Yes | The label |
+| `Value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4766,9 +5893,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### Render()
+###### Render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4786,6 +5913,22 @@ Returns an error if rendering fails.
 public string Render(InternalDocument doc)
 ```
 
+**Example:**
+
+```csharp
+var result = instance.Render(new InternalDocument());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error`.
+
 ---
 
 #### RerankedDocument
@@ -4795,7 +5938,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4851,11 +5994,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### Rerank()
+###### Rerank()
 
 Score a list of documents against a query.
 
@@ -4874,6 +6017,23 @@ against `documents.len()` before sorting.
 public async Task<List<float>> RerankAsync(string query, List<string> documents)
 ```
 
+**Example:**
+
+```csharp
+var result = await instance.Rerank("value", new List<object>());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The query |
+| `Documents` | `List<string>` | Yes | The documents |
+
+**Returns:** `List<float>`
+
+**Errors:** Throws `Error`.
+
 ---
 
 #### RerankerConfig
@@ -4883,7 +6043,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4895,15 +6055,23 @@ Since v5.0.
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `null` (auto-select per platform). |
 | `MaxRerankDurationSecs` | `ulong?` | `null` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public RerankerConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = RerankerConfig.CreateDefault();
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4914,7 +6082,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4962,15 +6130,23 @@ while still supporting legitimate documents.
 | `MaxXmlDepth` | `nuint` | `1024` | Maximum XML depth (100 levels) |
 | `MaxTableCells` | `nuint` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public SecurityLimits CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = SecurityLimits.CreateDefault();
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -4997,9 +6173,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `MaxRequestBodyBytes` | `nuint` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `MaxMultipartFieldBytes` | `nuint` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
@@ -5007,7 +6183,15 @@ including host/port settings, CORS configuration, and upload limits.
 public ServerConfig CreateDefault()
 ```
 
-#### ListenAddr()
+**Example:**
+
+```csharp
+var result = ServerConfig.CreateDefault();
+```
+
+**Returns:** `ServerConfig`
+
+###### ListenAddr()
 
 Get the server listen address (host:port).
 
@@ -5017,7 +6201,15 @@ Get the server listen address (host:port).
 public string ListenAddr()
 ```
 
-#### CorsAllowsAll()
+**Example:**
+
+```csharp
+var result = instance.ListenAddr();
+```
+
+**Returns:** `string`
+
+###### CorsAllowsAll()
 
 Check if CORS allows all origins.
 
@@ -5030,7 +6222,15 @@ are allowed. Returns `false` if specific origins are configured.
 public bool CorsAllowsAll()
 ```
 
-#### IsOriginAllowed()
+**Example:**
+
+```csharp
+var result = instance.CorsAllowsAll();
+```
+
+**Returns:** `bool`
+
+###### IsOriginAllowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5045,7 +6245,21 @@ Returns `true` if:
 public bool IsOriginAllowed(string origin)
 ```
 
-#### MaxRequestBodyMb()
+**Example:**
+
+```csharp
+var result = instance.IsOriginAllowed("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Origin` | `string` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `bool`
+
+###### MaxRequestBodyMb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5055,7 +6269,15 @@ Get maximum request body size in megabytes (rounded up).
 public nuint MaxRequestBodyMb()
 ```
 
-#### MaxMultipartFieldMb()
+**Example:**
+
+```csharp
+var result = instance.MaxRequestBodyMb();
+```
+
+**Returns:** `nuint`
+
+###### MaxMultipartFieldMb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5064,6 +6286,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```csharp
 public nuint MaxMultipartFieldMb()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.MaxMultipartFieldMb();
+```
+
+**Returns:** `nuint`
 
 ---
 
@@ -5151,15 +6381,23 @@ Used via `ImageExtractionConfig.svg`.
 | `Sanitize` | `bool` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `RenderDpi` | `float` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public SvgOptions CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = SvgOptions.CreateDefault();
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5252,15 +6490,23 @@ for specific document types (invoices, handwriting, etc.).
 | `TextordSpaceSizeIsVariable` | `bool` | `true` | Variable-width space detection |
 | `ThresholdingMethod` | `bool` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TesseractConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TesseractConfig.CreateDefault();
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5320,9 +6566,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### New()
+###### New()
 
 Create a fresh counter with no previous state.
 
@@ -5331,6 +6577,14 @@ Create a fresh counter with no previous state.
 ```csharp
 public TokenCounter New()
 ```
+
+**Example:**
+
+```csharp
+var result = TokenCounter.New();
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5352,15 +6606,23 @@ Configuration for the token-reduction pipeline.
 | `TargetReduction` | `float?` | `null` | Target fraction of text to retain (0.0–1.0); `null` = no fixed target. |
 | `EnableSemanticClustering` | `bool` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TokenReductionConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TokenReductionConfig.CreateDefault();
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5373,15 +6635,23 @@ Token reduction configuration.
 | `Mode` | `string` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `PreserveImportantWords` | `bool` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TokenReductionOptions CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TokenReductionOptions.CreateDefault();
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5418,15 +6688,23 @@ model = "tiny"
 | `AllowNetwork` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `VerifyHash` | `bool` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TranscriptionConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TranscriptionConfig.CreateDefault();
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5490,15 +6768,23 @@ docstrings = true
 | `Groups` | `List<string>?` | `null` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `Process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TreeSitterConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TreeSitterConfig.CreateDefault();
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5520,15 +6806,23 @@ Controls which analysis features are enabled when extracting code files.
 | `ChunkMaxSize` | `nuint?` | `null` | Maximum chunk size in bytes. `null` disables chunking. |
 | `ContentMode` | `CodeContentMode` | `CodeContentMode.Chunks` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public TreeSitterProcessConfig CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = TreeSitterProcessConfig.CreateDefault();
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5559,9 +6853,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### Validate()
+###### Validate()
 
 Validate an extraction result.
 
@@ -5578,7 +6872,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5603,7 +6897,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5626,7 +6920,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5651,7 +6945,24 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 public async Task ValidateAsync(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### ShouldValidate()
+**Example:**
+
+```csharp
+await instance.Validate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error`.
+
+###### ShouldValidate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5668,7 +6979,22 @@ Defaults to `true` (always run).
 public bool ShouldValidate(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### Priority()
+**Example:**
+
+```csharp
+var result = instance.ShouldValidate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### Priority()
 
 Optional: Get the validation priority.
 
@@ -5686,6 +7012,14 @@ Priority value (higher = runs earlier).
 ```csharp
 public int Priority()
 ```
+
+**Example:**
+
+```csharp
+var result = instance.Priority();
+```
+
+**Returns:** `int`
 
 ---
 
@@ -5745,15 +7079,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `WindowSize` | `nuint` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### CreateDefault()
+###### CreateDefault()
 
 **Signature:**
 
 ```csharp
 public YakeParams CreateDefault()
 ```
+
+**Example:**
+
+```csharp
+var result = YakeParams.CreateDefault();
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -5977,7 +7319,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6724,7 +8066,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

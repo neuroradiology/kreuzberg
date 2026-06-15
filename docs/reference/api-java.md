@@ -33,6 +33,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 public static ExtractionResult extractBytes(byte[] content, String mimeType, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractBytes("data".getBytes(), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +48,7 @@ public static ExtractionResult extractBytes(byte[] content, String mimeType, Ext
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -74,6 +81,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 public static ExtractionResult extractFile(String path, String mimeType, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractFile("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +96,7 @@ public static ExtractionResult extractFile(String path, String mimeType, Extract
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -106,6 +120,12 @@ use a truly synchronous extraction approach instead.
 public static ExtractionResult extractFileSync(String path, String mimeType, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractFileSync("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +135,7 @@ public static ExtractionResult extractFileSync(String path, String mimeType, Ext
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -135,6 +156,12 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 public static ExtractionResult extractBytesSync(byte[] content, String mimeType, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractBytesSync("data".getBytes(), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +171,7 @@ public static ExtractionResult extractBytesSync(byte[] content, String mimeType,
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -161,6 +189,12 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 public static List<ExtractionResult> batchExtractFilesSync(List<BatchFileItem> items, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = batchExtractFilesSync(List.of(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +203,7 @@ public static List<ExtractionResult> batchExtractFilesSync(List<BatchFileItem> i
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -188,6 +223,12 @@ that iterates through items and calls `extract_bytes_sync()`.
 public static List<ExtractionResult> batchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = batchExtractBytesSync(List.of(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +237,7 @@ public static List<ExtractionResult> batchExtractBytesSync(List<BatchBytesItem> 
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -237,6 +279,12 @@ Per-file configuration overrides:
 public static List<ExtractionResult> batchExtractFiles(List<BatchFileItem> items, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = batchExtractFiles(List.of(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +293,7 @@ public static List<ExtractionResult> batchExtractFiles(List<BatchFileItem> items
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -280,6 +329,12 @@ Per-item configuration overrides:
 public static List<ExtractionResult> batchExtractBytes(List<BatchBytesItem> items, ExtractionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = batchExtractBytes(List.of(), new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +343,7 @@ public static List<ExtractionResult> batchExtractBytes(List<BatchBytesItem> item
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `List<ExtractionResult>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -316,6 +372,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 public static String detectMimeTypeFromBytes(byte[] content) throws Error
 ```
 
+**Example:**
+
+```java
+var result = detectMimeTypeFromBytes("data".getBytes());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +385,7 @@ public static String detectMimeTypeFromBytes(byte[] content) throws Error
 | `content` | `byte[]` | Yes | Raw file bytes |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -343,6 +406,12 @@ A vector of file extensions (without leading dot) for the MIME type.
 public static List<String> getExtensionsForMime(String mimeType) throws Error
 ```
 
+**Example:**
+
+```java
+var result = getExtensionsForMime("value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +419,7 @@ public static List<String> getExtensionsForMime(String mimeType) throws Error
 | `mimeType` | `String` | Yes | The MIME type to look up |
 
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -373,6 +443,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```java
 public static List<SupportedFormat> listSupportedFormats()
+```
+
+**Example:**
+
+```java
+var result = listSupportedFormats();
 ```
 
 **Returns:** `List<SupportedFormat>`
@@ -406,6 +482,12 @@ from the four corner points of the grid.
 public static List<QrCode> detectQrCodes(byte[] imageBytes, String formatHint)
 ```
 
+**Example:**
+
+```java
+var result = detectQrCodes("data".getBytes(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +516,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 public static void clearEmbeddingBackends() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearEmbeddingBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -452,7 +541,14 @@ bindings.
 public static List<String> listEmbeddingBackends() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listEmbeddingBackends();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -467,7 +563,14 @@ List names of all registered document extractors.
 public static List<String> listDocumentExtractors() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listDocumentExtractors();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -489,7 +592,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 public static void clearDocumentExtractors() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearDocumentExtractors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -510,7 +620,14 @@ A vector of OCR backend names.
 public static List<String> listOcrBackends() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listOcrBackends();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -532,7 +649,14 @@ Removes all OCR backends and calls their `shutdown()` methods.
 public static void clearOcrBackends() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearOcrBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -553,7 +677,14 @@ safe to call on any target.
 public static void registerBuiltin() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+registerBuiltin();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -576,7 +707,14 @@ global registry.
 public static List<String> listPostProcessors() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listPostProcessors();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -591,7 +729,14 @@ Remove all registered post-processors.
 public static void clearPostProcessors() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearPostProcessors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -610,7 +755,14 @@ Returns an error if the registry lock is poisoned.
 public static List<String> listRenderers() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listRenderers();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -633,7 +785,14 @@ Returns an error if the registry lock is poisoned.
 public static void clearRenderers() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearRenderers();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -649,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +816,14 @@ Since v5.0.
 public static void clearRerankerBackends() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearRerankerBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -669,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +843,14 @@ Since v5.0.
 public static List<String> listRerankerBackends() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listRerankerBackends();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -692,7 +865,14 @@ List names of all registered validators.
 public static List<String> listValidators() throws Error
 ```
 
+**Example:**
+
+```java
+var result = listValidators();
+```
+
 **Returns:** `List<String>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -707,7 +887,14 @@ Remove all registered validators.
 public static void clearValidators() throws Error
 ```
 
-**Returns:** `void`
+**Example:**
+
+```java
+clearValidators();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -731,6 +918,12 @@ a half-populated vector.
 public static void classifyPages(ExtractionResult result, PageClassificationConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+classifyPages(new ExtractionResult(), new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +931,8 @@ public static void classifyPages(ExtractionResult result, PageClassificationConf
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -762,6 +956,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 public static List<ClassificationLabel> classifyText(String text, PageClassificationConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = classifyText("value", new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +970,7 @@ public static List<ClassificationLabel> classifyText(String text, PageClassifica
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `List<ClassificationLabel>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -799,6 +1000,12 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 public static List<ClassificationLabel> classifyDocument(List<String> pages, PageClassificationConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = classifyDocument(List.of(), new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1014,7 @@ public static List<ClassificationLabel> classifyDocument(List<String> pages, Pag
 | `config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `List<ClassificationLabel>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -824,6 +1032,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 public static String downloadModel(String name, String cacheDir) throws Error
 ```
 
+**Example:**
+
+```java
+var result = downloadModel("value", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1046,7 @@ public static String downloadModel(String name, String cacheDir) throws Error
 | `cacheDir` | `Optional<String>` | No | The cache dir |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -846,6 +1061,12 @@ Pinned default NER model identifier.
 public static String defaultModelName()
 ```
 
+**Example:**
+
+```java
+var result = defaultModelName();
+```
+
 **Returns:** `String`
 
 ---
@@ -858,6 +1079,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```java
 public static List<String> knownModels()
+```
+
+**Example:**
+
+```java
+var result = knownModels();
 ```
 
 **Returns:** `List<String>`
@@ -875,6 +1102,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 public static void redact(ExtractionResult result, RedactionConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+redact(new ExtractionResult(), new RedactionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1115,8 @@ public static void redact(ExtractionResult result, RedactionConfig config) throw
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -900,6 +1134,12 @@ pass `null` (or an unknown code) to fall back to English.
 
 ```java
 public static Optional<String> summarize(String text, String language, int maxTokens)
+```
+
+**Example:**
+
+```java
+var result = summarize("value", "value", 42);
 ```
 
 **Parameters:**
@@ -923,6 +1163,12 @@ callers).
 
 ```java
 public static int tokenCount(String text)
+```
+
+**Example:**
+
+```java
+var result = tokenCount("value");
 ```
 
 **Parameters:**
@@ -950,6 +1196,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 public static void translateResult(ExtractionResult result, TranslationConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+translateResult(new ExtractionResult(), new TranslationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -957,7 +1209,8 @@ public static void translateResult(ExtractionResult result, TranslationConfig co
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -973,6 +1226,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```java
 public static ExtractionDiff compare(ExtractionResult a, ExtractionResult b, DiffOptions opts)
+```
+
+**Example:**
+
+```java
+var result = compare(new ExtractionResult(), new ExtractionResult(), new DiffOptions());
 ```
 
 **Parameters:**
@@ -1011,6 +1270,12 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 public static String extractRegionWithVlm(byte[] imageBytes, String imageMime, RegionKind regionKind, LlmConfig llmConfig, String customPrompt) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractRegionWithVlm("data".getBytes(), "value", new RegionKind(), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1022,6 +1287,7 @@ public static String extractRegionWithVlm(byte[] imageBytes, String imageMime, R
 | `customPrompt` | `Optional<String>` | No | The custom prompt |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1050,6 +1316,12 @@ Returns an error if:
 public static List<Keyword> extractKeywords(String text, KeywordConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = extractKeywords("value", new KeywordConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1058,6 +1330,7 @@ public static List<Keyword> extractKeywords(String text, KeywordConfig config) t
 | `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `List<Keyword>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1084,6 +1357,12 @@ or rendered, or if `page_index` is out of range.
 public static byte[] renderPdfPageToPng(byte[] pdfBytes, long pageIndex, int dpi, String password) throws Error
 ```
 
+**Example:**
+
+```java
+var result = renderPdfPageToPng("data".getBytes(), 42, 42, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1094,6 +1373,7 @@ public static byte[] renderPdfPageToPng(byte[] pdfBytes, long pageIndex, int dpi
 | `password` | `Optional<String>` | No | Optional password for encrypted PDFs |
 
 **Returns:** `byte[]`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1118,6 +1398,12 @@ Returns an error if the VLM call fails or if image format detection fails.
 public static String captionImage(byte[] imageBytes, LlmConfig llmConfig, String customPrompt) throws Error
 ```
 
+**Example:**
+
+```java
+var result = captionImage("data".getBytes(), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1127,6 +1413,7 @@ public static String captionImage(byte[] imageBytes, LlmConfig llmConfig, String
 | `customPrompt` | `Optional<String>` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1152,6 +1439,12 @@ or if the VLM call fails.
 public static String captionImageFile(String path, LlmConfig llmConfig, String customPrompt) throws Error
 ```
 
+**Example:**
+
+```java
+var result = captionImageFile("value", new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1161,6 +1454,7 @@ public static String captionImageFile(String path, LlmConfig llmConfig, String c
 | `customPrompt` | `Optional<String>` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1178,6 +1472,12 @@ Set `check_exists` to `true` to verify the file exists before detection.
 public static String detectMimeType(String path, boolean checkExists) throws Error
 ```
 
+**Example:**
+
+```java
+var result = detectMimeType("value", true);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1186,6 +1486,7 @@ public static String detectMimeType(String path, boolean checkExists) throws Err
 | `checkExists` | `boolean` | Yes | The check exists |
 
 **Returns:** `String`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1198,6 +1499,12 @@ public static String detectMimeType(String path, boolean checkExists) throws Err
 public static List<List<Float>> embedTextsAsync(List<String> texts, EmbeddingConfig config) throws Error
 ```
 
+**Example:**
+
+```java
+var result = embedTextsAsync(List.of(), new EmbeddingConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1206,6 +1513,7 @@ public static List<List<Float>> embedTextsAsync(List<String> texts, EmbeddingCon
 | `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `List<List<Float>>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1221,6 +1529,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```java
 public static Optional<EmbeddingPreset> getEmbeddingPreset(String name)
+```
+
+**Example:**
+
+```java
+var result = getEmbeddingPreset("value");
 ```
 
 **Parameters:**
@@ -1245,6 +1559,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 public static List<String> listEmbeddingPresets()
 ```
 
+**Example:**
+
+```java
+var result = listEmbeddingPresets();
+```
+
 **Returns:** `List<String>`
 
 ---
@@ -1262,12 +1582,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```java
 public static List<RerankedDocument> rerank(String query, List<String> documents, RerankerConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = rerank("value", List.of(), new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1279,6 +1605,7 @@ public static List<RerankedDocument> rerank(String query, List<String> documents
 | `config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `List<RerankedDocument>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1287,12 +1614,18 @@ public static List<RerankedDocument> rerank(String query, List<String> documents
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```java
 public static List<RerankedDocument> rerankAsync(String query, List<String> documents, RerankerConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = rerankAsync("value", List.of(), new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1304,6 +1637,7 @@ public static List<RerankedDocument> rerankAsync(String query, List<String> docu
 | `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
+
 **Errors:** Throws `ErrorException`.
 
 ---
@@ -1315,12 +1649,18 @@ Get a reranker preset by name.
 Returns `null` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```java
 public static Optional<RerankerPreset> getRerankerPreset(String name)
+```
+
+**Example:**
+
+```java
+var result = getRerankerPreset("value");
 ```
 
 **Parameters:**
@@ -1339,12 +1679,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```java
 public static List<String> listRerankerPresets()
+```
+
+**Example:**
+
+```java
+var result = listRerankerPresets();
 ```
 
 **Returns:** `List<String>`
@@ -1602,15 +1948,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prependHeadingContext` | `boolean` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topicThreshold` | `Optional<Float>` | `null` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static ChunkingConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = ChunkingConfig.defaultOptions();
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1669,15 +2023,23 @@ default behavior unchanged.
 | `stripRepeatingText` | `boolean` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `includeWatermarks` | `boolean` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static ContentFilterConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = ContentFilterConfig.defaultOptions();
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1803,15 +2165,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `includeEmbedded` | `boolean` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `maxContentChars` | `Optional<Long>` | `null` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `null` means no truncation. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static DiffOptions defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = DiffOptions.defaultOptions();
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1897,9 +2267,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### extractBytes()
+###### extractBytes()
 
 Extract content from a byte array.
 
@@ -1923,7 +2293,25 @@ The pipeline will convert this into the public `ExtractionResult`.
 public InternalDocument extractBytes(byte[] content, String mimeType, ExtractionConfig config) throws Error
 ```
 
-#### extractFile()
+**Example:**
+
+```java
+var result = instance.extractBytes("data".getBytes(), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `byte[]` | Yes | Raw document bytes |
+| `mimeType` | `String` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `ErrorException`.
+
+###### extractFile()
 
 Extract content from a file.
 
@@ -1944,7 +2332,25 @@ Same as `extract_bytes`, plus file I/O errors.
 public InternalDocument extractFile(String path, String mimeType, ExtractionConfig config) throws Error
 ```
 
-#### supportedMimeTypes()
+**Example:**
+
+```java
+var result = instance.extractFile("value", "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | Path to the document file |
+| `mimeType` | `String` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `ErrorException`.
+
+###### supportedMimeTypes()
 
 Get the list of MIME types supported by this extractor.
 
@@ -1963,14 +2369,22 @@ A slice of MIME type strings.
 public List<String> supportedMimeTypes()
 ```
 
-#### priority()
+**Example:**
+
+```java
+var result = instance.supportedMimeTypes();
+```
+
+**Returns:** `List<String>`
+
+###### priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -1988,7 +2402,15 @@ Priority value (default: 50)
 public int priority()
 ```
 
-#### canHandle()
+**Example:**
+
+```java
+var result = instance.priority();
+```
+
+**Returns:** `int`
+
+###### canHandle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2004,6 +2426,21 @@ Defaults to `true` (rely on MIME type matching).
 ```java
 public boolean canHandle(String path, String mimeType)
 ```
+
+**Example:**
+
+```java
+var result = instance.canHandle("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | The  path |
+| `mimeType` | `String` | Yes | The  mime type |
+
+**Returns:** `boolean`
 
 ---
 
@@ -2081,9 +2518,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `List<DocumentRelationship>` | `Collections.emptyList()` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `nodeTypes` | `List<String>` | `Collections.emptyList()` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### finalizeNodeTypes()
+###### finalizeNodeTypes()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2096,7 +2533,15 @@ construction paths (builder, derivation) call this automatically.
 public void finalizeNodeTypes()
 ```
 
-#### isEmpty()
+**Example:**
+
+```java
+instance.finalizeNodeTypes();
+```
+
+**Returns:** No return value.
+
+###### isEmpty()
 
 Check if the document structure is empty.
 
@@ -2106,13 +2551,29 @@ Check if the document structure is empty.
 public boolean isEmpty()
 ```
 
-#### defaultOptions()
+**Example:**
+
+```java
+var result = instance.isEmpty();
+```
+
+**Returns:** `boolean`
+
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static DocumentStructure defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = DocumentStructure.defaultOptions();
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2355,9 +2816,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### dimensions()
+###### dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2368,7 +2829,15 @@ every vector returned by `embed`.
 public long dimensions()
 ```
 
-#### embed()
+**Example:**
+
+```java
+var result = instance.dimensions();
+```
+
+**Returns:** `long`
+
+###### embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2383,6 +2852,22 @@ backend-specific failures. The dispatcher layers its own validation
 ```java
 public List<List<Float>> embed(List<String> texts) throws Error
 ```
+
+**Example:**
+
+```java
+var result = instance.embed(List.of());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `List<String>` | Yes | The texts |
+
+**Returns:** `List<List<Float>>`
+
+**Errors:** Throws `ErrorException`.
 
 ---
 
@@ -2403,15 +2888,23 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `Optional<AccelerationConfig>` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 | `maxEmbedDurationSecs` | `Optional<Long>` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static EmbeddingConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = EmbeddingConfig.defaultOptions();
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2587,7 +3080,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `Optional<OcrConfig>` | `null` | OCR configuration (None = OCR disabled) |
 | `forceOcr` | `boolean` | `false` | Force OCR even for searchable PDFs |
 | `forceOcrPages` | `Optional<List<Integer>>` | `null` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disableOcr` | `boolean` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `disableOcr` | `boolean` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `chunking` | `Optional<ChunkingConfig>` | `null` | Text chunking configuration (None = chunking disabled) |
 | `contentFilter` | `Optional<ContentFilterConfig>` | `null` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `Optional<ImageExtractionConfig>` | `null` | Image extraction configuration (None = no image extraction) |
@@ -2625,9 +3118,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `qrCodes` | `Optional<Boolean>` | `null` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancelToken` | `Optional<String>` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
@@ -2635,7 +3128,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 public static ExtractionConfig defaultOptions()
 ```
 
-#### needsImageData()
+**Example:**
+
+```java
+var result = ExtractionConfig.defaultOptions();
+```
+
+**Returns:** `ExtractionConfig`
+
+###### needsImageData()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2644,7 +3145,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2660,11 +3161,19 @@ also requested `images` extraction.
 public boolean needsImageData()
 ```
 
-#### needsImageProcessing()
+**Example:**
+
+```java
+var result = instance.needsImageData();
+```
+
+**Returns:** `boolean`
+
+###### needsImageProcessing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2675,6 +3184,14 @@ image I/O and processing when results won't be used.
 ```java
 public boolean needsImageProcessing()
 ```
+
+**Example:**
+
+```java
+var result = instance.needsImageProcessing();
+```
+
+**Returns:** `boolean`
 
 ---
 
@@ -2732,9 +3249,9 @@ This is the main result type returned by all extraction functions.
 | `formattedContent` | `Optional<String>` | `null` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocrInternalDocument` | `Optional<String>` | `null` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### fromOcr()
+###### fromOcr()
 
 Convert from an OCR result.
 
@@ -2743,6 +3260,20 @@ Convert from an OCR result.
 ```java
 public static ExtractionResult fromOcr(OcrExtractionResult ocr)
 ```
+
+**Example:**
+
+```java
+var result = ExtractionResult.fromOcr(new OcrExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2917,15 +3448,23 @@ included in page content.
 | `includeBbox` | `boolean` | `true` | Include bounding box information in hierarchy blocks |
 | `ocrCoverageThreshold` | `Optional<Float>` | `null` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static HierarchyConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = HierarchyConfig.defaultOptions();
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -2973,15 +3512,23 @@ the plain comrak-based renderer.
 | `classPrefix` | `String` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embedCss` | `boolean` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static HtmlOutputConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = HtmlOutputConfig.defaultOptions();
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3006,15 +3553,23 @@ Image extraction configuration.
 | `appendOcrText` | `boolean` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `outputFormat` | `ImageOutputFormat` | `ImageOutputFormat.NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static ImageExtractionConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = ImageExtractionConfig.defaultOptions();
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3066,15 +3621,23 @@ for different document types.
 | `binarizationMethod` | `String` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invertColors` | `boolean` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static ImagePreprocessingConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = ImagePreprocessingConfig.defaultOptions();
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3157,15 +3720,23 @@ Keyword extraction configuration.
 | `yakeParams` | `Optional<YakeParams>` | `null` | YAKE-specific tuning parameters. |
 | `rakeParams` | `Optional<RakeParams>` | `null` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static KeywordConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = KeywordConfig.defaultOptions();
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3179,15 +3750,23 @@ Language detection configuration.
 | `minConfidence` | `double` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detectMultiple` | `boolean` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static LanguageDetectionConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = LanguageDetectionConfig.defaultOptions();
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3218,15 +3797,23 @@ is enabled for PDF extraction.
 | `tableModel` | `TableModel` | `TableModel.TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `Optional<AccelerationConfig>` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static LayoutDetectionConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = LayoutDetectionConfig.defaultOptions();
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3266,9 +3853,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3278,7 +3865,21 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 public static LlmBackend new(LlmConfig config)
 ```
 
-#### detect()
+**Example:**
+
+```java
+var result = LlmBackend.new(new LlmConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### detect()
 
 **Signature:**
 
@@ -3286,13 +3887,48 @@ public static LlmBackend new(LlmConfig config)
 public List<Entity> detect(String text, List<EntityCategory> categories) throws Error
 ```
 
-#### detectWithCustom()
+**Example:**
+
+```java
+var result = instance.detect("value", List.of());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `categories` | `List<EntityCategory>` | Yes | The categories |
+
+**Returns:** `List<Entity>`
+
+**Errors:** Throws `ErrorException`.
+
+###### detectWithCustom()
 
 **Signature:**
 
 ```java
 public List<Entity> detectWithCustom(String text, List<EntityCategory> categories, List<String> customLabels) throws Error
 ```
+
+**Example:**
+
+```java
+var result = instance.detectWithCustom("value", List.of(), List.of());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `categories` | `List<EntityCategory>` | Yes | The categories |
+| `customLabels` | `List<String>` | Yes | The custom labels |
+
+**Returns:** `List<Entity>`
+
+**Errors:** Throws `ErrorException`.
 
 ---
 
@@ -3367,9 +4003,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocrUsed` | `boolean` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `Map<String, Object>` | `Collections.emptyMap()` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### isEmpty()
+###### isEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3379,6 +4015,14 @@ additional postprocessor fields are populated.
 ```java
 public boolean isEmpty()
 ```
+
+**Example:**
+
+```java
+var result = instance.isEmpty();
+```
+
+**Returns:** `boolean`
 
 ---
 
@@ -3425,9 +4069,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### processImage()
+###### processImage()
 
 Process an image and extract text via OCR.
 
@@ -3441,7 +4085,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3453,7 +4097,24 @@ so multiple backends can coexist in a pipeline without key conflicts.
 public ExtractionResult processImage(byte[] imageBytes, OcrConfig config) throws Error
 ```
 
-#### processImageFile()
+**Example:**
+
+```java
+var result = instance.processImage("data".getBytes(), new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `imageBytes` | `byte[]` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `ErrorException`.
+
+###### processImageFile()
 
 Process a file and extract text via OCR.
 
@@ -3470,7 +4131,24 @@ Same as `process_image`, plus file I/O errors.
 public ExtractionResult processImageFile(String path, OcrConfig config) throws Error
 ```
 
-#### supportsLanguage()
+**Example:**
+
+```java
+var result = instance.processImageFile("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | Path to the image file |
+| `config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `ErrorException`.
+
+###### supportsLanguage()
 
 Check if this backend supports a given language code.
 
@@ -3484,7 +4162,21 @@ Check if this backend supports a given language code.
 public boolean supportsLanguage(String lang)
 ```
 
-#### backendType()
+**Example:**
+
+```java
+var result = instance.supportsLanguage("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lang` | `String` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `boolean`
+
+###### backendType()
 
 Get the backend type identifier.
 
@@ -3498,7 +4190,15 @@ The backend type enum value.
 public OcrBackendType backendType()
 ```
 
-#### supportedLanguages()
+**Example:**
+
+```java
+var result = instance.backendType();
+```
+
+**Returns:** `OcrBackendType`
+
+###### supportedLanguages()
 
 Optional: Get a list of all supported languages.
 
@@ -3510,7 +4210,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 public List<String> supportedLanguages()
 ```
 
-#### supportsTableDetection()
+**Example:**
+
+```java
+var result = instance.supportedLanguages();
+```
+
+**Returns:** `List<String>`
+
+###### supportsTableDetection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3522,7 +4230,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 public boolean supportsTableDetection()
 ```
 
-#### supportsDocumentProcessing()
+**Example:**
+
+```java
+var result = instance.supportsTableDetection();
+```
+
+**Returns:** `boolean`
+
+###### supportsDocumentProcessing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3534,7 +4250,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 public boolean supportsDocumentProcessing()
 ```
 
-#### processDocument()
+**Example:**
+
+```java
+var result = instance.supportsDocumentProcessing();
+```
+
+**Returns:** `boolean`
+
+###### processDocument()
 
 Process a document file directly via OCR.
 
@@ -3545,6 +4269,23 @@ Only called if `supports_document_processing` returns `true`.
 ```java
 public ExtractionResult processDocument(String path, OcrConfig config) throws Error
 ```
+
+**Example:**
+
+```java
+var result = instance.processDocument("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | The  path |
+| `config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `ErrorException`.
 
 ---
 
@@ -3585,15 +4326,23 @@ OCR configuration.
 | `acceleration` | `Optional<AccelerationConfig>` | `null` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdataBytes` | `Optional<Map<String, byte[]>>` | `null` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static OcrConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = OcrConfig.defaultOptions();
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3724,15 +4473,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnumWsRatioThreshold` | `double` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipelineMinQuality` | `double` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static OcrQualityThresholds defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = OcrQualityThresholds.defaultOptions();
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3808,9 +4565,9 @@ Uses a builder pattern for convenient configuration.
 | `dropScore` | `float` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `modelTier` | `String` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### withCacheDir()
+###### withCacheDir()
 
 Sets a custom cache directory for model files.
 
@@ -3820,7 +4577,21 @@ Sets a custom cache directory for model files.
 public PaddleOcrConfig withCacheDir(String path)
 ```
 
-#### withTableDetection()
+**Example:**
+
+```java
+var result = instance.withCacheDir("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withTableDetection()
 
 Enables or disables table structure detection.
 
@@ -3830,7 +4601,21 @@ Enables or disables table structure detection.
 public PaddleOcrConfig withTableDetection(boolean enable)
 ```
 
-#### withAngleCls()
+**Example:**
+
+```java
+var result = instance.withTableDetection(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `boolean` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withAngleCls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3840,7 +4625,21 @@ Enables or disables angle classification for rotated text.
 public PaddleOcrConfig withAngleCls(boolean enable)
 ```
 
-#### withDetDbThresh()
+**Example:**
+
+```java
+var result = instance.withAngleCls(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `boolean` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbThresh()
 
 Sets the database threshold for text detection.
 
@@ -3850,7 +4649,21 @@ Sets the database threshold for text detection.
 public PaddleOcrConfig withDetDbThresh(float threshold)
 ```
 
-#### withDetDbBoxThresh()
+**Example:**
+
+```java
+var result = instance.withDetDbThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbBoxThresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3860,7 +4673,21 @@ Sets the box threshold for text bounding box refinement.
 public PaddleOcrConfig withDetDbBoxThresh(float threshold)
 ```
 
-#### withDetDbUnclipRatio()
+**Example:**
+
+```java
+var result = instance.withDetDbBoxThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbUnclipRatio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3870,7 +4697,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 public PaddleOcrConfig withDetDbUnclipRatio(float ratio)
 ```
 
-#### withDetLimitSideLen()
+**Example:**
+
+```java
+var result = instance.withDetDbUnclipRatio(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ratio` | `float` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetLimitSideLen()
 
 Sets the maximum side length for detection images.
 
@@ -3880,7 +4721,21 @@ Sets the maximum side length for detection images.
 public PaddleOcrConfig withDetLimitSideLen(int length)
 ```
 
-#### withRecBatchNum()
+**Example:**
+
+```java
+var result = instance.withDetLimitSideLen(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `length` | `int` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withRecBatchNum()
 
 Sets the batch size for recognition inference.
 
@@ -3890,7 +4745,21 @@ Sets the batch size for recognition inference.
 public PaddleOcrConfig withRecBatchNum(int batchSize)
 ```
 
-#### withDropScore()
+**Example:**
+
+```java
+var result = instance.withRecBatchNum(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `batchSize` | `int` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDropScore()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3900,7 +4769,21 @@ Sets the minimum recognition confidence threshold.
 public PaddleOcrConfig withDropScore(float score)
 ```
 
-#### withPadding()
+**Example:**
+
+```java
+var result = instance.withDropScore(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `score` | `float` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withPadding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3910,7 +4793,21 @@ Sets padding in pixels added around images before detection.
 public PaddleOcrConfig withPadding(int padding)
 ```
 
-#### withModelTier()
+**Example:**
+
+```java
+var result = instance.withPadding(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `padding` | `int` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withModelTier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3920,7 +4817,21 @@ Sets the model tier controlling detection/recognition model size.
 public PaddleOcrConfig withModelTier(String tier)
 ```
 
-#### defaultOptions()
+**Example:**
+
+```java
+var result = instance.withModelTier("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tier` | `String` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### defaultOptions()
 
 Creates a default configuration with English language support.
 
@@ -3929,6 +4840,14 @@ Creates a default configuration with English language support.
 ```java
 public static PaddleOcrConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = PaddleOcrConfig.defaultOptions();
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -3990,15 +4909,23 @@ when page boundaries are available and chunking is configured.
 | `insertPageMarkers` | `boolean` | `false` | Insert page markers in main content string |
 | `markerFormat` | `String` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static PageConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = PageConfig.defaultOptions();
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4128,15 +5055,23 @@ PDF-specific configuration.
 | `allowSingleColumnTables` | `boolean` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocrInlineImages` | `boolean` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `null` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static PdfConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = PdfConfig.defaultOptions();
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4170,9 +5105,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### name()
+###### name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4188,7 +5123,15 @@ The name should be:
 public String name()
 ```
 
-#### version()
+**Example:**
+
+```java
+var result = instance.name();
+```
+
+**Returns:** `String`
+
+###### version()
 
 Returns the semantic version of this plugin.
 
@@ -4202,7 +5145,15 @@ Defaults to the kreuzberg crate version.
 public String version()
 ```
 
-#### initialize()
+**Example:**
+
+```java
+var result = instance.version();
+```
+
+**Returns:** `String`
+
+###### initialize()
 
 Initialize the plugin.
 
@@ -4212,7 +5163,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4231,7 +5182,17 @@ Defaults to a no-op for stateless plugins.
 public void initialize() throws Error
 ```
 
-#### shutdown()
+**Example:**
+
+```java
+instance.initialize();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `ErrorException`.
+
+###### shutdown()
 
 Shutdown the plugin.
 
@@ -4242,7 +5203,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4260,7 +5221,17 @@ Defaults to a no-op for stateless plugins.
 public void shutdown() throws Error
 ```
 
-#### description()
+**Example:**
+
+```java
+instance.shutdown();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `ErrorException`.
+
+###### description()
 
 Optional plugin description for debugging and logging.
 
@@ -4272,7 +5243,15 @@ Defaults to empty string if not overridden.
 public String description()
 ```
 
-#### author()
+**Example:**
+
+```java
+var result = instance.description();
+```
+
+**Returns:** `String`
+
+###### author()
 
 Optional plugin author information.
 
@@ -4283,6 +5262,14 @@ Defaults to empty string if not overridden.
 ```java
 public String author()
 ```
+
+**Example:**
+
+```java
+var result = instance.author();
+```
+
+**Returns:** `String`
 
 ---
 
@@ -4318,9 +5305,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### process()
+###### process()
 
 Process an extraction result.
 
@@ -4339,15 +5326,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4369,7 +5356,24 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 public void process(ExtractionResult result, ExtractionConfig config) throws Error
 ```
 
-#### processingStage()
+**Example:**
+
+```java
+instance.process(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `ErrorException`.
+
+###### processingStage()
 
 Get the processing stage for this post-processor.
 
@@ -4385,7 +5389,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 public ProcessingStage processingStage()
 ```
 
-#### shouldProcess()
+**Example:**
+
+```java
+var result = instance.processingStage();
+```
+
+**Returns:** `ProcessingStage`
+
+###### shouldProcess()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4402,7 +5414,22 @@ Defaults to `true` (always run).
 public boolean shouldProcess(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### estimatedDurationMs()
+**Example:**
+
+```java
+var result = instance.shouldProcess(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `boolean`
+
+###### estimatedDurationMs()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4418,7 +5445,21 @@ Estimated processing time in milliseconds.
 public long estimatedDurationMs(ExtractionResult result)
 ```
 
-#### priority()
+**Example:**
+
+```java
+var result = instance.estimatedDurationMs(new ExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `long`
+
+###### priority()
 
 Execution priority within the processing stage.
 
@@ -4431,6 +5472,14 @@ for high-priority processors that should run early in their stage.
 ```java
 public int priority()
 ```
+
+**Example:**
+
+```java
+var result = instance.priority();
+```
+
+**Returns:** `int`
 
 ---
 
@@ -4446,15 +5495,23 @@ Post-processor configuration.
 | `enabledSet` | `Optional<List<String>>` | `null` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabledSet` | `Optional<List<String>>` | `null` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static PostProcessorConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = PostProcessorConfig.defaultOptions();
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4580,15 +5637,23 @@ RAKE-specific parameters.
 | `minWordLength` | `long` | `1` | Minimum word length to consider (default: 1). |
 | `maxWordsPerPhrase` | `long` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static RakeParams defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = RakeParams.defaultOptions();
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4624,9 +5689,9 @@ Configuration for the redaction post-processor.
 | `customTerms` | `List<RedactionTerm>` | `Collections.emptyList()` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `customPatterns` | `List<RedactionPattern>` | `Collections.emptyList()` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
@@ -4634,7 +5699,15 @@ Configuration for the redaction post-processor.
 public static RedactionConfig defaultOptions()
 ```
 
-#### validate()
+**Example:**
+
+```java
+var result = RedactionConfig.defaultOptions();
+```
+
+**Returns:** `RedactionConfig`
+
+###### validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4649,6 +5722,16 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```java
 public void validate() throws Error
 ```
+
+**Example:**
+
+```java
+instance.validate();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `ErrorException`.
 
 ---
 
@@ -4680,9 +5763,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `pattern` | `String` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `caseSensitive` | `boolean` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### labeled()
+###### labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4691,6 +5774,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```java
 public static RedactionPattern labeled(String label, String pattern)
 ```
+
+**Example:**
+
+```java
+var result = RedactionPattern.labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `String` | Yes | The label |
+| `pattern` | `String` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4724,9 +5822,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `value` | `String` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `caseSensitive` | `boolean` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### literal()
+###### literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4736,7 +5834,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 public static RedactionTerm literal(String value)
 ```
 
-#### labeled()
+**Example:**
+
+```java
+var result = RedactionTerm.literal("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `String` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### labeled()
 
 Build a term with a custom label.
 
@@ -4745,6 +5857,21 @@ Build a term with a custom label.
 ```java
 public static RedactionTerm labeled(String label, String value)
 ```
+
+**Example:**
+
+```java
+var result = RedactionTerm.labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `String` | Yes | The label |
+| `value` | `String` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4766,9 +5893,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### render()
+###### render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4786,6 +5913,22 @@ Returns an error if rendering fails.
 public String render(InternalDocument doc) throws Error
 ```
 
+**Example:**
+
+```java
+var result = instance.render(new InternalDocument());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `String`
+
+**Errors:** Throws `ErrorException`.
+
 ---
 
 #### RerankedDocument
@@ -4795,7 +5938,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4851,11 +5994,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### rerank()
+###### rerank()
 
 Score a list of documents against a query.
 
@@ -4874,6 +6017,23 @@ against `documents.len()` before sorting.
 public List<Float> rerank(String query, List<String> documents) throws Error
 ```
 
+**Example:**
+
+```java
+var result = instance.rerank("value", List.of());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `List<String>` | Yes | The documents |
+
+**Returns:** `List<Float>`
+
+**Errors:** Throws `ErrorException`.
+
 ---
 
 #### RerankerConfig
@@ -4883,7 +6043,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4895,15 +6055,23 @@ Since v5.0.
 | `acceleration` | `Optional<AccelerationConfig>` | `null` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `null` (auto-select per platform). |
 | `maxRerankDurationSecs` | `Optional<Long>` | `null` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static RerankerConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = RerankerConfig.defaultOptions();
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4914,7 +6082,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4962,15 +6130,23 @@ while still supporting legitimate documents.
 | `maxXmlDepth` | `long` | `1024` | Maximum XML depth (100 levels) |
 | `maxTableCells` | `long` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static SecurityLimits defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = SecurityLimits.defaultOptions();
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -4997,9 +6173,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `maxRequestBodyBytes` | `long` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `maxMultipartFieldBytes` | `long` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
@@ -5007,7 +6183,15 @@ including host/port settings, CORS configuration, and upload limits.
 public static ServerConfig defaultOptions()
 ```
 
-#### listenAddr()
+**Example:**
+
+```java
+var result = ServerConfig.defaultOptions();
+```
+
+**Returns:** `ServerConfig`
+
+###### listenAddr()
 
 Get the server listen address (host:port).
 
@@ -5017,7 +6201,15 @@ Get the server listen address (host:port).
 public String listenAddr()
 ```
 
-#### corsAllowsAll()
+**Example:**
+
+```java
+var result = instance.listenAddr();
+```
+
+**Returns:** `String`
+
+###### corsAllowsAll()
 
 Check if CORS allows all origins.
 
@@ -5030,7 +6222,15 @@ are allowed. Returns `false` if specific origins are configured.
 public boolean corsAllowsAll()
 ```
 
-#### isOriginAllowed()
+**Example:**
+
+```java
+var result = instance.corsAllowsAll();
+```
+
+**Returns:** `boolean`
+
+###### isOriginAllowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5045,7 +6245,21 @@ Returns `true` if:
 public boolean isOriginAllowed(String origin)
 ```
 
-#### maxRequestBodyMb()
+**Example:**
+
+```java
+var result = instance.isOriginAllowed("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `origin` | `String` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `boolean`
+
+###### maxRequestBodyMb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5055,7 +6269,15 @@ Get maximum request body size in megabytes (rounded up).
 public long maxRequestBodyMb()
 ```
 
-#### maxMultipartFieldMb()
+**Example:**
+
+```java
+var result = instance.maxRequestBodyMb();
+```
+
+**Returns:** `long`
+
+###### maxMultipartFieldMb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5064,6 +6286,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```java
 public long maxMultipartFieldMb()
 ```
+
+**Example:**
+
+```java
+var result = instance.maxMultipartFieldMb();
+```
+
+**Returns:** `long`
 
 ---
 
@@ -5151,15 +6381,23 @@ Used via `ImageExtractionConfig.svg`.
 | `sanitize` | `boolean` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `renderDpi` | `float` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static SvgOptions defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = SvgOptions.defaultOptions();
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5252,15 +6490,23 @@ for specific document types (invoices, handwriting, etc.).
 | `textordSpaceSizeIsVariable` | `boolean` | `true` | Variable-width space detection |
 | `thresholdingMethod` | `boolean` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TesseractConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TesseractConfig.defaultOptions();
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5320,9 +6566,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a fresh counter with no previous state.
 
@@ -5331,6 +6577,14 @@ Create a fresh counter with no previous state.
 ```java
 public static TokenCounter new()
 ```
+
+**Example:**
+
+```java
+var result = TokenCounter.new();
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5352,15 +6606,23 @@ Configuration for the token-reduction pipeline.
 | `targetReduction` | `Optional<Float>` | `null` | Target fraction of text to retain (0.0–1.0); `null` = no fixed target. |
 | `enableSemanticClustering` | `boolean` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TokenReductionConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TokenReductionConfig.defaultOptions();
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5373,15 +6635,23 @@ Token reduction configuration.
 | `mode` | `String` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserveImportantWords` | `boolean` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TokenReductionOptions defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TokenReductionOptions.defaultOptions();
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5418,15 +6688,23 @@ model = "tiny"
 | `allowNetwork` | `boolean` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verifyHash` | `boolean` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TranscriptionConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TranscriptionConfig.defaultOptions();
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5490,15 +6768,23 @@ docstrings = true
 | `groups` | `Optional<List<String>>` | `null` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TreeSitterConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TreeSitterConfig.defaultOptions();
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5520,15 +6806,23 @@ Controls which analysis features are enabled when extracting code files.
 | `chunkMaxSize` | `Optional<Long>` | `null` | Maximum chunk size in bytes. `null` disables chunking. |
 | `contentMode` | `CodeContentMode` | `CodeContentMode.CHUNKS` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static TreeSitterProcessConfig defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = TreeSitterProcessConfig.defaultOptions();
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5559,9 +6853,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### validate()
+###### validate()
 
 Validate an extraction result.
 
@@ -5578,7 +6872,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5603,7 +6897,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5626,7 +6920,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5651,7 +6945,24 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 public void validate(ExtractionResult result, ExtractionConfig config) throws Error
 ```
 
-#### shouldValidate()
+**Example:**
+
+```java
+instance.validate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `ErrorException`.
+
+###### shouldValidate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5668,7 +6979,22 @@ Defaults to `true` (always run).
 public boolean shouldValidate(ExtractionResult result, ExtractionConfig config)
 ```
 
-#### priority()
+**Example:**
+
+```java
+var result = instance.shouldValidate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `boolean`
+
+###### priority()
 
 Optional: Get the validation priority.
 
@@ -5686,6 +7012,14 @@ Priority value (higher = runs earlier).
 ```java
 public int priority()
 ```
+
+**Example:**
+
+```java
+var result = instance.priority();
+```
+
+**Returns:** `int`
 
 ---
 
@@ -5745,15 +7079,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `windowSize` | `long` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### defaultOptions()
+###### defaultOptions()
 
 **Signature:**
 
 ```java
 public static YakeParams defaultOptions()
 ```
+
+**Example:**
+
+```java
+var result = YakeParams.defaultOptions();
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -5977,7 +7319,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6696,7 +8038,7 @@ and provides context for debugging.
 | `LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
 | `EMBEDDING` | The embedding model or embedding pipeline returned an error. |
-| `RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `TRANSCRIPTION` | Audio/video transcription failed. |
 | `TIMEOUT` | The extraction operation exceeded the configured time limit. |
 | `CANCELLED` | The extraction was cancelled via a `CancellationToken`. |

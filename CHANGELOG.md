@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.16] - 2026-06-15
+
+### Changed
+
+- **alef pin 0.25.9 → 0.25.16.** Bundles eight upstream alef releases: 0.25.10 swift Heif cfg-gate + extendr type_paths + rustler clone-filter + kotlin-android gradle workspace target; 0.25.11 rustler/swift/elixir-scaffold rc.16 codegen iterations (flat_enum tuple `..Default::default()` conditional, spawn_blocking JoinHandle discharge, swift cfg-gated wrapper structs + extern skip + phantom_vec cfg, elixir check-cfg allow-list); 0.25.12–0.25.14 cfg-union propagation experiment (since reverted); 0.25.15 reverts those propagation passes and emits swift `extern "Rust" { type T; }` decls unconditionally so parent extern blocks resolve when wrapper feature is on; 0.25.16 drops cfg propagation on enum From-impl match arms and raises test_apps/node smoke timeout for slow grammars (vb). Net effect: kreuzberg-swift (desktop), kreuzberg-wasm, kreuzberg-dart, kreuzberg-jni, kreuzberg-node, kreuzberg-py, kreuzberg-ffi, kreuzberg-php all compile clean; node and py emit 4 `unexpected_cfgs` warnings each on `keywords-yake`/`keywords-rake` (their hand-authored Cargo.toml lacks the feature; non-blocking).
+
 ### Fixed
 
 - **CI: invalidate libheif Linux cache to fix rc.15 E2E symbol resolution.** E2E (zig) and other e2e jobs failed with `undefined symbol: heif_image_get_plane_readonly2` at runtime because the libheif source-build cache (introduced rc.12 to fix `libheif-sys >= 1.21`) was keyed with a static version string; stale cache entries from rc.12–rc.14 may have contained corrupted or incomplete .so files. Incrementing the cache key suffix to `-cache-v2` forces a fresh build and ensures all runners build libheif 1.23.0 with the required 1.16+ API symbols. The install script itself (source build to `/usr/local`, LD_LIBRARY_PATH ordering in ci-e2e.yaml) requires no changes.

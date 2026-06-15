@@ -92,6 +92,15 @@ typedef struct KREUZBERGCacheStats KREUZBERGCacheStats;
  */
 typedef struct KREUZBERGCaptioningConfig KREUZBERGCaptioningConfig;
 /**
+ * Captioning enrichment knob: which LLM to use for image captions.
+ *
+ * The enrichment stage calls `caption_image` for every
+ * image in `ExtractionResult::images` that has non-empty `data`. Images with
+ * empty byte data (e.g. reference-only images populated via `source_path`) are
+ * skipped rather than forwarded to the VLM.
+ */
+typedef struct KREUZBERGCaptioningEnrichmentConfig KREUZBERGCaptioningEnrichmentConfig;
+/**
  * A single changed cell within a table.
  *
  * Defined here (rather than only in `crate::diff`) so `RevisionDelta` can
@@ -166,6 +175,10 @@ typedef struct KREUZBERGChunkingConfig KREUZBERGChunkingConfig;
  * Citation file metadata (RIS, PubMed, EndNote).
  */
 typedef struct KREUZBERGCitationMetadata KREUZBERGCitationMetadata;
+/**
+ * Classification enrichment knob: how to label the document.
+ */
+typedef struct KREUZBERGClassificationEnrichmentConfig KREUZBERGClassificationEnrichmentConfig;
 /**
  * A single label + confidence pair.
  */
@@ -863,10 +876,6 @@ typedef struct KREUZBERGMetadata KREUZBERGMetadata;
  * Combined paths to all models needed for OCR (backward compatibility).
  */
 typedef struct KREUZBERGModelPaths KREUZBERGModelPaths;
-/**
- * NER backend trait (stub for Android x86_64).
- */
-typedef struct KREUZBERGNerBackend KREUZBERGNerBackend;
 /**
  * NER backend selector.
  */
@@ -13599,6 +13608,41 @@ int64_t kreuzberg_pdf_metadata_height(const KREUZBERGPdfMetadata *ptr);
 uint32_t kreuzberg_pdf_metadata_page_count(const KREUZBERGPdfMetadata *ptr);
 
 /**
+ * Free a `ClassificationEnrichmentConfig` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_classification_enrichment_config_free(KREUZBERGClassificationEnrichmentConfig *ptr);
+
+/**
+ * Get the `config` field from a `ClassificationEnrichmentConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGPageClassificationConfig *kreuzberg_classification_enrichment_config_config(const KREUZBERGClassificationEnrichmentConfig *ptr);
+
+/**
+ * Free a `CaptioningEnrichmentConfig` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_captioning_enrichment_config_free(KREUZBERGCaptioningEnrichmentConfig *ptr);
+
+/**
+ * Get the `config` field from a `CaptioningEnrichmentConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGLlmConfig *kreuzberg_captioning_enrichment_config_config(const KREUZBERGCaptioningEnrichmentConfig *ptr);
+
+/**
+ * Get the `custom_prompt` field from a `CaptioningEnrichmentConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_captioning_enrichment_config_custom_prompt(const KREUZBERGCaptioningEnrichmentConfig *ptr);
+
+/**
  * Convert an integer to a `ExecutionProviderType` variant. Returns -1 on invalid input.
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
@@ -16077,6 +16121,48 @@ uintptr_t kreuzberg_classify_text_len(const char *_text,
                                       const KREUZBERGPageClassificationConfig *_config);
 
 /**
+ * Classify a single document (as multiple pages or a single text block).
+ *
+ * Aggregates classifications across all pages in the provided text, returning
+ * a combined label set that represents the document as a whole.
+ * \param pages Slice of page texts to classify. Each page is classified independently using the
+ * configured LLM, and results are aggregated.
+ * \param config Classification configuration including labels and LLM settings.
+ * \return A vector of `ClassificationLabel` entries representing the document's overall
+ * classification.
+ * \note Returns an error if `config.labels` is empty or if LLM calls fail.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * use kreuzberg::text::classification::classify_document;
+ * use kreuzberg::core::config::PageClassificationConfig;
+ * use kreuzberg::core::config::LlmConfig;
+ *
+ * let config = PageClassificationConfig {
+ *     labels: vec!["invoice".to_string(), "memo".to_string()],
+ *     llm: LlmConfig::default(),
+ *     prompt_template: None,
+ *     multi_label: false,
+ * };
+ *
+ * let pages = vec!["Page 1 content", "Page 2 content"];
+ * let labels = classify_document(&pages, &config).await?;
+ * \endcode
+ */
+char *kreuzberg_classify_document(const char *pages,
+                                  const KREUZBERGPageClassificationConfig *config);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_classify_document` on
+ * this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_classify_document`.
+ */
+uintptr_t kreuzberg_classify_document_len(const char *_pages,
+                                          const KREUZBERGPageClassificationConfig *_config);
+
+/**
  * Eagerly download a NER model into the kreuzberg cache.
  *
  * `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
@@ -16334,6 +16420,88 @@ int32_t kreuzberg_render_pdf_page_to_png(const uint8_t *pdf_bytes,
                                          uint8_t **out_ptr,
                                          uintptr_t *out_len,
                                          uintptr_t *out_cap);
+
+/**
+ * Caption a single image from bytes.
+ * \param image_bytes The image data.
+ * \param llm_config LLM configuration for the VLM call.
+ * \param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt
+ * when `None`.
+ * \return The generated caption text.
+ * \note Returns an error if the VLM call fails or if image format detection fails.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * use kreuzberg::captioning::caption_image;
+ * use kreuzberg::LlmConfig;
+ *
+ * # async fn example() -> kreuzberg::Result<()> {
+ * let image_bytes = vec![0xFF, 0xD8]; // JPEG header
+ * let config = LlmConfig {
+ *     model: "anthropic/claude-3-5-sonnet".to_string(),
+ *     ..Default::default()
+ * };
+ * let caption = caption_image(&image_bytes, &config, None).await?;
+ * # Ok(())
+ * # }
+ * \endcode
+ */
+char *kreuzberg_caption_image(const uint8_t *image_bytes,
+                              uintptr_t image_bytes_len,
+                              const KREUZBERGLlmConfig *llm_config,
+                              const char *custom_prompt);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_caption_image` on this
+ * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
+ * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_caption_image`.
+ */
+uintptr_t kreuzberg_caption_image_len(const uint8_t *_image_bytes,
+                                      uintptr_t _image_bytes_len,
+                                      const KREUZBERGLlmConfig *_llm_config,
+                                      const char *_custom_prompt);
+
+/**
+ * Caption a single image from a file path.
+ * \param path Path to the image file.
+ * \param llm_config LLM configuration for the VLM call.
+ * \param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt
+ * when `None`.
+ * \return The generated caption text.
+ * \note Returns an error if the file cannot be read, if image format detection fails,
+ * or if the VLM call fails.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * use kreuzberg::captioning::caption_image_file;
+ * use kreuzberg::LlmConfig;
+ *
+ * # async fn example() -> kreuzberg::Result<()> {
+ * let config = LlmConfig {
+ *     model: "openai/gpt-4o-mini".to_string(),
+ *     ..Default::default()
+ * };
+ * let caption = caption_image_file("document_page_001.png", &config, None).await?;
+ * # Ok(())
+ * # }
+ * \endcode
+ */
+char *kreuzberg_caption_image_file(const char *path,
+                                   const KREUZBERGLlmConfig *llm_config,
+                                   const char *custom_prompt);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_caption_image_file` on
+ * this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_caption_image_file`.
+ */
+uintptr_t kreuzberg_caption_image_file_len(const char *_path,
+                                           const KREUZBERGLlmConfig *_llm_config,
+                                           const char *_custom_prompt);
 
 /**
  * Detect the MIME type of a file at the given path.

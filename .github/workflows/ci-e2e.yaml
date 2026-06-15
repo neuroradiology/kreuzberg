@@ -100,7 +100,7 @@ jobs:
             crates/kreuzberg-ffi/include/kreuzberg.h
             crates/kreuzberg-ffi/kreuzberg-ffi.pc
             crates/kreuzberg-ffi/cmake/
-          key: ffi-${{ matrix.target }}-${{ steps.ffi-hash.outputs.value }}
+          key: ffi-${{ matrix.target }}-${{ steps.ffi-hash.outputs.value }}-libheif-v1.23.0-cache-v2
 
       - name: Setup Rust
         if: steps.ffi-cache.outputs.cache-hit != 'true'

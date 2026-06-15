@@ -135,6 +135,9 @@ pub mod pdf;
 #[cfg(feature = "transcription")]
 pub(crate) mod transcription;
 
+#[cfg(feature = "captioning")]
+pub mod captioning;
+
 // ── Error, Result, and all types ─────────────────────────────────────────────
 // NOTE: `CancellationToken` is intentionally NOT re-exported here.
 // It is an `Arc<AtomicBool>` wrapper that does not cross FFI cleanly.
@@ -297,6 +300,14 @@ impl RegionKind {
         ""
     }
 }
+
+// Public NER API: detect_entities function and backend types.
+#[cfg(feature = "ner")]
+pub use text::ner::detect_entities;
+
+// Public classification API: classify_document function and existing classify_text.
+#[cfg(feature = "classification")]
+pub use text::classification::classify_document;
 
 #[cfg(feature = "redaction")]
 pub use text::redaction::strategy::TokenCounter;
@@ -652,3 +663,135 @@ pub fn get_reranker_preset(_name: &str) -> Option<RerankerPreset> {
 pub fn list_reranker_presets() -> Vec<String> {
     Vec::new()
 }
+
+// ── Captioning — public API (3 functions, feature-gated) ──────────────────────
+/// Caption a single image from bytes using a configured LLM.
+///
+/// # Arguments
+///
+/// * `image_bytes` - The image data.
+/// * `llm_config` - LLM configuration for the VLM call.
+/// * `custom_prompt` - Optional custom caption prompt. Uses the default
+///   `RegionKind::Caption` prompt when `None`.
+///
+/// # Returns
+///
+/// The generated caption text.
+///
+/// # Errors
+///
+/// Returns an error if the VLM call fails or if image format detection fails.
+///
+/// # Example
+///
+/// ```ignore
+/// use kreuzberg::captioning::caption_image;
+/// use kreuzberg::LlmConfig;
+///
+/// # async fn example() -> kreuzberg::Result<()> {
+/// let image_bytes = std::fs::read("photo.jpg")?;
+/// let config = LlmConfig {
+///     model: "openai/gpt-4o-mini".to_string(),
+///     ..Default::default()
+/// };
+/// let caption = caption_image(&image_bytes, &config, None).await?;
+/// println!("Caption: {}", caption);
+/// # Ok(())
+/// # }
+/// ```
+#[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+pub use captioning::caption_image;
+
+/// Caption a single image from a file path using a configured LLM.
+///
+/// # Arguments
+///
+/// * `path` - Path to the image file.
+/// * `llm_config` - LLM configuration for the VLM call.
+/// * `custom_prompt` - Optional custom caption prompt. Uses the default
+///   `RegionKind::Caption` prompt when `None`.
+///
+/// # Returns
+///
+/// The generated caption text.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read, if image format detection fails,
+/// or if the VLM call fails.
+///
+/// # Example
+///
+/// ```ignore
+/// use kreuzberg::captioning::caption_image_file;
+/// use kreuzberg::LlmConfig;
+///
+/// # async fn example() -> kreuzberg::Result<()> {
+/// let config = LlmConfig {
+///     model: "openai/gpt-4o-mini".to_string(),
+///     ..Default::default()
+/// };
+/// let caption = caption_image_file("document_page_001.png", &config, None).await?;
+/// # Ok(())
+/// # }
+/// ```
+#[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+pub use captioning::caption_image_file;
+
+/// Caption multiple images in a single batch.
+///
+/// Processes images sequentially (not in parallel). Returns one caption per input image
+/// in the same order. If a caption fails, the error is returned immediately without
+/// processing remaining images.
+///
+/// # Arguments
+///
+/// * `images` - Slice of image byte references to caption.
+/// * `llm_config` - LLM configuration for the VLM calls.
+/// * `custom_prompt` - Optional custom caption prompt. Uses the default
+///   `RegionKind::Caption` prompt when `None`.
+///
+/// # Returns
+///
+/// A vector of captions, one per input image, in the same order.
+///
+/// # Errors
+///
+/// Returns an error if any VLM call fails.
+///
+/// # Example
+///
+/// ```ignore
+/// use kreuzberg::captioning::caption_images;
+/// use kreuzberg::LlmConfig;
+///
+/// # async fn example() -> kreuzberg::Result<()> {
+/// let image1 = std::fs::read("photo1.jpg")?;
+/// let image2 = std::fs::read("photo2.jpg")?;
+/// let images = vec![image1.as_ref(), image2.as_ref()];
+/// let config = LlmConfig {
+///     model: "openai/gpt-4o-mini".to_string(),
+///     ..Default::default()
+/// };
+/// let captions = caption_images(&images, &config, None).await?;
+/// assert_eq!(captions.len(), 2);
+/// # Ok(())
+/// # }
+/// ```
+#[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+pub use captioning::caption_images;
+
+// ── Enrichment chokepoint ─────────────────────────────────────────────────────
+/// Unified post-extraction enrichment: classification, NER, captioning, and
+/// (future) transcription in a single composable call.
+pub mod enrich;
+pub use enrich::{EnrichedResult, EnrichmentConfig, enrich};
+
+#[cfg(feature = "ner")]
+pub use enrich::NerEnrichmentConfig;
+
+#[cfg(feature = "classification")]
+pub use enrich::ClassificationEnrichmentConfig;
+
+#[cfg(feature = "captioning")]
+pub use enrich::CaptioningEnrichmentConfig;

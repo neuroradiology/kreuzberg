@@ -33,6 +33,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 def extract_bytes(content: bytes, mime_type: str, config: ExtractionConfig) -> ExtractionResult
 ```
 
+**Example:**
+
+```python
+result = extract_bytes(b"data", "value", ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +48,7 @@ def extract_bytes(content: bytes, mime_type: str, config: ExtractionConfig) -> E
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -74,6 +81,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 def extract_file(path: str, mime_type: str = None, config: ExtractionConfig) -> ExtractionResult
 ```
 
+**Example:**
+
+```python
+result = extract_file("value", mime_type="value", ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +96,7 @@ def extract_file(path: str, mime_type: str = None, config: ExtractionConfig) -> 
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -106,6 +120,12 @@ use a truly synchronous extraction approach instead.
 def extract_file_sync(path: str, mime_type: str = None, config: ExtractionConfig) -> ExtractionResult
 ```
 
+**Example:**
+
+```python
+result = extract_file_sync("value", mime_type="value", ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +135,7 @@ def extract_file_sync(path: str, mime_type: str = None, config: ExtractionConfig
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -135,6 +156,12 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 def extract_bytes_sync(content: bytes, mime_type: str, config: ExtractionConfig) -> ExtractionResult
 ```
 
+**Example:**
+
+```python
+result = extract_bytes_sync(b"data", "value", ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +171,7 @@ def extract_bytes_sync(content: bytes, mime_type: str, config: ExtractionConfig)
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -161,6 +189,12 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 def batch_extract_files_sync(items: list[BatchFileItem], config: ExtractionConfig) -> list[ExtractionResult]
 ```
 
+**Example:**
+
+```python
+result = batch_extract_files_sync([], ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +203,7 @@ def batch_extract_files_sync(items: list[BatchFileItem], config: ExtractionConfi
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `list[ExtractionResult]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -188,6 +223,12 @@ that iterates through items and calls `extract_bytes_sync()`.
 def batch_extract_bytes_sync(items: list[BatchBytesItem], config: ExtractionConfig) -> list[ExtractionResult]
 ```
 
+**Example:**
+
+```python
+result = batch_extract_bytes_sync([], ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +237,7 @@ def batch_extract_bytes_sync(items: list[BatchBytesItem], config: ExtractionConf
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `list[ExtractionResult]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -237,6 +279,12 @@ Per-file configuration overrides:
 def batch_extract_files(items: list[BatchFileItem], config: ExtractionConfig) -> list[ExtractionResult]
 ```
 
+**Example:**
+
+```python
+result = batch_extract_files([], ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +293,7 @@ def batch_extract_files(items: list[BatchFileItem], config: ExtractionConfig) ->
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `list[ExtractionResult]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -280,6 +329,12 @@ Per-item configuration overrides:
 def batch_extract_bytes(items: list[BatchBytesItem], config: ExtractionConfig) -> list[ExtractionResult]
 ```
 
+**Example:**
+
+```python
+result = batch_extract_bytes([], ExtractionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +343,7 @@ def batch_extract_bytes(items: list[BatchBytesItem], config: ExtractionConfig) -
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `list[ExtractionResult]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -316,6 +372,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 def detect_mime_type_from_bytes(content: bytes) -> str
 ```
 
+**Example:**
+
+```python
+result = detect_mime_type_from_bytes(b"data")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +385,7 @@ def detect_mime_type_from_bytes(content: bytes) -> str
 | `content` | `bytes` | Yes | Raw file bytes |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -343,6 +406,12 @@ A vector of file extensions (without leading dot) for the MIME type.
 def get_extensions_for_mime(mime_type: str) -> list[str]
 ```
 
+**Example:**
+
+```python
+result = get_extensions_for_mime("value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +419,7 @@ def get_extensions_for_mime(mime_type: str) -> list[str]
 | `mime_type` | `str` | Yes | The MIME type to look up |
 
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -373,6 +443,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```python
 def list_supported_formats() -> list[SupportedFormat]
+```
+
+**Example:**
+
+```python
+result = list_supported_formats()
 ```
 
 **Returns:** `list[SupportedFormat]`
@@ -406,6 +482,12 @@ from the four corner points of the grid.
 def detect_qr_codes(image_bytes: bytes, format_hint: str = None) -> list[QrCode]
 ```
 
+**Example:**
+
+```python
+result = detect_qr_codes(b"data", format_hint="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +516,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 def clear_embedding_backends() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_embedding_backends()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -452,7 +541,14 @@ bindings.
 def list_embedding_backends() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_embedding_backends()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -467,7 +563,14 @@ List names of all registered document extractors.
 def list_document_extractors() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_document_extractors()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -489,7 +592,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 def clear_document_extractors() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_document_extractors()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -510,7 +620,14 @@ A vector of OCR backend names.
 def list_ocr_backends() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_ocr_backends()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -532,7 +649,14 @@ Removes all OCR backends and calls their `shutdown()` methods.
 def clear_ocr_backends() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_ocr_backends()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -553,7 +677,14 @@ safe to call on any target.
 def register_builtin() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+register_builtin()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -576,7 +707,14 @@ global registry.
 def list_post_processors() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_post_processors()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -591,7 +729,14 @@ Remove all registered post-processors.
 def clear_post_processors() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_post_processors()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -610,7 +755,14 @@ Returns an error if the registry lock is poisoned.
 def list_renderers() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_renderers()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -633,7 +785,14 @@ Returns an error if the registry lock is poisoned.
 def clear_renderers() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_renderers()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -649,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +816,14 @@ Since v5.0.
 def clear_reranker_backends() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_reranker_backends()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -669,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +843,14 @@ Since v5.0.
 def list_reranker_backends() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_reranker_backends()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -692,7 +865,14 @@ List names of all registered validators.
 def list_validators() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_validators()
+```
+
 **Returns:** `list[str]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -707,7 +887,14 @@ Remove all registered validators.
 def clear_validators() -> None
 ```
 
-**Returns:** `None`
+**Example:**
+
+```python
+clear_validators()
+```
+
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -731,6 +918,12 @@ a half-populated vector.
 def classify_pages(result: ExtractionResult, config: PageClassificationConfig) -> None
 ```
 
+**Example:**
+
+```python
+classify_pages(ExtractionResult(), PageClassificationConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +931,8 @@ def classify_pages(result: ExtractionResult, config: PageClassificationConfig) -
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `None`
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -762,6 +956,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 def classify_text(text: str, config: PageClassificationConfig) -> list[ClassificationLabel]
 ```
 
+**Example:**
+
+```python
+result = classify_text("value", PageClassificationConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +970,7 @@ def classify_text(text: str, config: PageClassificationConfig) -> list[Classific
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `list[ClassificationLabel]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -799,6 +1000,12 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 def classify_document(pages: list[str], config: PageClassificationConfig) -> list[ClassificationLabel]
 ```
 
+**Example:**
+
+```python
+result = classify_document([], PageClassificationConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1014,7 @@ def classify_document(pages: list[str], config: PageClassificationConfig) -> lis
 | `config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `list[ClassificationLabel]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -824,6 +1032,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 def download_model(name: str, cache_dir: str = None) -> str
 ```
 
+**Example:**
+
+```python
+result = download_model("value", cache_dir="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1046,7 @@ def download_model(name: str, cache_dir: str = None) -> str
 | `cache_dir` | `str \| None` | No | The cache dir |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -846,6 +1061,12 @@ Pinned default NER model identifier.
 def default_model_name() -> str
 ```
 
+**Example:**
+
+```python
+result = default_model_name()
+```
+
 **Returns:** `str`
 
 ---
@@ -858,6 +1079,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```python
 def known_models() -> list[str]
+```
+
+**Example:**
+
+```python
+result = known_models()
 ```
 
 **Returns:** `list[str]`
@@ -875,6 +1102,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 def redact(result: ExtractionResult, config: RedactionConfig) -> None
 ```
 
+**Example:**
+
+```python
+redact(ExtractionResult(), RedactionConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1115,8 @@ def redact(result: ExtractionResult, config: RedactionConfig) -> None
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** `None`
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -895,6 +1129,12 @@ Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN).
 
 ```python
 def find_all(text: str) -> list[PatternMatch]
+```
+
+**Example:**
+
+```python
+result = find_all("value")
 ```
 
 **Parameters:**
@@ -920,6 +1160,12 @@ they must be supplied by a NER backend through the redaction engine.
 
 ```python
 def scan_text(text: str, categories: list[PiiCategory]) -> list[PatternMatch]
+```
+
+**Example:**
+
+```python
+result = scan_text("value", [])
 ```
 
 **Parameters:**
@@ -948,6 +1194,12 @@ pass `None` (or an unknown code) to fall back to English.
 def summarize(text: str, language: str = None, max_tokens: int = None) -> str | None
 ```
 
+**Example:**
+
+```python
+result = summarize("value", language="value", max_tokens=42)
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -969,6 +1221,12 @@ callers).
 
 ```python
 def token_count(text: str) -> int
+```
+
+**Example:**
+
+```python
+result = token_count("value")
 ```
 
 **Parameters:**
@@ -996,6 +1254,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 def translate_result(result: ExtractionResult, config: TranslationConfig) -> None
 ```
 
+**Example:**
+
+```python
+translate_result(ExtractionResult(), TranslationConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1003,7 +1267,8 @@ def translate_result(result: ExtractionResult, config: TranslationConfig) -> Non
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** `None`
+**Returns:** No return value.
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1019,6 +1284,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```python
 def compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> ExtractionDiff
+```
+
+**Example:**
+
+```python
+result = compare(ExtractionResult(), ExtractionResult(), DiffOptions())
 ```
 
 **Parameters:**
@@ -1057,6 +1328,12 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 def extract_region_with_vlm(image_bytes: bytes, image_mime: str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: str = None) -> str
 ```
 
+**Example:**
+
+```python
+result = extract_region_with_vlm(b"data", "value", RegionKind(), LlmConfig(), custom_prompt="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1068,6 +1345,7 @@ def extract_region_with_vlm(image_bytes: bytes, image_mime: str, region_kind: Re
 | `custom_prompt` | `str \| None` | No | The custom prompt |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1096,6 +1374,12 @@ Returns an error if:
 def extract_keywords(text: str, config: KeywordConfig) -> list[Keyword]
 ```
 
+**Example:**
+
+```python
+result = extract_keywords("value", KeywordConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1104,6 +1388,7 @@ def extract_keywords(text: str, config: KeywordConfig) -> list[Keyword]
 | `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `list[Keyword]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1130,6 +1415,12 @@ or rendered, or if `page_index` is out of range.
 def render_pdf_page_to_png(pdf_bytes: bytes, page_index: int, dpi: int = None, password: str = None) -> bytes
 ```
 
+**Example:**
+
+```python
+result = render_pdf_page_to_png(b"data", 42, dpi=42, password="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1140,6 +1431,7 @@ def render_pdf_page_to_png(pdf_bytes: bytes, page_index: int, dpi: int = None, p
 | `password` | `str \| None` | No | Optional password for encrypted PDFs |
 
 **Returns:** `bytes`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1164,6 +1456,12 @@ Returns an error if the VLM call fails or if image format detection fails.
 def caption_image(image_bytes: bytes, llm_config: LlmConfig, custom_prompt: str = None) -> str
 ```
 
+**Example:**
+
+```python
+result = caption_image(b"data", LlmConfig(), custom_prompt="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1173,6 +1471,7 @@ def caption_image(image_bytes: bytes, llm_config: LlmConfig, custom_prompt: str 
 | `custom_prompt` | `str \| None` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1198,6 +1497,12 @@ or if the VLM call fails.
 def caption_image_file(path: str, llm_config: LlmConfig, custom_prompt: str = None) -> str
 ```
 
+**Example:**
+
+```python
+result = caption_image_file("value", LlmConfig(), custom_prompt="value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1207,6 +1512,7 @@ def caption_image_file(path: str, llm_config: LlmConfig, custom_prompt: str = No
 | `custom_prompt` | `str \| None` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1224,6 +1530,12 @@ Set `check_exists` to `True` to verify the file exists before detection.
 def detect_mime_type(path: str, check_exists: bool) -> str
 ```
 
+**Example:**
+
+```python
+result = detect_mime_type("value", True)
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1232,6 +1544,7 @@ def detect_mime_type(path: str, check_exists: bool) -> str
 | `check_exists` | `bool` | Yes | The check exists |
 
 **Returns:** `str`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1244,6 +1557,12 @@ def detect_mime_type(path: str, check_exists: bool) -> str
 def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
 ```
 
+**Example:**
+
+```python
+result = embed_texts_async([], EmbeddingConfig())
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1252,6 +1571,7 @@ def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[fl
 | `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `list[list[float]]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1267,6 +1587,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```python
 def get_embedding_preset(name: str) -> EmbeddingPreset | None
+```
+
+**Example:**
+
+```python
+result = get_embedding_preset("value")
 ```
 
 **Parameters:**
@@ -1291,6 +1617,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 def list_embedding_presets() -> list[str]
 ```
 
+**Example:**
+
+```python
+result = list_embedding_presets()
+```
+
 **Returns:** `list[str]`
 
 ---
@@ -1308,12 +1640,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```python
 def rerank(query: str, documents: list[str], config: RerankerConfig) -> list[RerankedDocument]
+```
+
+**Example:**
+
+```python
+result = rerank("value", [], RerankerConfig())
 ```
 
 **Parameters:**
@@ -1325,6 +1663,7 @@ def rerank(query: str, documents: list[str], config: RerankerConfig) -> list[Rer
 | `config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `list[RerankedDocument]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1333,12 +1672,18 @@ def rerank(query: str, documents: list[str], config: RerankerConfig) -> list[Rer
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```python
 def rerank_async(query: str, documents: list[str], config: RerankerConfig) -> list[RerankedDocument]
+```
+
+**Example:**
+
+```python
+result = rerank_async("value", [], RerankerConfig())
 ```
 
 **Parameters:**
@@ -1350,6 +1695,7 @@ def rerank_async(query: str, documents: list[str], config: RerankerConfig) -> li
 | `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `list[RerankedDocument]`
+
 **Errors:** Raises `Error`.
 
 ---
@@ -1361,12 +1707,18 @@ Get a reranker preset by name.
 Returns `None` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```python
 def get_reranker_preset(name: str) -> RerankerPreset | None
+```
+
+**Example:**
+
+```python
+result = get_reranker_preset("value")
 ```
 
 **Parameters:**
@@ -1385,12 +1737,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```python
 def list_reranker_presets() -> list[str]
+```
+
+**Example:**
+
+```python
+result = list_reranker_presets()
 ```
 
 **Returns:** `list[str]`
@@ -1648,9 +2006,9 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prepend_heading_context` | `bool` | `False` | When `True` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `False` |
 | `topic_threshold` | `float \| None` | `None` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -1658,6 +2016,14 @@ Use `..the default constructor` when constructing to allow for future field addi
 @staticmethod
 def default() -> ChunkingConfig
 ```
+
+**Example:**
+
+```python
+result = ChunkingConfig.default()
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1716,9 +2082,9 @@ default behavior unchanged.
 | `strip_repeating_text` | `bool` | `True` | Enable the heuristic cross-page repeating text detector. When `True` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `True`. |
 | `include_watermarks` | `bool` | `False` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `False` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -1726,6 +2092,14 @@ default behavior unchanged.
 @staticmethod
 def default() -> ContentFilterConfig
 ```
+
+**Example:**
+
+```python
+result = ContentFilterConfig.default()
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1851,9 +2225,9 @@ Options controlling how two `ExtractionResult` values are compared.
 | `include_embedded` | `bool` | `True` | Include embedded-children changes in the diff. Default: `True`. |
 | `max_content_chars` | `int \| None` | `None` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `None` means no truncation. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -1861,6 +2235,14 @@ Options controlling how two `ExtractionResult` values are compared.
 @staticmethod
 def default() -> DiffOptions
 ```
+
+**Example:**
+
+```python
+result = DiffOptions.default()
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1946,9 +2328,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### extract_bytes()
+###### extract_bytes()
 
 Extract content from a byte array.
 
@@ -1972,7 +2354,25 @@ The pipeline will convert this into the public `ExtractionResult`.
 def extract_bytes(self, content: bytes, mime_type: str, config: ExtractionConfig) -> InternalDocument
 ```
 
-#### extract_file()
+**Example:**
+
+```python
+result = instance.extract_bytes(b"data", "value", ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `bytes` | Yes | Raw document bytes |
+| `mime_type` | `str` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Raises `Error`.
+
+###### extract_file()
 
 Extract content from a file.
 
@@ -1993,7 +2393,25 @@ Same as `extract_bytes`, plus file I/O errors.
 def extract_file(self, path: str, mime_type: str, config: ExtractionConfig) -> InternalDocument
 ```
 
-#### supported_mime_types()
+**Example:**
+
+```python
+result = instance.extract_file("value", "value", ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `str` | Yes | Path to the document file |
+| `mime_type` | `str` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Raises `Error`.
+
+###### supported_mime_types()
 
 Get the list of MIME types supported by this extractor.
 
@@ -2012,14 +2430,22 @@ A slice of MIME type strings.
 def supported_mime_types(self) -> list[str]
 ```
 
-#### priority()
+**Example:**
+
+```python
+result = instance.supported_mime_types()
+```
+
+**Returns:** `list[str]`
+
+###### priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -2037,7 +2463,15 @@ Priority value (default: 50)
 def priority(self) -> int
 ```
 
-#### can_handle()
+**Example:**
+
+```python
+result = instance.priority()
+```
+
+**Returns:** `int`
+
+###### can_handle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2053,6 +2487,21 @@ Defaults to `True` (rely on MIME type matching).
 ```python
 def can_handle(self, path: str, mime_type: str) -> bool
 ```
+
+**Example:**
+
+```python
+result = instance.can_handle("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `str` | Yes | The  path |
+| `mime_type` | `str` | Yes | The  mime type |
+
+**Returns:** `bool`
 
 ---
 
@@ -2130,9 +2579,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `list[DocumentRelationship]` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `list[str]` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### finalize_node_types()
+###### finalize_node_types()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2145,7 +2594,15 @@ construction paths (builder, derivation) call this automatically.
 def finalize_node_types(self) -> None
 ```
 
-#### is_empty()
+**Example:**
+
+```python
+instance.finalize_node_types()
+```
+
+**Returns:** No return value.
+
+###### is_empty()
 
 Check if the document structure is empty.
 
@@ -2155,7 +2612,15 @@ Check if the document structure is empty.
 def is_empty(self) -> bool
 ```
 
-#### default()
+**Example:**
+
+```python
+result = instance.is_empty()
+```
+
+**Returns:** `bool`
+
+###### default()
 
 **Signature:**
 
@@ -2163,6 +2628,14 @@ def is_empty(self) -> bool
 @staticmethod
 def default() -> DocumentStructure
 ```
+
+**Example:**
+
+```python
+result = DocumentStructure.default()
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2405,9 +2878,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### dimensions()
+###### dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2418,7 +2891,15 @@ every vector returned by `embed`.
 def dimensions(self) -> int
 ```
 
-#### embed()
+**Example:**
+
+```python
+result = instance.dimensions()
+```
+
+**Returns:** `int`
+
+###### embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2433,6 +2914,22 @@ backend-specific failures. The dispatcher layers its own validation
 ```python
 def embed(self, texts: list[str]) -> list[list[float]]
 ```
+
+**Example:**
+
+```python
+result = instance.embed([])
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `list[str]` | Yes | The texts |
+
+**Returns:** `list[list[float]]`
+
+**Errors:** Raises `Error`.
 
 ---
 
@@ -2453,9 +2950,9 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 | `max_embed_duration_secs` | `int \| None` | `None` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -2463,6 +2960,14 @@ Requires the `embeddings` feature to be enabled.
 @staticmethod
 def default() -> EmbeddingConfig
 ```
+
+**Example:**
+
+```python
+result = EmbeddingConfig.default()
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2638,7 +3143,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `OcrConfig \| None` | `None` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `False` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `list[int] \| None` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `True`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `chunking` | `ChunkingConfig \| None` | `None` | Text chunking configuration (None = chunking disabled) |
 | `content_filter` | `ContentFilterConfig \| None` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `ImageExtractionConfig \| None` | `None` | Image extraction configuration (None = no image extraction) |
@@ -2676,9 +3181,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `qr_codes` | `bool \| None` | `None` | Enable QR-code detection in extracted images. When `True`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancel_token` | `str \| None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -2687,7 +3192,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 def default() -> ExtractionConfig
 ```
 
-#### needs_image_data()
+**Example:**
+
+```python
+result = ExtractionConfig.default()
+```
+
+**Returns:** `ExtractionConfig`
+
+###### needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2696,7 +3209,7 @@ indicating that image decompression and processing should occur.
 Returns `False` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2712,11 +3225,19 @@ also requested `images` extraction.
 def needs_image_data(self) -> bool
 ```
 
-#### needs_image_processing()
+**Example:**
+
+```python
+result = instance.needs_image_data()
+```
+
+**Returns:** `bool`
+
+###### needs_image_processing()
 
 Returns `True` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2727,6 +3248,14 @@ image I/O and processing when results won't be used.
 ```python
 def needs_image_processing(self) -> bool
 ```
+
+**Example:**
+
+```python
+result = instance.needs_image_processing()
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2784,9 +3313,9 @@ This is the main result type returned by all extraction functions.
 | `formatted_content` | `str \| None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `str \| None` | `None` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### from_ocr()
+###### from_ocr()
 
 Convert from an OCR result.
 
@@ -2796,6 +3325,20 @@ Convert from an OCR result.
 @staticmethod
 def from_ocr(ocr: OcrExtractionResult) -> ExtractionResult
 ```
+
+**Example:**
+
+```python
+result = ExtractionResult.from_ocr(OcrExtractionResult())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2970,9 +3513,9 @@ included in page content.
 | `include_bbox` | `bool` | `True` | Include bounding box information in hierarchy blocks |
 | `ocr_coverage_threshold` | `float \| None` | `None` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -2980,6 +3523,14 @@ included in page content.
 @staticmethod
 def default() -> HierarchyConfig
 ```
+
+**Example:**
+
+```python
+result = HierarchyConfig.default()
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -3027,9 +3578,9 @@ the plain comrak-based renderer.
 | `class_prefix` | `str` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `True` | When `True` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `False` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3037,6 +3588,14 @@ the plain comrak-based renderer.
 @staticmethod
 def default() -> HtmlOutputConfig
 ```
+
+**Example:**
+
+```python
+result = HtmlOutputConfig.default()
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3061,9 +3620,9 @@ Image extraction configuration.
 | `append_ocr_text` | `bool` | `False` | When `True` and `ocr_text_only` is `False`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `ImageOutputFormat` | `ImageOutputFormat.NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3071,6 +3630,14 @@ Image extraction configuration.
 @staticmethod
 def default() -> ImageExtractionConfig
 ```
+
+**Example:**
+
+```python
+result = ImageExtractionConfig.default()
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3122,9 +3689,9 @@ for different document types.
 | `binarization_method` | `str` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invert_colors` | `bool` | `False` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3132,6 +3699,14 @@ for different document types.
 @staticmethod
 def default() -> ImagePreprocessingConfig
 ```
+
+**Example:**
+
+```python
+result = ImagePreprocessingConfig.default()
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3214,9 +3789,9 @@ Keyword extraction configuration.
 | `yake_params` | `YakeParams \| None` | `None` | YAKE-specific tuning parameters. |
 | `rake_params` | `RakeParams \| None` | `None` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3224,6 +3799,14 @@ Keyword extraction configuration.
 @staticmethod
 def default() -> KeywordConfig
 ```
+
+**Example:**
+
+```python
+result = KeywordConfig.default()
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3237,9 +3820,9 @@ Language detection configuration.
 | `min_confidence` | `float` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detect_multiple` | `bool` | `False` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3247,6 +3830,14 @@ Language detection configuration.
 @staticmethod
 def default() -> LanguageDetectionConfig
 ```
+
+**Example:**
+
+```python
+result = LanguageDetectionConfig.default()
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3277,9 +3868,9 @@ is enabled for PDF extraction.
 | `table_model` | `TableModel` | `TableModel.TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3287,6 +3878,14 @@ is enabled for PDF extraction.
 @staticmethod
 def default() -> LayoutDetectionConfig
 ```
+
+**Example:**
+
+```python
+result = LayoutDetectionConfig.default()
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3326,9 +3925,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3339,7 +3938,21 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 def new(config: LlmConfig) -> LlmBackend
 ```
 
-#### detect()
+**Example:**
+
+```python
+result = LlmBackend.new(LlmConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### detect()
 
 **Signature:**
 
@@ -3347,13 +3960,48 @@ def new(config: LlmConfig) -> LlmBackend
 def detect(self, text: str, categories: list[EntityCategory]) -> list[Entity]
 ```
 
-#### detect_with_custom()
+**Example:**
+
+```python
+result = instance.detect("value", [])
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `str` | Yes | The text |
+| `categories` | `list[EntityCategory]` | Yes | The categories |
+
+**Returns:** `list[Entity]`
+
+**Errors:** Raises `Error`.
+
+###### detect_with_custom()
 
 **Signature:**
 
 ```python
 def detect_with_custom(self, text: str, categories: list[EntityCategory], custom_labels: list[str]) -> list[Entity]
 ```
+
+**Example:**
+
+```python
+result = instance.detect_with_custom("value", [], [])
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `str` | Yes | The text |
+| `categories` | `list[EntityCategory]` | Yes | The categories |
+| `custom_labels` | `list[str]` | Yes | The custom labels |
+
+**Returns:** `list[Entity]`
+
+**Errors:** Raises `Error`.
 
 ---
 
@@ -3428,9 +4076,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocr_used` | `bool` | — | Whether OCR was used during extraction. Set to `True` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `False` means native text extraction was used exclusively. |
 | `additional` | `dict[str, dict[str, Any]]` | `{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### is_empty()
+###### is_empty()
 
 Returns `True` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3440,6 +4088,14 @@ additional postprocessor fields are populated.
 ```python
 def is_empty(self) -> bool
 ```
+
+**Example:**
+
+```python
+result = instance.is_empty()
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -3486,9 +4142,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### process_image()
+###### process_image()
 
 Process an image and extract text via OCR.
 
@@ -3502,7 +4158,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3514,7 +4170,24 @@ so multiple backends can coexist in a pipeline without key conflicts.
 def process_image(self, image_bytes: bytes, config: OcrConfig) -> ExtractionResult
 ```
 
-#### process_image_file()
+**Example:**
+
+```python
+result = instance.process_image(b"data", OcrConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `bytes` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Raises `Error`.
+
+###### process_image_file()
 
 Process a file and extract text via OCR.
 
@@ -3531,7 +4204,24 @@ Same as `process_image`, plus file I/O errors.
 def process_image_file(self, path: str, config: OcrConfig) -> ExtractionResult
 ```
 
-#### supports_language()
+**Example:**
+
+```python
+result = instance.process_image_file("value", OcrConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `str` | Yes | Path to the image file |
+| `config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Raises `Error`.
+
+###### supports_language()
 
 Check if this backend supports a given language code.
 
@@ -3545,7 +4235,21 @@ Check if this backend supports a given language code.
 def supports_language(self, lang: str) -> bool
 ```
 
-#### backend_type()
+**Example:**
+
+```python
+result = instance.supports_language("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lang` | `str` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `bool`
+
+###### backend_type()
 
 Get the backend type identifier.
 
@@ -3559,7 +4263,15 @@ The backend type enum value.
 def backend_type(self) -> OcrBackendType
 ```
 
-#### supported_languages()
+**Example:**
+
+```python
+result = instance.backend_type()
+```
+
+**Returns:** `OcrBackendType`
+
+###### supported_languages()
 
 Optional: Get a list of all supported languages.
 
@@ -3571,7 +4283,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 def supported_languages(self) -> list[str]
 ```
 
-#### supports_table_detection()
+**Example:**
+
+```python
+result = instance.supported_languages()
+```
+
+**Returns:** `list[str]`
+
+###### supports_table_detection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3583,7 +4303,15 @@ Defaults to `False`. Override if your backend can detect and extract tables.
 def supports_table_detection(self) -> bool
 ```
 
-#### supports_document_processing()
+**Example:**
+
+```python
+result = instance.supports_table_detection()
+```
+
+**Returns:** `bool`
+
+###### supports_document_processing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3595,7 +4323,15 @@ Defaults to `False`. Override if the backend has optimized document processing.
 def supports_document_processing(self) -> bool
 ```
 
-#### process_document()
+**Example:**
+
+```python
+result = instance.supports_document_processing()
+```
+
+**Returns:** `bool`
+
+###### process_document()
 
 Process a document file directly via OCR.
 
@@ -3606,6 +4342,23 @@ Only called if `supports_document_processing` returns `True`.
 ```python
 def process_document(self, path: str, config: OcrConfig) -> ExtractionResult
 ```
+
+**Example:**
+
+```python
+result = instance.process_document("value", OcrConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `str` | Yes | The  path |
+| `config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Raises `Error`.
 
 ---
 
@@ -3646,9 +4399,9 @@ OCR configuration.
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `dict[str, bytes] \| None` | `None` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3656,6 +4409,14 @@ OCR configuration.
 @staticmethod
 def default() -> OcrConfig
 ```
+
+**Example:**
+
+```python
+result = OcrConfig.default()
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3786,9 +4547,9 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnum_ws_ratio_threshold` | `float` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipeline_min_quality` | `float` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -3796,6 +4557,14 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 @staticmethod
 def default() -> OcrQualityThresholds
 ```
+
+**Example:**
+
+```python
+result = OcrQualityThresholds.default()
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3871,9 +4640,9 @@ Uses a builder pattern for convenient configuration.
 | `drop_score` | `float` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `model_tier` | `str` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### with_cache_dir()
+###### with_cache_dir()
 
 Sets a custom cache directory for model files.
 
@@ -3883,7 +4652,21 @@ Sets a custom cache directory for model files.
 def with_cache_dir(self, path: str) -> PaddleOcrConfig
 ```
 
-#### with_table_detection()
+**Example:**
+
+```python
+result = instance.with_cache_dir("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `str` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_table_detection()
 
 Enables or disables table structure detection.
 
@@ -3893,7 +4676,21 @@ Enables or disables table structure detection.
 def with_table_detection(self, enable: bool) -> PaddleOcrConfig
 ```
 
-#### with_angle_cls()
+**Example:**
+
+```python
+result = instance.with_table_detection(True)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_angle_cls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3903,7 +4700,21 @@ Enables or disables angle classification for rotated text.
 def with_angle_cls(self, enable: bool) -> PaddleOcrConfig
 ```
 
-#### with_det_db_thresh()
+**Example:**
+
+```python
+result = instance.with_angle_cls(True)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_thresh()
 
 Sets the database threshold for text detection.
 
@@ -3913,7 +4724,21 @@ Sets the database threshold for text detection.
 def with_det_db_thresh(self, threshold: float) -> PaddleOcrConfig
 ```
 
-#### with_det_db_box_thresh()
+**Example:**
+
+```python
+result = instance.with_det_db_thresh(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_box_thresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3923,7 +4748,21 @@ Sets the box threshold for text bounding box refinement.
 def with_det_db_box_thresh(self, threshold: float) -> PaddleOcrConfig
 ```
 
-#### with_det_db_unclip_ratio()
+**Example:**
+
+```python
+result = instance.with_det_db_box_thresh(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_db_unclip_ratio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3933,7 +4772,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 def with_det_db_unclip_ratio(self, ratio: float) -> PaddleOcrConfig
 ```
 
-#### with_det_limit_side_len()
+**Example:**
+
+```python
+result = instance.with_det_db_unclip_ratio(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ratio` | `float` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_det_limit_side_len()
 
 Sets the maximum side length for detection images.
 
@@ -3943,7 +4796,21 @@ Sets the maximum side length for detection images.
 def with_det_limit_side_len(self, length: int) -> PaddleOcrConfig
 ```
 
-#### with_rec_batch_num()
+**Example:**
+
+```python
+result = instance.with_det_limit_side_len(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `length` | `int` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_rec_batch_num()
 
 Sets the batch size for recognition inference.
 
@@ -3953,7 +4820,21 @@ Sets the batch size for recognition inference.
 def with_rec_batch_num(self, batch_size: int) -> PaddleOcrConfig
 ```
 
-#### with_drop_score()
+**Example:**
+
+```python
+result = instance.with_rec_batch_num(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `batch_size` | `int` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_drop_score()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3963,7 +4844,21 @@ Sets the minimum recognition confidence threshold.
 def with_drop_score(self, score: float) -> PaddleOcrConfig
 ```
 
-#### with_padding()
+**Example:**
+
+```python
+result = instance.with_drop_score(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `score` | `float` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_padding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3973,7 +4868,21 @@ Sets padding in pixels added around images before detection.
 def with_padding(self, padding: int) -> PaddleOcrConfig
 ```
 
-#### with_model_tier()
+**Example:**
+
+```python
+result = instance.with_padding(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `padding` | `int` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### with_model_tier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3983,7 +4892,21 @@ Sets the model tier controlling detection/recognition model size.
 def with_model_tier(self, tier: str) -> PaddleOcrConfig
 ```
 
-#### default()
+**Example:**
+
+```python
+result = instance.with_model_tier("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tier` | `str` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### default()
 
 Creates a default configuration with English language support.
 
@@ -3993,6 +4916,14 @@ Creates a default configuration with English language support.
 @staticmethod
 def default() -> PaddleOcrConfig
 ```
+
+**Example:**
+
+```python
+result = PaddleOcrConfig.default()
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -4054,9 +4985,9 @@ when page boundaries are available and chunking is configured.
 | `insert_page_markers` | `bool` | `False` | Insert page markers in main content string |
 | `marker_format` | `str` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4064,6 +4995,14 @@ when page boundaries are available and chunking is configured.
 @staticmethod
 def default() -> PageConfig
 ```
+
+**Example:**
+
+```python
+result = PageConfig.default()
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4193,9 +5132,9 @@ PDF-specific configuration.
 | `allow_single_column_tables` | `bool` | `False` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `True`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `False` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `False`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4203,6 +5142,14 @@ PDF-specific configuration.
 @staticmethod
 def default() -> PdfConfig
 ```
+
+**Example:**
+
+```python
+result = PdfConfig.default()
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4236,9 +5183,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### name()
+###### name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4254,7 +5201,15 @@ The name should be:
 def name(self) -> str
 ```
 
-#### version()
+**Example:**
+
+```python
+result = instance.name()
+```
+
+**Returns:** `str`
+
+###### version()
 
 Returns the semantic version of this plugin.
 
@@ -4268,7 +5223,15 @@ Defaults to the kreuzberg crate version.
 def version(self) -> str
 ```
 
-#### initialize()
+**Example:**
+
+```python
+result = instance.version()
+```
+
+**Returns:** `str`
+
+###### initialize()
 
 Initialize the plugin.
 
@@ -4278,7 +5241,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4297,7 +5260,17 @@ Defaults to a no-op for stateless plugins.
 def initialize(self) -> None
 ```
 
-#### shutdown()
+**Example:**
+
+```python
+instance.initialize()
+```
+
+**Returns:** No return value.
+
+**Errors:** Raises `Error`.
+
+###### shutdown()
 
 Shutdown the plugin.
 
@@ -4308,7 +5281,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4326,7 +5299,17 @@ Defaults to a no-op for stateless plugins.
 def shutdown(self) -> None
 ```
 
-#### description()
+**Example:**
+
+```python
+instance.shutdown()
+```
+
+**Returns:** No return value.
+
+**Errors:** Raises `Error`.
+
+###### description()
 
 Optional plugin description for debugging and logging.
 
@@ -4338,7 +5321,15 @@ Defaults to empty string if not overridden.
 def description(self) -> str
 ```
 
-#### author()
+**Example:**
+
+```python
+result = instance.description()
+```
+
+**Returns:** `str`
+
+###### author()
 
 Optional plugin author information.
 
@@ -4349,6 +5340,14 @@ Defaults to empty string if not overridden.
 ```python
 def author(self) -> str
 ```
+
+**Example:**
+
+```python
+result = instance.author()
+```
+
+**Returns:** `str`
 
 ---
 
@@ -4384,9 +5383,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### process()
+###### process()
 
 Process an extraction result.
 
@@ -4405,15 +5404,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4435,7 +5434,24 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 def process(self, result: ExtractionResult, config: ExtractionConfig) -> None
 ```
 
-#### processing_stage()
+**Example:**
+
+```python
+instance.process(ExtractionResult(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Raises `Error`.
+
+###### processing_stage()
 
 Get the processing stage for this post-processor.
 
@@ -4451,7 +5467,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 def processing_stage(self) -> ProcessingStage
 ```
 
-#### should_process()
+**Example:**
+
+```python
+result = instance.processing_stage()
+```
+
+**Returns:** `ProcessingStage`
+
+###### should_process()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4468,7 +5492,22 @@ Defaults to `True` (always run).
 def should_process(self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 
-#### estimated_duration_ms()
+**Example:**
+
+```python
+result = instance.should_process(ExtractionResult(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### estimated_duration_ms()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4484,7 +5523,21 @@ Estimated processing time in milliseconds.
 def estimated_duration_ms(self, result: ExtractionResult) -> int
 ```
 
-#### priority()
+**Example:**
+
+```python
+result = instance.estimated_duration_ms(ExtractionResult())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `int`
+
+###### priority()
 
 Execution priority within the processing stage.
 
@@ -4497,6 +5550,14 @@ for high-priority processors that should run early in their stage.
 ```python
 def priority(self) -> int
 ```
+
+**Example:**
+
+```python
+result = instance.priority()
+```
+
+**Returns:** `int`
 
 ---
 
@@ -4512,9 +5573,9 @@ Post-processor configuration.
 | `enabled_set` | `list[str] \| None` | `None` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabled_set` | `list[str] \| None` | `None` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4522,6 +5583,14 @@ Post-processor configuration.
 @staticmethod
 def default() -> PostProcessorConfig
 ```
+
+**Example:**
+
+```python
+result = PostProcessorConfig.default()
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4647,9 +5716,9 @@ RAKE-specific parameters.
 | `min_word_length` | `int` | `1` | Minimum word length to consider (default: 1). |
 | `max_words_per_phrase` | `int` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4657,6 +5726,14 @@ RAKE-specific parameters.
 @staticmethod
 def default() -> RakeParams
 ```
+
+**Example:**
+
+```python
+result = RakeParams.default()
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4692,9 +5769,9 @@ Configuration for the redaction post-processor.
 | `custom_terms` | `list[RedactionTerm]` | `[]` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `custom_patterns` | `list[RedactionPattern]` | `[]` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4703,7 +5780,15 @@ Configuration for the redaction post-processor.
 def default() -> RedactionConfig
 ```
 
-#### validate()
+**Example:**
+
+```python
+result = RedactionConfig.default()
+```
+
+**Returns:** `RedactionConfig`
+
+###### validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4718,6 +5803,16 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```python
 def validate(self) -> None
 ```
+
+**Example:**
+
+```python
+instance.validate()
+```
+
+**Returns:** No return value.
+
+**Errors:** Raises `Error`.
 
 ---
 
@@ -4749,9 +5844,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `pattern` | `str` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `True`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### labeled()
+###### labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4761,6 +5856,21 @@ Build a pattern with the given label (case-insensitive by default).
 @staticmethod
 def labeled(label: str, pattern: str) -> RedactionPattern
 ```
+
+**Example:**
+
+```python
+result = RedactionPattern.labeled("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `str` | Yes | The label |
+| `pattern` | `str` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4794,9 +5904,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `value` | `str` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `True`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### literal()
+###### literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4807,7 +5917,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 def literal(value: str) -> RedactionTerm
 ```
 
-#### labeled()
+**Example:**
+
+```python
+result = RedactionTerm.literal("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `str` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### labeled()
 
 Build a term with a custom label.
 
@@ -4817,6 +5941,21 @@ Build a term with a custom label.
 @staticmethod
 def labeled(label: str, value: str) -> RedactionTerm
 ```
+
+**Example:**
+
+```python
+result = RedactionTerm.labeled("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `str` | Yes | The label |
+| `value` | `str` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4838,9 +5977,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### render()
+###### render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4858,6 +5997,22 @@ Returns an error if rendering fails.
 def render(self, doc: InternalDocument) -> str
 ```
 
+**Example:**
+
+```python
+result = instance.render(InternalDocument())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `str`
+
+**Errors:** Raises `Error`.
+
 ---
 
 #### RerankedDocument
@@ -4867,7 +6022,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4923,11 +6078,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### rerank()
+###### rerank()
 
 Score a list of documents against a query.
 
@@ -4946,6 +6101,23 @@ against `documents.len()` before sorting.
 def rerank(self, query: str, documents: list[str]) -> list[float]
 ```
 
+**Example:**
+
+```python
+result = instance.rerank("value", [])
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `str` | Yes | The query |
+| `documents` | `list[str]` | Yes | The documents |
+
+**Returns:** `list[float]`
+
+**Errors:** Raises `Error`.
+
 ---
 
 #### RerankerConfig
@@ -4955,7 +6127,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4967,9 +6139,9 @@ Since v5.0.
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `None` (auto-select per platform). |
 | `max_rerank_duration_secs` | `int \| None` | `None` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4977,6 +6149,14 @@ Since v5.0.
 @staticmethod
 def default() -> RerankerConfig
 ```
+
+**Example:**
+
+```python
+result = RerankerConfig.default()
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4987,7 +6167,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -5035,9 +6215,9 @@ while still supporting legitimate documents.
 | `max_xml_depth` | `int` | `1024` | Maximum XML depth (100 levels) |
 | `max_table_cells` | `int` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5045,6 +6225,14 @@ while still supporting legitimate documents.
 @staticmethod
 def default() -> SecurityLimits
 ```
+
+**Example:**
+
+```python
+result = SecurityLimits.default()
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -5071,9 +6259,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `max_request_body_bytes` | `int` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `int` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5082,7 +6270,15 @@ including host/port settings, CORS configuration, and upload limits.
 def default() -> ServerConfig
 ```
 
-#### listen_addr()
+**Example:**
+
+```python
+result = ServerConfig.default()
+```
+
+**Returns:** `ServerConfig`
+
+###### listen_addr()
 
 Get the server listen address (host:port).
 
@@ -5092,7 +6288,15 @@ Get the server listen address (host:port).
 def listen_addr(self) -> str
 ```
 
-#### cors_allows_all()
+**Example:**
+
+```python
+result = instance.listen_addr()
+```
+
+**Returns:** `str`
+
+###### cors_allows_all()
 
 Check if CORS allows all origins.
 
@@ -5105,7 +6309,15 @@ are allowed. Returns `False` if specific origins are configured.
 def cors_allows_all(self) -> bool
 ```
 
-#### is_origin_allowed()
+**Example:**
+
+```python
+result = instance.cors_allows_all()
+```
+
+**Returns:** `bool`
+
+###### is_origin_allowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5120,7 +6332,21 @@ Returns `True` if:
 def is_origin_allowed(self, origin: str) -> bool
 ```
 
-#### max_request_body_mb()
+**Example:**
+
+```python
+result = instance.is_origin_allowed("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `origin` | `str` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `bool`
+
+###### max_request_body_mb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5130,7 +6356,15 @@ Get maximum request body size in megabytes (rounded up).
 def max_request_body_mb(self) -> int
 ```
 
-#### max_multipart_field_mb()
+**Example:**
+
+```python
+result = instance.max_request_body_mb()
+```
+
+**Returns:** `int`
+
+###### max_multipart_field_mb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5139,6 +6373,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```python
 def max_multipart_field_mb(self) -> int
 ```
+
+**Example:**
+
+```python
+result = instance.max_multipart_field_mb()
+```
+
+**Returns:** `int`
 
 ---
 
@@ -5226,9 +6468,9 @@ Used via `ImageExtractionConfig.svg`.
 | `sanitize` | `bool` | `True` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `True`. |
 | `render_dpi` | `float` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5236,6 +6478,14 @@ Used via `ImageExtractionConfig.svg`.
 @staticmethod
 def default() -> SvgOptions
 ```
+
+**Example:**
+
+```python
+result = SvgOptions.default()
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5328,9 +6578,9 @@ for specific document types (invoices, handwriting, etc.).
 | `textord_space_size_is_variable` | `bool` | `True` | Variable-width space detection |
 | `thresholding_method` | `bool` | `False` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5338,6 +6588,14 @@ for specific document types (invoices, handwriting, etc.).
 @staticmethod
 def default() -> TesseractConfig
 ```
+
+**Example:**
+
+```python
+result = TesseractConfig.default()
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5397,9 +6655,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a fresh counter with no previous state.
 
@@ -5409,6 +6667,14 @@ Create a fresh counter with no previous state.
 @staticmethod
 def new() -> TokenCounter
 ```
+
+**Example:**
+
+```python
+result = TokenCounter.new()
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5430,9 +6696,9 @@ Configuration for the token-reduction pipeline.
 | `target_reduction` | `float \| None` | `None` | Target fraction of text to retain (0.0–1.0); `None` = no fixed target. |
 | `enable_semantic_clustering` | `bool` | `False` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5440,6 +6706,14 @@ Configuration for the token-reduction pipeline.
 @staticmethod
 def default() -> TokenReductionConfig
 ```
+
+**Example:**
+
+```python
+result = TokenReductionConfig.default()
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5452,9 +6726,9 @@ Token reduction configuration.
 | `mode` | `str` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserve_important_words` | `bool` | `True` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5462,6 +6736,14 @@ Token reduction configuration.
 @staticmethod
 def default() -> TokenReductionOptions
 ```
+
+**Example:**
+
+```python
+result = TokenReductionOptions.default()
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5498,9 +6780,9 @@ model = "tiny"
 | `allow_network` | `bool` | `True` | Allow network access to download models from Hugging Face Hub. When `False`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verify_hash` | `bool` | `True` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5508,6 +6790,14 @@ model = "tiny"
 @staticmethod
 def default() -> TranscriptionConfig
 ```
+
+**Example:**
+
+```python
+result = TranscriptionConfig.default()
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5571,9 +6861,9 @@ docstrings = true
 | `groups` | `list[str] \| None` | `None` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5581,6 +6871,14 @@ docstrings = true
 @staticmethod
 def default() -> TreeSitterConfig
 ```
+
+**Example:**
+
+```python
+result = TreeSitterConfig.default()
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5602,9 +6900,9 @@ Controls which analysis features are enabled when extracting code files.
 | `chunk_max_size` | `int \| None` | `None` | Maximum chunk size in bytes. `None` disables chunking. |
 | `content_mode` | `CodeContentMode` | `CodeContentMode.CHUNKS` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5612,6 +6910,14 @@ Controls which analysis features are enabled when extracting code files.
 @staticmethod
 def default() -> TreeSitterProcessConfig
 ```
+
+**Example:**
+
+```python
+result = TreeSitterProcessConfig.default()
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5642,9 +6948,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### validate()
+###### validate()
 
 Validate an extraction result.
 
@@ -5661,7 +6967,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5686,7 +6992,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5709,7 +7015,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5734,7 +7040,24 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 def validate(self, result: ExtractionResult, config: ExtractionConfig) -> None
 ```
 
-#### should_validate()
+**Example:**
+
+```python
+instance.validate(ExtractionResult(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Raises `Error`.
+
+###### should_validate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5751,7 +7074,22 @@ Defaults to `True` (always run).
 def should_validate(self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 
-#### priority()
+**Example:**
+
+```python
+result = instance.should_validate(ExtractionResult(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### priority()
 
 Optional: Get the validation priority.
 
@@ -5769,6 +7107,14 @@ Priority value (higher = runs earlier).
 ```python
 def priority(self) -> int
 ```
+
+**Example:**
+
+```python
+result = instance.priority()
+```
+
+**Returns:** `int`
 
 ---
 
@@ -5828,9 +7174,9 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `window_size` | `int` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5838,6 +7184,14 @@ YAKE-specific parameters.
 @staticmethod
 def default() -> YakeParams
 ```
+
+**Example:**
+
+```python
+result = YakeParams.default()
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -6061,7 +7415,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6810,7 +8164,7 @@ and provides context for debugging.
 | `LockPoisoned(KreuzbergError)` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat(KreuzbergError)` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding(KreuzbergError)` | The embedding model or embedding pipeline returned an error. |
-| `Reranking(KreuzbergError)` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `Reranking(KreuzbergError)` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription(KreuzbergError)` | Audio/video transcription failed. |
 | `Timeout(KreuzbergError)` | The extraction operation exceeded the configured time limit. |
 | `Cancelled(KreuzbergError)` | The extraction was cancelled via a `CancellationToken`. |

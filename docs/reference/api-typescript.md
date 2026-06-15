@@ -33,6 +33,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 function extractBytes(content: Buffer, mimeType: string, config: ExtractionConfig): Promise<ExtractionResult>
 ```
 
+**Example:**
+
+```typescript
+const result = await extractBytes(Buffer.from("data"), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +48,7 @@ function extractBytes(content: Buffer, mimeType: string, config: ExtractionConfi
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -74,6 +81,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 function extractFile(path: string, mimeType?: string, config: ExtractionConfig): Promise<ExtractionResult>
 ```
 
+**Example:**
+
+```typescript
+const result = await extractFile("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +96,7 @@ function extractFile(path: string, mimeType?: string, config: ExtractionConfig):
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -106,6 +120,12 @@ use a truly synchronous extraction approach instead.
 function extractFileSync(path: string, mimeType?: string, config: ExtractionConfig): ExtractionResult
 ```
 
+**Example:**
+
+```typescript
+const result = extractFileSync("value", "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +135,7 @@ function extractFileSync(path: string, mimeType?: string, config: ExtractionConf
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -135,6 +156,12 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 function extractBytesSync(content: Buffer, mimeType: string, config: ExtractionConfig): ExtractionResult
 ```
 
+**Example:**
+
+```typescript
+const result = extractBytesSync(Buffer.from("data"), "value", new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +171,7 @@ function extractBytesSync(content: Buffer, mimeType: string, config: ExtractionC
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -161,6 +189,12 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 function batchExtractFilesSync(items: Array<BatchFileItem>, config: ExtractionConfig): Array<ExtractionResult>
 ```
 
+**Example:**
+
+```typescript
+const result = batchExtractFilesSync([], new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +203,7 @@ function batchExtractFilesSync(items: Array<BatchFileItem>, config: ExtractionCo
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `Array<ExtractionResult>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -188,6 +223,12 @@ that iterates through items and calls `extract_bytes_sync()`.
 function batchExtractBytesSync(items: Array<BatchBytesItem>, config: ExtractionConfig): Array<ExtractionResult>
 ```
 
+**Example:**
+
+```typescript
+const result = batchExtractBytesSync([], new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +237,7 @@ function batchExtractBytesSync(items: Array<BatchBytesItem>, config: ExtractionC
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `Array<ExtractionResult>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -237,6 +279,12 @@ Per-file configuration overrides:
 function batchExtractFiles(items: Array<BatchFileItem>, config: ExtractionConfig): Promise<Array<ExtractionResult>>
 ```
 
+**Example:**
+
+```typescript
+const result = await batchExtractFiles([], new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +293,7 @@ function batchExtractFiles(items: Array<BatchFileItem>, config: ExtractionConfig
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `Array<ExtractionResult>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -280,6 +329,12 @@ Per-item configuration overrides:
 function batchExtractBytes(items: Array<BatchBytesItem>, config: ExtractionConfig): Promise<Array<ExtractionResult>>
 ```
 
+**Example:**
+
+```typescript
+const result = await batchExtractBytes([], new ExtractionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +343,7 @@ function batchExtractBytes(items: Array<BatchBytesItem>, config: ExtractionConfi
 | `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `Array<ExtractionResult>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -316,6 +372,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 function detectMimeTypeFromBytes(content: Buffer): string
 ```
 
+**Example:**
+
+```typescript
+const result = detectMimeTypeFromBytes(Buffer.from("data"));
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +385,7 @@ function detectMimeTypeFromBytes(content: Buffer): string
 | `content` | `Buffer` | Yes | Raw file bytes |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -343,6 +406,12 @@ A vector of file extensions (without leading dot) for the MIME type.
 function getExtensionsForMime(mimeType: string): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = getExtensionsForMime("value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +419,7 @@ function getExtensionsForMime(mimeType: string): Array<string>
 | `mimeType` | `string` | Yes | The MIME type to look up |
 
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -373,6 +443,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```typescript
 function listSupportedFormats(): Array<SupportedFormat>
+```
+
+**Example:**
+
+```typescript
+const result = listSupportedFormats();
 ```
 
 **Returns:** `Array<SupportedFormat>`
@@ -406,6 +482,12 @@ from the four corner points of the grid.
 function detectQrCodes(imageBytes: Buffer, formatHint?: string): Array<QrCode>
 ```
 
+**Example:**
+
+```typescript
+const result = detectQrCodes(Buffer.from("data"), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +516,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 function clearEmbeddingBackends(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearEmbeddingBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -452,7 +541,14 @@ bindings.
 function listEmbeddingBackends(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listEmbeddingBackends();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -467,7 +563,14 @@ List names of all registered document extractors.
 function listDocumentExtractors(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listDocumentExtractors();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -489,7 +592,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 function clearDocumentExtractors(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearDocumentExtractors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -510,7 +620,14 @@ A vector of OCR backend names.
 function listOcrBackends(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listOcrBackends();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -532,7 +649,14 @@ Removes all OCR backends and calls their `shutdown()` methods.
 function clearOcrBackends(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearOcrBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -553,7 +677,14 @@ safe to call on any target.
 function registerBuiltin(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+registerBuiltin();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -576,7 +707,14 @@ global registry.
 function listPostProcessors(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listPostProcessors();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -591,7 +729,14 @@ Remove all registered post-processors.
 function clearPostProcessors(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearPostProcessors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -610,7 +755,14 @@ Returns an error if the registry lock is poisoned.
 function listRenderers(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listRenderers();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -633,7 +785,14 @@ Returns an error if the registry lock is poisoned.
 function clearRenderers(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearRenderers();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -649,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +816,14 @@ Since v5.0.
 function clearRerankerBackends(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearRerankerBackends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -669,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +843,14 @@ Since v5.0.
 function listRerankerBackends(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listRerankerBackends();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -692,7 +865,14 @@ List names of all registered validators.
 function listValidators(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listValidators();
+```
+
 **Returns:** `Array<string>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -707,7 +887,14 @@ Remove all registered validators.
 function clearValidators(): void
 ```
 
-**Returns:** `void`
+**Example:**
+
+```typescript
+clearValidators();
+```
+
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -731,6 +918,12 @@ a half-populated vector.
 function classifyPages(result: ExtractionResult, config: PageClassificationConfig): Promise<void>
 ```
 
+**Example:**
+
+```typescript
+await classifyPages(new ExtractionResult(), new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +931,8 @@ function classifyPages(result: ExtractionResult, config: PageClassificationConfi
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -762,6 +956,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 function classifyText(text: string, config: PageClassificationConfig): Promise<Array<ClassificationLabel>>
 ```
 
+**Example:**
+
+```typescript
+const result = await classifyText("value", new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +970,7 @@ function classifyText(text: string, config: PageClassificationConfig): Promise<A
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `Array<ClassificationLabel>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -799,6 +1000,12 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 function classifyDocument(pages: Array<string>, config: PageClassificationConfig): Promise<Array<ClassificationLabel>>
 ```
 
+**Example:**
+
+```typescript
+const result = await classifyDocument([], new PageClassificationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1014,7 @@ function classifyDocument(pages: Array<string>, config: PageClassificationConfig
 | `config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `Array<ClassificationLabel>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -824,6 +1032,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 function downloadModel(name: string, cacheDir?: string): string
 ```
 
+**Example:**
+
+```typescript
+const result = downloadModel("value", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1046,7 @@ function downloadModel(name: string, cacheDir?: string): string
 | `cacheDir` | `string \| null` | No | The cache dir |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -846,6 +1061,12 @@ Pinned default NER model identifier.
 function defaultModelName(): string
 ```
 
+**Example:**
+
+```typescript
+const result = defaultModelName();
+```
+
 **Returns:** `string`
 
 ---
@@ -858,6 +1079,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```typescript
 function knownModels(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = knownModels();
 ```
 
 **Returns:** `Array<string>`
@@ -875,6 +1102,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 function redact(result: ExtractionResult, config: RedactionConfig): Promise<void>
 ```
 
+**Example:**
+
+```typescript
+await redact(new ExtractionResult(), new RedactionConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1115,8 @@ function redact(result: ExtractionResult, config: RedactionConfig): Promise<void
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -895,6 +1129,12 @@ Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN).
 
 ```typescript
 function findAll(text: string): Array<PatternMatch>
+```
+
+**Example:**
+
+```typescript
+const result = findAll("value");
 ```
 
 **Parameters:**
@@ -920,6 +1160,12 @@ they must be supplied by a NER backend through the redaction engine.
 
 ```typescript
 function scanText(text: string, categories: Array<PiiCategory>): Array<PatternMatch>
+```
+
+**Example:**
+
+```typescript
+const result = scanText("value", []);
 ```
 
 **Parameters:**
@@ -948,6 +1194,12 @@ pass `null` (or an unknown code) to fall back to English.
 function summarize(text: string, language?: string, maxTokens?: number): string | null
 ```
 
+**Example:**
+
+```typescript
+const result = summarize("value", "value", 42);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -969,6 +1221,12 @@ callers).
 
 ```typescript
 function tokenCount(text: string): number
+```
+
+**Example:**
+
+```typescript
+const result = tokenCount("value");
 ```
 
 **Parameters:**
@@ -996,6 +1254,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 function translateResult(result: ExtractionResult, config: TranslationConfig): Promise<void>
 ```
 
+**Example:**
+
+```typescript
+await translateResult(new ExtractionResult(), new TranslationConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1003,7 +1267,8 @@ function translateResult(result: ExtractionResult, config: TranslationConfig): P
 | `result` | `ExtractionResult` | Yes | The extraction result |
 | `config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1019,6 +1284,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```typescript
 function compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions): ExtractionDiff
+```
+
+**Example:**
+
+```typescript
+const result = compare(new ExtractionResult(), new ExtractionResult(), new DiffOptions());
 ```
 
 **Parameters:**
@@ -1057,6 +1328,12 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 function extractRegionWithVlm(imageBytes: Buffer, imageMime: string, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt?: string): Promise<string>
 ```
 
+**Example:**
+
+```typescript
+const result = await extractRegionWithVlm(Buffer.from("data"), "value", new RegionKind(), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1068,6 +1345,7 @@ function extractRegionWithVlm(imageBytes: Buffer, imageMime: string, regionKind:
 | `customPrompt` | `string \| null` | No | The custom prompt |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1096,6 +1374,12 @@ Returns an error if:
 function extractKeywords(text: string, config: KeywordConfig): Array<Keyword>
 ```
 
+**Example:**
+
+```typescript
+const result = extractKeywords("value", new KeywordConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1104,6 +1388,7 @@ function extractKeywords(text: string, config: KeywordConfig): Array<Keyword>
 | `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `Array<Keyword>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1130,6 +1415,12 @@ or rendered, or if `page_index` is out of range.
 function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, dpi?: number, password?: string): Buffer
 ```
 
+**Example:**
+
+```typescript
+const result = renderPdfPageToPng(Buffer.from("data"), 42, 42, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1140,6 +1431,7 @@ function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, dpi?: number, p
 | `password` | `string \| null` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Buffer`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1164,6 +1456,12 @@ Returns an error if the VLM call fails or if image format detection fails.
 function captionImage(imageBytes: Buffer, llmConfig: LlmConfig, customPrompt?: string): Promise<string>
 ```
 
+**Example:**
+
+```typescript
+const result = await captionImage(Buffer.from("data"), new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1173,6 +1471,7 @@ function captionImage(imageBytes: Buffer, llmConfig: LlmConfig, customPrompt?: s
 | `customPrompt` | `string \| null` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1198,6 +1497,12 @@ or if the VLM call fails.
 function captionImageFile(path: string, llmConfig: LlmConfig, customPrompt?: string): Promise<string>
 ```
 
+**Example:**
+
+```typescript
+const result = await captionImageFile("value", new LlmConfig(), "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1207,6 +1512,7 @@ function captionImageFile(path: string, llmConfig: LlmConfig, customPrompt?: str
 | `customPrompt` | `string \| null` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1224,6 +1530,12 @@ Set `check_exists` to `true` to verify the file exists before detection.
 function detectMimeType(path: string, checkExists: boolean): string
 ```
 
+**Example:**
+
+```typescript
+const result = detectMimeType("value", true);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1232,6 +1544,7 @@ function detectMimeType(path: string, checkExists: boolean): string
 | `checkExists` | `boolean` | Yes | The check exists |
 
 **Returns:** `string`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1244,6 +1557,12 @@ function detectMimeType(path: string, checkExists: boolean): string
 function embedTextsAsync(texts: Array<string>, config: EmbeddingConfig): Promise<Array<Array<number>>>
 ```
 
+**Example:**
+
+```typescript
+const result = await embedTextsAsync([], new EmbeddingConfig());
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1252,6 +1571,7 @@ function embedTextsAsync(texts: Array<string>, config: EmbeddingConfig): Promise
 | `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `Array<Array<number>>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1267,6 +1587,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```typescript
 function getEmbeddingPreset(name: string): EmbeddingPreset | null
+```
+
+**Example:**
+
+```typescript
+const result = getEmbeddingPreset("value");
 ```
 
 **Parameters:**
@@ -1291,6 +1617,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 function listEmbeddingPresets(): Array<string>
 ```
 
+**Example:**
+
+```typescript
+const result = listEmbeddingPresets();
+```
+
 **Returns:** `Array<string>`
 
 ---
@@ -1308,12 +1640,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```typescript
 function rerank(query: string, documents: Array<string>, config: RerankerConfig): Array<RerankedDocument>
+```
+
+**Example:**
+
+```typescript
+const result = rerank("value", [], new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1325,6 +1663,7 @@ function rerank(query: string, documents: Array<string>, config: RerankerConfig)
 | `config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `Array<RerankedDocument>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1333,12 +1672,18 @@ function rerank(query: string, documents: Array<string>, config: RerankerConfig)
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```typescript
 function rerankAsync(query: string, documents: Array<string>, config: RerankerConfig): Promise<Array<RerankedDocument>>
+```
+
+**Example:**
+
+```typescript
+const result = await rerankAsync("value", [], new RerankerConfig());
 ```
 
 **Parameters:**
@@ -1350,6 +1695,7 @@ function rerankAsync(query: string, documents: Array<string>, config: RerankerCo
 | `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `Array<RerankedDocument>`
+
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -1361,12 +1707,18 @@ Get a reranker preset by name.
 Returns `null` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```typescript
 function getRerankerPreset(name: string): RerankerPreset | null
+```
+
+**Example:**
+
+```typescript
+const result = getRerankerPreset("value");
 ```
 
 **Parameters:**
@@ -1385,12 +1737,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```typescript
 function listRerankerPresets(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = listRerankerPresets();
 ```
 
 **Returns:** `Array<string>`
@@ -1648,15 +2006,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prependHeadingContext` | `boolean` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topicThreshold` | `number \| null` | `null` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): ChunkingConfig
 ```
+
+**Example:**
+
+```typescript
+const result = ChunkingConfig.default();
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1715,15 +2081,23 @@ default behavior unchanged.
 | `stripRepeatingText` | `boolean` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `includeWatermarks` | `boolean` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): ContentFilterConfig
 ```
+
+**Example:**
+
+```typescript
+const result = ContentFilterConfig.default();
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1849,15 +2223,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `includeEmbedded` | `boolean` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `maxContentChars` | `number \| null` | `null` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `null` means no truncation. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): DiffOptions
 ```
+
+**Example:**
+
+```typescript
+const result = DiffOptions.default();
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1943,9 +2325,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### extractBytes()
+###### extractBytes()
 
 Extract content from a byte array.
 
@@ -1966,10 +2348,28 @@ The pipeline will convert this into the public `ExtractionResult`.
 **Signature:**
 
 ```typescript
-extractBytes(content: Buffer, mimeType: string, config: ExtractionConfig): InternalDocument
+extractBytes(content: Buffer, mimeType: string, config: ExtractionConfig): Promise<InternalDocument>
 ```
 
-#### extractFile()
+**Example:**
+
+```typescript
+const result = await instance.extractBytes(Buffer.from("data"), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Buffer` | Yes | Raw document bytes |
+| `mimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### extractFile()
 
 Extract content from a file.
 
@@ -1987,10 +2387,28 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```typescript
-extractFile(path: string, mimeType: string, config: ExtractionConfig): InternalDocument
+extractFile(path: string, mimeType: string, config: ExtractionConfig): Promise<InternalDocument>
 ```
 
-#### supportedMimeTypes()
+**Example:**
+
+```typescript
+const result = await instance.extractFile("value", "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `string` | Yes | Path to the document file |
+| `mimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### supportedMimeTypes()
 
 Get the list of MIME types supported by this extractor.
 
@@ -2009,14 +2427,22 @@ A slice of MIME type strings.
 supportedMimeTypes(): Array<string>
 ```
 
-#### priority()
+**Example:**
+
+```typescript
+const result = instance.supportedMimeTypes();
+```
+
+**Returns:** `Array<string>`
+
+###### priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -2034,7 +2460,15 @@ Priority value (default: 50)
 priority(): number
 ```
 
-#### canHandle()
+**Example:**
+
+```typescript
+const result = instance.priority();
+```
+
+**Returns:** `number`
+
+###### canHandle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2050,6 +2484,21 @@ Defaults to `true` (rely on MIME type matching).
 ```typescript
 canHandle(path: string, mimeType: string): boolean
 ```
+
+**Example:**
+
+```typescript
+const result = instance.canHandle("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `string` | Yes | The  path |
+| `mimeType` | `string` | Yes | The  mime type |
+
+**Returns:** `boolean`
 
 ---
 
@@ -2127,9 +2576,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `Array<DocumentRelationship>` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `nodeTypes` | `Array<string>` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### finalizeNodeTypes()
+###### finalizeNodeTypes()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2142,7 +2591,15 @@ construction paths (builder, derivation) call this automatically.
 finalizeNodeTypes(): void
 ```
 
-#### isEmpty()
+**Example:**
+
+```typescript
+instance.finalizeNodeTypes();
+```
+
+**Returns:** No return value.
+
+###### isEmpty()
 
 Check if the document structure is empty.
 
@@ -2152,13 +2609,29 @@ Check if the document structure is empty.
 isEmpty(): boolean
 ```
 
-#### default()
+**Example:**
+
+```typescript
+const result = instance.isEmpty();
+```
+
+**Returns:** `boolean`
+
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): DocumentStructure
 ```
+
+**Example:**
+
+```typescript
+const result = DocumentStructure.default();
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2401,9 +2874,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### dimensions()
+###### dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2414,7 +2887,15 @@ every vector returned by `embed`.
 dimensions(): number
 ```
 
-#### embed()
+**Example:**
+
+```typescript
+const result = instance.dimensions();
+```
+
+**Returns:** `number`
+
+###### embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2427,8 +2908,24 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```typescript
-embed(texts: Array<string>): Array<Array<number>>
+embed(texts: Array<string>): Promise<Array<Array<number>>>
 ```
+
+**Example:**
+
+```typescript
+const result = await instance.embed([]);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Array<string>` | Yes | The texts |
+
+**Returns:** `Array<Array<number>>`
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -2449,15 +2946,23 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 | `maxEmbedDurationSecs` | `number \| null` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): EmbeddingConfig
 ```
+
+**Example:**
+
+```typescript
+const result = EmbeddingConfig.default();
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2633,7 +3138,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `OcrConfig \| null` | `null` | OCR configuration (None = OCR disabled) |
 | `forceOcr` | `boolean` | `false` | Force OCR even for searchable PDFs |
 | `forceOcrPages` | `Array<number> \| null` | `null` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disableOcr` | `boolean` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `disableOcr` | `boolean` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `chunking` | `ChunkingConfig \| null` | `null` | Text chunking configuration (None = chunking disabled) |
 | `contentFilter` | `ContentFilterConfig \| null` | `null` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `ImageExtractionConfig \| null` | `null` | Image extraction configuration (None = no image extraction) |
@@ -2671,9 +3176,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `qrCodes` | `boolean \| null` | `null` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancelToken` | `string \| null` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -2681,7 +3186,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 static default(): ExtractionConfig
 ```
 
-#### needsImageData()
+**Example:**
+
+```typescript
+const result = ExtractionConfig.default();
+```
+
+**Returns:** `ExtractionConfig`
+
+###### needsImageData()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2690,7 +3203,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2706,11 +3219,19 @@ also requested `images` extraction.
 needsImageData(): boolean
 ```
 
-#### needsImageProcessing()
+**Example:**
+
+```typescript
+const result = instance.needsImageData();
+```
+
+**Returns:** `boolean`
+
+###### needsImageProcessing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2721,6 +3242,14 @@ image I/O and processing when results won't be used.
 ```typescript
 needsImageProcessing(): boolean
 ```
+
+**Example:**
+
+```typescript
+const result = instance.needsImageProcessing();
+```
+
+**Returns:** `boolean`
 
 ---
 
@@ -2778,9 +3307,9 @@ This is the main result type returned by all extraction functions.
 | `formattedContent` | `string \| null` | `null` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocrInternalDocument` | `string \| null` | `null` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### fromOcr()
+###### fromOcr()
 
 Convert from an OCR result.
 
@@ -2789,6 +3318,20 @@ Convert from an OCR result.
 ```typescript
 static fromOcr(ocr: OcrExtractionResult): ExtractionResult
 ```
+
+**Example:**
+
+```typescript
+const result = ExtractionResult.fromOcr(new OcrExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2963,15 +3506,23 @@ included in page content.
 | `includeBbox` | `boolean` | `true` | Include bounding box information in hierarchy blocks |
 | `ocrCoverageThreshold` | `number \| null` | `null` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): HierarchyConfig
 ```
+
+**Example:**
+
+```typescript
+const result = HierarchyConfig.default();
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -3019,15 +3570,23 @@ the plain comrak-based renderer.
 | `classPrefix` | `string` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embedCss` | `boolean` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): HtmlOutputConfig
 ```
+
+**Example:**
+
+```typescript
+const result = HtmlOutputConfig.default();
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3052,15 +3611,23 @@ Image extraction configuration.
 | `appendOcrText` | `boolean` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `outputFormat` | `ImageOutputFormat` | `ImageOutputFormat.Native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): ImageExtractionConfig
 ```
+
+**Example:**
+
+```typescript
+const result = ImageExtractionConfig.default();
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3112,15 +3679,23 @@ for different document types.
 | `binarizationMethod` | `string` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invertColors` | `boolean` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): ImagePreprocessingConfig
 ```
+
+**Example:**
+
+```typescript
+const result = ImagePreprocessingConfig.default();
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3203,15 +3778,23 @@ Keyword extraction configuration.
 | `yakeParams` | `YakeParams \| null` | `null` | YAKE-specific tuning parameters. |
 | `rakeParams` | `RakeParams \| null` | `null` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): KeywordConfig
 ```
+
+**Example:**
+
+```typescript
+const result = KeywordConfig.default();
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3225,15 +3808,23 @@ Language detection configuration.
 | `minConfidence` | `number` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detectMultiple` | `boolean` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): LanguageDetectionConfig
 ```
+
+**Example:**
+
+```typescript
+const result = LanguageDetectionConfig.default();
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3264,15 +3855,23 @@ is enabled for PDF extraction.
 | `tableModel` | `TableModel` | `TableModel.Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): LayoutDetectionConfig
 ```
+
+**Example:**
+
+```typescript
+const result = LayoutDetectionConfig.default();
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3312,9 +3911,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3324,21 +3923,70 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 static new(config: LlmConfig): LlmBackend
 ```
 
-#### detect()
+**Example:**
+
+```typescript
+const result = LlmBackend.new(new LlmConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### detect()
 
 **Signature:**
 
 ```typescript
-detect(text: string, categories: Array<EntityCategory>): Array<Entity>
+detect(text: string, categories: Array<EntityCategory>): Promise<Array<Entity>>
 ```
 
-#### detectWithCustom()
+**Example:**
+
+```typescript
+const result = await instance.detect("value", []);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | The text |
+| `categories` | `Array<EntityCategory>` | Yes | The categories |
+
+**Returns:** `Array<Entity>`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### detectWithCustom()
 
 **Signature:**
 
 ```typescript
-detectWithCustom(text: string, categories: Array<EntityCategory>, customLabels: Array<string>): Array<Entity>
+detectWithCustom(text: string, categories: Array<EntityCategory>, customLabels: Array<string>): Promise<Array<Entity>>
 ```
+
+**Example:**
+
+```typescript
+const result = await instance.detectWithCustom("value", [], []);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | The text |
+| `categories` | `Array<EntityCategory>` | Yes | The categories |
+| `customLabels` | `Array<string>` | Yes | The custom labels |
+
+**Returns:** `Array<Entity>`
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -3413,9 +4061,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocrUsed` | `boolean` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `Record<string, unknown>` | `{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### isEmpty()
+###### isEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3425,6 +4073,14 @@ additional postprocessor fields are populated.
 ```typescript
 isEmpty(): boolean
 ```
+
+**Example:**
+
+```typescript
+const result = instance.isEmpty();
+```
+
+**Returns:** `boolean`
 
 ---
 
@@ -3471,9 +4127,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### processImage()
+###### processImage()
 
 Process an image and extract text via OCR.
 
@@ -3487,7 +4143,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3496,10 +4152,27 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```typescript
-processImage(imageBytes: Buffer, config: OcrConfig): ExtractionResult
+processImage(imageBytes: Buffer, config: OcrConfig): Promise<ExtractionResult>
 ```
 
-#### processImageFile()
+**Example:**
+
+```typescript
+const result = await instance.processImage(Buffer.from("data"), new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `imageBytes` | `Buffer` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### processImageFile()
 
 Process a file and extract text via OCR.
 
@@ -3513,10 +4186,27 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```typescript
-processImageFile(path: string, config: OcrConfig): ExtractionResult
+processImageFile(path: string, config: OcrConfig): Promise<ExtractionResult>
 ```
 
-#### supportsLanguage()
+**Example:**
+
+```typescript
+const result = await instance.processImageFile("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `string` | Yes | Path to the image file |
+| `config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### supportsLanguage()
 
 Check if this backend supports a given language code.
 
@@ -3530,7 +4220,21 @@ Check if this backend supports a given language code.
 supportsLanguage(lang: string): boolean
 ```
 
-#### backendType()
+**Example:**
+
+```typescript
+const result = instance.supportsLanguage("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lang` | `string` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `boolean`
+
+###### backendType()
 
 Get the backend type identifier.
 
@@ -3544,7 +4248,15 @@ The backend type enum value.
 backendType(): OcrBackendType
 ```
 
-#### supportedLanguages()
+**Example:**
+
+```typescript
+const result = instance.backendType();
+```
+
+**Returns:** `OcrBackendType`
+
+###### supportedLanguages()
 
 Optional: Get a list of all supported languages.
 
@@ -3556,7 +4268,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 supportedLanguages(): Array<string>
 ```
 
-#### supportsTableDetection()
+**Example:**
+
+```typescript
+const result = instance.supportedLanguages();
+```
+
+**Returns:** `Array<string>`
+
+###### supportsTableDetection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3568,7 +4288,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 supportsTableDetection(): boolean
 ```
 
-#### supportsDocumentProcessing()
+**Example:**
+
+```typescript
+const result = instance.supportsTableDetection();
+```
+
+**Returns:** `boolean`
+
+###### supportsDocumentProcessing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3580,7 +4308,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 supportsDocumentProcessing(): boolean
 ```
 
-#### processDocument()
+**Example:**
+
+```typescript
+const result = instance.supportsDocumentProcessing();
+```
+
+**Returns:** `boolean`
+
+###### processDocument()
 
 Process a document file directly via OCR.
 
@@ -3589,8 +4325,25 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```typescript
-processDocument(path: string, config: OcrConfig): ExtractionResult
+processDocument(path: string, config: OcrConfig): Promise<ExtractionResult>
 ```
+
+**Example:**
+
+```typescript
+const result = await instance.processDocument("value", new OcrConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `string` | Yes | The  path |
+| `config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -3631,15 +4384,23 @@ OCR configuration.
 | `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdataBytes` | `Record<string, Buffer> \| null` | `null` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): OcrConfig
 ```
+
+**Example:**
+
+```typescript
+const result = OcrConfig.default();
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3770,15 +4531,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnumWsRatioThreshold` | `number` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipelineMinQuality` | `number` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): OcrQualityThresholds
 ```
+
+**Example:**
+
+```typescript
+const result = OcrQualityThresholds.default();
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3854,9 +4623,9 @@ Uses a builder pattern for convenient configuration.
 | `dropScore` | `number` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `modelTier` | `string` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### withCacheDir()
+###### withCacheDir()
 
 Sets a custom cache directory for model files.
 
@@ -3866,7 +4635,21 @@ Sets a custom cache directory for model files.
 withCacheDir(path: string): PaddleOcrConfig
 ```
 
-#### withTableDetection()
+**Example:**
+
+```typescript
+const result = instance.withCacheDir("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `string` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withTableDetection()
 
 Enables or disables table structure detection.
 
@@ -3876,7 +4659,21 @@ Enables or disables table structure detection.
 withTableDetection(enable: boolean): PaddleOcrConfig
 ```
 
-#### withAngleCls()
+**Example:**
+
+```typescript
+const result = instance.withTableDetection(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `boolean` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withAngleCls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3886,7 +4683,21 @@ Enables or disables angle classification for rotated text.
 withAngleCls(enable: boolean): PaddleOcrConfig
 ```
 
-#### withDetDbThresh()
+**Example:**
+
+```typescript
+const result = instance.withAngleCls(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `boolean` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbThresh()
 
 Sets the database threshold for text detection.
 
@@ -3896,7 +4707,21 @@ Sets the database threshold for text detection.
 withDetDbThresh(threshold: number): PaddleOcrConfig
 ```
 
-#### withDetDbBoxThresh()
+**Example:**
+
+```typescript
+const result = instance.withDetDbThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `number` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbBoxThresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3906,7 +4731,21 @@ Sets the box threshold for text bounding box refinement.
 withDetDbBoxThresh(threshold: number): PaddleOcrConfig
 ```
 
-#### withDetDbUnclipRatio()
+**Example:**
+
+```typescript
+const result = instance.withDetDbBoxThresh(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `number` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetDbUnclipRatio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3916,7 +4755,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 withDetDbUnclipRatio(ratio: number): PaddleOcrConfig
 ```
 
-#### withDetLimitSideLen()
+**Example:**
+
+```typescript
+const result = instance.withDetDbUnclipRatio(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ratio` | `number` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDetLimitSideLen()
 
 Sets the maximum side length for detection images.
 
@@ -3926,7 +4779,21 @@ Sets the maximum side length for detection images.
 withDetLimitSideLen(length: number): PaddleOcrConfig
 ```
 
-#### withRecBatchNum()
+**Example:**
+
+```typescript
+const result = instance.withDetLimitSideLen(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `length` | `number` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withRecBatchNum()
 
 Sets the batch size for recognition inference.
 
@@ -3936,7 +4803,21 @@ Sets the batch size for recognition inference.
 withRecBatchNum(batchSize: number): PaddleOcrConfig
 ```
 
-#### withDropScore()
+**Example:**
+
+```typescript
+const result = instance.withRecBatchNum(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `batchSize` | `number` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withDropScore()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3946,7 +4827,21 @@ Sets the minimum recognition confidence threshold.
 withDropScore(score: number): PaddleOcrConfig
 ```
 
-#### withPadding()
+**Example:**
+
+```typescript
+const result = instance.withDropScore(0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `score` | `number` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withPadding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3956,7 +4851,21 @@ Sets padding in pixels added around images before detection.
 withPadding(padding: number): PaddleOcrConfig
 ```
 
-#### withModelTier()
+**Example:**
+
+```typescript
+const result = instance.withPadding(42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `padding` | `number` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### withModelTier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3966,7 +4875,21 @@ Sets the model tier controlling detection/recognition model size.
 withModelTier(tier: string): PaddleOcrConfig
 ```
 
-#### default()
+**Example:**
+
+```typescript
+const result = instance.withModelTier("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tier` | `string` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### default()
 
 Creates a default configuration with English language support.
 
@@ -3975,6 +4898,14 @@ Creates a default configuration with English language support.
 ```typescript
 static default(): PaddleOcrConfig
 ```
+
+**Example:**
+
+```typescript
+const result = PaddleOcrConfig.default();
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -4036,15 +4967,23 @@ when page boundaries are available and chunking is configured.
 | `insertPageMarkers` | `boolean` | `false` | Insert page markers in main content string |
 | `markerFormat` | `string` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): PageConfig
 ```
+
+**Example:**
+
+```typescript
+const result = PageConfig.default();
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4174,15 +5113,23 @@ PDF-specific configuration.
 | `allowSingleColumnTables` | `boolean` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocrInlineImages` | `boolean` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `null` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): PdfConfig
 ```
+
+**Example:**
+
+```typescript
+const result = PdfConfig.default();
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4216,9 +5163,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### name()
+###### name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4234,7 +5181,15 @@ The name should be:
 name(): string
 ```
 
-#### version()
+**Example:**
+
+```typescript
+const result = instance.name();
+```
+
+**Returns:** `string`
+
+###### version()
 
 Returns the semantic version of this plugin.
 
@@ -4248,7 +5203,15 @@ Defaults to the kreuzberg crate version.
 version(): string
 ```
 
-#### initialize()
+**Example:**
+
+```typescript
+const result = instance.version();
+```
+
+**Returns:** `string`
+
+###### initialize()
 
 Initialize the plugin.
 
@@ -4258,7 +5221,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4277,7 +5240,17 @@ Defaults to a no-op for stateless plugins.
 initialize(): void
 ```
 
-#### shutdown()
+**Example:**
+
+```typescript
+instance.initialize();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### shutdown()
 
 Shutdown the plugin.
 
@@ -4288,7 +5261,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4306,7 +5279,17 @@ Defaults to a no-op for stateless plugins.
 shutdown(): void
 ```
 
-#### description()
+**Example:**
+
+```typescript
+instance.shutdown();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### description()
 
 Optional plugin description for debugging and logging.
 
@@ -4318,7 +5301,15 @@ Defaults to empty string if not overridden.
 description(): string
 ```
 
-#### author()
+**Example:**
+
+```typescript
+const result = instance.description();
+```
+
+**Returns:** `string`
+
+###### author()
 
 Optional plugin author information.
 
@@ -4329,6 +5320,14 @@ Defaults to empty string if not overridden.
 ```typescript
 author(): string
 ```
+
+**Example:**
+
+```typescript
+const result = instance.author();
+```
+
+**Returns:** `string`
 
 ---
 
@@ -4364,9 +5363,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### process()
+###### process()
 
 Process an extraction result.
 
@@ -4385,15 +5384,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4412,10 +5411,27 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 **Signature:**
 
 ```typescript
-process(result: ExtractionResult, config: ExtractionConfig): void
+process(result: ExtractionResult, config: ExtractionConfig): Promise<void>
 ```
 
-#### processingStage()
+**Example:**
+
+```typescript
+await instance.process(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### processingStage()
 
 Get the processing stage for this post-processor.
 
@@ -4431,7 +5447,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 processingStage(): ProcessingStage
 ```
 
-#### shouldProcess()
+**Example:**
+
+```typescript
+const result = instance.processingStage();
+```
+
+**Returns:** `ProcessingStage`
+
+###### shouldProcess()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4448,7 +5472,22 @@ Defaults to `true` (always run).
 shouldProcess(result: ExtractionResult, config: ExtractionConfig): boolean
 ```
 
-#### estimatedDurationMs()
+**Example:**
+
+```typescript
+const result = instance.shouldProcess(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `boolean`
+
+###### estimatedDurationMs()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4464,7 +5503,21 @@ Estimated processing time in milliseconds.
 estimatedDurationMs(result: ExtractionResult): number
 ```
 
-#### priority()
+**Example:**
+
+```typescript
+const result = instance.estimatedDurationMs(new ExtractionResult());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `number`
+
+###### priority()
 
 Execution priority within the processing stage.
 
@@ -4477,6 +5530,14 @@ for high-priority processors that should run early in their stage.
 ```typescript
 priority(): number
 ```
+
+**Example:**
+
+```typescript
+const result = instance.priority();
+```
+
+**Returns:** `number`
 
 ---
 
@@ -4492,15 +5553,23 @@ Post-processor configuration.
 | `enabledSet` | `Array<string> \| null` | `null` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabledSet` | `Array<string> \| null` | `null` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): PostProcessorConfig
 ```
+
+**Example:**
+
+```typescript
+const result = PostProcessorConfig.default();
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4626,15 +5695,23 @@ RAKE-specific parameters.
 | `minWordLength` | `number` | `1` | Minimum word length to consider (default: 1). |
 | `maxWordsPerPhrase` | `number` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): RakeParams
 ```
+
+**Example:**
+
+```typescript
+const result = RakeParams.default();
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4670,9 +5747,9 @@ Configuration for the redaction post-processor.
 | `customTerms` | `Array<RedactionTerm>` | `[]` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `customPatterns` | `Array<RedactionPattern>` | `[]` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -4680,7 +5757,15 @@ Configuration for the redaction post-processor.
 static default(): RedactionConfig
 ```
 
-#### validate()
+**Example:**
+
+```typescript
+const result = RedactionConfig.default();
+```
+
+**Returns:** `RedactionConfig`
+
+###### validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4695,6 +5780,16 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```typescript
 validate(): void
 ```
+
+**Example:**
+
+```typescript
+instance.validate();
+```
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -4726,9 +5821,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `pattern` | `string` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `caseSensitive` | `boolean` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### labeled()
+###### labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4737,6 +5832,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```typescript
 static labeled(label: string, pattern: string): RedactionPattern
 ```
+
+**Example:**
+
+```typescript
+const result = RedactionPattern.labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `string` | Yes | The label |
+| `pattern` | `string` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4770,9 +5880,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `value` | `string` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `caseSensitive` | `boolean` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### literal()
+###### literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4782,7 +5892,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 static literal(value: string): RedactionTerm
 ```
 
-#### labeled()
+**Example:**
+
+```typescript
+const result = RedactionTerm.literal("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### labeled()
 
 Build a term with a custom label.
 
@@ -4791,6 +5915,21 @@ Build a term with a custom label.
 ```typescript
 static labeled(label: string, value: string): RedactionTerm
 ```
+
+**Example:**
+
+```typescript
+const result = RedactionTerm.labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `string` | Yes | The label |
+| `value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4812,9 +5951,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### render()
+###### render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4832,6 +5971,22 @@ Returns an error if rendering fails.
 render(doc: InternalDocument): string
 ```
 
+**Example:**
+
+```typescript
+const result = instance.render(new InternalDocument());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error` with a descriptive message.
+
 ---
 
 #### RerankedDocument
@@ -4841,7 +5996,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4897,11 +6052,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### rerank()
+###### rerank()
 
 Score a list of documents against a query.
 
@@ -4917,8 +6072,25 @@ against `documents.len()` before sorting.
 **Signature:**
 
 ```typescript
-rerank(query: string, documents: Array<string>): Array<number>
+rerank(query: string, documents: Array<string>): Promise<Array<number>>
 ```
+
+**Example:**
+
+```typescript
+const result = await instance.rerank("value", []);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `string` | Yes | The query |
+| `documents` | `Array<string>` | Yes | The documents |
+
+**Returns:** `Array<number>`
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -4929,7 +6101,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4941,15 +6113,23 @@ Since v5.0.
 | `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `null` (auto-select per platform). |
 | `maxRerankDurationSecs` | `number \| null` | `null` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): RerankerConfig
 ```
+
+**Example:**
+
+```typescript
+const result = RerankerConfig.default();
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4960,7 +6140,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -5008,15 +6188,23 @@ while still supporting legitimate documents.
 | `maxXmlDepth` | `number` | `1024` | Maximum XML depth (100 levels) |
 | `maxTableCells` | `number` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): SecurityLimits
 ```
+
+**Example:**
+
+```typescript
+const result = SecurityLimits.default();
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -5043,9 +6231,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `maxRequestBodyBytes` | `number` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `maxMultipartFieldBytes` | `number` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
@@ -5053,7 +6241,15 @@ including host/port settings, CORS configuration, and upload limits.
 static default(): ServerConfig
 ```
 
-#### listenAddr()
+**Example:**
+
+```typescript
+const result = ServerConfig.default();
+```
+
+**Returns:** `ServerConfig`
+
+###### listenAddr()
 
 Get the server listen address (host:port).
 
@@ -5063,7 +6259,15 @@ Get the server listen address (host:port).
 listenAddr(): string
 ```
 
-#### corsAllowsAll()
+**Example:**
+
+```typescript
+const result = instance.listenAddr();
+```
+
+**Returns:** `string`
+
+###### corsAllowsAll()
 
 Check if CORS allows all origins.
 
@@ -5076,7 +6280,15 @@ are allowed. Returns `false` if specific origins are configured.
 corsAllowsAll(): boolean
 ```
 
-#### isOriginAllowed()
+**Example:**
+
+```typescript
+const result = instance.corsAllowsAll();
+```
+
+**Returns:** `boolean`
+
+###### isOriginAllowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5091,7 +6303,21 @@ Returns `true` if:
 isOriginAllowed(origin: string): boolean
 ```
 
-#### maxRequestBodyMb()
+**Example:**
+
+```typescript
+const result = instance.isOriginAllowed("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `origin` | `string` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `boolean`
+
+###### maxRequestBodyMb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5101,7 +6327,15 @@ Get maximum request body size in megabytes (rounded up).
 maxRequestBodyMb(): number
 ```
 
-#### maxMultipartFieldMb()
+**Example:**
+
+```typescript
+const result = instance.maxRequestBodyMb();
+```
+
+**Returns:** `number`
+
+###### maxMultipartFieldMb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5110,6 +6344,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```typescript
 maxMultipartFieldMb(): number
 ```
+
+**Example:**
+
+```typescript
+const result = instance.maxMultipartFieldMb();
+```
+
+**Returns:** `number`
 
 ---
 
@@ -5197,15 +6439,23 @@ Used via `ImageExtractionConfig.svg`.
 | `sanitize` | `boolean` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `renderDpi` | `number` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): SvgOptions
 ```
+
+**Example:**
+
+```typescript
+const result = SvgOptions.default();
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5298,15 +6548,23 @@ for specific document types (invoices, handwriting, etc.).
 | `textordSpaceSizeIsVariable` | `boolean` | `true` | Variable-width space detection |
 | `thresholdingMethod` | `boolean` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TesseractConfig
 ```
+
+**Example:**
+
+```typescript
+const result = TesseractConfig.default();
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5366,9 +6624,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### new()
+###### new()
 
 Create a fresh counter with no previous state.
 
@@ -5377,6 +6635,14 @@ Create a fresh counter with no previous state.
 ```typescript
 static new(): TokenCounter
 ```
+
+**Example:**
+
+```typescript
+const result = TokenCounter.new();
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5398,15 +6664,23 @@ Configuration for the token-reduction pipeline.
 | `targetReduction` | `number \| null` | `null` | Target fraction of text to retain (0.0–1.0); `null` = no fixed target. |
 | `enableSemanticClustering` | `boolean` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TokenReductionConfig
 ```
+
+**Example:**
+
+```typescript
+const result = TokenReductionConfig.default();
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5419,15 +6693,23 @@ Token reduction configuration.
 | `mode` | `string` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserveImportantWords` | `boolean` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TokenReductionOptions
 ```
+
+**Example:**
+
+```typescript
+const result = TokenReductionOptions.default();
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5464,15 +6746,23 @@ model = "tiny"
 | `allowNetwork` | `boolean` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verifyHash` | `boolean` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TranscriptionConfig
 ```
+
+**Example:**
+
+```typescript
+const result = TranscriptionConfig.default();
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5536,15 +6826,23 @@ docstrings = true
 | `groups` | `Array<string> \| null` | `null` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TreeSitterConfig
 ```
+
+**Example:**
+
+```typescript
+const result = TreeSitterConfig.default();
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5566,15 +6864,23 @@ Controls which analysis features are enabled when extracting code files.
 | `chunkMaxSize` | `number \| null` | `null` | Maximum chunk size in bytes. `null` disables chunking. |
 | `contentMode` | `CodeContentMode` | `CodeContentMode.Chunks` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): TreeSitterProcessConfig
 ```
+
+**Example:**
+
+```typescript
+const result = TreeSitterProcessConfig.default();
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5605,9 +6911,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### validate()
+###### validate()
 
 Validate an extraction result.
 
@@ -5624,7 +6930,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5649,7 +6955,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5672,7 +6978,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5694,10 +7000,27 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 **Signature:**
 
 ```typescript
-validate(result: ExtractionResult, config: ExtractionConfig): void
+validate(result: ExtractionResult, config: ExtractionConfig): Promise<void>
 ```
 
-#### shouldValidate()
+**Example:**
+
+```typescript
+await instance.validate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Throws `Error` with a descriptive message.
+
+###### shouldValidate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5714,7 +7037,22 @@ Defaults to `true` (always run).
 shouldValidate(result: ExtractionResult, config: ExtractionConfig): boolean
 ```
 
-#### priority()
+**Example:**
+
+```typescript
+const result = instance.shouldValidate(new ExtractionResult(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `boolean`
+
+###### priority()
 
 Optional: Get the validation priority.
 
@@ -5732,6 +7070,14 @@ Priority value (higher = runs earlier).
 ```typescript
 priority(): number
 ```
+
+**Example:**
+
+```typescript
+const result = instance.priority();
+```
+
+**Returns:** `number`
 
 ---
 
@@ -5791,15 +7137,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `windowSize` | `number` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### default()
+###### default()
 
 **Signature:**
 
 ```typescript
 static default(): YakeParams
 ```
+
+**Example:**
+
+```typescript
+const result = YakeParams.default();
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -6023,7 +7377,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6772,7 +8126,7 @@ Errors are thrown as plain `Error` objects with descriptive messages.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

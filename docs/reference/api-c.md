@@ -33,6 +33,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 KreuzbergExtractionResult* kreuzberg_extract_bytes(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_extract_bytes((const uint8_t *)"data", "value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +48,7 @@ KreuzbergExtractionResult* kreuzberg_extract_bytes(const uint8_t* content, const
 | `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `KreuzbergExtractionResult`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -74,6 +81,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 KreuzbergExtractionResult* kreuzberg_extract_file(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_extract_file("value", "value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +96,7 @@ KreuzbergExtractionResult* kreuzberg_extract_file(const char* path, const char* 
 | `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `KreuzbergExtractionResult`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -106,6 +120,12 @@ use a truly synchronous extraction approach instead.
 KreuzbergExtractionResult* kreuzberg_extract_file_sync(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_extract_file_sync("value", "value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +135,7 @@ KreuzbergExtractionResult* kreuzberg_extract_file_sync(const char* path, const c
 | `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergExtractionResult`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -135,6 +156,12 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +171,7 @@ KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, 
 | `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergExtractionResult`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -161,6 +189,12 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 KreuzbergExtractionResult* kreuzberg_batch_extract_files_sync(KreuzbergBatchFileItem* items, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult* result = kreuzberg_batch_extract_files_sync(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +203,7 @@ KreuzbergExtractionResult* kreuzberg_batch_extract_files_sync(KreuzbergBatchFile
 | `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergExtractionResult*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -188,6 +223,12 @@ that iterates through items and calls `extract_bytes_sync()`.
 KreuzbergExtractionResult* kreuzberg_batch_extract_bytes_sync(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes_sync(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +237,7 @@ KreuzbergExtractionResult* kreuzberg_batch_extract_bytes_sync(KreuzbergBatchByte
 | `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergExtractionResult*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -237,6 +279,12 @@ Per-file configuration overrides:
 KreuzbergExtractionResult* kreuzberg_batch_extract_files(KreuzbergBatchFileItem* items, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult* result = kreuzberg_batch_extract_files(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +293,7 @@ KreuzbergExtractionResult* kreuzberg_batch_extract_files(KreuzbergBatchFileItem*
 | `config` | `KreuzbergExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `KreuzbergExtractionResult*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -280,6 +329,12 @@ Per-item configuration overrides:
 KreuzbergExtractionResult* kreuzberg_batch_extract_bytes(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +343,7 @@ KreuzbergExtractionResult* kreuzberg_batch_extract_bytes(KreuzbergBatchBytesItem
 | `config` | `KreuzbergExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `KreuzbergExtractionResult*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -316,6 +372,12 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 const char* kreuzberg_detect_mime_type_from_bytes(const uint8_t* content);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_detect_mime_type_from_bytes((const uint8_t *)"data");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +385,7 @@ const char* kreuzberg_detect_mime_type_from_bytes(const uint8_t* content);
 | `content` | `const uint8_t*` | Yes | Raw file bytes |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -343,6 +406,12 @@ A vector of file extensions (without leading dot) for the MIME type.
 const char** kreuzberg_get_extensions_for_mime(const char* mime_type);
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_get_extensions_for_mime("value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +419,7 @@ const char** kreuzberg_get_extensions_for_mime(const char* mime_type);
 | `mime_type` | `const char*` | Yes | The MIME type to look up |
 
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -373,6 +443,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```c
 KreuzbergSupportedFormat* kreuzberg_list_supported_formats();
+```
+
+**Example:**
+
+```c
+KreuzbergSupportedFormat* result = kreuzberg_list_supported_formats();
 ```
 
 **Returns:** `KreuzbergSupportedFormat*`
@@ -406,6 +482,12 @@ from the four corner points of the grid.
 KreuzbergQrCode* kreuzberg_detect_qr_codes(const uint8_t* image_bytes, const char* format_hint);
 ```
 
+**Example:**
+
+```c
+KreuzbergQrCode* result = kreuzberg_detect_qr_codes((const uint8_t *)"data", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +516,14 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 void kreuzberg_clear_embedding_backends();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_embedding_backends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -452,7 +541,14 @@ bindings.
 const char** kreuzberg_list_embedding_backends();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_embedding_backends();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -467,7 +563,14 @@ List names of all registered document extractors.
 const char** kreuzberg_list_document_extractors();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_document_extractors();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -489,7 +592,14 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 void kreuzberg_clear_document_extractors();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_document_extractors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -510,7 +620,14 @@ A vector of OCR backend names.
 const char** kreuzberg_list_ocr_backends();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_ocr_backends();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -532,7 +649,14 @@ Removes all OCR backends and calls their `shutdown()` methods.
 void kreuzberg_clear_ocr_backends();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_ocr_backends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -553,7 +677,14 @@ safe to call on any target.
 void kreuzberg_register_builtin();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_register_builtin();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -576,7 +707,14 @@ global registry.
 const char** kreuzberg_list_post_processors();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_post_processors();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -591,7 +729,14 @@ Remove all registered post-processors.
 void kreuzberg_clear_post_processors();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_post_processors();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -610,7 +755,14 @@ Returns an error if the registry lock is poisoned.
 const char** kreuzberg_list_renderers();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_renderers();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -633,7 +785,14 @@ Returns an error if the registry lock is poisoned.
 void kreuzberg_clear_renderers();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_renderers();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -649,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +816,14 @@ Since v5.0.
 void kreuzberg_clear_reranker_backends();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_reranker_backends();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -669,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +843,14 @@ Since v5.0.
 const char** kreuzberg_list_reranker_backends();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_reranker_backends();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -692,7 +865,14 @@ List names of all registered validators.
 const char** kreuzberg_list_validators();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_validators();
+```
+
 **Returns:** `const char**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -707,7 +887,14 @@ Remove all registered validators.
 void kreuzberg_clear_validators();
 ```
 
-**Returns:** `void`
+**Example:**
+
+```c
+kreuzberg_clear_validators();
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -731,6 +918,12 @@ a half-populated vector.
 void kreuzberg_classify_pages(KreuzbergExtractionResult result, KreuzbergPageClassificationConfig config);
 ```
 
+**Example:**
+
+```c
+kreuzberg_classify_pages(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +931,8 @@ void kreuzberg_classify_pages(KreuzbergExtractionResult result, KreuzbergPageCla
 | `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
 | `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -762,6 +956,12 @@ or any error returned by prompt rendering or the underlying LLM call.
 KreuzbergClassificationLabel* kreuzberg_classify_text(const char* text, KreuzbergPageClassificationConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergClassificationLabel* result = kreuzberg_classify_text("value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +970,7 @@ KreuzbergClassificationLabel* kreuzberg_classify_text(const char* text, Kreuzber
 | `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergClassificationLabel*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -799,6 +1000,12 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 KreuzbergClassificationLabel* kreuzberg_classify_document(const char** pages, KreuzbergPageClassificationConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergClassificationLabel* result = kreuzberg_classify_document(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1014,7 @@ KreuzbergClassificationLabel* kreuzberg_classify_document(const char** pages, Kr
 | `config` | `KreuzbergPageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `KreuzbergClassificationLabel*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -824,6 +1032,12 @@ CLI flag `kreuzberg warm --ner` delegates here.
 const char* kreuzberg_download_model(const char* name, const char* cache_dir);
 ```
 
+**Example:**
+
+```c
+const char* result = kreuzberg_download_model("value", "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1046,7 @@ const char* kreuzberg_download_model(const char* name, const char* cache_dir);
 | `cache_dir` | `const char**` | No | The cache dir |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -846,6 +1061,12 @@ Pinned default NER model identifier.
 const char* kreuzberg_default_model_name();
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_default_model_name();
+```
+
 **Returns:** `const char*`
 
 ---
@@ -858,6 +1079,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```c
 const char** kreuzberg_known_models();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_known_models();
 ```
 
 **Returns:** `const char**`
@@ -875,6 +1102,12 @@ rewrite every textual field. Populates `result.redaction_report`.
 void kreuzberg_redact(KreuzbergExtractionResult result, KreuzbergRedactionConfig config);
 ```
 
+**Example:**
+
+```c
+kreuzberg_redact(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1115,8 @@ void kreuzberg_redact(KreuzbergExtractionResult result, KreuzbergRedactionConfig
 | `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
 | `config` | `KreuzbergRedactionConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -900,6 +1134,12 @@ pass `NULL` (or an unknown code) to fall back to English.
 
 ```c
 const char** kreuzberg_summarize(const char* text, const char* language, uint32_t max_tokens);
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_summarize("value", "value", 42);
 ```
 
 **Parameters:**
@@ -923,6 +1163,12 @@ callers).
 
 ```c
 uint32_t kreuzberg_token_count(const char* text);
+```
+
+**Example:**
+
+```c
+uint32_t result = kreuzberg_token_count("value");
 ```
 
 **Parameters:**
@@ -950,6 +1196,12 @@ every chunk's `content` field. Every LLM call's usage is appended to
 void kreuzberg_translate_result(KreuzbergExtractionResult result, KreuzbergTranslationConfig config);
 ```
 
+**Example:**
+
+```c
+kreuzberg_translate_result(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -957,7 +1209,8 @@ void kreuzberg_translate_result(KreuzbergExtractionResult result, KreuzbergTrans
 | `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
 | `config` | `KreuzbergTranslationConfig` | Yes | The configuration options |
 
-**Returns:** `void`
+**Returns:** No return value.
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -973,6 +1226,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```c
 KreuzbergExtractionDiff* kreuzberg_compare(KreuzbergExtractionResult a, KreuzbergExtractionResult b, KreuzbergDiffOptions opts);
+```
+
+**Example:**
+
+```c
+KreuzbergExtractionDiff *result = kreuzberg_compare(NULL, NULL, NULL);
 ```
 
 **Parameters:**
@@ -1011,6 +1270,12 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const char* image_mime, KreuzbergRegionKind region_kind, KreuzbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_extract_region_with_vlm((const uint8_t *)"data", "value", (KreuzbergRegionKind){0}, NULL, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1022,6 +1287,7 @@ const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const 
 | `custom_prompt` | `const char**` | No | The custom prompt |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1050,6 +1316,12 @@ Returns an error if:
 KreuzbergKeyword* kreuzberg_extract_keywords(const char* text, KreuzbergKeywordConfig config);
 ```
 
+**Example:**
+
+```c
+KreuzbergKeyword* result = kreuzberg_extract_keywords("value", NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1058,6 +1330,7 @@ KreuzbergKeyword* kreuzberg_extract_keywords(const char* text, KreuzbergKeywordC
 | `config` | `KreuzbergKeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `KreuzbergKeyword*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1084,6 +1357,12 @@ or rendered, or if `page_index` is out of range.
 const uint8_t* kreuzberg_render_pdf_page_to_png(const uint8_t* pdf_bytes, uintptr_t page_index, int32_t dpi, const char* password);
 ```
 
+**Example:**
+
+```c
+const uint8_t *result = kreuzberg_render_pdf_page_to_png((const uint8_t *)"data", 42, 42, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1094,6 +1373,7 @@ const uint8_t* kreuzberg_render_pdf_page_to_png(const uint8_t* pdf_bytes, uintpt
 | `password` | `const char**` | No | Optional password for encrypted PDFs |
 
 **Returns:** `const uint8_t*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1118,6 +1398,12 @@ Returns an error if the VLM call fails or if image format detection fails.
 const char* kreuzberg_caption_image(const uint8_t* image_bytes, KreuzbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_caption_image((const uint8_t *)"data", NULL, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1127,6 +1413,7 @@ const char* kreuzberg_caption_image(const uint8_t* image_bytes, KreuzbergLlmConf
 | `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1152,6 +1439,12 @@ or if the VLM call fails.
 const char* kreuzberg_caption_image_file(const char* path, KreuzbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_caption_image_file("value", NULL, "value");
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1161,6 +1454,7 @@ const char* kreuzberg_caption_image_file(const char* path, KreuzbergLlmConfig ll
 | `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1178,6 +1472,12 @@ Set `check_exists` to `true` to verify the file exists before detection.
 const char* kreuzberg_detect_mime_type(const char* path, bool check_exists);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_detect_mime_type("value", true);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1186,6 +1486,7 @@ const char* kreuzberg_detect_mime_type(const char* path, bool check_exists);
 | `check_exists` | `bool` | Yes | The check exists |
 
 **Returns:** `const char*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1198,6 +1499,12 @@ const char* kreuzberg_detect_mime_type(const char* path, bool check_exists);
 float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
 ```
 
+**Example:**
+
+```c
+float** result = kreuzberg_embed_texts_async(NULL, NULL);
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1206,6 +1513,7 @@ float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig
 | `config` | `KreuzbergEmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `float**`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1221,6 +1529,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```c
 KreuzbergEmbeddingPreset* kreuzberg_get_embedding_preset(const char* name);
+```
+
+**Example:**
+
+```c
+KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
 ```
 
 **Parameters:**
@@ -1245,6 +1559,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 const char** kreuzberg_list_embedding_presets();
 ```
 
+**Example:**
+
+```c
+const char** result = kreuzberg_list_embedding_presets();
+```
+
 **Returns:** `const char**`
 
 ---
@@ -1262,12 +1582,18 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```c
 KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** documents, KreuzbergRerankerConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -1279,6 +1605,7 @@ KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** docu
 | `config` | `KreuzbergRerankerConfig` | Yes | The configuration options |
 
 **Returns:** `KreuzbergRerankedDocument*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1287,12 +1614,18 @@ KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** docu
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```c
 KreuzbergRerankedDocument* kreuzberg_rerank_async(const char* query, const char** documents, KreuzbergRerankerConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -1304,6 +1637,7 @@ KreuzbergRerankedDocument* kreuzberg_rerank_async(const char* query, const char*
 | `config` | `KreuzbergRerankerConfig` | Yes | The reranker config |
 
 **Returns:** `KreuzbergRerankedDocument*`
+
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -1315,12 +1649,18 @@ Get a reranker preset by name.
 Returns `NULL` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```c
 KreuzbergRerankerPreset* kreuzberg_get_reranker_preset(const char* name);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
 ```
 
 **Parameters:**
@@ -1339,12 +1679,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```c
 const char** kreuzberg_list_reranker_presets();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_list_reranker_presets();
 ```
 
 **Returns:** `const char**`
@@ -1602,15 +1948,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prepend_heading_context` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topic_threshold` | `float*` | `NULL` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergChunkingConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergChunkingConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergChunkingConfig`
 
 ---
 
@@ -1669,15 +2023,23 @@ default behavior unchanged.
 | `strip_repeating_text` | `bool` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `include_watermarks` | `bool` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergContentFilterConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergContentFilterConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergContentFilterConfig`
 
 ---
 
@@ -1803,15 +2165,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `include_embedded` | `bool` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `max_content_chars` | `uintptr_t*` | `NULL` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `NULL` means no truncation. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergDiffOptions kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergDiffOptions *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergDiffOptions`
 
 ---
 
@@ -1897,9 +2267,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### kreuzberg_extract_bytes()
+###### kreuzberg_extract_bytes()
 
 Extract content from a byte array.
 
@@ -1923,7 +2293,25 @@ The pipeline will convert this into the public `ExtractionResult`.
 KreuzbergInternalDocument kreuzberg_extract_bytes(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_extract_file()
+**Example:**
+
+```c
+KreuzbergInternalDocument *result = kreuzberg_extract_bytes(instance, (const uint8_t *)"data", "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `const uint8_t*` | Yes | Raw document bytes |
+| `mime_type` | `const char*` | Yes | MIME type of the document (already validated) |
+| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `KreuzbergInternalDocument`
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_extract_file()
 
 Extract content from a file.
 
@@ -1944,7 +2332,25 @@ Same as `extract_bytes`, plus file I/O errors.
 KreuzbergInternalDocument kreuzberg_extract_file(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_supported_mime_types()
+**Example:**
+
+```c
+KreuzbergInternalDocument *result = kreuzberg_extract_file(instance, "value", "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | Path to the document file |
+| `mime_type` | `const char*` | Yes | MIME type of the document (already validated) |
+| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `KreuzbergInternalDocument`
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_supported_mime_types()
 
 Get the list of MIME types supported by this extractor.
 
@@ -1963,14 +2369,22 @@ A slice of MIME type strings.
 const char** kreuzberg_supported_mime_types();
 ```
 
-#### kreuzberg_priority()
+**Example:**
+
+```c
+const char** result = kreuzberg_supported_mime_types(instance);
+```
+
+**Returns:** `const char**`
+
+###### kreuzberg_priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -1988,7 +2402,15 @@ Priority value (default: 50)
 int32_t kreuzberg_priority();
 ```
 
-#### kreuzberg_can_handle()
+**Example:**
+
+```c
+int32_t result = kreuzberg_priority(instance);
+```
+
+**Returns:** `int32_t`
+
+###### kreuzberg_can_handle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2004,6 +2426,21 @@ Defaults to `true` (rely on MIME type matching).
 ```c
 bool kreuzberg_can_handle(const char* path, const char* mime_type);
 ```
+
+**Example:**
+
+```c
+bool result = kreuzberg_can_handle(instance, "value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | The  path |
+| `mime_type` | `const char*` | Yes | The  mime type |
+
+**Returns:** `bool`
 
 ---
 
@@ -2081,9 +2518,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `KreuzbergDocumentRelationship*` | `NULL` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `const char**` | `NULL` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_finalize_node_types()
+###### kreuzberg_finalize_node_types()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2096,7 +2533,15 @@ construction paths (builder, derivation) call this automatically.
 void kreuzberg_finalize_node_types();
 ```
 
-#### kreuzberg_is_empty()
+**Example:**
+
+```c
+kreuzberg_finalize_node_types(instance);
+```
+
+**Returns:** No return value.
+
+###### kreuzberg_is_empty()
 
 Check if the document structure is empty.
 
@@ -2106,13 +2551,29 @@ Check if the document structure is empty.
 bool kreuzberg_is_empty();
 ```
 
-#### kreuzberg_default()
+**Example:**
+
+```c
+bool result = kreuzberg_is_empty(instance);
+```
+
+**Returns:** `bool`
+
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergDocumentStructure kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergDocumentStructure *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergDocumentStructure`
 
 ---
 
@@ -2355,9 +2816,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### kreuzberg_dimensions()
+###### kreuzberg_dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2368,7 +2829,15 @@ every vector returned by `embed`.
 uintptr_t kreuzberg_dimensions();
 ```
 
-#### kreuzberg_embed()
+**Example:**
+
+```c
+uintptr_t result = kreuzberg_dimensions(instance);
+```
+
+**Returns:** `uintptr_t`
+
+###### kreuzberg_embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2383,6 +2852,22 @@ backend-specific failures. The dispatcher layers its own validation
 ```c
 float** kreuzberg_embed(const char** texts);
 ```
+
+**Example:**
+
+```c
+float** result = kreuzberg_embed(instance, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `const char**` | Yes | The texts |
+
+**Returns:** `float**`
+
+**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -2403,15 +2888,23 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
 | `max_embed_duration_secs` | `uint64_t*` | `NULL` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `NULL` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergEmbeddingConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergEmbeddingConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergEmbeddingConfig`
 
 ---
 
@@ -2587,7 +3080,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `ocr` | `KreuzbergOcrConfig*` | `NULL` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `uint32_t**` | `NULL` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `chunking` | `KreuzbergChunkingConfig*` | `NULL` | Text chunking configuration (None = chunking disabled) |
 | `content_filter` | `KreuzbergContentFilterConfig*` | `NULL` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `images` | `KreuzbergImageExtractionConfig*` | `NULL` | Image extraction configuration (None = no image extraction) |
@@ -2625,9 +3118,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `qr_codes` | `bool*` | `NULL` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `cancel_token` | `const char**` | `NULL` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
@@ -2635,7 +3128,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 KreuzbergExtractionConfig kreuzberg_default();
 ```
 
-#### kreuzberg_needs_image_data()
+**Example:**
+
+```c
+KreuzbergExtractionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergExtractionConfig`
+
+###### kreuzberg_needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2644,7 +3145,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2660,11 +3161,19 @@ also requested `images` extraction.
 bool kreuzberg_needs_image_data();
 ```
 
-#### kreuzberg_needs_image_processing()
+**Example:**
+
+```c
+bool result = kreuzberg_needs_image_data(instance);
+```
+
+**Returns:** `bool`
+
+###### kreuzberg_needs_image_processing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2675,6 +3184,14 @@ image I/O and processing when results won't be used.
 ```c
 bool kreuzberg_needs_image_processing();
 ```
+
+**Example:**
+
+```c
+bool result = kreuzberg_needs_image_processing(instance);
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2732,9 +3249,9 @@ This is the main result type returned by all extraction functions.
 | `formatted_content` | `const char**` | `NULL` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `const char**` | `NULL` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_from_ocr()
+###### kreuzberg_from_ocr()
 
 Convert from an OCR result.
 
@@ -2743,6 +3260,20 @@ Convert from an OCR result.
 ```c
 KreuzbergExtractionResult kreuzberg_from_ocr(KreuzbergOcrExtractionResult ocr);
 ```
+
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_from_ocr((KreuzbergOcrExtractionResult){0});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ocr` | `KreuzbergOcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `KreuzbergExtractionResult`
 
 ---
 
@@ -2917,15 +3448,23 @@ included in page content.
 | `include_bbox` | `bool` | `true` | Include bounding box information in hierarchy blocks |
 | `ocr_coverage_threshold` | `float*` | `NULL` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergHierarchyConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergHierarchyConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergHierarchyConfig`
 
 ---
 
@@ -2973,15 +3512,23 @@ the plain comrak-based renderer.
 | `class_prefix` | `const char*` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergHtmlOutputConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergHtmlOutputConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergHtmlOutputConfig`
 
 ---
 
@@ -3006,15 +3553,23 @@ Image extraction configuration.
 | `append_ocr_text` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `KreuzbergImageOutputFormat` | `KREUZBERG_KREUZBERG_NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergImageExtractionConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergImageExtractionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergImageExtractionConfig`
 
 ---
 
@@ -3066,15 +3621,23 @@ for different document types.
 | `binarization_method` | `const char*` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invert_colors` | `bool` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergImagePreprocessingConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergImagePreprocessingConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergImagePreprocessingConfig`
 
 ---
 
@@ -3157,15 +3720,23 @@ Keyword extraction configuration.
 | `yake_params` | `KreuzbergYakeParams*` | `NULL` | YAKE-specific tuning parameters. |
 | `rake_params` | `KreuzbergRakeParams*` | `NULL` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergKeywordConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergKeywordConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergKeywordConfig`
 
 ---
 
@@ -3179,15 +3750,23 @@ Language detection configuration.
 | `min_confidence` | `double` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detect_multiple` | `bool` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergLanguageDetectionConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergLanguageDetectionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergLanguageDetectionConfig`
 
 ---
 
@@ -3218,15 +3797,23 @@ is enabled for PDF extraction.
 | `table_model` | `KreuzbergTableModel` | `KREUZBERG_KREUZBERG_TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergLayoutDetectionConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergLayoutDetectionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergLayoutDetectionConfig`
 
 ---
 
@@ -3266,9 +3853,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### kreuzberg_new()
+###### kreuzberg_new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3278,7 +3865,21 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 KreuzbergLlmBackend kreuzberg_new(KreuzbergLlmConfig config);
 ```
 
-#### kreuzberg_detect()
+**Example:**
+
+```c
+KreuzbergLlmBackend *result = kreuzberg_new((KreuzbergLlmConfig){0});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `KreuzbergLlmConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergLlmBackend`
+
+###### kreuzberg_detect()
 
 **Signature:**
 
@@ -3286,13 +3887,48 @@ KreuzbergLlmBackend kreuzberg_new(KreuzbergLlmConfig config);
 KreuzbergEntity* kreuzberg_detect(const char* text, KreuzbergEntityCategory* categories);
 ```
 
-#### kreuzberg_detect_with_custom()
+**Example:**
+
+```c
+KreuzbergEntity* result = kreuzberg_detect(instance, "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `categories` | `KreuzbergEntityCategory*` | Yes | The categories |
+
+**Returns:** `KreuzbergEntity*`
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_detect_with_custom()
 
 **Signature:**
 
 ```c
 KreuzbergEntity* kreuzberg_detect_with_custom(const char* text, KreuzbergEntityCategory* categories, const char** custom_labels);
 ```
+
+**Example:**
+
+```c
+KreuzbergEntity* result = kreuzberg_detect_with_custom(instance, "value", NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `categories` | `KreuzbergEntityCategory*` | Yes | The categories |
+| `custom_labels` | `const char**` | Yes | The custom labels |
+
+**Returns:** `KreuzbergEntity*`
+
+**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -3367,9 +4003,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocr_used` | `bool` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `void*` | `NULL` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_is_empty()
+###### kreuzberg_is_empty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3379,6 +4015,14 @@ additional postprocessor fields are populated.
 ```c
 bool kreuzberg_is_empty();
 ```
+
+**Example:**
+
+```c
+bool result = kreuzberg_is_empty(instance);
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -3425,9 +4069,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### kreuzberg_process_image()
+###### kreuzberg_process_image()
 
 Process an image and extract text via OCR.
 
@@ -3441,7 +4085,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3453,7 +4097,24 @@ so multiple backends can coexist in a pipeline without key conflicts.
 KreuzbergExtractionResult kreuzberg_process_image(const uint8_t* image_bytes, KreuzbergOcrConfig config);
 ```
 
-#### kreuzberg_process_image_file()
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_process_image(instance, (const uint8_t *)"data", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `image_bytes` | `const uint8_t*` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `config` | `KreuzbergOcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `KreuzbergExtractionResult`
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_process_image_file()
 
 Process a file and extract text via OCR.
 
@@ -3470,7 +4131,24 @@ Same as `process_image`, plus file I/O errors.
 KreuzbergExtractionResult kreuzberg_process_image_file(const char* path, KreuzbergOcrConfig config);
 ```
 
-#### kreuzberg_supports_language()
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_process_image_file(instance, "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | Path to the image file |
+| `config` | `KreuzbergOcrConfig` | Yes | OCR configuration |
+
+**Returns:** `KreuzbergExtractionResult`
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_supports_language()
 
 Check if this backend supports a given language code.
 
@@ -3484,7 +4162,21 @@ Check if this backend supports a given language code.
 bool kreuzberg_supports_language(const char* lang);
 ```
 
-#### kreuzberg_backend_type()
+**Example:**
+
+```c
+bool result = kreuzberg_supports_language(instance, "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `lang` | `const char*` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `bool`
+
+###### kreuzberg_backend_type()
 
 Get the backend type identifier.
 
@@ -3498,7 +4190,15 @@ The backend type enum value.
 KreuzbergOcrBackendType kreuzberg_backend_type();
 ```
 
-#### kreuzberg_supported_languages()
+**Example:**
+
+```c
+KreuzbergOcrBackendType *result = kreuzberg_backend_type(instance);
+```
+
+**Returns:** `KreuzbergOcrBackendType`
+
+###### kreuzberg_supported_languages()
 
 Optional: Get a list of all supported languages.
 
@@ -3510,7 +4210,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 const char** kreuzberg_supported_languages();
 ```
 
-#### kreuzberg_supports_table_detection()
+**Example:**
+
+```c
+const char** result = kreuzberg_supported_languages(instance);
+```
+
+**Returns:** `const char**`
+
+###### kreuzberg_supports_table_detection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3522,7 +4230,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 bool kreuzberg_supports_table_detection();
 ```
 
-#### kreuzberg_supports_document_processing()
+**Example:**
+
+```c
+bool result = kreuzberg_supports_table_detection(instance);
+```
+
+**Returns:** `bool`
+
+###### kreuzberg_supports_document_processing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3534,7 +4250,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 bool kreuzberg_supports_document_processing();
 ```
 
-#### kreuzberg_process_document()
+**Example:**
+
+```c
+bool result = kreuzberg_supports_document_processing(instance);
+```
+
+**Returns:** `bool`
+
+###### kreuzberg_process_document()
 
 Process a document file directly via OCR.
 
@@ -3545,6 +4269,23 @@ Only called if `supports_document_processing` returns `true`.
 ```c
 KreuzbergExtractionResult kreuzberg_process_document(const char* path, KreuzbergOcrConfig config);
 ```
+
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_process_document(instance, "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | The  path |
+| `config` | `KreuzbergOcrConfig` | Yes | The ocr config |
+
+**Returns:** `KreuzbergExtractionResult`
+
+**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -3585,15 +4326,23 @@ OCR configuration.
 | `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `void**` | `NULL` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergOcrConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergOcrConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergOcrConfig`
 
 ---
 
@@ -3724,15 +4473,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnum_ws_ratio_threshold` | `double` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipeline_min_quality` | `double` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergOcrQualityThresholds kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergOcrQualityThresholds *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergOcrQualityThresholds`
 
 ---
 
@@ -3808,9 +4565,9 @@ Uses a builder pattern for convenient configuration.
 | `drop_score` | `float` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `model_tier` | `const char*` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### kreuzberg_with_cache_dir()
+###### kreuzberg_with_cache_dir()
 
 Sets a custom cache directory for model files.
 
@@ -3820,7 +4577,21 @@ Sets a custom cache directory for model files.
 KreuzbergPaddleOcrConfig kreuzberg_with_cache_dir(const char* path);
 ```
 
-#### kreuzberg_with_table_detection()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_cache_dir(instance, "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `const char*` | Yes | Path to cache directory |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_table_detection()
 
 Enables or disables table structure detection.
 
@@ -3830,7 +4601,21 @@ Enables or disables table structure detection.
 KreuzbergPaddleOcrConfig kreuzberg_with_table_detection(bool enable);
 ```
 
-#### kreuzberg_with_angle_cls()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_table_detection(instance, true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable table detection |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_angle_cls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3840,7 +4625,21 @@ Enables or disables angle classification for rotated text.
 KreuzbergPaddleOcrConfig kreuzberg_with_angle_cls(bool enable);
 ```
 
-#### kreuzberg_with_det_db_thresh()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_angle_cls(instance, true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enable` | `bool` | Yes | Whether to enable angle classification |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_det_db_thresh()
 
 Sets the database threshold for text detection.
 
@@ -3850,7 +4649,21 @@ Sets the database threshold for text detection.
 KreuzbergPaddleOcrConfig kreuzberg_with_det_db_thresh(float threshold);
 ```
 
-#### kreuzberg_with_det_db_box_thresh()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_thresh(instance, 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_det_db_box_thresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3860,7 +4673,21 @@ Sets the box threshold for text bounding box refinement.
 KreuzbergPaddleOcrConfig kreuzberg_with_det_db_box_thresh(float threshold);
 ```
 
-#### kreuzberg_with_det_db_unclip_ratio()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_box_thresh(instance, 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `threshold` | `float` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_det_db_unclip_ratio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3870,7 +4697,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 KreuzbergPaddleOcrConfig kreuzberg_with_det_db_unclip_ratio(float ratio);
 ```
 
-#### kreuzberg_with_det_limit_side_len()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_unclip_ratio(instance, 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ratio` | `float` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_det_limit_side_len()
 
 Sets the maximum side length for detection images.
 
@@ -3880,7 +4721,21 @@ Sets the maximum side length for detection images.
 KreuzbergPaddleOcrConfig kreuzberg_with_det_limit_side_len(uint32_t length);
 ```
 
-#### kreuzberg_with_rec_batch_num()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_limit_side_len(instance, 42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `length` | `uint32_t` | Yes | Maximum side length in pixels |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_rec_batch_num()
 
 Sets the batch size for recognition inference.
 
@@ -3890,7 +4745,21 @@ Sets the batch size for recognition inference.
 KreuzbergPaddleOcrConfig kreuzberg_with_rec_batch_num(uint32_t batch_size);
 ```
 
-#### kreuzberg_with_drop_score()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_rec_batch_num(instance, 42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `batch_size` | `uint32_t` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_drop_score()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3900,7 +4769,21 @@ Sets the minimum recognition confidence threshold.
 KreuzbergPaddleOcrConfig kreuzberg_with_drop_score(float score);
 ```
 
-#### kreuzberg_with_padding()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_drop_score(instance, 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `score` | `float` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_padding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3910,7 +4793,21 @@ Sets padding in pixels added around images before detection.
 KreuzbergPaddleOcrConfig kreuzberg_with_padding(uint32_t padding);
 ```
 
-#### kreuzberg_with_model_tier()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_padding(instance, 42);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `padding` | `uint32_t` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_with_model_tier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3920,7 +4817,21 @@ Sets the model tier controlling detection/recognition model size.
 KreuzbergPaddleOcrConfig kreuzberg_with_model_tier(const char* tier);
 ```
 
-#### kreuzberg_default()
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_model_tier(instance, "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tier` | `const char*` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `KreuzbergPaddleOcrConfig`
+
+###### kreuzberg_default()
 
 Creates a default configuration with English language support.
 
@@ -3929,6 +4840,14 @@ Creates a default configuration with English language support.
 ```c
 KreuzbergPaddleOcrConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergPaddleOcrConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergPaddleOcrConfig`
 
 ---
 
@@ -3990,15 +4909,23 @@ when page boundaries are available and chunking is configured.
 | `insert_page_markers` | `bool` | `false` | Insert page markers in main content string |
 | `marker_format` | `const char*` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergPageConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergPageConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergPageConfig`
 
 ---
 
@@ -4128,15 +5055,23 @@ PDF-specific configuration.
 | `allow_single_column_tables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `NULL` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergPdfConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergPdfConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergPdfConfig`
 
 ---
 
@@ -4170,9 +5105,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### kreuzberg_name()
+###### kreuzberg_name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4188,7 +5123,15 @@ The name should be:
 const char* kreuzberg_name();
 ```
 
-#### kreuzberg_version()
+**Example:**
+
+```c
+const char *result = kreuzberg_name(instance);
+```
+
+**Returns:** `const char*`
+
+###### kreuzberg_version()
 
 Returns the semantic version of this plugin.
 
@@ -4202,7 +5145,15 @@ Defaults to the kreuzberg crate version.
 const char* kreuzberg_version();
 ```
 
-#### kreuzberg_initialize()
+**Example:**
+
+```c
+const char *result = kreuzberg_version(instance);
+```
+
+**Returns:** `const char*`
+
+###### kreuzberg_initialize()
 
 Initialize the plugin.
 
@@ -4212,7 +5163,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4231,7 +5182,17 @@ Defaults to a no-op for stateless plugins.
 void kreuzberg_initialize();
 ```
 
-#### kreuzberg_shutdown()
+**Example:**
+
+```c
+kreuzberg_initialize(instance);
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_shutdown()
 
 Shutdown the plugin.
 
@@ -4242,7 +5203,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4260,7 +5221,17 @@ Defaults to a no-op for stateless plugins.
 void kreuzberg_shutdown();
 ```
 
-#### kreuzberg_description()
+**Example:**
+
+```c
+kreuzberg_shutdown(instance);
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_description()
 
 Optional plugin description for debugging and logging.
 
@@ -4272,7 +5243,15 @@ Defaults to empty string if not overridden.
 const char* kreuzberg_description();
 ```
 
-#### kreuzberg_author()
+**Example:**
+
+```c
+const char *result = kreuzberg_description(instance);
+```
+
+**Returns:** `const char*`
+
+###### kreuzberg_author()
 
 Optional plugin author information.
 
@@ -4283,6 +5262,14 @@ Defaults to empty string if not overridden.
 ```c
 const char* kreuzberg_author();
 ```
+
+**Example:**
+
+```c
+const char *result = kreuzberg_author(instance);
+```
+
+**Returns:** `const char*`
 
 ---
 
@@ -4318,9 +5305,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### kreuzberg_process()
+###### kreuzberg_process()
 
 Process an extraction result.
 
@@ -4339,15 +5326,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4369,7 +5356,24 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 void kreuzberg_process(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_processing_stage()
+**Example:**
+
+```c
+kreuzberg_process(instance, NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_processing_stage()
 
 Get the processing stage for this post-processor.
 
@@ -4385,7 +5389,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 KreuzbergProcessingStage kreuzberg_processing_stage();
 ```
 
-#### kreuzberg_should_process()
+**Example:**
+
+```c
+KreuzbergProcessingStage *result = kreuzberg_processing_stage(instance);
+```
+
+**Returns:** `KreuzbergProcessingStage`
+
+###### kreuzberg_should_process()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4402,7 +5414,22 @@ Defaults to `true` (always run).
 bool kreuzberg_should_process(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_estimated_duration_ms()
+**Example:**
+
+```c
+bool result = kreuzberg_should_process(instance, NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `config` | `KreuzbergExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### kreuzberg_estimated_duration_ms()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4418,7 +5445,21 @@ Estimated processing time in milliseconds.
 uint64_t kreuzberg_estimated_duration_ms(KreuzbergExtractionResult result);
 ```
 
-#### kreuzberg_priority()
+**Example:**
+
+```c
+uint64_t result = kreuzberg_estimated_duration_ms(instance, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+
+**Returns:** `uint64_t`
+
+###### kreuzberg_priority()
 
 Execution priority within the processing stage.
 
@@ -4431,6 +5472,14 @@ for high-priority processors that should run early in their stage.
 ```c
 int32_t kreuzberg_priority();
 ```
+
+**Example:**
+
+```c
+int32_t result = kreuzberg_priority(instance);
+```
+
+**Returns:** `int32_t`
 
 ---
 
@@ -4446,15 +5495,23 @@ Post-processor configuration.
 | `enabled_set` | `const char***` | `NULL` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabled_set` | `const char***` | `NULL` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergPostProcessorConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergPostProcessorConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergPostProcessorConfig`
 
 ---
 
@@ -4580,15 +5637,23 @@ RAKE-specific parameters.
 | `min_word_length` | `uintptr_t` | `1` | Minimum word length to consider (default: 1). |
 | `max_words_per_phrase` | `uintptr_t` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergRakeParams kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergRakeParams *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergRakeParams`
 
 ---
 
@@ -4624,9 +5689,9 @@ Configuration for the redaction post-processor.
 | `custom_terms` | `KreuzbergRedactionTerm*` | `NULL` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `custom_patterns` | `KreuzbergRedactionPattern*` | `NULL` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
@@ -4634,7 +5699,15 @@ Configuration for the redaction post-processor.
 KreuzbergRedactionConfig kreuzberg_default();
 ```
 
-#### kreuzberg_validate()
+**Example:**
+
+```c
+KreuzbergRedactionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergRedactionConfig`
+
+###### kreuzberg_validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4649,6 +5722,16 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```c
 void kreuzberg_validate();
 ```
+
+**Example:**
+
+```c
+kreuzberg_validate(instance);
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -4680,9 +5763,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `pattern` | `const char*` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_labeled()
+###### kreuzberg_labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4691,6 +5774,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```c
 KreuzbergRedactionPattern kreuzberg_labeled(const char* label, const char* pattern);
 ```
+
+**Example:**
+
+```c
+KreuzbergRedactionPattern *result = kreuzberg_labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `const char*` | Yes | The label |
+| `pattern` | `const char*` | Yes | The pattern |
+
+**Returns:** `KreuzbergRedactionPattern`
 
 ---
 
@@ -4724,9 +5822,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `value` | `const char*` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_literal()
+###### kreuzberg_literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4736,7 +5834,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 KreuzbergRedactionTerm kreuzberg_literal(const char* value);
 ```
 
-#### kreuzberg_labeled()
+**Example:**
+
+```c
+KreuzbergRedactionTerm *result = kreuzberg_literal("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `const char*` | Yes | The value |
+
+**Returns:** `KreuzbergRedactionTerm`
+
+###### kreuzberg_labeled()
 
 Build a term with a custom label.
 
@@ -4745,6 +5857,21 @@ Build a term with a custom label.
 ```c
 KreuzbergRedactionTerm kreuzberg_labeled(const char* label, const char* value);
 ```
+
+**Example:**
+
+```c
+KreuzbergRedactionTerm *result = kreuzberg_labeled("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `const char*` | Yes | The label |
+| `value` | `const char*` | Yes | The value |
+
+**Returns:** `KreuzbergRedactionTerm`
 
 ---
 
@@ -4766,9 +5893,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### kreuzberg_render()
+###### kreuzberg_render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4786,6 +5913,22 @@ Returns an error if rendering fails.
 const char* kreuzberg_render(KreuzbergInternalDocument doc);
 ```
 
+**Example:**
+
+```c
+const char *result = kreuzberg_render(instance, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `doc` | `KreuzbergInternalDocument` | Yes | The internal document to render |
+
+**Returns:** `const char*`
+
+**Errors:** Returns `NULL` on error.
+
 ---
 
 #### KreuzbergRerankedDocument
@@ -4795,7 +5938,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4851,11 +5994,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### kreuzberg_rerank()
+###### kreuzberg_rerank()
 
 Score a list of documents against a query.
 
@@ -4874,6 +6017,23 @@ against `documents.len()` before sorting.
 float* kreuzberg_rerank(const char* query, const char** documents);
 ```
 
+**Example:**
+
+```c
+float* result = kreuzberg_rerank(instance, "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `const char*` | Yes | The query |
+| `documents` | `const char**` | Yes | The documents |
+
+**Returns:** `float*`
+
+**Errors:** Returns `NULL` on error.
+
 ---
 
 #### KreuzbergRerankerConfig
@@ -4883,7 +6043,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4895,15 +6055,23 @@ Since v5.0.
 | `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `NULL` (auto-select per platform). |
 | `max_rerank_duration_secs` | `uint64_t*` | `NULL` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `NULL` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergRerankerConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergRerankerConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergRerankerConfig`
 
 ---
 
@@ -4914,7 +6082,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4962,15 +6130,23 @@ while still supporting legitimate documents.
 | `max_xml_depth` | `uintptr_t` | `1024` | Maximum XML depth (100 levels) |
 | `max_table_cells` | `uintptr_t` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergSecurityLimits kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergSecurityLimits *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergSecurityLimits`
 
 ---
 
@@ -4997,9 +6173,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `max_request_body_bytes` | `uintptr_t` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `uintptr_t` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
@@ -5007,7 +6183,15 @@ including host/port settings, CORS configuration, and upload limits.
 KreuzbergServerConfig kreuzberg_default();
 ```
 
-#### kreuzberg_listen_addr()
+**Example:**
+
+```c
+KreuzbergServerConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergServerConfig`
+
+###### kreuzberg_listen_addr()
 
 Get the server listen address (host:port).
 
@@ -5017,7 +6201,15 @@ Get the server listen address (host:port).
 const char* kreuzberg_listen_addr();
 ```
 
-#### kreuzberg_cors_allows_all()
+**Example:**
+
+```c
+const char *result = kreuzberg_listen_addr(instance);
+```
+
+**Returns:** `const char*`
+
+###### kreuzberg_cors_allows_all()
 
 Check if CORS allows all origins.
 
@@ -5030,7 +6222,15 @@ are allowed. Returns `false` if specific origins are configured.
 bool kreuzberg_cors_allows_all();
 ```
 
-#### kreuzberg_is_origin_allowed()
+**Example:**
+
+```c
+bool result = kreuzberg_cors_allows_all(instance);
+```
+
+**Returns:** `bool`
+
+###### kreuzberg_is_origin_allowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5045,7 +6245,21 @@ Returns `true` if:
 bool kreuzberg_is_origin_allowed(const char* origin);
 ```
 
-#### kreuzberg_max_request_body_mb()
+**Example:**
+
+```c
+bool result = kreuzberg_is_origin_allowed(instance, "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `origin` | `const char*` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `bool`
+
+###### kreuzberg_max_request_body_mb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5055,7 +6269,15 @@ Get maximum request body size in megabytes (rounded up).
 uintptr_t kreuzberg_max_request_body_mb();
 ```
 
-#### kreuzberg_max_multipart_field_mb()
+**Example:**
+
+```c
+uintptr_t result = kreuzberg_max_request_body_mb(instance);
+```
+
+**Returns:** `uintptr_t`
+
+###### kreuzberg_max_multipart_field_mb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5064,6 +6286,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```c
 uintptr_t kreuzberg_max_multipart_field_mb();
 ```
+
+**Example:**
+
+```c
+uintptr_t result = kreuzberg_max_multipart_field_mb(instance);
+```
+
+**Returns:** `uintptr_t`
 
 ---
 
@@ -5151,15 +6381,23 @@ Used via `ImageExtractionConfig.svg`.
 | `sanitize` | `bool` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `render_dpi` | `float` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergSvgOptions kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergSvgOptions *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergSvgOptions`
 
 ---
 
@@ -5252,15 +6490,23 @@ for specific document types (invoices, handwriting, etc.).
 | `textord_space_size_is_variable` | `bool` | `true` | Variable-width space detection |
 | `thresholding_method` | `bool` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTesseractConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTesseractConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTesseractConfig`
 
 ---
 
@@ -5320,9 +6566,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### kreuzberg_new()
+###### kreuzberg_new()
 
 Create a fresh counter with no previous state.
 
@@ -5331,6 +6577,14 @@ Create a fresh counter with no previous state.
 ```c
 KreuzbergTokenCounter kreuzberg_new();
 ```
+
+**Example:**
+
+```c
+KreuzbergTokenCounter *result = kreuzberg_new();
+```
+
+**Returns:** `KreuzbergTokenCounter`
 
 ---
 
@@ -5352,15 +6606,23 @@ Configuration for the token-reduction pipeline.
 | `target_reduction` | `float*` | `NULL` | Target fraction of text to retain (0.0–1.0); `NULL` = no fixed target. |
 | `enable_semantic_clustering` | `bool` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTokenReductionConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTokenReductionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTokenReductionConfig`
 
 ---
 
@@ -5373,15 +6635,23 @@ Token reduction configuration.
 | `mode` | `const char*` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserve_important_words` | `bool` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTokenReductionOptions kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTokenReductionOptions *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTokenReductionOptions`
 
 ---
 
@@ -5418,15 +6688,23 @@ model = "tiny"
 | `allow_network` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verify_hash` | `bool` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTranscriptionConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTranscriptionConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTranscriptionConfig`
 
 ---
 
@@ -5490,15 +6768,23 @@ docstrings = true
 | `groups` | `const char***` | `NULL` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `KreuzbergTreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTreeSitterConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTreeSitterConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTreeSitterConfig`
 
 ---
 
@@ -5520,15 +6806,23 @@ Controls which analysis features are enabled when extracting code files.
 | `chunk_max_size` | `uintptr_t*` | `NULL` | Maximum chunk size in bytes. `NULL` disables chunking. |
 | `content_mode` | `KreuzbergCodeContentMode` | `KREUZBERG_KREUZBERG_CHUNKS` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergTreeSitterProcessConfig kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergTreeSitterProcessConfig *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergTreeSitterProcessConfig`
 
 ---
 
@@ -5559,9 +6853,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### kreuzberg_validate()
+###### kreuzberg_validate()
 
 Validate an extraction result.
 
@@ -5578,7 +6872,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5603,7 +6897,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5626,7 +6920,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5651,7 +6945,24 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 void kreuzberg_validate(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_should_validate()
+**Example:**
+
+```c
+kreuzberg_validate(instance, NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result to validate |
+| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `NULL` on error.
+
+###### kreuzberg_should_validate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5668,7 +6979,22 @@ Defaults to `true` (always run).
 bool kreuzberg_should_validate(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
 ```
 
-#### kreuzberg_priority()
+**Example:**
+
+```c
+bool result = kreuzberg_should_validate(instance, NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `config` | `KreuzbergExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### kreuzberg_priority()
 
 Optional: Get the validation priority.
 
@@ -5686,6 +7012,14 @@ Priority value (higher = runs earlier).
 ```c
 int32_t kreuzberg_priority();
 ```
+
+**Example:**
+
+```c
+int32_t result = kreuzberg_priority(instance);
+```
+
+**Returns:** `int32_t`
 
 ---
 
@@ -5745,15 +7079,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `window_size` | `uintptr_t` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### kreuzberg_default()
+###### kreuzberg_default()
 
 **Signature:**
 
 ```c
 KreuzbergYakeParams kreuzberg_default();
 ```
+
+**Example:**
+
+```c
+KreuzbergYakeParams *result = kreuzberg_default();
+```
+
+**Returns:** `KreuzbergYakeParams`
 
 ---
 
@@ -5977,7 +7319,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6724,7 +8066,7 @@ and provides context for debugging.
 | `KREUZBERG_LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `KREUZBERG_UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
 | `KREUZBERG_EMBEDDING` | The embedding model or embedding pipeline returned an error. |
-| `KREUZBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `KREUZBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `KREUZBERG_TRANSCRIPTION` | Audio/video transcription failed. |
 | `KREUZBERG_TIMEOUT` | The extraction operation exceeded the configured time limit. |
 | `KREUZBERG_CANCELLED` | The extraction was cancelled via a `CancellationToken`. |

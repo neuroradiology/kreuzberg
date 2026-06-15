@@ -580,9 +580,9 @@ dependencies = [
 
 [[package]]
 name = "brotli-decompressor"
-version = "5.0.2"
+version = "5.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30bebb348517c190d59e80c4f19c2beef71cf89d9df0c46386be8f92c7021fec"
+checksum = "5962523e1b92ce1b5e793d9169b9943eece10d39f62550bc04bb605d75b94924"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
@@ -2974,7 +2974,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3104,7 +3104,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-libheif"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 dependencies = [
  "cfg-if",
  "enumn",
@@ -3126,7 +3126,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3140,7 +3140,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 dependencies = [
  "cc",
  "cmake",
@@ -3151,11 +3151,12 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg_nif"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
  "async-trait",
+ "brotli-decompressor",
  "kreuzberg",
  "rustler",
  "serde",

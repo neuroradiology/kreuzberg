@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.15"
+version = "5.0.0-rc.16"
 edition = "2024"
 license = "Elastic-2.0"
 
@@ -11,7 +11,38 @@ ignored = ["kreuzberg"]
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
-
+[features]
+api = ["kreuzberg/api"]
+api-types = ["kreuzberg/api-types"]
+auto-rotate-types = ["kreuzberg/auto-rotate-types"]
+captioning = ["kreuzberg/captioning"]
+chunking-tokenizers = ["kreuzberg/chunking-tokenizers"]
+classification = ["kreuzberg/classification"]
+diff = ["kreuzberg/diff"]
+embedding-presets = ["kreuzberg/embedding-presets"]
+embeddings = ["kreuzberg/embeddings"]
+heic = ["kreuzberg/heic"]
+html = ["kreuzberg/html"]
+keywords-rake = ["kreuzberg/keywords-rake"]
+keywords-yake = ["kreuzberg/keywords-yake"]
+layout-types = ["kreuzberg/layout-types"]
+liter-llm = ["kreuzberg/liter-llm"]
+ner-llm = ["kreuzberg/ner-llm"]
+ner-onnx = ["kreuzberg/ner-onnx"]
+ocr = ["kreuzberg/ocr"]
+ocr-wasm = ["kreuzberg/ocr-wasm"]
+office = ["kreuzberg/office"]
+paddle-ocr-types = ["kreuzberg/paddle-ocr-types"]
+pdf = ["kreuzberg/pdf"]
+quality = ["kreuzberg/quality"]
+redaction = ["kreuzberg/redaction"]
+reranker = ["kreuzberg/reranker"]
+reranker-presets = ["kreuzberg/reranker-presets"]
+svg = ["kreuzberg/svg"]
+tokio-runtime = ["kreuzberg/tokio-runtime"]
+transcription-types = ["kreuzberg/transcription-types"]
+tree-sitter = ["kreuzberg/tree-sitter"]
+xml = ["kreuzberg/xml"]
 [dependencies]
 async-trait = "0.1"
 flutter_rust_bridge = "=2.12.0"
@@ -29,10 +60,4 @@ kreuzberg = { path = "../../../crates/kreuzberg", default-features = false, feat
 
 [lints.rust]
 # flutter_rust_bridge uses #[cfg(frb_expand)] internally during macro expansion.
-# Variant arms gated on upstream features (e.g. #[cfg(feature = "office")]) use
-# cfg conditions that are not declared in this binding crate. Declare all of them
-# as known cfgs so rustc does not emit unexpected_cfgs warnings.
-unexpected_cfgs = { level = "warn", check-cfg = [
-    'cfg(frb_expand)',
-    'cfg(feature, values("chunking-tokenizers", "heic", "keywords-rake", "keywords-yake", "office", "pdf", "svg", "transcription-types", "tree-sitter", "xml"))',
-] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

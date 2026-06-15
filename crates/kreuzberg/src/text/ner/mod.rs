@@ -25,6 +25,9 @@ pub mod llm;
 
 pub use backend::NerBackend;
 
+use crate::Result;
+use crate::types::entity::Entity;
+
 use std::path::PathBuf;
 
 /// Eagerly download a NER model into the kreuzberg cache.
@@ -63,4 +66,41 @@ pub fn known_models() -> &'static [&'static str] {
 #[cfg(not(feature = "ner-onnx"))]
 pub fn known_models() -> &'static [&'static str] {
     &[]
+}
+
+/// Detect named entities in the given text using the provided backend.
+///
+/// Identifies entities such as persons, organizations, locations, dates, and more
+/// based on the backend's capabilities and the categories requested.
+///
+/// # Arguments
+///
+/// * `text` - The input text to analyze.
+/// * `backend` - The NER backend implementation to use (either ONNX-based GLiNER or LLM-driven).
+/// * `categories` - Entity categories to detect. If empty, the backend returns all entities it can identify.
+///
+/// # Returns
+///
+/// A vector of detected `Entity` objects in source byte-offset order.
+///
+/// # Example
+///
+/// ```rust,no_run
+/// use kreuzberg::types::entity::EntityCategory;
+/// use kreuzberg::text::ner::{detect_entities, LlmBackend};
+/// use kreuzberg::core::config::LlmConfig;
+///
+/// # async fn example() -> kreuzberg::Result<()> {
+/// let backend = LlmBackend::new(LlmConfig::default());
+/// let categories = vec![EntityCategory::Person, EntityCategory::Organization];
+/// let entities = detect_entities("Alice works at Acme Corp.", &backend, &categories).await?;
+/// # Ok(())
+/// # }
+/// ```
+pub async fn detect_entities(
+    text: &str,
+    backend: &dyn NerBackend,
+    categories: &[crate::types::entity::EntityCategory],
+) -> Result<Vec<Entity>> {
+    backend.detect(text, categories).await
 }

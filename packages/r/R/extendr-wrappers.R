@@ -244,6 +244,18 @@ classify_pages <- function(result = ExtractionResult$default(), config) .Call("w
 #' or any error returned by prompt rendering or the underlying LLM call.
 #' @export
 classify_text <- function(text, config) .Call("wrap__classify_text", text, config, PACKAGE = "kreuzberg")
+#' Classify a single document (as multiple pages or a single text block)
+#'
+#' Aggregates classifications across all pages in the provided text, returning
+#' a combined label set that represents the document as a whole.
+#' @param pages Slice of page texts to classify. Each page is classified independently using the configured LLM, and results are aggregated.
+#' @param config Classification configuration including labels and LLM settings.
+#' @return A vector of `ClassificationLabel` entries representing the document's overall classification.
+#'
+#' @section Errors:
+#' Returns an error if `config.labels` is empty or if LLM calls fail.
+#' @export
+classify_document <- function(pages, config) .Call("wrap__classify_document", pages, config, PACKAGE = "kreuzberg")
 #' Eagerly download a NER model into the kreuzberg cache
 #'
 #' `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
@@ -360,6 +372,27 @@ extract_keywords <- function(text, config = KeywordConfig$default()) .Call("wrap
 #' or rendered, or if `page_index` is out of range.
 #' @export
 render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi = NULL, password = NULL) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
+#' Caption a single image from bytes
+#' @param image_bytes The image data.
+#' @param llm_config LLM configuration for the VLM call.
+#' @param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt when `None`.
+#' @return The generated caption text.
+#'
+#' @section Errors:
+#' Returns an error if the VLM call fails or if image format detection fails.
+#' @export
+caption_image <- function(image_bytes, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__caption_image", image_bytes, llm_config, custom_prompt, PACKAGE = "kreuzberg")
+#' Caption a single image from a file path
+#' @param path Path to the image file.
+#' @param llm_config LLM configuration for the VLM call.
+#' @param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt when `None`.
+#' @return The generated caption text.
+#'
+#' @section Errors:
+#' Returns an error if the file cannot be read, if image format detection fails,
+#' or if the VLM call fails.
+#' @export
+caption_image_file <- function(path, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__caption_image_file", path, llm_config, custom_prompt, PACKAGE = "kreuzberg")
 #' Detect the MIME type of a file at the given path
 #'
 #' Uses the file extension and optionally the file content to determine the MIME type.
@@ -3696,6 +3729,42 @@ PdfMetadata$from_json <- function(json) {
 }
 #' @export
 `[[.PdfMetadata` <- `$.PdfMetadata`
+#' Classification enrichment knob: how to label the document
+#' @field config Label set and LLM settings for the classification stage.
+#' @export
+ClassificationEnrichmentConfig <- new.env(parent = emptyenv())
+#' @export
+`$.ClassificationEnrichmentConfig` <- function(self, name) {
+  func <- ClassificationEnrichmentConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ClassificationEnrichmentConfig` <- `$.ClassificationEnrichmentConfig`
+#' Captioning enrichment knob: which LLM to use for image captions
+#'
+#' The enrichment stage calls `caption_image` for every
+#' image in `ExtractionResult::images` that has non-empty `data`. Images with
+#' empty byte data (e.g. reference-only images populated via `source_path`) are
+#' skipped rather than forwarded to the VLM.
+#' @field config LLM / VLM configuration forwarded verbatim to each `caption_image` call.
+#' @field custom_prompt Optional custom prompt override forwarded to every `caption_image` call. `None` uses the
+#' @export
+CaptioningEnrichmentConfig <- new.env(parent = emptyenv())
+#' @export
+`$.CaptioningEnrichmentConfig` <- function(self, name) {
+  func <- CaptioningEnrichmentConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.CaptioningEnrichmentConfig` <- `$.CaptioningEnrichmentConfig`
 #' Target format for re-encoding extracted images
 #'
 #' Controls whether and how extracted images are normalised to a uniform

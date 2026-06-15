@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.25.9"
+alef_version = "0.25.16"
 languages = [
   "python",
   "node",
@@ -724,6 +724,39 @@ types = [
   # &'a str field. Alef cannot generate a From impl for lifetime-parameterised
   # types without a matching static constructor. Not part of the public API.
   "kreuzberg::chunking::semantic::merge::Segment",
+
+  # NerBackend is a pub trait without a corresponding plugin registry entry
+  # (no register_ner_backend/get_ner_backend_registry exists in kreuzberg
+  # plugins). Treating it as a binding-visible type breaks swift-bridge
+  # (must be declared with `type NerBackend`) and dart frb codegen (needs
+  # `dyn NerBackend` in `RustAutoOpaqueInner<T>`). Until a proper trait_bridge
+  # entry is added, exclude the trait from the binding surface.
+  "NerBackend",
+  "kreuzberg::text::ner::backend::NerBackend",
+
+  # EnrichmentConfig + EnrichedResult sit on top of the (currently
+  # binding-excluded) NerBackend trait via `NerEnrichmentConfig.backend:
+  # Arc<dyn NerBackend>` and `EnrichedResult.ner: Option<Vec<EntityResult>>`.
+  # EnrichmentConfig lacks serde::{Serialize, Deserialize}; EnrichedResult
+  # lacks serde::Serialize and Default. Bindings that marshal via serde
+  # (JNI, NAPI, PyO3) cannot generate cross-FFI glue without those derives.
+  # Exclude until either (a) the NerBackend trait_bridge lands and the
+  # enrich types gain serde derives, or (b) a non-NER-only enrich subset is
+  # exposed.
+  "EnrichmentConfig",
+  "EnrichedResult",
+  "kreuzberg::enrich::EnrichmentConfig",
+  "kreuzberg::enrich::EnrichedResult",
+  "NerEnrichmentConfig",
+  "kreuzberg::enrich::NerEnrichmentConfig",
+
+  # ClassifyContext<'a> has a lifetime-bound &'a str field plus a bare
+  # `Value` field that alef cannot prove is `serde_json::Value`. Internal
+  # type used only by the classify_one() helper; not part of the public
+  # binding surface. classify_pages/classify_text/classify_document are the
+  # public entry points.
+  "ClassifyContext",
+  "kreuzberg::text::classification::page_classifier::ClassifyContext",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge
@@ -757,6 +790,7 @@ methods = [
   # params that differ from the opaque-handle receiver. Callers use apply_strategy
   # (a free function) to consume a TokenCounter, making this method internal.
   "TokenCounter.next_token",
+
 ]
 
 functions = [
@@ -767,6 +801,31 @@ functions = [
   # &category.0 (newtype syntax) for PiiCategory mapped to String.
   # Excluded globally until upstream fixes &mut-through-Arc delegation.
   "apply_strategy",
+
+  # classify_one is an internal helper invoked by classify_pages/classify_text;
+  # takes a `&ClassifyContext<'_>` with a bare `Value` field that alef cannot
+  # prove is `serde_json::Value`. Public entry points are
+  # classify_pages/classify_text/classify_document.
+  "classify_one",
+
+  # detect_entities takes `&dyn NerBackend` — the trait is excluded above and
+  # has no plugin registry yet, so the free function is unreachable from
+  # bindings. The Python binding exposes the higher-level redact()/detect_pii()
+  # pipeline; other languages will gain NER access once the trait_bridge
+  # entry lands.
+  "detect_entities",
+
+  # caption_images takes `&[&[u8]]` (slice of byte slices). Alef cannot
+  # automatically convert binding-side `Vec<Vec<u8>>` (or `Vec<Value>` for
+  # JNI) into a slice-of-slices reference; would require a per-binding
+  # adapter to call `iter().map(Vec::as_slice).collect::<Vec<_>>()` first.
+  # caption_image() (single image) covers the common case; multi-image
+  # callers can loop client-side until alef gains slice-of-slice conversion.
+  "caption_images",
+
+  # enrich() takes &EnrichmentConfig and returns EnrichedResult — both
+  # excluded above pending NerBackend trait_bridge and serde derives.
+  "enrich",
 ]
 
 [crates.lint.python]
@@ -3774,7 +3833,7 @@ path = "../../packages/zig"
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
 # https://github.com/kreuzberg-dev/kreuzberg/releases/download/v{version}/kreuzberg-zig-v{version}.tar.gz
-hash = "kreuzberg-5.0.0-rc.15-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "kreuzberg-5.0.0-rc.16-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements

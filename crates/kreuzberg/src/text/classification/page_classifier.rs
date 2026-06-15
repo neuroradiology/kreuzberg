@@ -135,15 +135,20 @@ fn page_slices(result: &ExtractionResult) -> Vec<(u32, &str)> {
 /// Building this once and threading it through `classify_one` avoids
 /// re-joining label lists / re-building the JSON schema per page when the
 /// caller drives `classify_pages` in a loop.
-struct ClassifyContext<'a> {
-    template: &'a str,
-    labels_joined: String,
-    schema: Value,
-    schema_name: &'static str,
+pub struct ClassifyContext<'a> {
+    /// Rendered prompt template (default or user-provided).
+    pub template: &'a str,
+    /// Pre-joined comma-separated label list used in the rendered prompt.
+    pub labels_joined: String,
+    /// JSON schema describing the model's expected output shape.
+    pub schema: Value,
+    /// Stable schema identifier for the active single- or multi-label mode.
+    pub schema_name: &'static str,
 }
 
 impl<'a> ClassifyContext<'a> {
-    fn new(config: &'a PageClassificationConfig) -> Self {
+    /// Build a reusable classification context for the supplied configuration.
+    pub fn new(config: &'a PageClassificationConfig) -> Self {
         let template = config
             .prompt_template
             .as_deref()
@@ -166,7 +171,7 @@ impl<'a> ClassifyContext<'a> {
 
 /// Classify a single text snippet (one page or a standalone document body)
 /// and return its labels plus the LLM call's usage record, if any.
-async fn classify_one(
+pub async fn classify_one(
     text: &str,
     ctx: &ClassifyContext<'_>,
     config: &PageClassificationConfig,

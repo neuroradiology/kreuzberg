@@ -70,7 +70,7 @@ runs:
           /usr/local/share/libheif/
         key: libheif-linux-${{ runner.arch }}-v1.23.0-cache-v2
         restore-keys: |
-          libheif-linux-${{ runner.arch }}-
+          libheif-linux-${{ runner.arch }}-v1.23.0-cache-v2
 
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'

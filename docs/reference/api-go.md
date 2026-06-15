@@ -33,6 +33,15 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 func ExtractBytes(content []byte, mimeType string, config ExtractionConfig) (ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractBytes([]byte("data"), "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -42,6 +51,7 @@ func ExtractBytes(content []byte, mimeType string, config ExtractionConfig) (Ext
 | `Config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -74,6 +84,15 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 func ExtractFile(path string, mimeType string, config ExtractionConfig) (ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractFile("value", "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,6 +102,7 @@ func ExtractFile(path string, mimeType string, config ExtractionConfig) (Extract
 | `Config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -106,6 +126,15 @@ use a truly synchronous extraction approach instead.
 func ExtractFileSync(path string, mimeType string, config ExtractionConfig) (ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractFileSync("value", "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -115,6 +144,7 @@ func ExtractFileSync(path string, mimeType string, config ExtractionConfig) (Ext
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -135,6 +165,15 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 func ExtractBytesSync(content []byte, mimeType string, config ExtractionConfig) (ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractBytesSync([]byte("data"), "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -144,6 +183,7 @@ func ExtractBytesSync(content []byte, mimeType string, config ExtractionConfig) 
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -161,6 +201,15 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 func BatchExtractFilesSync(items []BatchFileItem, config ExtractionConfig) ([]ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := BatchExtractFilesSync(nil, ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -169,6 +218,7 @@ func BatchExtractFilesSync(items []BatchFileItem, config ExtractionConfig) ([]Ex
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `[]ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -188,6 +238,15 @@ that iterates through items and calls `extract_bytes_sync()`.
 func BatchExtractBytesSync(items []BatchBytesItem, config ExtractionConfig) ([]ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := BatchExtractBytesSync(nil, ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -196,6 +255,7 @@ func BatchExtractBytesSync(items []BatchBytesItem, config ExtractionConfig) ([]E
 | `Config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `[]ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -237,6 +297,15 @@ Per-file configuration overrides:
 func BatchExtractFiles(items []BatchFileItem, config ExtractionConfig) ([]ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := BatchExtractFiles(nil, ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -245,6 +314,7 @@ func BatchExtractFiles(items []BatchFileItem, config ExtractionConfig) ([]Extrac
 | `Config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
 **Returns:** `[]ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -280,6 +350,15 @@ Per-item configuration overrides:
 func BatchExtractBytes(items []BatchBytesItem, config ExtractionConfig) ([]ExtractionResult, error)
 ```
 
+**Example:**
+
+```go
+result, err := BatchExtractBytes(nil, ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -288,6 +367,7 @@ func BatchExtractBytes(items []BatchBytesItem, config ExtractionConfig) ([]Extra
 | `Config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
 
 **Returns:** `[]ExtractionResult`
+
 **Errors:** Returns `error`.
 
 ---
@@ -316,6 +396,15 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 func DetectMimeTypeFromBytes(content []byte) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := DetectMimeTypeFromBytes([]byte("data"))
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -323,6 +412,7 @@ func DetectMimeTypeFromBytes(content []byte) (string, error)
 | `Content` | `[]byte` | Yes | Raw file bytes |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -343,6 +433,15 @@ A vector of file extensions (without leading dot) for the MIME type.
 func GetExtensionsForMime(mimeType string) ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := GetExtensionsForMime("value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -350,6 +449,7 @@ func GetExtensionsForMime(mimeType string) ([]string, error)
 | `MimeType` | `string` | Yes | The MIME type to look up |
 
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -373,6 +473,12 @@ A vector of `SupportedFormat` entries sorted by extension.
 
 ```go
 func ListSupportedFormats() []SupportedFormat
+```
+
+**Example:**
+
+```go
+result := ListSupportedFormats()
 ```
 
 **Returns:** `[]SupportedFormat`
@@ -406,6 +512,12 @@ from the four corner points of the grid.
 func DetectQrCodes(imageBytes []byte, formatHint string) []QrCode
 ```
 
+**Example:**
+
+```go
+result := DetectQrCodes([]byte("data"), "value")
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -434,7 +546,16 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 func ClearEmbeddingBackends() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearEmbeddingBackends(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -452,7 +573,17 @@ bindings.
 func ListEmbeddingBackends() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListEmbeddingBackends()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -467,7 +598,17 @@ List names of all registered document extractors.
 func ListDocumentExtractors() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListDocumentExtractors()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -489,7 +630,16 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 func ClearDocumentExtractors() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearDocumentExtractors(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -510,7 +660,17 @@ A vector of OCR backend names.
 func ListOcrBackends() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListOcrBackends()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -532,7 +692,16 @@ Removes all OCR backends and calls their `shutdown()` methods.
 func ClearOcrBackends() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearOcrBackends(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -553,7 +722,16 @@ safe to call on any target.
 func RegisterBuiltin() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := RegisterBuiltin(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -576,7 +754,17 @@ global registry.
 func ListPostProcessors() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListPostProcessors()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -591,7 +779,16 @@ Remove all registered post-processors.
 func ClearPostProcessors() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearPostProcessors(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -610,7 +807,17 @@ Returns an error if the registry lock is poisoned.
 func ListRenderers() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListRenderers()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -633,7 +840,16 @@ Returns an error if the registry lock is poisoned.
 func ClearRenderers() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearRenderers(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -649,7 +865,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -657,7 +873,16 @@ Since v5.0.
 func ClearRerankerBackends() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearRerankerBackends(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -669,7 +894,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
@@ -677,7 +902,17 @@ Since v5.0.
 func ListRerankerBackends() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListRerankerBackends()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -692,7 +927,17 @@ List names of all registered validators.
 func ListValidators() ([]string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ListValidators()
+if err != nil {
+    return err
+}
+```
+
 **Returns:** `[]string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -707,7 +952,16 @@ Remove all registered validators.
 func ClearValidators() error
 ```
 
-**Returns:** ``
+**Example:**
+
+```go
+if err := ClearValidators(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -731,6 +985,14 @@ a half-populated vector.
 func ClassifyPages(result ExtractionResult, config PageClassificationConfig) error
 ```
 
+**Example:**
+
+```go
+if err := ClassifyPages(ExtractionResult{}, PageClassificationConfig{}); err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -738,7 +1000,8 @@ func ClassifyPages(result ExtractionResult, config PageClassificationConfig) err
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** ``
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -762,6 +1025,15 @@ or any error returned by prompt rendering or the underlying LLM call.
 func ClassifyText(text string, config PageClassificationConfig) ([]ClassificationLabel, error)
 ```
 
+**Example:**
+
+```go
+result, err := ClassifyText("value", PageClassificationConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -770,6 +1042,7 @@ func ClassifyText(text string, config PageClassificationConfig) ([]Classificatio
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `[]ClassificationLabel`
+
 **Errors:** Returns `error`.
 
 ---
@@ -799,6 +1072,15 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 func ClassifyDocument(pages []string, config PageClassificationConfig) ([]ClassificationLabel, error)
 ```
 
+**Example:**
+
+```go
+result, err := ClassifyDocument(nil, PageClassificationConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -807,6 +1089,7 @@ func ClassifyDocument(pages []string, config PageClassificationConfig) ([]Classi
 | `Config` | `PageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
 **Returns:** `[]ClassificationLabel`
+
 **Errors:** Returns `error`.
 
 ---
@@ -824,6 +1107,15 @@ CLI flag `kreuzberg warm --ner` delegates here.
 func DownloadModel(name string, cacheDir string) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := DownloadModel("value", "value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -832,6 +1124,7 @@ func DownloadModel(name string, cacheDir string) (string, error)
 | `CacheDir` | `*string` | No | The cache dir |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -846,6 +1139,12 @@ Pinned default NER model identifier.
 func DefaultModelName() string
 ```
 
+**Example:**
+
+```go
+result := DefaultModelName()
+```
+
 **Returns:** `string`
 
 ---
@@ -858,6 +1157,12 @@ All NER models kreuzberg knows about (used by `--all-ner-models`).
 
 ```go
 func KnownModels() []string
+```
+
+**Example:**
+
+```go
+result := KnownModels()
 ```
 
 **Returns:** `[]string`
@@ -875,6 +1180,14 @@ rewrite every textual field. Populates `result.redaction_report`.
 func Redact(result ExtractionResult, config RedactionConfig) error
 ```
 
+**Example:**
+
+```go
+if err := Redact(ExtractionResult{}, RedactionConfig{}); err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -882,7 +1195,8 @@ func Redact(result ExtractionResult, config RedactionConfig) error
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `RedactionConfig` | Yes | The configuration options |
 
-**Returns:** ``
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -900,6 +1214,12 @@ pass `nil` (or an unknown code) to fall back to English.
 
 ```go
 func Summarize(text string, language string, maxTokens uint32) *string
+```
+
+**Example:**
+
+```go
+result := Summarize("value", "value", 42)
 ```
 
 **Parameters:**
@@ -923,6 +1243,12 @@ callers).
 
 ```go
 func TokenCount(text string) uint32
+```
+
+**Example:**
+
+```go
+result := TokenCount("value")
 ```
 
 **Parameters:**
@@ -950,6 +1276,14 @@ every chunk's `content` field. Every LLM call's usage is appended to
 func TranslateResult(result ExtractionResult, config TranslationConfig) error
 ```
 
+**Example:**
+
+```go
+if err := TranslateResult(ExtractionResult{}, TranslationConfig{}); err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -957,7 +1291,8 @@ func TranslateResult(result ExtractionResult, config TranslationConfig) error
 | `Result` | `ExtractionResult` | Yes | The extraction result |
 | `Config` | `TranslationConfig` | Yes | The configuration options |
 
-**Returns:** ``
+**Returns:** No return value.
+
 **Errors:** Returns `error`.
 
 ---
@@ -973,6 +1308,12 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 
 ```go
 func Compare(a ExtractionResult, b ExtractionResult, opts DiffOptions) ExtractionDiff
+```
+
+**Example:**
+
+```go
+result := Compare(ExtractionResult{}, ExtractionResult{}, DiffOptions{})
 ```
 
 **Parameters:**
@@ -1011,6 +1352,15 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 func ExtractRegionWithVlm(imageBytes []byte, imageMime string, regionKind RegionKind, llmConfig LlmConfig, customPrompt string) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractRegionWithVlm([]byte("data"), "value", RegionKind{}, LlmConfig{}, "value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1022,6 +1372,7 @@ func ExtractRegionWithVlm(imageBytes []byte, imageMime string, regionKind Region
 | `CustomPrompt` | `*string` | No | The custom prompt |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1050,6 +1401,15 @@ Returns an error if:
 func ExtractKeywords(text string, config KeywordConfig) ([]Keyword, error)
 ```
 
+**Example:**
+
+```go
+result, err := ExtractKeywords("value", KeywordConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1058,6 +1418,7 @@ func ExtractKeywords(text string, config KeywordConfig) ([]Keyword, error)
 | `Config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `[]Keyword`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1084,6 +1445,15 @@ or rendered, or if `page_index` is out of range.
 func RenderPdfPageToPng(pdfBytes []byte, pageIndex int, dpi int32, password string) ([]byte, error)
 ```
 
+**Example:**
+
+```go
+result, err := RenderPdfPageToPng([]byte("data"), 42, 42, "value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1094,6 +1464,7 @@ func RenderPdfPageToPng(pdfBytes []byte, pageIndex int, dpi int32, password stri
 | `Password` | `*string` | No | Optional password for encrypted PDFs |
 
 **Returns:** `[]byte`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1118,6 +1489,15 @@ Returns an error if the VLM call fails or if image format detection fails.
 func CaptionImage(imageBytes []byte, llmConfig LlmConfig, customPrompt string) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := CaptionImage([]byte("data"), LlmConfig{}, "value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1127,6 +1507,7 @@ func CaptionImage(imageBytes []byte, llmConfig LlmConfig, customPrompt string) (
 | `CustomPrompt` | `*string` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1152,6 +1533,15 @@ or if the VLM call fails.
 func CaptionImageFile(path string, llmConfig LlmConfig, customPrompt string) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := CaptionImageFile("value", LlmConfig{}, "value")
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1161,6 +1551,7 @@ func CaptionImageFile(path string, llmConfig LlmConfig, customPrompt string) (st
 | `CustomPrompt` | `*string` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1178,6 +1569,15 @@ Set `check_exists` to `true` to verify the file exists before detection.
 func DetectMimeType(path string, checkExists bool) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := DetectMimeType("value", true)
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1186,6 +1586,7 @@ func DetectMimeType(path string, checkExists bool) (string, error)
 | `CheckExists` | `bool` | Yes | The check exists |
 
 **Returns:** `string`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1198,6 +1599,15 @@ func DetectMimeType(path string, checkExists bool) (string, error)
 func EmbedTextsAsync(texts []string, config EmbeddingConfig) ([][]float32, error)
 ```
 
+**Example:**
+
+```go
+result, err := EmbedTextsAsync(nil, EmbeddingConfig{})
+if err != nil {
+    return err
+}
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -1206,6 +1616,7 @@ func EmbedTextsAsync(texts []string, config EmbeddingConfig) ([][]float32, error
 | `Config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `[][]float32`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1221,6 +1632,12 @@ clone so the value is safe to pass across FFI boundaries.
 
 ```go
 func GetEmbeddingPreset(name string) *EmbeddingPreset
+```
+
+**Example:**
+
+```go
+result := GetEmbeddingPreset("value")
 ```
 
 **Parameters:**
@@ -1245,6 +1662,12 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 func ListEmbeddingPresets() []string
 ```
 
+**Example:**
+
+```go
+result := ListEmbeddingPresets()
+```
+
 **Returns:** `[]string`
 
 ---
@@ -1262,12 +1685,21 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```go
 func Rerank(query string, documents []string, config RerankerConfig) ([]RerankedDocument, error)
+```
+
+**Example:**
+
+```go
+result, err := Rerank("value", nil, RerankerConfig{})
+if err != nil {
+    return err
+}
 ```
 
 **Parameters:**
@@ -1279,6 +1711,7 @@ func Rerank(query string, documents []string, config RerankerConfig) ([]Reranked
 | `Config` | `RerankerConfig` | Yes | The configuration options |
 
 **Returns:** `[]RerankedDocument`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1287,12 +1720,21 @@ func Rerank(query string, documents []string, config RerankerConfig) ([]Reranked
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```go
 func RerankAsync(query string, documents []string, config RerankerConfig) ([]RerankedDocument, error)
+```
+
+**Example:**
+
+```go
+result, err := RerankAsync("value", nil, RerankerConfig{})
+if err != nil {
+    return err
+}
 ```
 
 **Parameters:**
@@ -1304,6 +1746,7 @@ func RerankAsync(query string, documents []string, config RerankerConfig) ([]Rer
 | `Config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `[]RerankedDocument`
+
 **Errors:** Returns `error`.
 
 ---
@@ -1315,12 +1758,18 @@ Get a reranker preset by name.
 Returns `nil` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```go
 func GetRerankerPreset(name string) *RerankerPreset
+```
+
+**Example:**
+
+```go
+result := GetRerankerPreset("value")
 ```
 
 **Parameters:**
@@ -1339,12 +1788,18 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 **Signature:**
 
 ```go
 func ListRerankerPresets() []string
+```
+
+**Example:**
+
+```go
+result := ListRerankerPresets()
 ```
 
 **Returns:** `[]string`
@@ -1602,15 +2057,23 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `PrependHeadingContext` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `TopicThreshold` | `*float32` | `nil` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *ChunkingConfig) Default() ChunkingConfig
 ```
+
+**Example:**
+
+```go
+result := ChunkingConfig.Default()
+```
+
+**Returns:** `ChunkingConfig`
 
 ---
 
@@ -1669,15 +2132,23 @@ default behavior unchanged.
 | `StripRepeatingText` | `bool` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true`, `include_footers = true`, or both, in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `IncludeWatermarks` | `bool` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *ContentFilterConfig) Default() ContentFilterConfig
 ```
+
+**Example:**
+
+```go
+result := ContentFilterConfig.Default()
+```
+
+**Returns:** `ContentFilterConfig`
 
 ---
 
@@ -1803,15 +2274,23 @@ Options controlling how two `ExtractionResult` values are compared.
 | `IncludeEmbedded` | `bool` | `true` | Include embedded-children changes in the diff. Default: `true`. |
 | `MaxContentChars` | `*int` | `nil` | Truncate content to this many characters before diffing. Useful for very large documents where only the first N characters matter. `nil` means no truncation. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *DiffOptions) Default() DiffOptions
 ```
+
+**Example:**
+
+```go
+result := DiffOptions.Default()
+```
+
+**Returns:** `DiffOptions`
 
 ---
 
@@ -1897,9 +2376,9 @@ Default priority is 50.
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-### Methods
+##### Methods
 
-#### ExtractBytes()
+###### ExtractBytes()
 
 Extract content from a byte array.
 
@@ -1923,7 +2402,28 @@ The pipeline will convert this into the public `ExtractionResult`.
 func (o *DocumentExtractor) ExtractBytes(content []byte, mimeType string, config ExtractionConfig) (InternalDocument, error)
 ```
 
-#### ExtractFile()
+**Example:**
+
+```go
+result, err := instance.ExtractBytes([]byte("data"), "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Content` | `[]byte` | Yes | Raw document bytes |
+| `MimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Returns `error`.
+
+###### ExtractFile()
 
 Extract content from a file.
 
@@ -1944,7 +2444,28 @@ Same as `extract_bytes`, plus file I/O errors.
 func (o *DocumentExtractor) ExtractFile(path string, mimeType string, config ExtractionConfig) (InternalDocument, error)
 ```
 
-#### SupportedMimeTypes()
+**Example:**
+
+```go
+result, err := instance.ExtractFile("value", "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to the document file |
+| `MimeType` | `string` | Yes | MIME type of the document (already validated) |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** `InternalDocument`
+
+**Errors:** Returns `error`.
+
+###### SupportedMimeTypes()
 
 Get the list of MIME types supported by this extractor.
 
@@ -1963,14 +2484,22 @@ A slice of MIME type strings.
 func (o *DocumentExtractor) SupportedMimeTypes() []string
 ```
 
-#### Priority()
+**Example:**
+
+```go
+result := instance.SupportedMimeTypes()
+```
+
+**Returns:** `[]string`
+
+###### Priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-### Priority Guidelines
+##### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -1988,7 +2517,15 @@ Priority value (default: 50)
 func (o *DocumentExtractor) Priority() int32
 ```
 
-#### CanHandle()
+**Example:**
+
+```go
+result := instance.Priority()
+```
+
+**Returns:** `int32`
+
+###### CanHandle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -2004,6 +2541,21 @@ Defaults to `true` (rely on MIME type matching).
 ```go
 func (o *DocumentExtractor) CanHandle(path string, mimeType string) bool
 ```
+
+**Example:**
+
+```go
+result := instance.CanHandle("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | The  path |
+| `MimeType` | `string` | Yes | The  mime type |
+
+**Returns:** `bool`
 
 ---
 
@@ -2081,9 +2633,9 @@ and parent-child relationships are bidirectionally consistent.
 | `Relationships` | `[]DocumentRelationship` | `nil` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `NodeTypes` | `[]string` | `nil` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-### Methods
+##### Methods
 
-#### FinalizeNodeTypes()
+###### FinalizeNodeTypes()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -2096,7 +2648,15 @@ construction paths (builder, derivation) call this automatically.
 func (o *DocumentStructure) FinalizeNodeTypes()
 ```
 
-#### IsEmpty()
+**Example:**
+
+```go
+instance.FinalizeNodeTypes()
+```
+
+**Returns:** No return value.
+
+###### IsEmpty()
 
 Check if the document structure is empty.
 
@@ -2106,13 +2666,29 @@ Check if the document structure is empty.
 func (o *DocumentStructure) IsEmpty() bool
 ```
 
-#### Default()
+**Example:**
+
+```go
+result := instance.IsEmpty()
+```
+
+**Returns:** `bool`
+
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *DocumentStructure) Default() DocumentStructure
 ```
+
+**Example:**
+
+```go
+result := DocumentStructure.Default()
+```
+
+**Returns:** `DocumentStructure`
 
 ---
 
@@ -2355,9 +2931,9 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
-### Methods
+##### Methods
 
-#### Dimensions()
+###### Dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -2368,7 +2944,15 @@ every vector returned by `embed`.
 func (o *EmbeddingBackend) Dimensions() int
 ```
 
-#### Embed()
+**Example:**
+
+```go
+result := instance.Dimensions()
+```
+
+**Returns:** `int`
+
+###### Embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -2383,6 +2967,25 @@ backend-specific failures. The dispatcher layers its own validation
 ```go
 func (o *EmbeddingBackend) Embed(texts []string) ([][]float32, error)
 ```
+
+**Example:**
+
+```go
+result, err := instance.Embed(nil)
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Texts` | `[]string` | Yes | The texts |
+
+**Returns:** `[][]float32`
+
+**Errors:** Returns `error`.
 
 ---
 
@@ -2403,15 +3006,23 @@ Requires the `embeddings` feature to be enabled.
 | `Acceleration` | `*AccelerationConfig` | `nil` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
 | `MaxEmbedDurationSecs` | `*uint64` | `nil` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *EmbeddingConfig) Default() EmbeddingConfig
 ```
+
+**Example:**
+
+```go
+result := EmbeddingConfig.Default()
+```
+
+**Returns:** `EmbeddingConfig`
 
 ---
 
@@ -2587,7 +3198,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `Ocr` | `*OcrConfig` | `nil` | OCR configuration (None = OCR disabled) |
 | `ForceOcr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `ForceOcrPages` | `*[]uint32` | `nil` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
-| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.* |
+| `DisableOcr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
 | `Chunking` | `*ChunkingConfig` | `nil` | Text chunking configuration (None = chunking disabled) |
 | `ContentFilter` | `*ContentFilterConfig` | `nil` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
 | `Images` | `*ImageExtractionConfig` | `nil` | Image extraction configuration (None = no image extraction) |
@@ -2625,9 +3236,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `QrCodes` | `*bool` | `nil` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 | `CancelToken` | `*string` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
@@ -2635,7 +3246,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 func (o *ExtractionConfig) Default() ExtractionConfig
 ```
 
-#### NeedsImageData()
+**Example:**
+
+```go
+result := ExtractionConfig.Default()
+```
+
+**Returns:** `ExtractionConfig`
+
+###### NeedsImageData()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2644,7 +3263,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-### Optimization Impact
+##### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -2660,11 +3279,19 @@ also requested `images` extraction.
 func (o *ExtractionConfig) NeedsImageData() bool
 ```
 
-#### NeedsImageProcessing()
+**Example:**
+
+```go
+result := instance.NeedsImageData()
+```
+
+**Returns:** `bool`
+
+###### NeedsImageProcessing()
 
 Returns `true` when any image processing is needed during extraction.
 
-### Optimization Impact
+##### Optimization Impact
 
 For text-only extractions (no OCR, no image extraction, no captioning), skipping
 image decompression can improve CPU utilization by 5-10% by avoiding wasteful
@@ -2675,6 +3302,14 @@ image I/O and processing when results won't be used.
 ```go
 func (o *ExtractionConfig) NeedsImageProcessing() bool
 ```
+
+**Example:**
+
+```go
+result := instance.NeedsImageProcessing()
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2732,9 +3367,9 @@ This is the main result type returned by all extraction functions.
 | `FormattedContent` | `*string` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `OcrInternalDocument` | `*string` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-### Methods
+##### Methods
 
-#### FromOcr()
+###### FromOcr()
 
 Convert from an OCR result.
 
@@ -2743,6 +3378,20 @@ Convert from an OCR result.
 ```go
 func (o *ExtractionResult) FromOcr(ocr OcrExtractionResult) ExtractionResult
 ```
+
+**Example:**
+
+```go
+result := ExtractionResult.FromOcr(OcrExtractionResult{})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
+
+**Returns:** `ExtractionResult`
 
 ---
 
@@ -2917,15 +3566,23 @@ included in page content.
 | `IncludeBbox` | `bool` | `true` | Include bounding box information in hierarchy blocks |
 | `OcrCoverageThreshold` | `*float32` | `nil` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *HierarchyConfig) Default() HierarchyConfig
 ```
+
+**Example:**
+
+```go
+result := HierarchyConfig.Default()
+```
+
+**Returns:** `HierarchyConfig`
 
 ---
 
@@ -2973,15 +3630,23 @@ the plain comrak-based renderer.
 | `ClassPrefix` | `string` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `EmbedCss` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *HtmlOutputConfig) Default() HtmlOutputConfig
 ```
+
+**Example:**
+
+```go
+result := HtmlOutputConfig.Default()
+```
+
+**Returns:** `HtmlOutputConfig`
 
 ---
 
@@ -3006,15 +3671,23 @@ Image extraction configuration.
 | `AppendOcrText` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `OutputFormat` | `ImageOutputFormat` | `ImageOutputFormat.Native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *ImageExtractionConfig) Default() ImageExtractionConfig
 ```
+
+**Example:**
+
+```go
+result := ImageExtractionConfig.Default()
+```
+
+**Returns:** `ImageExtractionConfig`
 
 ---
 
@@ -3066,15 +3739,23 @@ for different document types.
 | `BinarizationMethod` | `string` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `InvertColors` | `bool` | `false` | Invert colors (white text on black → black on white). |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *ImagePreprocessingConfig) Default() ImagePreprocessingConfig
 ```
+
+**Example:**
+
+```go
+result := ImagePreprocessingConfig.Default()
+```
+
+**Returns:** `ImagePreprocessingConfig`
 
 ---
 
@@ -3157,15 +3838,23 @@ Keyword extraction configuration.
 | `YakeParams` | `*YakeParams` | `nil` | YAKE-specific tuning parameters. |
 | `RakeParams` | `*RakeParams` | `nil` | RAKE-specific tuning parameters. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *KeywordConfig) Default() KeywordConfig
 ```
+
+**Example:**
+
+```go
+result := KeywordConfig.Default()
+```
+
+**Returns:** `KeywordConfig`
 
 ---
 
@@ -3179,15 +3868,23 @@ Language detection configuration.
 | `MinConfidence` | `float64` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `DetectMultiple` | `bool` | `false` | Detect multiple languages in the document |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *LanguageDetectionConfig) Default() LanguageDetectionConfig
 ```
+
+**Example:**
+
+```go
+result := LanguageDetectionConfig.Default()
+```
+
+**Returns:** `LanguageDetectionConfig`
 
 ---
 
@@ -3218,15 +3915,23 @@ is enabled for PDF extraction.
 | `TableModel` | `TableModel` | `TableModel.Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `Acceleration` | `*AccelerationConfig` | `nil` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *LayoutDetectionConfig) Default() LayoutDetectionConfig
 ```
+
+**Example:**
+
+```go
+result := LayoutDetectionConfig.Default()
+```
+
+**Returns:** `LayoutDetectionConfig`
 
 ---
 
@@ -3266,9 +3971,9 @@ Link element metadata.
 
 liter-llm-backed NER backend.
 
-### Methods
+##### Methods
 
-#### New()
+###### New()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
@@ -3278,7 +3983,21 @@ Create a new LLM-backed NER backend with the given LLM configuration.
 func (o *LlmBackend) New(config LlmConfig) LlmBackend
 ```
 
-#### Detect()
+**Example:**
+
+```go
+result := LlmBackend.New(LlmConfig{})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Config` | `LlmConfig` | Yes | The configuration options |
+
+**Returns:** `LlmBackend`
+
+###### Detect()
 
 **Signature:**
 
@@ -3286,13 +4005,54 @@ func (o *LlmBackend) New(config LlmConfig) LlmBackend
 func (o *LlmBackend) Detect(text string, categories []EntityCategory) ([]Entity, error)
 ```
 
-#### DetectWithCustom()
+**Example:**
+
+```go
+result, err := instance.Detect("value", nil)
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Categories` | `[]EntityCategory` | Yes | The categories |
+
+**Returns:** `[]Entity`
+
+**Errors:** Returns `error`.
+
+###### DetectWithCustom()
 
 **Signature:**
 
 ```go
 func (o *LlmBackend) DetectWithCustom(text string, categories []EntityCategory, customLabels []string) ([]Entity, error)
 ```
+
+**Example:**
+
+```go
+result, err := instance.DetectWithCustom("value", nil, nil)
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Categories` | `[]EntityCategory` | Yes | The categories |
+| `CustomLabels` | `[]string` | Yes | The custom labels |
+
+**Returns:** `[]Entity`
+
+**Errors:** Returns `error`.
 
 ---
 
@@ -3367,9 +4127,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `OcrUsed` | `bool` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `Additional` | `map[string]interface{}` | `nil` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-### Methods
+##### Methods
 
-#### IsEmpty()
+###### IsEmpty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -3379,6 +4139,14 @@ additional postprocessor fields are populated.
 ```go
 func (o *Metadata) IsEmpty() bool
 ```
+
+**Example:**
+
+```go
+result := instance.IsEmpty()
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -3425,9 +4193,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-### Methods
+##### Methods
 
-#### ProcessImage()
+###### ProcessImage()
 
 Process an image and extract text via OCR.
 
@@ -3441,7 +4209,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-### Reading `backend_options`
+##### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -3453,7 +4221,27 @@ so multiple backends can coexist in a pipeline without key conflicts.
 func (o *OcrBackend) ProcessImage(imageBytes []byte, config OcrConfig) (ExtractionResult, error)
 ```
 
-#### ProcessImageFile()
+**Example:**
+
+```go
+result, err := instance.ProcessImage([]byte("data"), OcrConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ImageBytes` | `[]byte` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
+| `Config` | `OcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `error`.
+
+###### ProcessImageFile()
 
 Process a file and extract text via OCR.
 
@@ -3470,7 +4258,27 @@ Same as `process_image`, plus file I/O errors.
 func (o *OcrBackend) ProcessImageFile(path string, config OcrConfig) (ExtractionResult, error)
 ```
 
-#### SupportsLanguage()
+**Example:**
+
+```go
+result, err := instance.ProcessImageFile("value", OcrConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to the image file |
+| `Config` | `OcrConfig` | Yes | OCR configuration |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `error`.
+
+###### SupportsLanguage()
 
 Check if this backend supports a given language code.
 
@@ -3484,7 +4292,21 @@ Check if this backend supports a given language code.
 func (o *OcrBackend) SupportsLanguage(lang string) bool
 ```
 
-#### BackendType()
+**Example:**
+
+```go
+result := instance.SupportsLanguage("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Lang` | `string` | Yes | ISO 639-2/3 language code (e.g., "eng", "deu", "fra") |
+
+**Returns:** `bool`
+
+###### BackendType()
 
 Get the backend type identifier.
 
@@ -3498,7 +4320,15 @@ The backend type enum value.
 func (o *OcrBackend) BackendType() OcrBackendType
 ```
 
-#### SupportedLanguages()
+**Example:**
+
+```go
+result := instance.BackendType()
+```
+
+**Returns:** `OcrBackendType`
+
+###### SupportedLanguages()
 
 Optional: Get a list of all supported languages.
 
@@ -3510,7 +4340,15 @@ Defaults to empty list. Override to provide comprehensive language support info.
 func (o *OcrBackend) SupportedLanguages() []string
 ```
 
-#### SupportsTableDetection()
+**Example:**
+
+```go
+result := instance.SupportedLanguages()
+```
+
+**Returns:** `[]string`
+
+###### SupportsTableDetection()
 
 Optional: Check if the backend supports table detection.
 
@@ -3522,7 +4360,15 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 func (o *OcrBackend) SupportsTableDetection() bool
 ```
 
-#### SupportsDocumentProcessing()
+**Example:**
+
+```go
+result := instance.SupportsTableDetection()
+```
+
+**Returns:** `bool`
+
+###### SupportsDocumentProcessing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -3534,7 +4380,15 @@ Defaults to `false`. Override if the backend has optimized document processing.
 func (o *OcrBackend) SupportsDocumentProcessing() bool
 ```
 
-#### ProcessDocument()
+**Example:**
+
+```go
+result := instance.SupportsDocumentProcessing()
+```
+
+**Returns:** `bool`
+
+###### ProcessDocument()
 
 Process a document file directly via OCR.
 
@@ -3545,6 +4399,26 @@ Only called if `supports_document_processing` returns `true`.
 ```go
 func (o *OcrBackend) ProcessDocument(path string, config OcrConfig) (ExtractionResult, error)
 ```
+
+**Example:**
+
+```go
+result, err := instance.ProcessDocument("value", OcrConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | The  path |
+| `Config` | `OcrConfig` | Yes | The ocr config |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `error`.
 
 ---
 
@@ -3585,15 +4459,23 @@ OCR configuration.
 | `Acceleration` | `*AccelerationConfig` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `TessdataBytes` | `*map[string][]byte` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *OcrConfig) Default() OcrConfig
 ```
+
+**Example:**
+
+```go
+result := OcrConfig.Default()
+```
+
+**Returns:** `OcrConfig`
 
 ---
 
@@ -3724,15 +4606,23 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `AlnumWsRatioThreshold` | `float64` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `PipelineMinQuality` | `float64` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *OcrQualityThresholds) Default() OcrQualityThresholds
 ```
+
+**Example:**
+
+```go
+result := OcrQualityThresholds.Default()
+```
+
+**Returns:** `OcrQualityThresholds`
 
 ---
 
@@ -3808,9 +4698,9 @@ Uses a builder pattern for convenient configuration.
 | `DropScore` | `float32` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `ModelTier` | `string` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-### Methods
+##### Methods
 
-#### WithCacheDir()
+###### WithCacheDir()
 
 Sets a custom cache directory for model files.
 
@@ -3820,7 +4710,21 @@ Sets a custom cache directory for model files.
 func (o *PaddleOcrConfig) WithCacheDir(path string) PaddleOcrConfig
 ```
 
-#### WithTableDetection()
+**Example:**
+
+```go
+result := instance.WithCacheDir("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Path` | `string` | Yes | Path to cache directory |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithTableDetection()
 
 Enables or disables table structure detection.
 
@@ -3830,7 +4734,21 @@ Enables or disables table structure detection.
 func (o *PaddleOcrConfig) WithTableDetection(enable bool) PaddleOcrConfig
 ```
 
-#### WithAngleCls()
+**Example:**
+
+```go
+result := instance.WithTableDetection(true)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Enable` | `bool` | Yes | Whether to enable table detection |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithAngleCls()
 
 Enables or disables angle classification for rotated text.
 
@@ -3840,7 +4758,21 @@ Enables or disables angle classification for rotated text.
 func (o *PaddleOcrConfig) WithAngleCls(enable bool) PaddleOcrConfig
 ```
 
-#### WithDetDbThresh()
+**Example:**
+
+```go
+result := instance.WithAngleCls(true)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Enable` | `bool` | Yes | Whether to enable angle classification |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbThresh()
 
 Sets the database threshold for text detection.
 
@@ -3850,7 +4782,21 @@ Sets the database threshold for text detection.
 func (o *PaddleOcrConfig) WithDetDbThresh(threshold float32) PaddleOcrConfig
 ```
 
-#### WithDetDbBoxThresh()
+**Example:**
+
+```go
+result := instance.WithDetDbThresh(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Threshold` | `float32` | Yes | Detection threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbBoxThresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -3860,7 +4806,21 @@ Sets the box threshold for text bounding box refinement.
 func (o *PaddleOcrConfig) WithDetDbBoxThresh(threshold float32) PaddleOcrConfig
 ```
 
-#### WithDetDbUnclipRatio()
+**Example:**
+
+```go
+result := instance.WithDetDbBoxThresh(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Threshold` | `float32` | Yes | Box threshold (0.0-1.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetDbUnclipRatio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -3870,7 +4830,21 @@ Sets the unclip ratio for expanding text bounding boxes.
 func (o *PaddleOcrConfig) WithDetDbUnclipRatio(ratio float32) PaddleOcrConfig
 ```
 
-#### WithDetLimitSideLen()
+**Example:**
+
+```go
+result := instance.WithDetDbUnclipRatio(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Ratio` | `float32` | Yes | Unclip ratio (typically 1.5-2.0) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDetLimitSideLen()
 
 Sets the maximum side length for detection images.
 
@@ -3880,7 +4854,21 @@ Sets the maximum side length for detection images.
 func (o *PaddleOcrConfig) WithDetLimitSideLen(length uint32) PaddleOcrConfig
 ```
 
-#### WithRecBatchNum()
+**Example:**
+
+```go
+result := instance.WithDetLimitSideLen(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Length` | `uint32` | Yes | Maximum side length in pixels |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithRecBatchNum()
 
 Sets the batch size for recognition inference.
 
@@ -3890,7 +4878,21 @@ Sets the batch size for recognition inference.
 func (o *PaddleOcrConfig) WithRecBatchNum(batchSize uint32) PaddleOcrConfig
 ```
 
-#### WithDropScore()
+**Example:**
+
+```go
+result := instance.WithRecBatchNum(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `BatchSize` | `uint32` | Yes | Number of text regions to process simultaneously |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithDropScore()
 
 Sets the minimum recognition confidence threshold.
 
@@ -3900,7 +4902,21 @@ Sets the minimum recognition confidence threshold.
 func (o *PaddleOcrConfig) WithDropScore(score float32) PaddleOcrConfig
 ```
 
-#### WithPadding()
+**Example:**
+
+```go
+result := instance.WithDropScore(0.5)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Score` | `float32` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithPadding()
 
 Sets padding in pixels added around images before detection.
 
@@ -3910,7 +4926,21 @@ Sets padding in pixels added around images before detection.
 func (o *PaddleOcrConfig) WithPadding(padding uint32) PaddleOcrConfig
 ```
 
-#### WithModelTier()
+**Example:**
+
+```go
+result := instance.WithPadding(42)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Padding` | `uint32` | Yes | Padding in pixels (0-100) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### WithModelTier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -3920,7 +4950,21 @@ Sets the model tier controlling detection/recognition model size.
 func (o *PaddleOcrConfig) WithModelTier(tier string) PaddleOcrConfig
 ```
 
-#### Default()
+**Example:**
+
+```go
+result := instance.WithModelTier("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Tier` | `string` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
+
+**Returns:** `PaddleOcrConfig`
+
+###### Default()
 
 Creates a default configuration with English language support.
 
@@ -3929,6 +4973,14 @@ Creates a default configuration with English language support.
 ```go
 func (o *PaddleOcrConfig) Default() PaddleOcrConfig
 ```
+
+**Example:**
+
+```go
+result := PaddleOcrConfig.Default()
+```
+
+**Returns:** `PaddleOcrConfig`
 
 ---
 
@@ -3990,15 +5042,23 @@ when page boundaries are available and chunking is configured.
 | `InsertPageMarkers` | `bool` | `false` | Insert page markers in main content string |
 | `MarkerFormat` | `string` | `"<!-- PAGE {page_num} -->"` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *PageConfig) Default() PageConfig
 ```
+
+**Example:**
+
+```go
+result := PageConfig.Default()
+```
+
+**Returns:** `PageConfig`
 
 ---
 
@@ -4128,15 +5188,23 @@ PDF-specific configuration.
 | `AllowSingleColumnTables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `OcrInlineImages` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `nil` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *PdfConfig) Default() PdfConfig
 ```
+
+**Example:**
+
+```go
+result := PdfConfig.Default()
+```
+
+**Returns:** `PdfConfig`
 
 ---
 
@@ -4170,9 +5238,9 @@ identification, and metadata.
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-### Methods
+##### Methods
 
-#### Name()
+###### Name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -4188,7 +5256,15 @@ The name should be:
 func (o *Plugin) Name() string
 ```
 
-#### Version()
+**Example:**
+
+```go
+result := instance.Name()
+```
+
+**Returns:** `string`
+
+###### Version()
 
 Returns the semantic version of this plugin.
 
@@ -4202,7 +5278,15 @@ Defaults to the kreuzberg crate version.
 func (o *Plugin) Version() string
 ```
 
-#### Initialize()
+**Example:**
+
+```go
+result := instance.Version()
+```
+
+**Returns:** `string`
+
+###### Initialize()
 
 Initialize the plugin.
 
@@ -4212,7 +5296,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -4231,7 +5315,19 @@ Defaults to a no-op for stateless plugins.
 func (o *Plugin) Initialize() error
 ```
 
-#### Shutdown()
+**Example:**
+
+```go
+if err := instance.Initialize(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `error`.
+
+###### Shutdown()
 
 Shutdown the plugin.
 
@@ -4242,7 +5338,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-### Thread Safety
+##### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -4260,7 +5356,19 @@ Defaults to a no-op for stateless plugins.
 func (o *Plugin) Shutdown() error
 ```
 
-#### Description()
+**Example:**
+
+```go
+if err := instance.Shutdown(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `error`.
+
+###### Description()
 
 Optional plugin description for debugging and logging.
 
@@ -4272,7 +5380,15 @@ Defaults to empty string if not overridden.
 func (o *Plugin) Description() string
 ```
 
-#### Author()
+**Example:**
+
+```go
+result := instance.Description()
+```
+
+**Returns:** `string`
+
+###### Author()
 
 Optional plugin author information.
 
@@ -4283,6 +5399,14 @@ Defaults to empty string if not overridden.
 ```go
 func (o *Plugin) Author() string
 ```
+
+**Example:**
+
+```go
+result := instance.Author()
+```
+
+**Returns:** `string`
 
 ---
 
@@ -4318,9 +5442,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### Process()
+###### Process()
 
 Process an extraction result.
 
@@ -4339,15 +5463,15 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-### Performance
+##### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-### Example - Language Detection
+##### Example - Language Detection
 
-### Example - Text Cleaning
+##### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -4369,7 +5493,26 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 func (o *PostProcessor) Process(result ExtractionResult, config ExtractionConfig) error
 ```
 
-#### ProcessingStage()
+**Example:**
+
+```go
+if err := instance.Process(ExtractionResult{}, ExtractionConfig{}); err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `error`.
+
+###### ProcessingStage()
 
 Get the processing stage for this post-processor.
 
@@ -4385,7 +5528,15 @@ The `ProcessingStage` (Early, Middle, or Late).
 func (o *PostProcessor) ProcessingStage() ProcessingStage
 ```
 
-#### ShouldProcess()
+**Example:**
+
+```go
+result := instance.ProcessingStage()
+```
+
+**Returns:** `ProcessingStage`
+
+###### ShouldProcess()
 
 Optional: Check if this processor should run for a given result.
 
@@ -4402,7 +5553,22 @@ Defaults to `true` (always run).
 func (o *PostProcessor) ShouldProcess(result ExtractionResult, config ExtractionConfig) bool
 ```
 
-#### EstimatedDurationMs()
+**Example:**
+
+```go
+result := instance.ShouldProcess(ExtractionResult{}, ExtractionConfig{})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### EstimatedDurationMs()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -4418,7 +5584,21 @@ Estimated processing time in milliseconds.
 func (o *PostProcessor) EstimatedDurationMs(result ExtractionResult) uint64
 ```
 
-#### Priority()
+**Example:**
+
+```go
+result := instance.EstimatedDurationMs(ExtractionResult{})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `uint64`
+
+###### Priority()
 
 Execution priority within the processing stage.
 
@@ -4431,6 +5611,14 @@ for high-priority processors that should run early in their stage.
 ```go
 func (o *PostProcessor) Priority() int32
 ```
+
+**Example:**
+
+```go
+result := instance.Priority()
+```
+
+**Returns:** `int32`
 
 ---
 
@@ -4446,15 +5634,23 @@ Post-processor configuration.
 | `EnabledSet` | `*[]string` | `nil` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `DisabledSet` | `*[]string` | `nil` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *PostProcessorConfig) Default() PostProcessorConfig
 ```
+
+**Example:**
+
+```go
+result := PostProcessorConfig.Default()
+```
+
+**Returns:** `PostProcessorConfig`
 
 ---
 
@@ -4580,15 +5776,23 @@ RAKE-specific parameters.
 | `MinWordLength` | `int` | `1` | Minimum word length to consider (default: 1). |
 | `MaxWordsPerPhrase` | `int` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *RakeParams) Default() RakeParams
 ```
+
+**Example:**
+
+```go
+result := RakeParams.Default()
+```
+
+**Returns:** `RakeParams`
 
 ---
 
@@ -4624,9 +5828,9 @@ Configuration for the redaction post-processor.
 | `CustomTerms` | `[]RedactionTerm` | `nil` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
 | `CustomPatterns` | `[]RedactionPattern` | `nil` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
@@ -4634,7 +5838,15 @@ Configuration for the redaction post-processor.
 func (o *RedactionConfig) Default() RedactionConfig
 ```
 
-#### Validate()
+**Example:**
+
+```go
+result := RedactionConfig.Default()
+```
+
+**Returns:** `RedactionConfig`
+
+###### Validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -4649,6 +5861,18 @@ still rejects empty values to avoid degenerate zero-length matches.
 ```go
 func (o *RedactionConfig) Validate() error
 ```
+
+**Example:**
+
+```go
+if err := instance.Validate(); err != nil {
+    return err
+}
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `error`.
 
 ---
 
@@ -4680,9 +5904,9 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 | `Pattern` | `string` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
 | `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
-### Methods
+##### Methods
 
-#### Labeled()
+###### Labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
@@ -4691,6 +5915,21 @@ Build a pattern with the given label (case-insensitive by default).
 ```go
 func (o *RedactionPattern) Labeled(label string, pattern string) RedactionPattern
 ```
+
+**Example:**
+
+```go
+result := RedactionPattern.Labeled("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Label` | `string` | Yes | The label |
+| `Pattern` | `string` | Yes | The pattern |
+
+**Returns:** `RedactionPattern`
 
 ---
 
@@ -4724,9 +5963,9 @@ metacharacters themselves). Case-insensitive by default — set
 | `Value` | `string` | — | Literal value to match. Regex metacharacters are escaped automatically. |
 | `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
-### Methods
+##### Methods
 
-#### Literal()
+###### Literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
@@ -4736,7 +5975,21 @@ Build a term whose label is the literal value itself (case-insensitive).
 func (o *RedactionTerm) Literal(value string) RedactionTerm
 ```
 
-#### Labeled()
+**Example:**
+
+```go
+result := RedactionTerm.Literal("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
+
+###### Labeled()
 
 Build a term with a custom label.
 
@@ -4745,6 +5998,21 @@ Build a term with a custom label.
 ```go
 func (o *RedactionTerm) Labeled(label string, value string) RedactionTerm
 ```
+
+**Example:**
+
+```go
+result := RedactionTerm.Labeled("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Label` | `string` | Yes | The label |
+| `Value` | `string` | Yes | The value |
+
+**Returns:** `RedactionTerm`
 
 ---
 
@@ -4766,9 +6034,9 @@ take no-op defaults and need not be overridden.
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-### Methods
+##### Methods
 
-#### Render()
+###### Render()
 
 Render an `InternalDocument` to the output format.
 
@@ -4786,6 +6054,25 @@ Returns an error if rendering fails.
 func (o *Renderer) Render(doc InternalDocument) (string, error)
 ```
 
+**Example:**
+
+```go
+result, err := instance.Render(InternalDocument{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Doc` | `InternalDocument` | Yes | The internal document to render |
+
+**Returns:** `string`
+
+**Errors:** Returns `error`.
+
 ---
 
 #### RerankedDocument
@@ -4795,7 +6082,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4851,11 +6138,11 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.
+Since v5.0.0.
 
-### Methods
+##### Methods
 
-#### Rerank()
+###### Rerank()
 
 Score a list of documents against a query.
 
@@ -4874,6 +6161,26 @@ against `documents.len()` before sorting.
 func (o *RerankerBackend) Rerank(query string, documents []string) ([]float32, error)
 ```
 
+**Example:**
+
+```go
+result, err := instance.Rerank("value", nil)
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The query |
+| `Documents` | `[]string` | Yes | The documents |
+
+**Returns:** `[]float32`
+
+**Errors:** Returns `error`.
+
 ---
 
 #### RerankerConfig
@@ -4883,7 +6190,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4895,15 +6202,23 @@ Since v5.0.
 | `Acceleration` | `*AccelerationConfig` | `nil` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `nil` (auto-select per platform). |
 | `MaxRerankDurationSecs` | `*uint64` | `nil` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *RerankerConfig) Default() RerankerConfig
 ```
+
+**Example:**
+
+```go
+result := RerankerConfig.Default()
+```
+
+**Returns:** `RerankerConfig`
 
 ---
 
@@ -4914,7 +6229,7 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.
+Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4962,15 +6277,23 @@ while still supporting legitimate documents.
 | `MaxXmlDepth` | `int` | `1024` | Maximum XML depth (100 levels) |
 | `MaxTableCells` | `int` | `100000` | Maximum cells per table (100,000) |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *SecurityLimits) Default() SecurityLimits
 ```
+
+**Example:**
+
+```go
+result := SecurityLimits.Default()
+```
+
+**Returns:** `SecurityLimits`
 
 ---
 
@@ -4997,9 +6320,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `MaxRequestBodyBytes` | `int` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `MaxMultipartFieldBytes` | `int` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
@@ -5007,7 +6330,15 @@ including host/port settings, CORS configuration, and upload limits.
 func (o *ServerConfig) Default() ServerConfig
 ```
 
-#### ListenAddr()
+**Example:**
+
+```go
+result := ServerConfig.Default()
+```
+
+**Returns:** `ServerConfig`
+
+###### ListenAddr()
 
 Get the server listen address (host:port).
 
@@ -5017,7 +6348,15 @@ Get the server listen address (host:port).
 func (o *ServerConfig) ListenAddr() string
 ```
 
-#### CorsAllowsAll()
+**Example:**
+
+```go
+result := instance.ListenAddr()
+```
+
+**Returns:** `string`
+
+###### CorsAllowsAll()
 
 Check if CORS allows all origins.
 
@@ -5030,7 +6369,15 @@ are allowed. Returns `false` if specific origins are configured.
 func (o *ServerConfig) CorsAllowsAll() bool
 ```
 
-#### IsOriginAllowed()
+**Example:**
+
+```go
+result := instance.CorsAllowsAll()
+```
+
+**Returns:** `bool`
+
+###### IsOriginAllowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -5045,7 +6392,21 @@ Returns `true` if:
 func (o *ServerConfig) IsOriginAllowed(origin string) bool
 ```
 
-#### MaxRequestBodyMb()
+**Example:**
+
+```go
+result := instance.IsOriginAllowed("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Origin` | `string` | Yes | The origin to check (e.g., "<https://example.com">) |
+
+**Returns:** `bool`
+
+###### MaxRequestBodyMb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -5055,7 +6416,15 @@ Get maximum request body size in megabytes (rounded up).
 func (o *ServerConfig) MaxRequestBodyMb() int
 ```
 
-#### MaxMultipartFieldMb()
+**Example:**
+
+```go
+result := instance.MaxRequestBodyMb()
+```
+
+**Returns:** `int`
+
+###### MaxMultipartFieldMb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -5064,6 +6433,14 @@ Get maximum multipart field size in megabytes (rounded up).
 ```go
 func (o *ServerConfig) MaxMultipartFieldMb() int
 ```
+
+**Example:**
+
+```go
+result := instance.MaxMultipartFieldMb()
+```
+
+**Returns:** `int`
 
 ---
 
@@ -5151,15 +6528,23 @@ Used via `ImageExtractionConfig.svg`.
 | `Sanitize` | `bool` | `true` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `true`. |
 | `RenderDpi` | `float32` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *SvgOptions) Default() SvgOptions
 ```
+
+**Example:**
+
+```go
+result := SvgOptions.Default()
+```
+
+**Returns:** `SvgOptions`
 
 ---
 
@@ -5252,15 +6637,23 @@ for specific document types (invoices, handwriting, etc.).
 | `TextordSpaceSizeIsVariable` | `bool` | `true` | Variable-width space detection |
 | `ThresholdingMethod` | `bool` | `false` | Use adaptive thresholding method |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TesseractConfig) Default() TesseractConfig
 ```
+
+**Example:**
+
+```go
+result := TesseractConfig.Default()
+```
+
+**Returns:** `TesseractConfig`
 
 ---
 
@@ -5320,9 +6713,9 @@ for Markdown, structural elements like headers and links.
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
-### Methods
+##### Methods
 
-#### New()
+###### New()
 
 Create a fresh counter with no previous state.
 
@@ -5331,6 +6724,14 @@ Create a fresh counter with no previous state.
 ```go
 func (o *TokenCounter) New() TokenCounter
 ```
+
+**Example:**
+
+```go
+result := TokenCounter.New()
+```
+
+**Returns:** `TokenCounter`
 
 ---
 
@@ -5352,15 +6753,23 @@ Configuration for the token-reduction pipeline.
 | `TargetReduction` | `*float32` | `nil` | Target fraction of text to retain (0.0–1.0); `nil` = no fixed target. |
 | `EnableSemanticClustering` | `bool` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TokenReductionConfig) Default() TokenReductionConfig
 ```
+
+**Example:**
+
+```go
+result := TokenReductionConfig.Default()
+```
+
+**Returns:** `TokenReductionConfig`
 
 ---
 
@@ -5373,15 +6782,23 @@ Token reduction configuration.
 | `Mode` | `string` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `PreserveImportantWords` | `bool` | `true` | Preserve important words (capitalized, technical terms) |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TokenReductionOptions) Default() TokenReductionOptions
 ```
+
+**Example:**
+
+```go
+result := TokenReductionOptions.Default()
+```
+
+**Returns:** `TokenReductionOptions`
 
 ---
 
@@ -5418,15 +6835,23 @@ model = "tiny"
 | `AllowNetwork` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `VerifyHash` | `bool` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TranscriptionConfig) Default() TranscriptionConfig
 ```
+
+**Example:**
+
+```go
+result := TranscriptionConfig.Default()
+```
+
+**Returns:** `TranscriptionConfig`
 
 ---
 
@@ -5490,15 +6915,23 @@ docstrings = true
 | `Groups` | `*[]string` | `nil` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `Process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TreeSitterConfig) Default() TreeSitterConfig
 ```
+
+**Example:**
+
+```go
+result := TreeSitterConfig.Default()
+```
+
+**Returns:** `TreeSitterConfig`
 
 ---
 
@@ -5520,15 +6953,23 @@ Controls which analysis features are enabled when extracting code files.
 | `ChunkMaxSize` | `*int` | `nil` | Maximum chunk size in bytes. `nil` disables chunking. |
 | `ContentMode` | `CodeContentMode` | `CodeContentMode.Chunks` | Content rendering mode for code extraction. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *TreeSitterProcessConfig) Default() TreeSitterProcessConfig
 ```
+
+**Example:**
+
+```go
+result := TreeSitterProcessConfig.Default()
+```
+
+**Returns:** `TreeSitterProcessConfig`
 
 ---
 
@@ -5559,9 +7000,9 @@ For non-fatal checks, use post-processors instead.
 
 Validators must be thread-safe (`Send + Sync`).
 
-### Methods
+##### Methods
 
-#### Validate()
+###### Validate()
 
 Validate an extraction result.
 
@@ -5578,7 +7019,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-### Example - Content Length Validation
+##### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5603,7 +7044,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Quality Score Validation
+##### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5626,7 +7067,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-### Example - Security Validation
+##### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -5651,7 +7092,26 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 func (o *Validator) Validate(result ExtractionResult, config ExtractionConfig) error
 ```
 
-#### ShouldValidate()
+**Example:**
+
+```go
+if err := instance.Validate(ExtractionResult{}, ExtractionConfig{}); err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result to validate |
+| `Config` | `ExtractionConfig` | Yes | Extraction configuration |
+
+**Returns:** No return value.
+
+**Errors:** Returns `error`.
+
+###### ShouldValidate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -5668,7 +7128,22 @@ Defaults to `true` (always run).
 func (o *Validator) ShouldValidate(result ExtractionResult, config ExtractionConfig) bool
 ```
 
-#### Priority()
+**Example:**
+
+```go
+result := instance.ShouldValidate(ExtractionResult{}, ExtractionConfig{})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Result` | `ExtractionResult` | Yes | The extraction result |
+| `Config` | `ExtractionConfig` | Yes | The extraction config |
+
+**Returns:** `bool`
+
+###### Priority()
 
 Optional: Get the validation priority.
 
@@ -5686,6 +7161,14 @@ Priority value (higher = runs earlier).
 ```go
 func (o *Validator) Priority() int32
 ```
+
+**Example:**
+
+```go
+result := instance.Priority()
+```
+
+**Returns:** `int32`
 
 ---
 
@@ -5745,15 +7228,23 @@ YAKE-specific parameters.
 |-------|------|---------|-------------|
 | `WindowSize` | `int` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-### Methods
+##### Methods
 
-#### Default()
+###### Default()
 
 **Signature:**
 
 ```go
 func (o *YakeParams) Default() YakeParams
 ```
+
+**Example:**
+
+```go
+result := YakeParams.Default()
+```
+
+**Returns:** `YakeParams`
 
 ---
 
@@ -5977,7 +7468,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.
+Since v5.0.0.
 
 | Value | Description |
 |-------|-------------|
@@ -6724,7 +8215,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |
