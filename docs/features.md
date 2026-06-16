@@ -217,6 +217,32 @@ Some OCR backends (including EasyOCR) now support **document-level processing**.
 
 For backend configuration, language selection, and PSM/OEM modes, see the [OCR Guide](guides/ocr.md).
 
+### Candle GLM-OCR
+
+!!! Info "Added in v5.0.0-rc.18"
+
+Pure-Rust VLM OCR via the `candle-glm-ocr` feature. Wraps the zai-org/GLM-OCR 0.9B-param vision-language model running natively through the candle transformer framework. No ONNX Runtime dependency.
+
+**Feature flag:** `candle-glm-ocr`
+
+**Implies:** `candle-ocr`, `kreuzberg-candle-ocr/glm-ocr`, `layout-detection`
+
+**Deployment:**
+
+- **CPU & Metal (macOS)** — Full support
+- **CUDA (Linux/Windows with NVIDIA GPU)** — Full support
+- **WASM** — Excluded (candle not available on WASM)
+- **Android x86_64 emulator** — Excluded (no prebuilt candle targets)
+
+**Model & performance:**
+
+- Model size: ~3 GB on first download; cached at `~/.cache/huggingface/`
+- Default layout mode: `paired` — PP-DocLayout-V3 detects regions, per-region task-specific OCR (ocr/table/formula/chart/caption), outputs merged into reading-order markdown
+- Alternative mode: `whole_page` — Single OCR pass over entire page with optional task override
+- Metal dtype: F32 (BF16 matmul unavailable in candle 0.10)
+
+Configure via `--ocr-backend candle-glm-ocr` or `ocr.backend = "candle-glm-ocr"` in config. Set layout mode and device via `backend_options`: `{"layout_mode":"paired"}`, `{"layout_mode":"whole_page"}`, `{"device":"metal"}`, `{"device":"cuda"}`.
+
 ---
 
 ## Processing Features

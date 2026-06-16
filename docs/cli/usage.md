@@ -419,7 +419,7 @@ kreuzberg cache stats
 | Flag                              | Description                                                                                                                  |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `--ocr <true\|false>`             | Enable or disable OCR. Defaults to tesseract backend when enabled.                                                           |
-| `--ocr-backend <BACKEND>`         | OCR backend: `tesseract`, `paddle-ocr`, or `easyocr`.                                                                        |
+| `--ocr-backend <BACKEND>`         | OCR backend: `tesseract`, `paddle-ocr`, `easyocr`, `candle-trocr`, `candle-paddleocr-vl`, `candle-glm-ocr`, or `vlm`.        |
 | `--ocr-language <LANG>`           | OCR language code. Tesseract uses ISO 639-3 (`eng`, `fra`, `deu`). PaddleOCR/EasyOCR use short codes (`en`, `ch`, `korean`). |
 | `--force-ocr <true\|false>`       | Force OCR even if the document has an existing text layer.                                                                   |
 | `--ocr-auto-rotate <true\|false>` | Automatically rotate images before OCR based on detected orientation.                                                        |
