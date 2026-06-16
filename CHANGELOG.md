@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **deps**: Pin `alloc-stdlib` to `0.2.2` to unify the `alloc-no-stdlib` v2/v3 split that broke `brotli-decompressor` compilation under `cargo check --workspace`. Drop brotli HTTP encoding from `tower-http` (`compression-full` → `compression-gzip,compression-deflate,compression-zstd`); clients negotiating brotli will fall back to gzip. Unblocks the prek `cargo-clippy` hook.
+- **benchmark-harness**: Handle the new `KreuzbergPipeline::CandleGlmOcr` variant in the kreuzberg adapter pipeline-args match — non-exhaustive arm left over from Phase 5 wiring.
 - **candle-ocr**: `TrocrBackend::process_image` now actually invokes the real `TrocrEngine` instead of returning a placeholder string. The engine code in `kreuzberg_candle_ocr::models::trocr` was already real, but the backend wrapper exposed to the OCR registry was the original Phase 3a stub. Runtime `backend_options.variant` now overrides the constructor-time default.
 - **candle-ocr**: `TrocrEngine` now uses `decoder_start_token_id` and `eos_token_id` from the loaded `config.json` instead of `trocr::TrOCRConfig::default()`. Prevents silent generation breakage if any checkpoint's defaults diverge from candle's.
 - **candle-ocr**: `PaddleOcrVlBackend` now reuses engines across calls via a process-wide pool keyed by `(PaddleOcrVlTask, DevicePreference)`. Eliminates the ~900 MB safetensors reload that previously fired on every request. The pool reuses the existing `DevicePreference` taxonomy rather than introducing a parallel `DeviceKind` enum.

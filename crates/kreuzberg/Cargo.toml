@@ -639,7 +639,9 @@ tower-http = { version = "0.7", features = [
     "catch-panic",
     "request-id",
     "sensitive-headers",
-    "compression-full",
+    "compression-gzip",
+    "compression-deflate",
+    "compression-zstd",
 ], optional = true }
 tracing = { workspace = true }
 tracing-opentelemetry = { version = "0.33", optional = true }
