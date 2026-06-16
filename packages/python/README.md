@@ -87,7 +87,7 @@
   </a>
 </div>
 
-Extract text, tables, images, and metadata from 90+ file formats and 300+ programming languages including PDF, Office documents, and images. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system.
+Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system.
 
 ## What This Package Provides
 
@@ -497,9 +497,9 @@ if result.detected_languages and "en" in result.detected_languages:
 
 ## System Requirements
 
-### ONNX Runtime (for embeddings)
+### ONNX Runtime (for ORT-dependent features)
 
-If using embeddings functionality, ONNX Runtime version 1.22.x must be installed:
+If using embeddings or other ORT-dependent inference features, ONNX Runtime version 1.24+ must be installed:
 
 ```bash
 # macOS
@@ -512,9 +512,9 @@ brew install onnxruntime
 # Download from https://github.com/microsoft/onnxruntime/releases
 ```
 
-**Important:** Kreuzberg requires ONNX Runtime version 1.22.x for embeddings.
+**Important:** Kreuzberg requires ONNX Runtime version 1.24+ for embeddings and other ORT-dependent inference features.
 
-Without ONNX Runtime, embeddings will raise `MissingDependencyError` with installation instructions.
+Without ONNX Runtime, ORT-dependent features will raise `MissingDependencyError` with installation instructions.
 
 ### Tesseract OCR (Required for OCR)
 

@@ -10,7 +10,7 @@ Kreuzberg uses a high-performance Rust core with one registry-backed extraction 
 
 PDF extraction uses the pdf_oxide provider <span class="version-badge">v4.0</span>. Legacy `.doc` and `.ppt` extraction no longer requires LibreOffice <span class="version-badge">v4.3</span>; those formats are parsed through native OLE/CFB extractors.
 
-Call `list_supported_formats()` in SDKs or the REST/API layer to inspect the runtime registry, including MIME types, extensions, and enabled capabilities <span class="version-badge">v5.0</span>.
+Call `list_supported_formats()` in SDKs or the REST/API layer to inspect the runtime registry, including extensions and MIME types <span class="version-badge">v5.0</span>.
 
 All formats support async/await and batch processing. Image formats and PDFs support optional OCR when configured.
 
@@ -84,7 +84,20 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | JBIG2      | `.jbig2`, `.jb2`               | `image/x-jbig2`                                    | Native Rust (hayro-jbig2)    | Yes         | OCR: Pure Rust bi-level decoder, commonly found in scanned PDFs                                                             |
 | PNM Family | `.pnm`, `.pbm`, `.pgm`, `.ppm` | `image/x-portable-anymap`, and so on.              | Native Rust (image-rs)       | Yes         | NetPBM formats                                                                                                              |
 | HEIC / HEIF | `.heic`, `.heics`, `.heif`    | `image/heic`, `image/heif`, `image/heic-sequence`  | Native libheif binding       | Yes         | Pixel decoding requires `heic` and libheif; EXIF metadata is pure Rust                                                       |
-| AVIF / AVCS | `.avif`, `.avcs`              | `image/avif`, `image/avif-sequence`                | Native libheif binding       | Yes         | Available through the HEIC-family aggregate <span class="version-badge">v5.0</span>                                         |
+| AVIF / AVCS | `.avif`, `.avcs`              | `image/avif`, `image/avcs`                         | Native libheif binding       | Yes         | Available through the HEIC-family aggregate <span class="version-badge">v5.0</span>                                         |
+
+### Audio and Video
+
+Audio/video formats use Whisper ONNX transcription when the `transcription` Cargo feature is enabled and a `transcription` config block is present <span class="version-badge">v5.0</span>. Video containers extract the audio track only.
+
+| Format          | Extensions       | MIME Type    | Extraction Method       | OCR Support | Special Features                         |
+| --------------- | ---------------- | ------------ | ----------------------- | ----------- | ---------------------------------------- |
+| MP3             | `.mp3`, `.mpga`   | `audio/mpeg` | Whisper ONNX            | No          | Speech-to-text transcript                |
+| M4A / AAC       | `.m4a`           | `audio/mp4`  | Whisper ONNX            | No          | Speech-to-text transcript                |
+| WAV             | `.wav`           | `audio/wav`  | Whisper ONNX            | No          | Speech-to-text transcript                |
+| WebM Audio      | `.webm`          | `audio/webm` | Whisper ONNX            | No          | Speech-to-text transcript                |
+| MP4 Video Audio | `.mp4`, `.mpeg`  | `video/mp4`  | Whisper ONNX            | No          | Audio-track transcription only           |
+| WebM Video Audio | `.webm`         | `video/webm` | Whisper ONNX            | No          | Audio-track transcription only           |
 
 ### Archives
 
@@ -111,7 +124,7 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | RIS              | `.ris`             | `application/x-research-info-systems`            | Native (biblib)                                                                               | No          | Structured citation parsing with title, authors, DOI, and abstract extraction  |
 | EndNote XML      | `.enw`             | `application/x-endnote+xml`                      | Native (biblib)                                                                               | No          | Structured citation parsing with title, authors, DOI, and keywords extraction  |
 | PubMed/MEDLINE   | `.nbib`            | `application/x-pubmed`                           | Native (biblib)                                                                               | No          | Structured citation parsing with author affiliations, MeSH terms, and abstract |
-| CSL JSON         | `.csl`             | `application/csl+json`                           | Native (JSON parser)                                                                          | No          | Citation Style Language JSON                                                   |
+| CSL JSON         | MIME-only          | `application/csl+json`                           | Native (JSON parser)                                                                          | No          | Citation Style Language JSON                                                   |
 
 ### Markdown Variants (Native)
 
@@ -216,6 +229,8 @@ Kreuzberg uses Cargo feature flags to enable optional format and processing supp
 | `mdx`        | MDX documents |
 | `svg`        | SVG parse/sanitize/rasterize and normalized image output <span class="version-badge">v5.0</span> |
 | `heic`       | HEIC/HEIF/AVIF/AVCS pixel decoding through libheif <span class="version-badge">v5.0</span> |
+| `transcription-types` | Audio/video transcription config and DTOs without ONNX Runtime <span class="version-badge">v5.0</span> |
+| `transcription` | Whisper ONNX audio/video transcription extractor <span class="version-badge">v5.0</span> |
 | `formats`    | Aggregate for document/image/archive format extractors |
 | `wasm-target` / `android-target` / `windows-target` | Platform-specific pure-Rust or reduced-native feature sets <span class="version-badge">v5.0</span> |
 
@@ -293,7 +308,7 @@ Kreuzberg automatically detects file formats using:
 2. **mime_guess Crate**: Fallback for unknown extensions
 3. **Manual Override**: Explicit MIME type can be provided
 
-Use `list_supported_formats()` when you need the exact enabled registry for the current build.
+Use `list_supported_formats()` when you need the exact runtime registry for the current build.
 
 Example with manual override:
 
@@ -472,11 +487,12 @@ results = batch_extract_file(paths, config=config)
 - **Encrypted Office Documents**: Password protection not supported
 - **Multi-page TIFF**: OCR processes first page only (configurable)
 - **Animated GIF**: Extracts first frame only
+- **Video Transcription**: Only the audio track is transcribed; frames are not decoded or captioned.
 
 ### Unsupported Formats
 
-- Video formats (MP4, AVI, MOV, etc.)
-- Audio formats (MP3, WAV, FLAC, etc.)
+- Video containers outside MP4/WebM transcription support (AVI, MOV, MKV, etc.)
+- Audio codecs/containers outside MP3, M4A/AAC-in-MP4, WAV, and WebM audio (FLAC, OGG, etc.)
 - CAD formats (DWG, DXF, etc.)
 - Database files (MDB, ACCDB, etc.)
 - Compressed Office formats without proper headers

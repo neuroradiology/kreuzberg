@@ -81,17 +81,14 @@ async fn enrich_classification_leaves_other_stages_none() {
     // We do not actually call the LLM in unit tests, so we only check that
     // absent features remain None. If the LLM key is absent the call will
     // fail; wrap in an ignore-on-error for the non-LLM CI environment.
-    match enrich(extraction, &config).await {
-        Ok(enriched) => {
-            // Classification ran (or returned empty on empty pages), everything else is None.
-            #[cfg(feature = "ner")]
-            assert!(enriched.entities.is_none());
-            #[cfg(feature = "captioning")]
-            assert!(enriched.captions.is_none());
-        }
-        // LLM unavailable in this environment — that is acceptable for a unit test.
-        Err(_) => {}
+    if let Ok(enriched) = enrich(extraction, &config).await {
+        // Classification ran (or returned empty on empty pages), everything else is None.
+        #[cfg(feature = "ner")]
+        assert!(enriched.entities.is_none());
+        #[cfg(feature = "captioning")]
+        assert!(enriched.captions.is_none());
     }
+    // LLM unavailable in this environment — that is acceptable for a unit test.
 }
 
 /// Stub NerBackend that returns two hardcoded entities.

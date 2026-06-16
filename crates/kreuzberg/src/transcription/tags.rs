@@ -11,8 +11,10 @@ use std::io::Cursor;
 /// Tag and audio-property data extracted from an audio/video file.
 // Fields are consumed by the inference path in the follow-up PR.
 #[allow(dead_code)]
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Default)]
 pub struct AudioTags {
+    /// Track title (`TIT2` / `\xa9nam` / Vorbis `TITLE`).
     pub title: Option<String>,
     /// Artist/performer — maps to `Metadata::authors` (wrapped in a Vec).
     pub artist: Option<String>,
@@ -35,6 +37,7 @@ pub struct AudioTags {
 /// Attempt to read audio tags and properties from raw bytes.
 ///
 /// Never panics or returns an error — failures produce `AudioTags::default()`.
+#[cfg_attr(alef, alef(skip))]
 pub fn read_audio_tags(bytes: &[u8]) -> AudioTags {
     let cursor = Cursor::new(bytes);
     // guess_file_type() → Result<_, io::Error>; read() → Result<_, LoftyError>.

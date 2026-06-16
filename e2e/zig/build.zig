@@ -52,6 +52,7 @@ pub fn build(b: *std.Build) void {
     batch_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const batch_run = b.addRunArtifact(batch_tests);
     batch_run.setCwd(b.path("../../test_documents"));
+    batch_run.step.dependOn(&async_run.step);
     test_step.dependOn(&batch_run.step);
 
     const contract_module = b.createModule(.{
@@ -69,6 +70,7 @@ pub fn build(b: *std.Build) void {
     contract_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const contract_run = b.addRunArtifact(contract_tests);
     contract_run.setCwd(b.path("../../test_documents"));
+    contract_run.step.dependOn(&batch_run.step);
     test_step.dependOn(&contract_run.step);
 
     const detection_module = b.createModule(.{
@@ -86,6 +88,7 @@ pub fn build(b: *std.Build) void {
     detection_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const detection_run = b.addRunArtifact(detection_tests);
     detection_run.setCwd(b.path("../../test_documents"));
+    detection_run.step.dependOn(&contract_run.step);
     test_step.dependOn(&detection_run.step);
 
     const document_extractor_management_module = b.createModule(.{
@@ -103,6 +106,7 @@ pub fn build(b: *std.Build) void {
     document_extractor_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const document_extractor_management_run = b.addRunArtifact(document_extractor_management_tests);
     document_extractor_management_run.setCwd(b.path("../../test_documents"));
+    document_extractor_management_run.step.dependOn(&detection_run.step);
     test_step.dependOn(&document_extractor_management_run.step);
 
     const embed_async_pending_module = b.createModule(.{
@@ -120,6 +124,7 @@ pub fn build(b: *std.Build) void {
     embed_async_pending_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embed_async_pending_run = b.addRunArtifact(embed_async_pending_tests);
     embed_async_pending_run.setCwd(b.path("../../test_documents"));
+    embed_async_pending_run.step.dependOn(&document_extractor_management_run.step);
     test_step.dependOn(&embed_async_pending_run.step);
 
     const embed_extra_module = b.createModule(.{
@@ -137,6 +142,7 @@ pub fn build(b: *std.Build) void {
     embed_extra_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embed_extra_run = b.addRunArtifact(embed_extra_tests);
     embed_extra_run.setCwd(b.path("../../test_documents"));
+    embed_extra_run.step.dependOn(&embed_async_pending_run.step);
     test_step.dependOn(&embed_extra_run.step);
 
     const embedding_backend_management_module = b.createModule(.{
@@ -154,6 +160,7 @@ pub fn build(b: *std.Build) void {
     embedding_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embedding_backend_management_run = b.addRunArtifact(embedding_backend_management_tests);
     embedding_backend_management_run.setCwd(b.path("../../test_documents"));
+    embedding_backend_management_run.step.dependOn(&embed_extra_run.step);
     test_step.dependOn(&embedding_backend_management_run.step);
 
     const embeddings_module = b.createModule(.{
@@ -171,6 +178,7 @@ pub fn build(b: *std.Build) void {
     embeddings_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const embeddings_run = b.addRunArtifact(embeddings_tests);
     embeddings_run.setCwd(b.path("../../test_documents"));
+    embeddings_run.step.dependOn(&embedding_backend_management_run.step);
     test_step.dependOn(&embeddings_run.step);
 
     const error_module = b.createModule(.{
@@ -188,6 +196,7 @@ pub fn build(b: *std.Build) void {
     error_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const error_run = b.addRunArtifact(error_tests);
     error_run.setCwd(b.path("../../test_documents"));
+    error_run.step.dependOn(&embeddings_run.step);
     test_step.dependOn(&error_run.step);
 
     const format_specific_module = b.createModule(.{
@@ -205,6 +214,7 @@ pub fn build(b: *std.Build) void {
     format_specific_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const format_specific_run = b.addRunArtifact(format_specific_tests);
     format_specific_run.setCwd(b.path("../../test_documents"));
+    format_specific_run.step.dependOn(&error_run.step);
     test_step.dependOn(&format_specific_run.step);
 
     const mime_utilities_module = b.createModule(.{
@@ -222,6 +232,7 @@ pub fn build(b: *std.Build) void {
     mime_utilities_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const mime_utilities_run = b.addRunArtifact(mime_utilities_tests);
     mime_utilities_run.setCwd(b.path("../../test_documents"));
+    mime_utilities_run.step.dependOn(&format_specific_run.step);
     test_step.dependOn(&mime_utilities_run.step);
 
     const ocr_backend_management_module = b.createModule(.{
@@ -239,6 +250,7 @@ pub fn build(b: *std.Build) void {
     ocr_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const ocr_backend_management_run = b.addRunArtifact(ocr_backend_management_tests);
     ocr_backend_management_run.setCwd(b.path("../../test_documents"));
+    ocr_backend_management_run.step.dependOn(&mime_utilities_run.step);
     test_step.dependOn(&ocr_backend_management_run.step);
 
     const pdf_module = b.createModule(.{
@@ -256,6 +268,7 @@ pub fn build(b: *std.Build) void {
     pdf_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const pdf_run = b.addRunArtifact(pdf_tests);
     pdf_run.setCwd(b.path("../../test_documents"));
+    pdf_run.step.dependOn(&ocr_backend_management_run.step);
     test_step.dependOn(&pdf_run.step);
 
     const plugin_api_module = b.createModule(.{
@@ -273,6 +286,7 @@ pub fn build(b: *std.Build) void {
     plugin_api_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const plugin_api_run = b.addRunArtifact(plugin_api_tests);
     plugin_api_run.setCwd(b.path("../../test_documents"));
+    plugin_api_run.step.dependOn(&pdf_run.step);
     test_step.dependOn(&plugin_api_run.step);
 
     const post_processor_management_module = b.createModule(.{
@@ -290,6 +304,7 @@ pub fn build(b: *std.Build) void {
     post_processor_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const post_processor_management_run = b.addRunArtifact(post_processor_management_tests);
     post_processor_management_run.setCwd(b.path("../../test_documents"));
+    post_processor_management_run.step.dependOn(&plugin_api_run.step);
     test_step.dependOn(&post_processor_management_run.step);
 
     const registry_module = b.createModule(.{
@@ -307,6 +322,7 @@ pub fn build(b: *std.Build) void {
     registry_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const registry_run = b.addRunArtifact(registry_tests);
     registry_run.setCwd(b.path("../../test_documents"));
+    registry_run.step.dependOn(&post_processor_management_run.step);
     test_step.dependOn(&registry_run.step);
 
     const registry_operations_module = b.createModule(.{
@@ -324,6 +340,7 @@ pub fn build(b: *std.Build) void {
     registry_operations_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const registry_operations_run = b.addRunArtifact(registry_operations_tests);
     registry_operations_run.setCwd(b.path("../../test_documents"));
+    registry_operations_run.step.dependOn(&registry_run.step);
     test_step.dependOn(&registry_operations_run.step);
 
     const renderer_management_module = b.createModule(.{
@@ -341,6 +358,7 @@ pub fn build(b: *std.Build) void {
     renderer_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const renderer_management_run = b.addRunArtifact(renderer_management_tests);
     renderer_management_run.setCwd(b.path("../../test_documents"));
+    renderer_management_run.step.dependOn(&registry_operations_run.step);
     test_step.dependOn(&renderer_management_run.step);
 
     const rerank_module = b.createModule(.{
@@ -358,6 +376,7 @@ pub fn build(b: *std.Build) void {
     rerank_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const rerank_run = b.addRunArtifact(rerank_tests);
     rerank_run.setCwd(b.path("../../test_documents"));
+    rerank_run.step.dependOn(&renderer_management_run.step);
     test_step.dependOn(&rerank_run.step);
 
     const rerank_async_pending_module = b.createModule(.{
@@ -375,6 +394,7 @@ pub fn build(b: *std.Build) void {
     rerank_async_pending_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const rerank_async_pending_run = b.addRunArtifact(rerank_async_pending_tests);
     rerank_async_pending_run.setCwd(b.path("../../test_documents"));
+    rerank_async_pending_run.step.dependOn(&rerank_run.step);
     test_step.dependOn(&rerank_async_pending_run.step);
 
     const reranker_backend_management_module = b.createModule(.{
@@ -392,6 +412,7 @@ pub fn build(b: *std.Build) void {
     reranker_backend_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const reranker_backend_management_run = b.addRunArtifact(reranker_backend_management_tests);
     reranker_backend_management_run.setCwd(b.path("../../test_documents"));
+    reranker_backend_management_run.step.dependOn(&rerank_async_pending_run.step);
     test_step.dependOn(&reranker_backend_management_run.step);
 
     const smoke_module = b.createModule(.{
@@ -409,6 +430,7 @@ pub fn build(b: *std.Build) void {
     smoke_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const smoke_run = b.addRunArtifact(smoke_tests);
     smoke_run.setCwd(b.path("../../test_documents"));
+    smoke_run.step.dependOn(&reranker_backend_management_run.step);
     test_step.dependOn(&smoke_run.step);
 
     const summarization_module = b.createModule(.{
@@ -426,6 +448,7 @@ pub fn build(b: *std.Build) void {
     summarization_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const summarization_run = b.addRunArtifact(summarization_tests);
     summarization_run.setCwd(b.path("../../test_documents"));
+    summarization_run.step.dependOn(&smoke_run.step);
     test_step.dependOn(&summarization_run.step);
 
     const validator_management_module = b.createModule(.{
@@ -443,6 +466,7 @@ pub fn build(b: *std.Build) void {
     validator_management_tests.root_module.addRPath(.{ .cwd_relative = ffi_path_abs });
     const validator_management_run = b.addRunArtifact(validator_management_tests);
     validator_management_run.setCwd(b.path("../../test_documents"));
+    validator_management_run.step.dependOn(&summarization_run.step);
     test_step.dependOn(&validator_management_run.step);
 
 }

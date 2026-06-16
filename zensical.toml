@@ -31,6 +31,7 @@ nav = [
       { "Advanced Features" = "guides/advanced.md" },
       { "Keyword Extraction" = "guides/keywords.md" },
       { "Layout Detection" = "guides/layout-detection.md" },
+      { "Audio and Video Transcription" = "guides/transcription.md" },
       { "LLM Integration" = "guides/llm-integration.md" },
       { "Code Intelligence" = "guides/code-intelligence.md" },
       { "Named-Entity Recognition" = "guides/ner.md" },

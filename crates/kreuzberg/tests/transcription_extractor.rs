@@ -41,8 +41,7 @@ fn config_with_transcription() -> ExtractionConfig {
 
 #[tokio::test]
 async fn async_extract_audio_wav_returns_transcript() {
-    let bytes =
-        std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
+    let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = config_with_transcription();
     let result = extract_bytes(&bytes, "audio/wav", &config).await.expect("extract");
     assert!(
@@ -54,8 +53,7 @@ async fn async_extract_audio_wav_returns_transcript() {
 
 #[test]
 fn sync_extract_audio_wav_returns_transcript() {
-    let bytes =
-        std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
+    let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = config_with_transcription();
     let result = extract_bytes_sync(&bytes, "audio/wav", &config).expect("extract");
     assert!(
@@ -67,8 +65,7 @@ fn sync_extract_audio_wav_returns_transcript() {
 
 #[tokio::test]
 async fn async_extract_audio_mp3_returns_transcript() {
-    let bytes =
-        std::fs::read(helpers::get_test_file_path("audio/hello-world.mp3")).expect("fixture");
+    let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.mp3")).expect("fixture");
     let config = config_with_transcription();
     let result = extract_bytes(&bytes, "audio/mpeg", &config).await.expect("extract");
     assert!(
@@ -80,8 +77,7 @@ async fn async_extract_audio_mp3_returns_transcript() {
 
 #[tokio::test]
 async fn async_extract_no_transcription_config_returns_error() {
-    let bytes =
-        std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
+    let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = ExtractionConfig::default(); // no transcription block
     let result = extract_bytes(&bytes, "audio/wav", &config).await;
     assert!(result.is_err(), "expected error with no transcription config");

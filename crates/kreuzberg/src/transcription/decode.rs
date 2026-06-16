@@ -8,13 +8,16 @@ use crate::KreuzbergError;
 use crate::Result;
 
 /// The canonical PCM format that all transcription engines receive.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone)]
 pub struct PcmAudio {
+    /// Interleaved (or mono) f32 PCM samples in [-1.0, 1.0].
     pub samples: Vec<f32>,
     /// Always 16000 after resampling/normalization in this decoder.
     pub sample_rate_hz: u32,
     /// Always 1 (mono) after our conversion.
     pub channels: u16,
+    /// Duration of the decoded audio in milliseconds.
     pub duration_ms: u64,
 }
 
@@ -23,13 +26,14 @@ pub struct PcmAudio {
 /// This is a blocking CPU-heavy operation — callers should use
 /// `tokio::task::spawn_blocking` when on an async runtime.
 #[cfg(feature = "transcription")]
+#[cfg_attr(alef, alef(skip))]
 pub fn decode_audio_to_pcm(bytes: &[u8], max_bytes: Option<u64>) -> Result<PcmAudio> {
     use std::io::Cursor;
     use symphonia::core::codecs::audio::AudioDecoderOptions;
     use symphonia::core::errors::Error as SymphoniaError;
-    use symphonia::core::formats::probe::Hint;
     use symphonia::core::formats::FormatOptions;
     use symphonia::core::formats::TrackType;
+    use symphonia::core::formats::probe::Hint;
     use symphonia::core::io::MediaSourceStream;
     use symphonia::core::meta::MetadataOptions;
 
@@ -56,7 +60,7 @@ pub fn decode_audio_to_pcm(bytes: &[u8], max_bytes: Option<u64>) -> Result<PcmAu
         .probe(&hint, mss, fmt_opts, meta_opts)
         .map_err(|e| KreuzbergError::transcription(format!("symphonia probe failed: {e}")))?;
 
-    // Select the first decodeable audio track.
+    // Select the first decodable audio track.
     let track = format
         .default_track(TrackType::Audio)
         .ok_or_else(|| KreuzbergError::transcription("no audio track found in input"))?;
@@ -69,23 +73,15 @@ pub fn decode_audio_to_pcm(bytes: &[u8], max_bytes: Option<u64>) -> Result<PcmAu
         .as_ref()
         .and_then(|p| p.audio())
         .cloned()
-        .ok_or_else(|| {
-            KreuzbergError::transcription("audio track has no decodable codec parameters")
-        })?;
+        .ok_or_else(|| KreuzbergError::transcription("audio track has no decodable codec parameters"))?;
 
     let src_sample_rate = audio_codec_params.sample_rate.unwrap_or(44_100);
-    let src_channels = audio_codec_params
-        .channels
-        .as_ref()
-        .map(|c| c.count())
-        .unwrap_or(1);
+    let src_channels = audio_codec_params.channels.as_ref().map(|c| c.count()).unwrap_or(1);
 
     let dec_opts: AudioDecoderOptions = Default::default();
     let mut decoder = symphonia::default::get_codecs()
         .make_audio_decoder(&audio_codec_params, &dec_opts)
-        .map_err(|e| {
-            KreuzbergError::transcription(format!("unsupported audio codec: {e}"))
-        })?;
+        .map_err(|e| KreuzbergError::transcription(format!("unsupported audio codec: {e}")))?;
 
     // Decode all packets, collecting interleaved f32 samples.
     let mut interleaved: Vec<f32> = Vec::new();
@@ -94,9 +90,7 @@ pub fn decode_audio_to_pcm(bytes: &[u8], max_bytes: Option<u64>) -> Result<PcmAu
         let packet = match format.next_packet() {
             Ok(Some(pkt)) => pkt,
             Ok(None) => break, // end of stream
-            Err(SymphoniaError::IoError(e))
-                if e.kind() == std::io::ErrorKind::UnexpectedEof =>
-            {
+            Err(SymphoniaError::IoError(e)) if e.kind() == std::io::ErrorKind::UnexpectedEof => {
                 break;
             }
             Err(SymphoniaError::ResetRequired) => {
@@ -120,9 +114,7 @@ pub fn decode_audio_to_pcm(bytes: &[u8], max_bytes: Option<u64>) -> Result<PcmAu
             // Soft errors: skip the packet.
             Err(SymphoniaError::IoError(_)) | Err(SymphoniaError::DecodeError(_)) => continue,
             Err(e) => {
-                return Err(KreuzbergError::transcription(format!(
-                    "audio decode error: {e}"
-                )));
+                return Err(KreuzbergError::transcription(format!("audio decode error: {e}")));
             }
         };
 
@@ -198,8 +190,7 @@ fn resample_linear_to_16k(samples: &[f32], src_hz: u32) -> Vec<f32> {
 
     let src_len = samples.len();
     // Number of output frames: ceil(src_len * TARGET_HZ / src_hz).
-    let out_len = (src_len as u64 * TARGET_HZ as u64)
-        .div_ceil(src_hz as u64) as usize;
+    let out_len = (src_len as u64 * TARGET_HZ as u64).div_ceil(src_hz as u64) as usize;
 
     let mut out = Vec::with_capacity(out_len);
     let ratio = src_hz as f64 / TARGET_HZ as f64;
@@ -219,6 +210,7 @@ fn resample_linear_to_16k(samples: &[f32], src_hz: u32) -> Vec<f32> {
 /// at compile time (should never be called in practice because the extractor
 /// itself is also cfg-gated).
 #[cfg(not(feature = "transcription"))]
+#[cfg_attr(alef, alef(skip))]
 pub fn decode_audio_to_pcm(_bytes: &[u8], _max_bytes: Option<u64>) -> Result<PcmAudio> {
     Err(KreuzbergError::transcription(
         "Audio decoding requires the `transcription` Cargo feature (symphonia + ORT)",

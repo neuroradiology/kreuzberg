@@ -123,13 +123,12 @@ impl SpecialTokens {
         // All multilingual Whisper models have `<|en|>`, `<|de|>`, etc. in their
         // vocabulary. We resolve any code that the tokenizer actually knows.
         let language_codes = [
-            "af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs",
-            "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fo", "fr", "gl", "gu",
-            "ha", "haw", "he", "hi", "hr", "ht", "hu", "hy", "id", "is", "it", "ja", "jw", "ka",
-            "kk", "km", "kn", "ko", "la", "lb", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn",
-            "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro",
-            "ru", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta",
-            "te", "tg", "th", "tk", "tl", "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "zh",
+            "af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs", "cy", "da", "de", "el",
+            "en", "es", "et", "eu", "fa", "fi", "fo", "fr", "gl", "gu", "ha", "haw", "he", "hi", "hr", "ht", "hu",
+            "hy", "id", "is", "it", "ja", "jw", "ka", "kk", "km", "kn", "ko", "la", "lb", "lo", "lt", "lv", "mg", "mi",
+            "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro", "ru",
+            "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl",
+            "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "zh",
         ];
 
         let mut language_ids = HashMap::new();
@@ -165,10 +164,7 @@ impl SpecialTokens {
         if let Some(&id) = self.language_ids.get(lang) {
             return id;
         }
-        tracing::warn!(
-            language = lang,
-            "Unknown language code; falling back to English",
-        );
+        tracing::warn!(language = lang, "Unknown language code; falling back to English",);
         *self.language_ids.get("en").unwrap_or(&self.start_of_transcript)
     }
 }
@@ -272,8 +268,8 @@ impl WhisperEngine {
             "Decoder (with past) session I/O",
         );
 
-        let tokenizer = Tokenizer::from_file(&paths.tokenizer)
-            .map_err(|e| TranscriptionError::Tokenizer(e.to_string()))?;
+        let tokenizer =
+            Tokenizer::from_file(&paths.tokenizer).map_err(|e| TranscriptionError::Tokenizer(e.to_string()))?;
 
         let special_tokens = SpecialTokens::resolve(&tokenizer)?;
 
@@ -461,8 +457,7 @@ impl WhisperEngine {
             for mel_idx in 0..n_mels {
                 let src_start = mel_idx * n_frames;
                 let dst_start = mel_idx * target_frames;
-                padded[dst_start..dst_start + n_frames]
-                    .copy_from_slice(&flat[src_start..src_start + n_frames]);
+                padded[dst_start..dst_start + n_frames].copy_from_slice(&flat[src_start..src_start + n_frames]);
             }
             padded
         } else {
@@ -522,22 +517,24 @@ impl WhisperEngine {
     ///
     /// Returns the token IDs produced **after** the prompt (i.e. the transcribed
     /// tokens), excluding the final `<|endoftext|>` token.
-    fn greedy_decode(
-        &self,
-        prompt: Vec<i64>,
-        encoder_hidden_states: &Value,
-    ) -> Result<Vec<u32>, TranscriptionError> {
+    fn greedy_decode(&self, prompt: Vec<i64>, encoder_hidden_states: &Value) -> Result<Vec<u32>, TranscriptionError> {
         let eot = self.special_tokens.end_of_text;
 
         // Discover decoder I/O names once from the live sessions.
-        let dec_input_names: Vec<String> =
-            self.decoder.inputs().iter().map(|i| i.name().to_string()).collect();
-        let dec_output_names: Vec<String> =
-            self.decoder.outputs().iter().map(|o| o.name().to_string()).collect();
-        let dwp_input_names: Vec<String> =
-            self.decoder_with_past.inputs().iter().map(|i| i.name().to_string()).collect();
-        let dwp_output_names: Vec<String> =
-            self.decoder_with_past.outputs().iter().map(|o| o.name().to_string()).collect();
+        let dec_input_names: Vec<String> = self.decoder.inputs().iter().map(|i| i.name().to_string()).collect();
+        let dec_output_names: Vec<String> = self.decoder.outputs().iter().map(|o| o.name().to_string()).collect();
+        let dwp_input_names: Vec<String> = self
+            .decoder_with_past
+            .inputs()
+            .iter()
+            .map(|i| i.name().to_string())
+            .collect();
+        let dwp_output_names: Vec<String> = self
+            .decoder_with_past
+            .outputs()
+            .iter()
+            .map(|o| o.name().to_string())
+            .collect();
 
         tracing::debug!(?dec_input_names, ?dec_output_names, "Decoder I/O names");
         tracing::debug!(?dwp_input_names, ?dwp_output_names, "Decoder-with-past I/O names");
@@ -565,8 +562,8 @@ impl WhisperEngine {
         // Step 0: initial decoder pass (no past key-values)
         // -----------------------------------------------------------------------
         let prompt_len = prompt.len();
-        let input_ids_0 = Array2::from_shape_vec((1, prompt_len), prompt)
-            .map_err(|e| TranscriptionError::Shape(e.to_string()))?;
+        let input_ids_0 =
+            Array2::from_shape_vec((1, prompt_len), prompt).map_err(|e| TranscriptionError::Shape(e.to_string()))?;
         let ids_value_0: Value = Value::from_array(input_ids_0)?.into();
 
         let enc_hs_clone = clone_value_f32(encoder_hidden_states)?;
@@ -632,8 +629,7 @@ impl WhisperEngine {
         // -----------------------------------------------------------------------
         // Steps 1…N: decoder_with_past loop
         // -----------------------------------------------------------------------
-        let dwp_wants_enc_hs =
-            dwp_input_names.iter().any(|n| n.contains("encoder_hidden_states"));
+        let dwp_wants_enc_hs = dwp_input_names.iter().any(|n| n.contains("encoder_hidden_states"));
 
         for _ in 1..WHISPER_MAX_TOKENS {
             let last_token = *generated.last().expect("generated is non-empty; qed");
@@ -715,9 +711,7 @@ impl WhisperEngine {
 /// Whisper vocab is ~51865 tokens. A plain argmax over `Vec<f32>` is fast
 /// enough; no softmax is required for greedy decoding.
 fn greedy_argmax_last(logits: &Value) -> Result<u32, TranscriptionError> {
-    let tensor = logits
-        .try_extract_array::<f32>()
-        .map_err(TranscriptionError::Ort)?;
+    let tensor = logits.try_extract_array::<f32>().map_err(TranscriptionError::Ort)?;
     let shape = tensor.shape();
     if shape.len() < 3 {
         return Err(TranscriptionError::Shape(format!(
@@ -756,9 +750,7 @@ fn greedy_argmax_last(logits: &Value) -> Result<u32, TranscriptionError> {
 /// This is necessary because `ort::value::Value` is not `Clone` and ORT
 /// session inputs consume values by move.
 fn clone_value_f32(value: &Value) -> Result<Value, TranscriptionError> {
-    let arr = value
-        .try_extract_array::<f32>()
-        .map_err(TranscriptionError::Ort)?;
+    let arr = value.try_extract_array::<f32>().map_err(TranscriptionError::Ort)?;
     let shape: Vec<usize> = arr.shape().to_vec();
     let flat: Vec<f32> = arr.iter().cloned().collect();
     let owned = ndarray::ArrayD::from_shape_vec(ndarray::IxDyn(&shape), flat)
@@ -782,8 +774,7 @@ mod tests {
             (1, 2, 4),
             vec![
                 // position 0: max at index 1
-                0.1_f32, 0.9, 0.2, 0.0,
-                // position 1: max at index 3
+                0.1_f32, 0.9, 0.2, 0.0, // position 1: max at index 3
                 0.1, 0.2, 0.3, 0.8,
             ],
         )
@@ -795,8 +786,7 @@ mod tests {
 
     #[test]
     fn greedy_argmax_last_single_position() {
-        let data = Array3::from_shape_vec((1, 1, 5), vec![0.0_f32, 0.0, 100.0, 0.0, 0.0])
-            .unwrap();
+        let data = Array3::from_shape_vec((1, 1, 5), vec![0.0_f32, 0.0, 100.0, 0.0, 0.0]).unwrap();
         let val: Value = Value::from_array(data).unwrap().into();
         let tok = greedy_argmax_last(&val).unwrap();
         assert_eq!(tok, 2);
@@ -813,19 +803,15 @@ mod tests {
             .join("kreuzberg")
             .join("whisper");
 
-        let paths =
-            match ensure_whisper_model(WhisperModel::Tiny, Some(&cache_dir), false, false) {
-                Ok(p) => p,
-                Err(_) => return, // model not cached — skip
-            };
+        let paths = match ensure_whisper_model(WhisperModel::Tiny, Some(&cache_dir), false, false) {
+            Ok(p) => p,
+            Err(_) => return, // model not cached — skip
+        };
 
         let tokenizer = Tokenizer::from_file(&paths.tokenizer).expect("tokenizer load");
         let st = SpecialTokens::resolve(&tokenizer).expect("special token resolution");
 
-        assert!(
-            st.end_of_text > 0,
-            "end_of_text token should be a valid non-zero ID"
-        );
+        assert!(st.end_of_text > 0, "end_of_text token should be a valid non-zero ID");
         assert!(
             st.language_ids.contains_key("en"),
             "English language token must be present"

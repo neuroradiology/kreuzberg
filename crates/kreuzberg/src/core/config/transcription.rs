@@ -44,21 +44,21 @@ pub struct TranscriptionConfig {
 
     /// Optional language hint (ISO-639-1 code, e.g. "en", "de").
     ///
-    /// When `None` (default) the engine may attempt auto-detection if supported.
+    /// When `None` (default), the current engine falls back to English.
     /// For deterministic production output, always set this explicitly.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
 
-    /// Whether to emit segment-level timestamps in the result metadata.
+    /// Whether to request segment-level timestamps.
     ///
-    /// When true, `metadata["transcription.segments"]` will contain an array
-    /// of `{start_ms, end_ms, text}` objects (if the engine supports it).
+    /// Accepted for forward compatibility. The current engine always uses
+    /// `<|notimestamps|>` and does not emit segment metadata yet.
     #[serde(default)]
     pub timestamps: bool,
 
     /// Hard safety limit on input duration (milliseconds).
     ///
-    /// Files longer than this are rejected *before* any decode or model work.
+    /// Files longer than this are rejected after decode, before model work.
     /// Default: 30 minutes. Set to `None` to disable (not recommended for
     /// untrusted input).
     #[serde(default = "default_max_duration_ms")]
@@ -72,17 +72,16 @@ pub struct TranscriptionConfig {
 
     /// Wall-clock timeout for the entire transcription operation (ms).
     ///
-    /// Includes model download (first time), decode, and inference.
-    /// Default: 10 minutes. Uses `tokio::select!` so the async runtime is
-    /// never blocked.
+    /// Default: 10 minutes. Reserved for timeout enforcement; the current
+    /// extractor does not enforce this field yet.
     #[serde(default = "default_timeout_ms")]
     pub timeout_ms: Option<u64>,
 
     /// Override the directory used for Whisper model cache.
     ///
     /// When `None`, uses the centralized resolver:
-    /// `KREUZBERG_CACHE_DIR/transcription/whisper` or the platform default
-    /// (`~/.cache/kreuzberg/transcription/whisper` on Linux, etc.).
+    /// `KREUZBERG_CACHE_DIR/whisper` or the platform default
+    /// (`~/.cache/kreuzberg/whisper` on Linux, etc.).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub model_cache_dir: Option<PathBuf>,
 
@@ -93,9 +92,10 @@ pub struct TranscriptionConfig {
     #[serde(default = "default_true")]
     pub allow_network: bool,
 
-    /// Verify SHA256 checksums of downloaded model files (when known).
+    /// Request SHA256 verification of downloaded model files.
     ///
-    /// Strongly recommended; disable only for debugging.
+    /// Reserved for the checksum table follow-up. The current resolver logs a
+    /// warning and treats this as a no-op.
     #[serde(default = "default_true")]
     pub verify_hash: bool,
 }
@@ -141,16 +141,16 @@ fn default_timeout_ms() -> Option<u64> {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum WhisperModel {
-    /// ~39 MB, fastest, lowest quality. Good default for development and CI.
+    /// Smallest, fastest, lowest quality. Good default for development and CI.
     #[default]
     Tiny,
-    /// ~74 MB, reasonable quality/speed tradeoff.
+    /// Reasonable quality/speed tradeoff.
     Base,
-    /// ~244 MB, better accuracy.
+    /// Better accuracy with higher memory and cache use.
     Small,
-    /// ~769 MB, high quality (slower, more memory).
+    /// High quality; slower and more memory-intensive.
     Medium,
-    /// ~1550 MB, best quality (large-v3). Use only when latency is acceptable.
+    /// Best quality (large-v3). Use only when latency and memory use are acceptable.
     LargeV3,
 }
 

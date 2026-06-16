@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-ffi"
-version = "5.0.0-rc.16"
+version = "5.0.0-rc.17"
 edition = "2021"
 license = "Elastic-2.0"
 description = "High-performance document intelligence library"
@@ -24,7 +24,45 @@ ignored = ["ahash", "serde_json", "tokio", "async-trait"]
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [features]
-default = []
+default = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"]
+full = ["kreuzberg/full"]
+pdf = ["kreuzberg/pdf"]
+ocr = ["kreuzberg/ocr"]
+paddle-ocr = ["kreuzberg/paddle-ocr"]
+paddle-ocr-types = ["kreuzberg/paddle-ocr-types"]
+layout-detection = ["kreuzberg/layout-detection"]
+layout-types = ["kreuzberg/layout-types"]
+embeddings = ["kreuzberg/embeddings"]
+embedding-presets = ["kreuzberg/embedding-presets"]
+reranker = ["kreuzberg/reranker"]
+reranker-presets = ["kreuzberg/reranker-presets"]
+chunking = ["kreuzberg/chunking"]
+keywords-yake = ["kreuzberg/keywords-yake"]
+keywords-rake = ["kreuzberg/keywords-rake"]
+language-detection = ["kreuzberg/language-detection"]
+html = ["kreuzberg/html"]
+tree-sitter = ["kreuzberg/tree-sitter"]
+office = ["kreuzberg/office"]
+email = ["kreuzberg/email"]
+archives = ["kreuzberg/archives"]
+stopwords = ["kreuzberg/stopwords"]
+auto-rotate = ["kreuzberg/auto-rotate"]
+auto-rotate-types = ["kreuzberg/auto-rotate-types"]
+tokio-runtime = ["kreuzberg/tokio-runtime"]
+api = ["kreuzberg/api"]
+mcp = ["kreuzberg/mcp"]
+liter-llm = ["kreuzberg/liter-llm"]
+quality = ["kreuzberg/quality"]
+svg = ["kreuzberg/svg"]
+transcription = ["kreuzberg/transcription"]
+transcription-types = ["kreuzberg/transcription-types"]
+classification = ["kreuzberg/classification"]
+captioning = ["kreuzberg/captioning"]
+ner-onnx = ["kreuzberg/ner-onnx"]
+ner-llm = ["kreuzberg/ner-llm"]
+diff = ["kreuzberg/diff"]
+redaction = ["kreuzberg/redaction"]
+api-types = ["kreuzberg/api-types"]
 
 [dependencies]
 ahash = "0.8"
@@ -33,16 +71,16 @@ serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios", target_os = "windows")))'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.16", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.16", features = ["android-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["android-target"] }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.16", features = ["android-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["android-target"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.16", features = ["windows-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["windows-target"] }
 
 
 [build-dependencies]

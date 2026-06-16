@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.17] - 2026-06-16
+
 ### Added
 
 - **Whisper ONNX transcription for audio/video MIME types via the `transcription`
@@ -18,6 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sync (`extract_bytes_sync`) and async (`extract_bytes`) API surfaces.
   Engine instances are cached per process; concurrent inference is bounded by
   the same thread-budget semaphore used by the embedding and reranking pipelines.
+
+### Changed
+
+- **alef pin 0.25.16 → 0.25.18.** Adds source-symbol `cfg` propagation across every binding emitter (C FFI, JNI, NAPI, PyO3, Magnus, Rustler, Extendr, ext-php-rs, wasm-bindgen, swift-bridge, flutter_rust_bridge): every emitted export now carries the same `#[cfg(feature = "...")]` as the source type/function it references. Fixes Mobile (Android/iOS) and Windows publish failures where binding crates referenced classification/captioning symbols absent from the active feature aggregate. Transcription engine types (`WhisperEngine`, `TranscriptionError`, `WhisperModelError`) opt out of bridging via `#[cfg_attr(alef, alef(skip))]`.
+
+### Fixed
+
+- **`enrich.rs`: feature-gate unused-config suppressor under `-D warnings`.** When none of `transcription-types`, `classification`, `ner`, or `captioning` features are active (e.g. on the Live HF preset Rust job), the `config: &EnrichmentConfig` parameter was unused and clippy `-D warnings` failed. Added a cfg-gated `let _ = config;` to silence the lint without behavior change.
+- **Node plugin dispose pattern.** `e2e/node/tests/test_plugins.test.ts` stubs now expose `async dispose()` and tests await it before `clearDocumentExtractors()`/`clearRenderers()` to avoid NAPI threadsafe-function handle corruption (separate from the alef trait-bridge refactor tracked in `[[project_node_plugin_api_crash]]`).
+- **R Makevars: rpath for ORT shared library dlopen.** Adds platform-conditional `-Wl,-rpath,@loader_path` (macOS) and `-Wl,-rpath,$ORIGIN` (Linux) link args so the kreuzberg R extension can resolve the bundled ONNX Runtime `dylib`/`so` at `library.dynam2` load time. Closes the runtime gap left after the alef 0.25.17 compile fix (`[[project_r_runtime_ort]]`).
+- **rc.16 cancelled and untagged.** Mobile/Windows compile failures plus the `enrich.rs` clippy regression blocked every non-desktop registry; no packages reached crates.io, PyPI, npm, RubyGems, Hex, Maven, NuGet, or pub.dev. Tag and GH release were deleted; rc.17 is the first usable v5 RC since rc.15.
 
 ## [5.0.0-rc.16] - 2026-06-15
 

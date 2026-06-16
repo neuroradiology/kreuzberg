@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.16"
+version = "5.0.0-rc.17"
 edition = "2024"
 license = "Elastic-2.0"
 
@@ -12,7 +12,7 @@ ignored = ["kreuzberg"]
 [lib]
 crate-type = ["cdylib", "staticlib"]
 [features]
-default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "heic", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker", "reranker-presets", "svg", "tokio-runtime", "transcription", "transcription-types", "tree-sitter", "xml"]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "heic", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker", "reranker-presets", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
 api = ["kreuzberg/api"]
 api-types = ["kreuzberg/api-types"]
 auto-rotate-types = ["kreuzberg/auto-rotate-types"]
@@ -41,7 +41,6 @@ reranker = ["kreuzberg/reranker"]
 reranker-presets = ["kreuzberg/reranker-presets"]
 svg = ["kreuzberg/svg"]
 tokio-runtime = ["kreuzberg/tokio-runtime"]
-transcription = ["kreuzberg/transcription"]
 transcription-types = ["kreuzberg/transcription-types"]
 tree-sitter = ["kreuzberg/tree-sitter"]
 xml = ["kreuzberg/xml"]

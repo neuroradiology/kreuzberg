@@ -16,11 +16,11 @@
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Kreuzberg-007ec6)](https://huggingface.co/Kreuzberg)
 [![Discord](https://img.shields.io/badge/Discord-Chat-007ec6)](https://discord.gg/xt9WY3GnKR)
 
-High-performance document intelligence library for Rust. Extract text, metadata, and structured information from PDFs, Office documents, images, and 75 formats.
+High-performance document intelligence library for Rust. Extract text, metadata, transcripts, and structured information from PDFs, Office documents, images, audio/video, and 96 formats.
 
 This is the core Rust library that powers the Python, TypeScript, and Ruby bindings.
 
-> **🚀 Version 4.9.5 Release**
+> **Version 5.0.0-rc.17 Release**
 > This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
 >
 > **Note**: The Rust crate is not currently published to crates.io for this RC. Use git dependencies or language bindings (Python, TypeScript, Ruby) instead.
@@ -29,7 +29,7 @@ This is the core Rust library that powers the Python, TypeScript, and Ruby bindi
 
 ```toml
 [dependencies]
-kreuzberg = "4.0"
+kreuzberg = "5.0.0-rc.17"
 tokio = { version = "1", features = ["rt", "macros"] }
 ```
 
@@ -49,19 +49,19 @@ Kreuzberg offers flexible PDFium linking strategies for different deployment sce
 ```toml
 # Default (dynamic linking)
 [dependencies]
-kreuzberg = "4.0"
+kreuzberg = "5.0.0-rc.17"
 
 # Static linking
 [dependencies]
-kreuzberg = { version = "4.0", features = ["pdf-static"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-static"] }
 
 # Bundled in binary
 [dependencies]
-kreuzberg = { version = "4.0", features = ["pdf-bundled"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-bundled"] }
 
 # System library (requires PDFium installed)
 [dependencies]
-kreuzberg = { version = "4.0", features = ["pdf-system"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-system"] }
 ```
 
 For more details on feature flags and configuration options, see the [Kreuzberg documentation](https://docs.kreuzberg.dev).
@@ -246,7 +246,7 @@ The crate uses feature flags for optional functionality:
 
 ```toml
 [dependencies]
-kreuzberg = { version = "4.0", features = ["pdf", "excel", "ocr"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["pdf", "excel", "ocr"] }
 ```
 
 ### Available Features
@@ -268,9 +268,9 @@ kreuzberg = { version = "4.0", features = ["pdf", "excel", "ocr"] }
 ### Feature Bundles
 
 ```toml
-kreuzberg = { version = "4.0", features = ["full"] }
-kreuzberg = { version = "4.0", features = ["server"] }
-kreuzberg = { version = "4.0", features = ["cli"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["full"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["server"] }
+kreuzberg = { version = "5.0.0-rc.17", features = ["cli"] }
 ```
 
 ## PDF Support

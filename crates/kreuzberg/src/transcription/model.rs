@@ -37,6 +37,7 @@ use crate::core::config::transcription::WhisperModel;
 
 /// On-disk paths for all files needed to load a Whisper model in an ORT session.
 #[cfg(feature = "transcription")]
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone)]
 pub struct WhisperModelPaths {
     /// Encoder ONNX model: `onnx/encoder_model.onnx`.
@@ -123,7 +124,10 @@ pub(crate) fn n_mels(model: WhisperModel) -> u32 {
 /// Tiny and Base are small enough to ship without a shard.
 #[cfg(feature = "transcription")]
 fn is_sharded(model: WhisperModel) -> bool {
-    matches!(model, WhisperModel::Small | WhisperModel::Medium | WhisperModel::LargeV3)
+    matches!(
+        model,
+        WhisperModel::Small | WhisperModel::Medium | WhisperModel::LargeV3
+    )
 }
 
 /// Remote paths (relative to the repo root on HF Hub) for the files that
@@ -294,6 +298,7 @@ fn unlock_file(_file: &std::fs::File) {}
 /// Returns [`WhisperModelError`] on I/O failures, download failures, or when the
 /// model is unavailable and `allow_network` is `false`.
 #[cfg(feature = "transcription")]
+#[cfg_attr(alef, alef(skip))]
 pub fn ensure_whisper_model(
     model: WhisperModel,
     cache_dir: Option<&Path>,
@@ -476,7 +481,12 @@ mod tests {
     #[cfg(feature = "transcription")]
     #[test]
     fn n_mels_is_128_only_for_large_v3() {
-        for model in [WhisperModel::Tiny, WhisperModel::Base, WhisperModel::Small, WhisperModel::Medium] {
+        for model in [
+            WhisperModel::Tiny,
+            WhisperModel::Base,
+            WhisperModel::Small,
+            WhisperModel::Medium,
+        ] {
             assert_eq!(n_mels(model), 80, "{model:?} should have 80 mels");
         }
         assert_eq!(n_mels(WhisperModel::LargeV3), 128);

@@ -353,7 +353,8 @@ no-ort-target = [
 wasm-target = ["no-ort-target", "excel-wasm", "tree-sitter-wasm", "ocr-wasm"]
 # android-target: no-ort-target plus native-Linux variants that work on Android ABI
 # (excel with tokio, native tree-sitter, Tesseract OCR, and API/MCP transport).
-# Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate).
+# Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, reranker,
+# auto-rotate, transcription).
 android-target = [
     "no-ort-target",
     "excel",
@@ -405,7 +406,8 @@ windows-target = [
     "quality",
 ]
 # Mobile deployment preset — formats + analysis + Tesseract OCR + code intelligence + API types.
-# Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate)
+# Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, reranker,
+# auto-rotate, transcription)
 # and server transport infrastructure (mcp, otel, liter-llm).
 mobile = ["formats", "analysis", "ocr", "tree-sitter", "api-types", "tokio-runtime"]
 # WASM only: enables wasm-bindgen-rayon for multi-threaded WASM builds.
@@ -520,9 +522,9 @@ infer = "0.19.0"
 itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
-kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.16", optional = true }
+kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.17", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }
-kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.16", optional = true }
+kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.17", optional = true }
 libc = { workspace = true }
 # lofty: pure-Rust audio tag reader (ID3v1/v2, MP4 atoms, Vorbis comments, FLAC, etc.)
 # MIT license. Used for metadata extraction independent of the inference backend.
@@ -627,7 +629,7 @@ zip = { version = ">=7.0.0", optional = true, default-features = false, features
 [target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.16", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.17", optional = true }
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 pprof = { version = "0.15.0", features = ["flamegraph"], optional = true }
 # Enable tokenizers `http` feature on native targets so model downloads work via hf-hub.
@@ -640,7 +642,7 @@ ureq = { version = "3.3", default-features = false, features = ["rustls", "json"
 [target.'cfg(all(target_os = "windows", not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.16", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.17", optional = true }
 # liter-llm: aws-lc-sys MSVC fix shipped in kreuzberg-dev/liter-llm; track via git patch.
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 # Enable tokenizers `http` feature on Windows so model downloads work via hf-hub.
@@ -666,7 +668,7 @@ getrandom_03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] 
 # On wasm32, swap kreuzberg-tesseract from its native default ("static-linking" -> "build-tesseract")
 # to the WASI-SDK build path ("build-tesseract-wasm") and bundle eng.traineddata so OCR works
 # in-memory with no filesystem.
-kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.16", default-features = false, features = [
+kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.17", default-features = false, features = [
     "build-tesseract-wasm",
     "bundle-tessdata-eng",
 ], optional = true }

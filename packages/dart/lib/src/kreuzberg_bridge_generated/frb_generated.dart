@@ -6,8 +6,6 @@
 import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:io';
-import 'dart:core' as _DartCore;
-import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -22,160 +20,64 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static final instance = RustLib._();
 
   RustLib._();
-  /// Resolve the prebuilt native library from environment variable,
-  /// package-relative location, or defer to flutter_rust_bridge's default loader.
-  /// Returns `null` to defer to flutter_rust_bridge's default loader.
+
+  /// Resolve the prebuilt native library from this package's own installed
+  /// location so the load works from any working directory and under hardened
+  /// runtimes. Returns `null` to defer to flutter_rust_bridge's default loader.
   ///
-  /// Checks in order:
-  /// 1. FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR environment variable
-  ///    (allows test harnesses to point to development build paths)
-  /// 2. Package-installed location with RID subdirectory (lib/src/native/<rid>/)
-  ///    (for published pub.dev packages with platform-specific bundled native libraries)
-  /// 3. Package-installed location (lib/src/kreuzberg_bridge_generated/)
-  ///    (legacy fallback for development or packages without per-platform binaries)
-  /// 4. Returns null (flutter_rust_bridge falls back to its default loader)
+  /// Published pub.dev packages stage natives under `lib/src/native/<rid>/`
+  /// (e.g. `macos-arm64`, `linux-x64`). For local FRB-dev builds the dylib is
+  /// emitted into `lib/src/kreuzberg_bridge_generated/`; that
+  /// path is searched as a fallback.
   static Future<ExternalLibrary?> _alefResolveExternalLibrary() async {
     try {
-      const candidates = <String>[
-        // macOS: framework bundle (preferred modern packaging)
-        'kreuzberg_dart.framework',
-        // macOS: bare dylib fallback
-        'libkreuzberg_dart.dylib',
-        // Linux
-        'libkreuzberg_dart.so',
-        // Windows
-        'kreuzberg_dart.dll',
+      final packageRoot = await Isolate.resolvePackageUri(
+        Uri.parse('package:kreuzberg/kreuzberg.dart'),
+      );
+      if (packageRoot == null) return null;
+      final libNames = _alefHostLibNames();
+      final searchDirs = <Uri>[
+        if (_alefHostRid() != null)
+          packageRoot.resolve('src/native/${_alefHostRid()}/'),
+        packageRoot.resolve('src/kreuzberg_bridge_generated/'),
       ];
-
-      // Helper to open a native library by absolute path.
-      // Normalizes path to absolute to avoid hardened-runtime "relative path rejected" errors.
-      ExternalLibrary? tryOpenAbsolute(String libPath) {
-        try {
-          final absPath = File(libPath).absolute.path;
-          return ExternalLibrary.open(absPath);
-        } catch (_) {
-          return null;
-        }
-      }
-
-      bool candidateExists(String libPath) {
-        return File(libPath).existsSync() || Directory(libPath).existsSync();
-      }
-
-      // Check FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR env var first.
-      // This allows test harnesses to override library location for development.
-      final envDir = Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
-      if (envDir != null && envDir.isNotEmpty) {
-        final absEnvDir = Directory(envDir).absolute.path;
-        final libDir = Directory(absEnvDir);
-        if (libDir.existsSync()) {
-          for (final candidate in candidates) {
-            final libPath = '$absEnvDir/$candidate';
-            if (candidateExists(libPath)) {
-              final result = tryOpenAbsolute(libPath);
-              if (result != null) return result;
-            }
+      for (final dir in searchDirs) {
+        for (final name in libNames) {
+          final libPath = dir.resolve(name).toFilePath();
+          if (File(libPath).existsSync() || Directory(libPath).existsSync()) {
+            return ExternalLibrary.open(libPath);
           }
         }
-      }
-
-      // Compute RID (runtime identifier) from platform and architecture using Abi.current().
-      // This is more reliable than parsing Platform.version.
-      String? computeRid() {
-        final abi = Abi.current();
-        final os = Platform.operatingSystem;
-
-        // Map from (os, Abi) to RID string.
-        String? ridFromAbi() {
-          if (os == 'linux') {
-            if (abi == Abi.linuxX64) return 'linux-x64';
-            if (abi == Abi.linuxArm64) return 'linux-arm64';
-          } else if (os == 'macos') {
-            if (abi == Abi.macosX64) return 'macos-x64';
-            if (abi == Abi.macosArm64) return 'macos-arm64';
-          } else if (os == 'windows') {
-            if (abi == Abi.windowsX64) return 'windows-x64';
-            if (abi == Abi.windowsArm64) return 'windows-arm64';
-          }
-          return null;
-        }
-
-        return ridFromAbi();
-      }
-
-      final rid = computeRid();
-      if (rid != null) {
-        final packageRoot =
-            await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
-        if (packageRoot != null) {
-          final ridDir = packageRoot.resolve('src/native/$rid/');
-          for (final candidate in candidates) {
-            final libPath = ridDir.resolve(candidate).toFilePath();
-            if (candidateExists(libPath)) {
-              final result = tryOpenAbsolute(libPath);
-              if (result != null) return result;
-            }
-          }
-        }
-      }
-
-      // Check legacy package-installed location as fallback.
-      final packageRoot =
-          await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
-      if (packageRoot != null) {
-        final libDir = packageRoot.resolve('src/kreuzberg_bridge_generated/');
-        for (final candidate in candidates) {
-          final libPath = libDir.resolve(candidate).toFilePath();
-          if (candidateExists(libPath)) {
-            final result = tryOpenAbsolute(libPath);
-            if (result != null) return result;
-          }
-        }
-      }
-
-      // As a last resort, resolve the running test/script's package root via
-      // `Platform.script` and search standard RID-relative locations there.
-      // Critical on macOS: `Directory.current` under hardened-runtime `dart` is
-      // the dart binary's own bin dir (relative-path dlopen rejected), whereas
-      // `Platform.script` resolves to the running .dart file's absolute URI,
-      // from which we can walk up to find the package root (the dir containing
-      // `pubspec.yaml`) and look for the bundled native library at standard
-      // paths. This handles the case where `Isolate.resolvePackageUri`
-      // resolution did not yield the actual staging location (e.g., a path
-      // dependency in local development, or a test_app whose host package
-      // contains the native lib directly rather than via the bridged package).
-      try {
-        final scriptPath = Platform.script.toFilePath();
-        var dir = File(scriptPath).absolute.parent;
-        while (dir.parent.path != dir.path
-            && !File('${dir.path}/pubspec.yaml').existsSync()) {
-          dir = dir.parent;
-        }
-        if (File('${dir.path}/pubspec.yaml').existsSync()) {
-          final rid = computeRid();
-          final absRootPath = dir.absolute.path;
-          final searchRoots = <String>[
-            if (rid != null) '$absRootPath/lib/src/native/$rid',
-            '$absRootPath/lib',
-            absRootPath,
-          ];
-          for (final root in searchRoots) {
-            for (final candidate in candidates) {
-              final libPath = '$root/$candidate';
-              if (candidateExists(libPath)) {
-                final result = tryOpenAbsolute(libPath);
-                if (result != null) return result;
-              }
-            }
-          }
-        }
-      } catch (_) {
-        // fall through to default loader
       }
     } catch (_) {
       // Fall through to the default loader on any resolution failure.
     }
     return null;
+  }
+
+  /// Map the host platform to the pub.dev native staging RID. Returns `null`
+  /// for unrecognized host triples so the FRB-dev fallback path runs instead.
+  static String? _alefHostRid() {
+    final abi = Abi.current();
+    if (abi == Abi.macosArm64) return 'macos-arm64';
+    if (abi == Abi.macosX64) return 'macos-x64';
+    if (abi == Abi.linuxArm64) return 'linux-arm64';
+    if (abi == Abi.linuxX64) return 'linux-x64';
+    if (abi == Abi.windowsArm64) return 'windows-arm64';
+    if (abi == Abi.windowsX64) return 'windows-x64';
+    return null;
+  }
+
+  static List<String> _alefHostLibNames() {
+    // The Dart-binding Rust crate is `{stem}-dart` (per the cargo manifest
+    // template), which produces a cdylib named `lib{stem}_dart.{ext}` on Unix
+    // and `{stem}_dart.dll` on Windows. On macOS, pub.dev-published packages
+    // may ship the binary as a Framework bundle (preferred modern packaging)
+    // — list that first so the loader finds it before the bare dylib.
+    if (Platform.isMacOS)
+      return const ['kreuzberg_dart.framework', 'libkreuzberg_dart.dylib'];
+    if (Platform.isWindows) return const ['kreuzberg_dart.dll'];
+    return const ['libkreuzberg_dart.so'];
   }
 
   /// Initialize flutter_rust_bridge
@@ -225,7 +127,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1216565787;
+  int get rustContentHash => -940515134;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -984,11 +886,6 @@ abstract class RustLibApi extends BaseApi {
 
   Future<YearRange> crateCreateYearRangeFromJson({required String json});
 
-  Future<PcmAudio> crateDecodeAudioToPcm({
-    required List<int> bytes,
-    PlatformInt64? maxBytes,
-  });
-
   Future<String> crateDefaultModelName();
 
   Future<String> crateDetectMimeType({
@@ -1008,13 +905,6 @@ abstract class RustLibApi extends BaseApi {
   Future<List<Float64List>> crateEmbedTextsAsync({
     required List<String> texts,
     required EmbeddingConfig config,
-  });
-
-  Future<WhisperModelPaths> crateEnsureWhisperModel({
-    required WhisperModel model,
-    String? cacheDir,
-    required bool allowNetwork,
-    required bool verifyHash,
   });
 
   Future<ExtractionResult> crateExtractBytes({
@@ -1083,8 +973,6 @@ abstract class RustLibApi extends BaseApi {
   Future<List<SupportedFormat>> crateListSupportedFormats();
 
   Future<List<String>> crateListValidators();
-
-  Future<AudioTags> crateReadAudioTags({required List<int> bytes});
 
   Future<void> crateRedact({
     required ExtractionResult result,
@@ -8174,40 +8062,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PcmAudio> crateDecodeAudioToPcm({
-    required List<int> bytes,
-    PlatformInt64? maxBytes,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_list_prim_u_8_loose(bytes, serializer);
-          sse_encode_opt_box_autoadd_i_64(maxBytes, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 206,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_pcm_audio,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateDecodeAudioToPcmConstMeta,
-        argValues: [bytes, maxBytes],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateDecodeAudioToPcmConstMeta => const TaskConstMeta(
-    debugName: "decode_audio_to_pcm",
-    argNames: ["bytes", "maxBytes"],
-  );
-
-  @override
   Future<String> crateDefaultModelName() {
     return handler.executeNormal(
       NormalTask(
@@ -8216,7 +8070,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 207,
+            funcId: 206,
             port: port_,
           );
         },
@@ -8248,7 +8102,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 208,
+            funcId: 207,
             port: port_,
           );
         },
@@ -8278,7 +8132,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 209,
+            funcId: 208,
             port: port_,
           );
         },
@@ -8313,7 +8167,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 210,
+            funcId: 209,
             port: port_,
           );
         },
@@ -8344,7 +8198,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 211,
+            funcId: 210,
             port: port_,
           );
         },
@@ -8378,7 +8232,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 212,
+            funcId: 211,
             port: port_,
           );
         },
@@ -8399,44 +8253,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<WhisperModelPaths> crateEnsureWhisperModel({
-    required WhisperModel model,
-    String? cacheDir,
-    required bool allowNetwork,
-    required bool verifyHash,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_whisper_model(model, serializer);
-          sse_encode_opt_String(cacheDir, serializer);
-          sse_encode_bool(allowNetwork, serializer);
-          sse_encode_bool(verifyHash, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 213,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_whisper_model_paths,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateEnsureWhisperModelConstMeta,
-        argValues: [model, cacheDir, allowNetwork, verifyHash],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateEnsureWhisperModelConstMeta => const TaskConstMeta(
-    debugName: "ensure_whisper_model",
-    argNames: ["model", "cacheDir", "allowNetwork", "verifyHash"],
-  );
-
-  @override
   Future<ExtractionResult> crateExtractBytes({
     required List<int> content,
     required String mimeType,
@@ -8452,7 +8268,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 214,
+            funcId: 212,
             port: port_,
           );
         },
@@ -8488,7 +8304,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 215,
+            funcId: 213,
             port: port_,
           );
         },
@@ -8524,7 +8340,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 216,
+            funcId: 214,
             port: port_,
           );
         },
@@ -8560,7 +8376,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 217,
+            funcId: 215,
             port: port_,
           );
         },
@@ -8594,7 +8410,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 218,
+            funcId: 216,
             port: port_,
           );
         },
@@ -8634,7 +8450,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 219,
+            funcId: 217,
             port: port_,
           );
         },
@@ -8670,7 +8486,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 220,
+            funcId: 218,
             port: port_,
           );
         },
@@ -8698,7 +8514,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 221,
+            funcId: 219,
             port: port_,
           );
         },
@@ -8728,7 +8544,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 222,
+            funcId: 220,
             port: port_,
           );
         },
@@ -8758,7 +8574,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 223,
+            funcId: 221,
             port: port_,
           );
         },
@@ -8785,7 +8601,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 224,
+            funcId: 222,
             port: port_,
           );
         },
@@ -8812,7 +8628,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 225,
+            funcId: 223,
             port: port_,
           );
         },
@@ -8839,7 +8655,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 226,
+            funcId: 224,
             port: port_,
           );
         },
@@ -8866,7 +8682,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 227,
+            funcId: 225,
             port: port_,
           );
         },
@@ -8893,7 +8709,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 228,
+            funcId: 226,
             port: port_,
           );
         },
@@ -8920,7 +8736,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 229,
+            funcId: 227,
             port: port_,
           );
         },
@@ -8947,7 +8763,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 230,
+            funcId: 228,
             port: port_,
           );
         },
@@ -8974,7 +8790,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 231,
+            funcId: 229,
             port: port_,
           );
         },
@@ -9001,7 +8817,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 232,
+            funcId: 230,
             port: port_,
           );
         },
@@ -9028,7 +8844,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 233,
+            funcId: 231,
             port: port_,
           );
         },
@@ -9055,7 +8871,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 234,
+            funcId: 232,
             port: port_,
           );
         },
@@ -9074,34 +8890,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_validators", argNames: []);
 
   @override
-  Future<AudioTags> crateReadAudioTags({required List<int> bytes}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_list_prim_u_8_loose(bytes, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 235,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_audio_tags,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateReadAudioTagsConstMeta,
-        argValues: [bytes],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateReadAudioTagsConstMeta =>
-      const TaskConstMeta(debugName: "read_audio_tags", argNames: ["bytes"]);
-
-  @override
   Future<void> crateRedact({
     required ExtractionResult result,
     required RedactionConfig config,
@@ -9115,7 +8903,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 236,
+            funcId: 233,
             port: port_,
           );
         },
@@ -9142,7 +8930,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 237,
+            funcId: 234,
             port: port_,
           );
         },
@@ -9175,7 +8963,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 238,
+            funcId: 235,
             port: port_,
           );
         },
@@ -9211,7 +8999,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 239,
+            funcId: 236,
             port: port_,
           );
         },
@@ -9245,7 +9033,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 240,
+            funcId: 237,
             port: port_,
           );
         },
@@ -9280,7 +9068,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 241,
+            funcId: 238,
             port: port_,
           );
         },
@@ -9313,7 +9101,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 242,
+            funcId: 239,
             port: port_,
           );
         },
@@ -9346,7 +9134,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 243,
+            funcId: 240,
             port: port_,
           );
         },
@@ -9380,7 +9168,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 244,
+            funcId: 241,
             port: port_,
           );
         },
@@ -9416,7 +9204,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 245,
+            funcId: 242,
             port: port_,
           );
         },
@@ -9452,7 +9240,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 246,
+            funcId: 243,
             port: port_,
           );
         },
@@ -9488,7 +9276,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 247,
+            funcId: 244,
             port: port_,
           );
         },
@@ -9522,7 +9310,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 248,
+            funcId: 245,
             port: port_,
           );
         },
@@ -9558,7 +9346,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 249,
+            funcId: 246,
             port: port_,
           );
         },
@@ -9588,7 +9376,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 250,
+            funcId: 247,
             port: port_,
           );
         },
@@ -9620,7 +9408,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 251,
+            funcId: 248,
             port: port_,
           );
         },
@@ -9650,7 +9438,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 252,
+            funcId: 249,
             port: port_,
           );
         },
@@ -9681,7 +9469,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 253,
+            funcId: 250,
             port: port_,
           );
         },
@@ -9712,7 +9500,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 254,
+            funcId: 251,
             port: port_,
           );
         },
@@ -9742,7 +9530,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 255,
+            funcId: 252,
             port: port_,
           );
         },
@@ -9773,7 +9561,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 256,
+            funcId: 253,
             port: port_,
           );
         },
@@ -9801,7 +9589,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 257,
+            funcId: 254,
             port: port_,
           );
         },
@@ -9832,7 +9620,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 258,
+            funcId: 255,
             port: port_,
           );
         },
@@ -11323,25 +11111,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       sampleRateHz: dco_decode_opt_box_autoadd_i_64(arr[3]),
       channels: dco_decode_opt_box_autoadd_i_64(arr[4]),
       bitrate: dco_decode_opt_box_autoadd_i_64(arr[5]),
-    );
-  }
-
-  @protected
-  AudioTags dco_decode_audio_tags(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
-    return AudioTags(
-      title: dco_decode_opt_String(arr[0]),
-      artist: dco_decode_opt_String(arr[1]),
-      year: dco_decode_opt_String(arr[2]),
-      language: dco_decode_opt_String(arr[3]),
-      durationMs: dco_decode_opt_box_autoadd_i_64(arr[4]),
-      sampleRateHz: dco_decode_opt_box_autoadd_i_64(arr[5]),
-      channels: dco_decode_opt_box_autoadd_i_64(arr[6]),
-      bitrate: dco_decode_opt_box_autoadd_i_64(arr[7]),
-      container: dco_decode_opt_String(arr[8]),
     );
   }
 
@@ -15253,20 +15022,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  PcmAudio dco_decode_pcm_audio(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return PcmAudio(
-      samples: dco_decode_list_prim_f_64_strict(arr[0]),
-      sampleRateHz: dco_decode_i_64(arr[1]),
-      channels: dco_decode_i_64(arr[2]),
-      durationMs: dco_decode_i_64(arr[3]),
-    );
-  }
-
-  @protected
   PdfAnnotation dco_decode_pdf_annotation(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -16204,22 +15959,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  WhisperModelPaths dco_decode_whisper_model_paths(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
-    return WhisperModelPaths(
-      encoder: dco_decode_String(arr[0]),
-      decoder: dco_decode_String(arr[1]),
-      decoderWithPast: dco_decode_String(arr[2]),
-      tokenizer: dco_decode_String(arr[3]),
-      config: dco_decode_String(arr[4]),
-      nMels: dco_decode_i_64(arr[5]),
-    );
-  }
-
-  @protected
   XlsxAppProperties dco_decode_xlsx_app_properties(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -17005,31 +16744,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       sampleRateHz: var_sampleRateHz,
       channels: var_channels,
       bitrate: var_bitrate,
-    );
-  }
-
-  @protected
-  AudioTags sse_decode_audio_tags(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_title = sse_decode_opt_String(deserializer);
-    var var_artist = sse_decode_opt_String(deserializer);
-    var var_year = sse_decode_opt_String(deserializer);
-    var var_language = sse_decode_opt_String(deserializer);
-    var var_durationMs = sse_decode_opt_box_autoadd_i_64(deserializer);
-    var var_sampleRateHz = sse_decode_opt_box_autoadd_i_64(deserializer);
-    var var_channels = sse_decode_opt_box_autoadd_i_64(deserializer);
-    var var_bitrate = sse_decode_opt_box_autoadd_i_64(deserializer);
-    var var_container = sse_decode_opt_String(deserializer);
-    return AudioTags(
-      title: var_title,
-      artist: var_artist,
-      year: var_year,
-      language: var_language,
-      durationMs: var_durationMs,
-      sampleRateHz: var_sampleRateHz,
-      channels: var_channels,
-      bitrate: var_bitrate,
-      container: var_container,
     );
   }
 
@@ -22554,21 +22268,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  PcmAudio sse_decode_pcm_audio(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_samples = sse_decode_list_prim_f_64_strict(deserializer);
-    var var_sampleRateHz = sse_decode_i_64(deserializer);
-    var var_channels = sse_decode_i_64(deserializer);
-    var var_durationMs = sse_decode_i_64(deserializer);
-    return PcmAudio(
-      samples: var_samples,
-      sampleRateHz: var_sampleRateHz,
-      channels: var_channels,
-      durationMs: var_durationMs,
-    );
-  }
-
-  @protected
   PdfAnnotation sse_decode_pdf_annotation(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_annotationType = sse_decode_pdf_annotation_type(deserializer);
@@ -23663,27 +23362,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  WhisperModelPaths sse_decode_whisper_model_paths(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_encoder = sse_decode_String(deserializer);
-    var var_decoder = sse_decode_String(deserializer);
-    var var_decoderWithPast = sse_decode_String(deserializer);
-    var var_tokenizer = sse_decode_String(deserializer);
-    var var_config = sse_decode_String(deserializer);
-    var var_nMels = sse_decode_i_64(deserializer);
-    return WhisperModelPaths(
-      encoder: var_encoder,
-      decoder: var_decoder,
-      decoderWithPast: var_decoderWithPast,
-      tokenizer: var_tokenizer,
-      config: var_config,
-      nMels: var_nMels,
-    );
-  }
-
-  @protected
   XlsxAppProperties sse_decode_xlsx_app_properties(
     SseDeserializer deserializer,
   ) {
@@ -24758,20 +24436,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.sampleRateHz, serializer);
     sse_encode_opt_box_autoadd_i_64(self.channels, serializer);
     sse_encode_opt_box_autoadd_i_64(self.bitrate, serializer);
-  }
-
-  @protected
-  void sse_encode_audio_tags(AudioTags self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_opt_String(self.title, serializer);
-    sse_encode_opt_String(self.artist, serializer);
-    sse_encode_opt_String(self.year, serializer);
-    sse_encode_opt_String(self.language, serializer);
-    sse_encode_opt_box_autoadd_i_64(self.durationMs, serializer);
-    sse_encode_opt_box_autoadd_i_64(self.sampleRateHz, serializer);
-    sse_encode_opt_box_autoadd_i_64(self.channels, serializer);
-    sse_encode_opt_box_autoadd_i_64(self.bitrate, serializer);
-    sse_encode_opt_String(self.container, serializer);
   }
 
   @protected
@@ -29548,15 +29212,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_pcm_audio(PcmAudio self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_list_prim_f_64_strict(self.samples, serializer);
-    sse_encode_i_64(self.sampleRateHz, serializer);
-    sse_encode_i_64(self.channels, serializer);
-    sse_encode_i_64(self.durationMs, serializer);
-  }
-
-  @protected
   void sse_encode_pdf_annotation(PdfAnnotation self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_pdf_annotation_type(self.annotationType, serializer);
@@ -30388,20 +30043,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_whisper_model(WhisperModel self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
-  }
-
-  @protected
-  void sse_encode_whisper_model_paths(
-    WhisperModelPaths self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_String(self.encoder, serializer);
-    sse_encode_String(self.decoder, serializer);
-    sse_encode_String(self.decoderWithPast, serializer);
-    sse_encode_String(self.tokenizer, serializer);
-    sse_encode_String(self.config, serializer);
-    sse_encode_i_64(self.nMels, serializer);
   }
 
   @protected

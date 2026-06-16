@@ -757,14 +757,14 @@ model = "tiny"
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `true` | Master switch. When false the block is ignored and audio files fall back to the normal "unsupported format" path. |
 | `model` | `WhisperModel` | `WhisperModel::Tiny` | Whisper model size to use. Smaller = faster + lower memory. `tiny` is the pragmatic default for first-time users and CI. |
-| `language` | `Option<String>` | `None` | Optional language hint (ISO-639-1 code, e.g. "en", "de"). When `None` (default) the engine may attempt auto-detection if supported. For deterministic production output, always set this explicitly. |
-| `timestamps` | `bool` | `false` | Whether to emit segment-level timestamps in the result metadata. When true, `metadata["transcription.segments"]` will contain an array of `{start_ms, end_ms, text}` objects (if the engine supports it). |
-| `max_duration_ms` | `Option<u64>` | `Default::default()` | Hard safety limit on input duration (milliseconds). Files longer than this are rejected *before* any decode or model work. Default: 30 minutes. Set to `None` to disable (not recommended for untrusted input). |
+| `language` | `Option<String>` | `None` | Optional language hint (ISO-639-1 code, e.g. "en", "de"). When `None` (default), the current engine falls back to English. For deterministic production output, always set this explicitly. |
+| `timestamps` | `bool` | `false` | Whether to request segment-level timestamps. Accepted for forward compatibility. The current engine always uses `<\|notimestamps\|>` and does not emit segment metadata yet. |
+| `max_duration_ms` | `Option<u64>` | `Default::default()` | Hard safety limit on input duration (milliseconds). Files longer than this are rejected after decode, before model work. Default: 30 minutes. Set to `None` to disable (not recommended for untrusted input). |
 | `max_bytes` | `Option<u64>` | `Default::default()` | Hard safety limit on input size (bytes). Default: 512 MiB. Protects against pathological or malicious uploads. |
-| `timeout_ms` | `Option<u64>` | `Default::default()` | Wall-clock timeout for the entire transcription operation (ms). Includes model download (first time), decode, and inference. Default: 10 minutes. Uses `tokio.select!` so the async runtime is never blocked. |
-| `model_cache_dir` | `Option<PathBuf>` | `None` | Override the directory used for Whisper model cache. When `None`, uses the centralized resolver: `KREUZBERG_CACHE_DIR/transcription/whisper` or the platform default (`~/.cache/kreuzberg/transcription/whisper` on Linux, etc.). |
+| `timeout_ms` | `Option<u64>` | `Default::default()` | Wall-clock timeout for the entire transcription operation (ms). Default: 10 minutes. Reserved for timeout enforcement; the current extractor does not enforce this field yet. |
+| `model_cache_dir` | `Option<PathBuf>` | `None` | Override the directory used for Whisper model cache. When `None`, uses the centralized resolver: `KREUZBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/kreuzberg/whisper` on Linux, etc.). |
 | `allow_network` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
-| `verify_hash` | `bool` | `true` | Verify SHA256 checksums of downloaded model files (when known). Strongly recommended; disable only for debugging. |
+| `verify_hash` | `bool` | `true` | Request SHA256 verification of downloaded model files. Reserved for the checksum table follow-up. The current resolver logs a warning and treats this as a no-op. |
 
 ---
 
@@ -4027,10 +4027,10 @@ transcription engine.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Tiny` | `tiny` | ~39 MB, fastest, lowest quality. Good default for development and CI. |
-| `Base` | `base` | ~74 MB, reasonable quality/speed tradeoff. |
-| `Small` | `small` | ~244 MB, better accuracy. |
-| `Medium` | `medium` | ~769 MB, high quality (slower, more memory). |
-| `LargeV3` | `large_v3` | ~1550 MB, best quality (large-v3). Use only when latency is acceptable. |
+| `Tiny` | `tiny` | Smallest, fastest, lowest quality. Good default for development and CI. |
+| `Base` | `base` | Reasonable quality/speed tradeoff. |
+| `Small` | `small` | Better accuracy with higher memory and cache use. |
+| `Medium` | `medium` | High quality; slower and more memory-intensive. |
+| `LargeV3` | `large_v3` | Best quality (large-v3). Use only when latency and memory use are acceptable. |
 
 ---

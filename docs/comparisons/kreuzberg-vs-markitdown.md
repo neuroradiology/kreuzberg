@@ -7,7 +7,7 @@ MarkItDown is a Microsoft-backed Python library that converts documents to Markd
 |                  | Kreuzberg                                                       | MarkItDown                                |
 | ---------------- | --------------------------------------------------------------- | ----------------------------------------- |
 | **Written in**   | Rust                                                            | Python                                    |
-| **File formats** | 90+                                                             | ~25                                       |
+| **File formats** | 96                                                              | ~25                                       |
 | **Use from**     | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Python                                    |
 | **Output**       | Unified text, element-based, per-page JSON, Markdown            | Markdown                                  |
 | **License**      | Apache-2.0                                                      | Elastic-2.0                               |

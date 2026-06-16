@@ -2,7 +2,7 @@
 
 {% include 'partials/badges.html.jinja' %}
 
-Extract text, metadata, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
+Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
 ## Key Features
 
@@ -10,6 +10,7 @@ Extract text, metadata, and code intelligence from 96 file formats and 306 progr
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, and C
 - **96 file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
+- **Audio/video transcription** – Whisper ONNX transcripts for MP3, M4A, WAV, WebM, and MP4 audio tracks with model caching and offline mode
 - **LLM intelligence** – VLM OCR (GPT-4o, Claude, Gemini, Ollama), structured JSON extraction with schema constraints, and provider-hosted embeddings via 143 LLM providers (including local engines: Ollama, LM Studio, vLLM, llama.cpp) through [liter-llm](https://github.com/kreuzberg-dev/liter-llm)
 - **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), VLM OCR (143 vision model providers including local engines), extensible via plugin API
 - **High performance** – Rust core with pure-Rust PDF, SIMD optimizations and full parallelism
@@ -37,7 +38,7 @@ Each language binding provides comprehensive documentation with examples and bes
 **JavaScript/TypeScript:**
 
 - **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node)** – Native NAPI-RS bindings for Node.js/Bun, fastest performance
-- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-wasm)** – WebAssembly for browsers/Deno/Cloudflare Workers, comprehensive format and OCR support (PDF, Excel, archives, all office formats, real Tesseract via the WASI build) — only ORT-dependent features (paddle-ocr, layout detection, embeddings, auto-rotate) and server modes (api/mcp/cli) are excluded
+- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-wasm)** – WebAssembly for browsers/Deno/Cloudflare Workers, comprehensive document and OCR support (PDF, Excel, archives, office formats, real Tesseract via the WASI build) — ORT-dependent features (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription) and server modes (api/mcp/cli) are excluded
 
 **Compiled Languages:**
 
@@ -94,14 +95,14 @@ Complete architecture coverage across all language bindings:
 
 | Target                                             | ORT-dependent features\* |
 | -------------------------------------------------- | :----------------------: |
-| iOS (`aarch64-apple-ios`, `aarch64-apple-ios-sim`) |            ✅            |
-| Android arm64 (`aarch64-linux-android`)            |            ✅            |
+| iOS (`aarch64-apple-ios`, `aarch64-apple-ios-sim`) |            ❌            |
+| Android arm64 (`aarch64-linux-android`)            |            ❌            |
 | Android x86_64 emulator (`x86_64-linux-android`)   |            ❌            |
 
-\*ORT-dependent features: PaddleOCR, layout detection, embeddings, auto-rotate.
-All non-ORT capabilities (Tesseract OCR, every document format, chunking, language detection, keywords, tree-sitter code intelligence, API/MCP, LLM) are available on all four mobile targets.
+\*ORT-dependent features: PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription.
+All non-ORT capabilities (Tesseract OCR, document formats outside audio/video transcription, chunking, language detection, keywords, tree-sitter code intelligence, API/MCP, LLM) are available on all four mobile targets.
 
-The `x86_64-linux-android` emulator triple lacks an ORT prebuilt upstream; kreuzberg's `kreuzberg` crate exposes an `android-target` aggregate feature that selects the same no-ORT feature set as WASM. The `kreuzberg-ffi` and `kreuzberg-dart` crates auto-select that aggregate for the emulator via target-conditional dependencies — host and arm64 phones get full features automatically.
+Published mobile bindings use the reduced `android-target` feature set on iOS and Android because ONNX Runtime and libheif do not cross-compile cleanly to SDK/NDK targets. Native Rust consumers can choose features manually for custom mobile builds, but the published mobile artifacts use this no-ORT bundle.
 
 ### Browsers / Edge (WebAssembly)
 
@@ -118,7 +119,7 @@ To use embeddings functionality:
 
 2. Use embeddings in your code - see [Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)
 
-**Note:** Kreuzberg requires ONNX Runtime version 1.24+ for embeddings. All other Kreuzberg features work without ONNX Runtime.
+**Note:** Kreuzberg requires ONNX Runtime version 1.24+ for embeddings and other ORT-dependent inference features. Non-ORT Kreuzberg features work without ONNX Runtime.
 
 ## Supported Formats
 
@@ -128,9 +129,9 @@ To use embeddings functionality:
 
 | Category            | Formats                                                                                          | Capabilities                                       |
 | ------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| **Word Processing** | `.docx`, `.docm`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages`                                     | Full text, tables, lists, images, metadata, styles |
+| **Word Processing** | `.docx`, `.docm`, `.doc`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages`                              | Full text, tables, lists, images, metadata, styles |
 | **Spreadsheets**    | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts        |
-| **Presentations**   | `.pptx`, `.pptm`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key`                                      | Slides, speaker notes, images, metadata            |
+| **Presentations**   | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key`                              | Slides, speaker notes, images, metadata            |
 | **PDF**             | `.pdf`                                                                                           | Text, tables, images, metadata, OCR support        |
 | **eBooks**          | `.epub`, `.fb2`                                                                                  | Chapters, metadata, embedded resources             |
 | **Database**        | `.dbf`                                                                                           | Table data extraction, field type support          |
@@ -142,7 +143,15 @@ To use embeddings functionality:
 | ------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | **Raster**   | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`                | OCR, table detection, EXIF metadata, dimensions, color space |
 | **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | Pure Rust decoders (JPEG 2000, JBIG2), OCR, table detection  |
+| **HEIC family** | `.heic`, `.heics`, `.heif`, `.avif`, `.avcs`                                  | EXIF metadata, optional libheif pixel decoding               |
 | **Vector**   | `.svg`                                                                           | DOM parsing, embedded text, graphics metadata                |
+
+### Audio & Video
+
+| Category              | Formats                                   | Features                                               |
+| --------------------- | ----------------------------------------- | ------------------------------------------------------ |
+| **Audio**             | `.mp3`, `.mpga`, `.m4a`, `.wav`, `.webm`  | Whisper transcription when native transcription exists |
+| **Video audio track** | `.mp4`, `.mpeg`, `.webm`                  | Audio-track transcription only                         |
 
 ### Web & Data
 
@@ -156,21 +165,21 @@ To use embeddings functionality:
 
 | Category     | Formats                              | Features                                                |
 | ------------ | ------------------------------------ | ------------------------------------------------------- |
-| **Email**    | `.eml`, `.msg`                       | Headers, body (HTML/plain), attachments, UTF-16 support |
+| **Email**    | `.eml`, `.msg`, `.pst`                | Headers, body (HTML/plain), attachments, UTF-16 support |
 | **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | Recursive extraction, nested archives, metadata         |
 
 ### Academic & Scientific
 
 | Category          | Formats                                               | Features                                                    |
 | ----------------- | ----------------------------------------------------- | ----------------------------------------------------------- |
-| **Citations**     | `.bib`, `.ris`, `.nbib`, `.enw`, `.csl`               | BibTeX/BibLaTeX, RIS, PubMed/MEDLINE, EndNote XML, CSL JSON |
-| **Scientific**    | `.tex`, `.latex`, `.typ`, `.typst`, `.jats`, `.ipynb` | LaTeX, Typst, JATS journal articles, Jupyter notebooks      |
-| **Publishing**    | `.fb2`, `.docbook`, `.dbk`, `.opml`                   | FictionBook, DocBook XML, OPML outlines                     |
-| **Documentation** | `.pod`, `.mdoc`, `.troff`                             | Perl POD, man pages, troff                                  |
+| **Citations**     | `.bib`, `.ris`, `.nbib`, `.enw`                                  | BibTeX/BibLaTeX, RIS, PubMed/MEDLINE, EndNote XML, CSL JSON by MIME type |
+| **Scientific**    | `.tex`, `.latex`, `.typ`, `.typst`, `.jats`, `.ipynb`             | LaTeX, Typst, JATS journal articles, Jupyter notebooks      |
+| **Publishing**    | `.fb2`, `.docbook`, `.dbk`, `.docbook4`, `.docbook5`, `.opml`     | FictionBook, DocBook XML, OPML outlines                     |
+| **Documentation** | MIME-only POD, mdoc, troff                                        | Perl POD, man pages, troff                                  |
 
 **[Complete Format Reference →](https://docs.kreuzberg.dev/reference/formats/)**
 
-### Code Intelligence (300+ Languages)
+### Code Intelligence (306 Languages)
 
 | Feature                    | Description                                                   |
 | -------------------------- | ------------------------------------------------------------- |
@@ -395,7 +404,7 @@ Yes! The WASM package (`@kreuzberg/wasm`) supports browsers, Deno, and Cloudflar
 
 - PDF, Excel, archives, all office formats
 - Real Tesseract OCR via WASI build
-- Only ORT-dependent features excluded (PaddleOCR, layout detection, embeddings, auto-rotate)
+- Only ORT-dependent features excluded (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription)
 
 ### What deployment options are available?
 

@@ -51,7 +51,7 @@ No SDK, no code — just your terminal.
 
 !!! Warning "x86_64 CPU — AVX/AVX2 instruction set required"
 
-    The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, and **embeddings**. All other Kreuzberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
+    The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, **embeddings**, **reranking**, **auto-rotate**, and **transcription**. All other Kreuzberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
 
 !!! Warning "Windows — ONNX Runtime required for Go, Elixir, and C/C++"
 
@@ -121,7 +121,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```gradle
-  implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.16'
+  implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.17'
   ```
 
   [API Reference](../reference/api-java.md){ .install-api-link }
@@ -132,7 +132,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```kotlin
-  implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.16")
+  implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.17")
   ```
 
   [API Reference](../reference/api-kotlin-android.md){ .install-api-link }
@@ -154,7 +154,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```swift
-  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.16")
+  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.17")
   ```
 
   [API Reference](../reference/api-swift.md){ .install-api-link }
@@ -187,7 +187,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```elixir
-  {:kreuzberg, "~> 5.0.0-rc.16"}
+  {:kreuzberg, "~> 5.0.0-rc.17"}
   ```
 
   [API Reference](../reference/api-elixir.md){ .install-api-link }
@@ -232,7 +232,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.16.tar.gz
+  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
   ```
 
   [API Reference](../reference/api-zig.md){ .install-api-link }
@@ -248,7 +248,7 @@ Only relevant if building from source or enabling OCR:
 
 | Dependency                | When you need it                                                                       |
 | ------------------------- | -------------------------------------------------------------------------------------- |
-| AVX/AVX2 CPU instructions | Required for ONNX Runtime features (PaddleOCR, layout detection, embeddings) on x86_64 |
+| AVX/AVX2 CPU instructions | Required for ONNX Runtime features (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription) on x86_64 |
 | Rust toolchain (`rustup`) | Building any native binding from source                                                |
 | C/C++ compiler            | Building native bindings (Xcode command-line tools / `build-essential` / MSVC)         |
 | Tesseract OCR             | Optional — `brew install tesseract` / `apt install tesseract-ocr`                      |
@@ -283,7 +283,7 @@ integration.
 
 ### GPU Acceleration
 
-Kreuzberg bundles a CPU-only ONNX Runtime — ML features (PaddleOCR, layout detection, embeddings) work out of the box on CPU.
+Kreuzberg bundles a CPU-only ONNX Runtime — ML features (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription) work out of the box on CPU.
 
 For GPU acceleration, install a GPU-enabled ONNX Runtime and set `ORT_DYLIB_PATH`:
 
@@ -387,14 +387,14 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
     <dependency>
         <groupId>dev.kreuzberg</groupId>
         <artifactId>kreuzberg</artifactId>
-        <version>5.0.0-rc.16</version>
+        <version>5.0.0-rc.17</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```gradle
-    implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.16'
+    implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.17'
     ```
 
 Requires Java 25+ (FFM/Panama API). Native libraries are bundled in the JAR.
@@ -406,7 +406,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:kreuzberg, "~> 5.0.0-rc.16"}
+    {:kreuzberg, "~> 5.0.0-rc.17"}
   ]
 end
 ```
@@ -433,7 +433,7 @@ go get github.com/kreuzberg-dev/kreuzberg/v5@latest
 
 !!! Note "Windows feature limitations"
 
-    The Go and C/C++ bindings on Windows (MinGW/GNU target) do not include **PaddleOCR**, **layout detection**, or **auto-rotate**. Tesseract OCR and all other features work normally. These limitations apply only to Windows; Linux and macOS builds include the full feature set.
+    The Go and C/C++ bindings on Windows (MinGW/GNU target) do not include ORT-dependent inference features: **PaddleOCR**, **layout detection**, **embeddings**, **reranking**, **auto-rotate**, or **transcription**. Tesseract OCR and non-ORT features work normally. These limitations apply only to Windows; Linux and macOS builds include the full feature set.
 
 ### Rust
 

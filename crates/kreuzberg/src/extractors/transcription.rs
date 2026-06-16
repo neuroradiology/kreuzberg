@@ -30,19 +30,17 @@ use tokio::task;
 /// Process-wide cache of loaded `WhisperEngine` instances, keyed by the
 /// canonical model paths (encoder|tokenizer). Mirrors the pattern in
 /// `crate::reranking::get_or_init_engine`.
-static ENGINES: LazyLock<Mutex<HashMap<String, Arc<WhisperEngine>>>> =
-    LazyLock::new(|| Mutex::new(HashMap::new()));
+static ENGINES: LazyLock<Mutex<HashMap<String, Arc<WhisperEngine>>>> = LazyLock::new(|| Mutex::new(HashMap::new()));
 
 /// Semaphore that limits the number of concurrent Whisper inference calls.
 ///
 /// The budget matches `resolve_thread_budget` — the same value used by the
 /// embedding and reranking semaphores so all ORT inference shares one
 /// per-process concurrency bound.
-static TRANSCRIPTION_SEMAPHORE: LazyLock<Arc<tokio::sync::Semaphore>> =
-    LazyLock::new(|| {
-        let budget = crate::core::config::concurrency::resolve_thread_budget(None);
-        Arc::new(tokio::sync::Semaphore::new(budget))
-    });
+static TRANSCRIPTION_SEMAPHORE: LazyLock<Arc<tokio::sync::Semaphore>> = LazyLock::new(|| {
+    let budget = crate::core::config::concurrency::resolve_thread_budget(None);
+    Arc::new(tokio::sync::Semaphore::new(budget))
+});
 
 /// Cache key for a loaded engine — stable across calls with identical model files.
 fn engine_cache_key(paths: &WhisperModelPaths) -> String {
@@ -150,12 +148,10 @@ impl DocumentExtractor for TranscriptionExtractor {
             let cache_dir = tcfg.model_cache_dir.clone();
             let allow_network = tcfg.allow_network;
             let verify_hash = tcfg.verify_hash;
-            task::spawn_blocking(move || {
-                ensure_whisper_model(model, cache_dir.as_deref(), allow_network, verify_hash)
-            })
-            .await
-            .map_err(|e| KreuzbergError::transcription(format!("model resolution task panicked: {e}")))?
-            .map_err(|e| KreuzbergError::transcription(format!("whisper model resolution failed: {e}")))?
+            task::spawn_blocking(move || ensure_whisper_model(model, cache_dir.as_deref(), allow_network, verify_hash))
+                .await
+                .map_err(|e| KreuzbergError::transcription(format!("model resolution task panicked: {e}")))?
+                .map_err(|e| KreuzbergError::transcription(format!("whisper model resolution failed: {e}")))?
         };
 
         let engine = get_or_build_engine(&paths)?;
@@ -170,12 +166,11 @@ impl DocumentExtractor for TranscriptionExtractor {
         let timestamps = tcfg.timestamps;
         let engine_for_task = Arc::clone(&engine);
 
-        let transcript = task::spawn_blocking(move || {
-            engine_for_task.transcribe(&pcm_clone, lang_clone.as_deref(), timestamps)
-        })
-        .await
-        .map_err(|e| KreuzbergError::transcription(format!("whisper task panicked: {e}")))?
-        .map_err(|e| KreuzbergError::transcription(format!("whisper inference failed: {e}")))?;
+        let transcript =
+            task::spawn_blocking(move || engine_for_task.transcribe(&pcm_clone, lang_clone.as_deref(), timestamps))
+                .await
+                .map_err(|e| KreuzbergError::transcription(format!("whisper task panicked: {e}")))?
+                .map_err(|e| KreuzbergError::transcription(format!("whisper inference failed: {e}")))?;
 
         let mut doc = build_audio_document(tags, &pcm, mime_type);
         if !transcript.is_empty() {

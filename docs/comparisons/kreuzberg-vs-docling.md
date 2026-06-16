@@ -7,7 +7,7 @@ Kreuzberg and Docling are both open-source document extraction libraries, but th
 |                  | Kreuzberg                                                         | Docling                                              |
 | ---------------- | ----------------------------------------------------------------- | ---------------------------------------------------- |
 | **Written in**   | Rust                                                              | Python                                               |
-| **File formats** | 90+                                                               | ~38 extensions (15+ types)                           |
+| **File formats** | 96                                                                | ~38 extensions (15+ types)                           |
 | **Use from**     | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm   | Python                                               |
 | **License**      | Apache-2.0                                                        | Elastic-2.0                                          |
 | **OCR**          | Tesseract + PaddleOCR (local, multi-backend fallback)             | Tesseract + EasyOCR                                  |

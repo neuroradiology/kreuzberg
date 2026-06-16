@@ -7,7 +7,7 @@ Apache Tika is the longest-running open-source document extraction tool in the e
 |                  | Kreuzberg                                                       | Apache Tika                                                          |
 | ---------------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
 | **Written in**   | Rust                                                            | Java                                                                 |
-| **File formats** | 90+ extracted                                                   | 1500+ detected, hundreds extracted                                   |
+| **File formats** | 96 extracted                                                    | 1500+ detected, hundreds extracted                                   |
 | **Use from**     | Python, TypeScript, Go, Ruby, Java, C#, PHP, Elixir, Rust, Wasm | Java, or any language via Tika Server (HTTP)                         |
 | **Run it as**    | Library, CLI, self-hosted API, browser (Wasm)                   | Java library, Tika Server (HTTP), CLI                                |
 | **License**      | Apache-2.0                                                      | Apache-2.0                                                           |

@@ -24,8 +24,7 @@ use kreuzberg::transcription::model::ensure_whisper_model;
 /// Called from multiple tests; model download is gated behind `allow_network = true`
 /// so the first cold run fetches from HF Hub.
 fn load_tiny() -> WhisperEngine {
-    let paths = ensure_whisper_model(WhisperModel::Tiny, None, true, false)
-        .expect("Tiny model download/cache failed");
+    let paths = ensure_whisper_model(WhisperModel::Tiny, None, true, false).expect("Tiny model download/cache failed");
     WhisperEngine::load(&paths).expect("WhisperEngine::load failed")
 }
 
@@ -98,5 +97,8 @@ fn empty_pcm_returns_empty_string() {
         duration_ms: 0,
     };
     let text = engine.transcribe(&pcm, None, false).expect("empty PCM must not error");
-    assert!(text.is_empty(), "empty PCM should produce empty transcript, got: {text:?}");
+    assert!(
+        text.is_empty(),
+        "empty PCM should produce empty transcript, got: {text:?}"
+    );
 }

@@ -2,7 +2,7 @@
 
 A map of what Kreuzberg can do. Each section links to the guide or reference page with configuration details and code examples.
 
-![Kreuzberg features overview -- 90+ input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/feature-overview.png)
+![Kreuzberg features overview -- 96 input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/feature-overview.png)
 
 ---
 
@@ -66,6 +66,20 @@ A map of what Kreuzberg can do. Each section links to the guide or reference pag
         every target via the pure-Rust `nom-exif` integration. See the
         [installation guide](getting-started/installation.md#heif--heic--avif-support).
 
+=== "Audio and Video"
+
+    <div class="format-chips">
+    <span class="format-chip">MP3 <code>.mp3 .mpga</code></span>
+    <span class="format-chip">M4A <code>.m4a</code></span>
+    <span class="format-chip">WAV <code>.wav</code></span>
+    <span class="format-chip">WebM audio <code>.webm</code></span>
+    <span class="format-chip">MP4 audio track <code>.mp4 .mpeg</code></span>
+    <span class="format-chip">WebM audio track <code>.webm</code></span>
+    </div>
+
+    !!! info "Since v5.0"
+        Enable the `transcription` feature and set a `transcription` config block to extract Whisper ONNX transcripts from audio files and video audio tracks. See [Audio and Video Transcription](guides/transcription.md).
+
 === "Email"
 
     <div class="format-chips">
@@ -128,7 +142,7 @@ Use these labels when matching docs to deployed packages. Labels use major.minor
 | <span class="version-badge">v4.5</span> | OCR pipeline fallback, layout detection, and document-level OCR. |
 | <span class="version-badge">v4.6</span> | PDF page rendering. |
 | <span class="version-badge">v4.8</span> | LLM/VLM intelligence through liter-llm. |
-| <span class="version-badge">v5.0</span> | Image-index references, SVG/image output normalization, HEIC aggregate formats, `list_supported_formats`, reranking, NER, redaction, summarization, translation, page classification, image captions, QR-code detection, and the `windows-target` feature aggregate. |
+| <span class="version-badge">v5.0</span> | Image-index references, SVG/image output normalization, HEIC aggregate formats, `list_supported_formats`, Whisper audio/video transcription, reranking, NER, redaction, summarization, translation, page classification, image captions, QR-code detection, and the `windows-target` feature aggregate. |
 
 ---
 

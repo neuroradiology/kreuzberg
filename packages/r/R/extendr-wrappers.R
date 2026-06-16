@@ -1530,13 +1530,13 @@ SummarizationConfig$from_json <- function(json) {
 #' @field enabled Master switch. When false the block is ignored and audio files fall back to the normal "unsupported
 #' @field model Whisper model size to use.
 #' @field language Optional language hint (ISO-639-1 code, e.g. "en", "de").
-#' @field timestamps Whether to emit segment-level timestamps in the result metadata.
+#' @field timestamps Whether to request segment-level timestamps.
 #' @field max_duration_ms Hard safety limit on input duration (milliseconds).
 #' @field max_bytes Hard safety limit on input size (bytes).
 #' @field timeout_ms Wall-clock timeout for the entire transcription operation (ms).
 #' @field model_cache_dir Override the directory used for Whisper model cache.
 #' @field allow_network Allow network access to download models from Hugging Face Hub.
-#' @field verify_hash Verify SHA256 checksums of downloaded model files (when known).
+#' @field verify_hash Request SHA256 verification of downloaded model files.
 #' @export
 TranscriptionConfig <- new.env(parent = emptyenv())
 TranscriptionConfig$default <- function() .Call("wrap__TranscriptionConfig__default", PACKAGE = "kreuzberg")

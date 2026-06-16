@@ -1,10 +1,10 @@
 ---
-description: "Kreuzberg – Extract text, tables, and metadata from 96 file formats with a Rust core and polyglot SDKs. No GPU required."
+description: "Kreuzberg – Extract text, tables, metadata, and audio transcripts from 96 file formats with a Rust core and polyglot SDKs. No GPU required."
 ---
 
 # Kreuzberg
 
-Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, and metadata from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
+Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, metadata, and audio transcripts from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
 
 <div class="hero-badges" markdown>
 
@@ -27,7 +27,7 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 
 - :material-file-document-multiple:{ .lg .middle } **96 File Formats**
 
-  PDF, DOCX, XLSX, PPTX, images, HTML, XML, emails, archives, academic formats — one API handles them all.
+  PDF, DOCX, XLSX, PPTX, images, HTML, XML, emails, archives, academic formats, and audio/video transcription when enabled.
 
 - :material-eye:{ .lg .middle } **Multi-Engine OCR**
 
@@ -65,7 +65,7 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 | **C#**                  | `dotnet add package Kreuzberg`                 | [API Reference](reference/api-csharp.md)     |
 | **Ruby**                | `gem install kreuzberg`                        | [API Reference](reference/api-ruby.md)       |
 | **PHP**                 | `composer require kreuzberg/kreuzberg`         | [API Reference](reference/api-php.md)        |
-| **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.16"}`               | [API Reference](reference/api-elixir.md)     |
+| **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.17"}`               | [API Reference](reference/api-elixir.md)     |
 | **R**                   | r-universe `kreuzberg`                         | [API Reference](reference/api-r.md)          |
 | **Dart / Flutter**      | `dart pub add kreuzberg`                       | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                          | [API Reference](reference/api-swift.md)      |

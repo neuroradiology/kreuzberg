@@ -1,58 +1,60 @@
 # Audio and Video Transcription
 
 The `transcription` Cargo feature adds speech-to-text extraction for audio and
-video MIME types via Whisper ONNX models.  Enable the feature and set a
+video MIME types via Whisper ONNX models <span class="version-badge">v5.0</span>. Enable the feature and set a
 `TranscriptionConfig` block in your `ExtractionConfig` to produce transcripts
 from audio and video files.
 
 ## Supported MIME types
 
-| MIME type    | Container            |
-|--------------|----------------------|
-| `audio/mpeg` | MP3                  |
-| `audio/mp4`  | M4A / AAC in MP4     |
-| `audio/wav`  | WAV / RIFF           |
-| `audio/webm` | WebM audio           |
-| `video/mp4`  | MP4 video (audio track only) |
-| `video/webm` | WebM video (audio track only) |
+| MIME type    | Extensions     | Container                    |
+|--------------|----------------|------------------------------|
+| `audio/mpeg` | `.mp3`, `.mpga` | MP3                          |
+| `audio/mp4`  | `.m4a`         | M4A / AAC in MP4             |
+| `audio/wav`  | `.wav`         | WAV / RIFF                   |
+| `audio/webm` | `.webm`        | WebM audio                   |
+| `video/mp4`  | `.mp4`, `.mpeg` | MP4 video (audio track only) |
+| `video/webm` | `.webm`        | WebM video (audio track only) |
 
 ## Model sizes
 
-| Variant    | Download size | RAM at inference | Mel bins |
-|------------|---------------|------------------|----------|
-| `Tiny`     | ~75 MB        | ~273 MB          | 80       |
-| `Base`     | ~145 MB       | ~390 MB          | 80       |
-| `Small`    | ~466 MB       | ~967 MB          | 80       |
-| `Medium`   | ~1.5 GB       | ~2.0 GB          | 80       |
-| `LargeV3`  | ~3.1 GB       | ~3.9 GB          | 128      |
+| Variant   | Cache footprint | RAM at inference | Mel bins |
+|-----------|-----------------|------------------|----------|
+| `Tiny`    | Smallest        | Lowest memory    | 80       |
+| `Base`    | Small           | Low memory       | 80       |
+| `Small`   | Medium          | Medium memory    | 80       |
+| `Medium`  | Large           | High memory      | 80       |
+| `LargeV3` | Largest         | Highest memory   | 128      |
 
 Models are downloaded from `onnx-community/whisper-{size}` on HuggingFace Hub
-on first use and cached under `{KREUZBERG_CACHE_DIR}/whisper/{size}/`.
+on first use and cached under `{KREUZBERG_CACHE_DIR}/whisper/{size}/` when
+`KREUZBERG_CACHE_DIR` is set, or under the platform cache directory such as
+`~/.cache/kreuzberg/whisper/{size}/` on Linux.
 
 ## Configuration knobs
 
 | Field              | Type              | Default  | Description |
 |--------------------|-------------------|----------|-------------|
-| `enabled`          | `bool`            | `false`  | Must be `true` for the extractor to activate. |
+| `enabled`          | `bool`            | `true`   | The extractor activates only when the `transcription` block is present and `enabled` is true. |
 | `model`            | `WhisperModel`    | `Tiny`   | Size variant to use. |
-| `language`         | `Option<String>`  | `None`   | ISO-639-1 code (e.g. `"en"`, `"de"`). `None` defaults to English. |
+| `language`         | `Option<String>`  | `None`   | ISO-639-1 code (e.g. `"en"`, `"de"`). The current engine falls back to English when unset; set this explicitly for deterministic output. |
 | `timestamps`       | `bool`            | `false`  | Accepted for forward-compatibility; segment timestamps are not yet emitted. |
-| `max_bytes`        | `Option<u64>`     | `None`   | Reject input larger than this many bytes before decoding. |
-| `max_duration_ms`  | `Option<u64>`     | `None`   | Reject audio longer than this many milliseconds after decode. |
-| `timeout_ms`       | `Option<u64>`     | `None`   | Wall-clock timeout for the full inference call (not yet enforced; reserved). |
+| `max_bytes`        | `Option<u64>`     | `512 MiB` | Reject input larger than this many bytes before decoding. |
+| `max_duration_ms`  | `Option<u64>`     | `30 min` | Reject audio longer than this many milliseconds after decode. |
+| `timeout_ms`       | `Option<u64>`     | `10 min` | Reserved wall-clock timeout for the full inference call. The current extractor does not enforce it yet. |
 | `model_cache_dir`  | `Option<PathBuf>` | `None`   | Override the default cache location. |
 | `allow_network`    | `bool`            | `true`   | Set to `false` to disable automatic downloads; returns `ModelMissing` if the model is not already cached. |
-| `verify_hash`      | `bool`            | `false`  | Hash verification is reserved for a future work item; currently a no-op with a warning. |
+| `verify_hash`      | `bool`            | `true`   | Hash verification is reserved for a future work item; currently a no-op with a warning. |
 
 ## First-run download
 
 On the first call with `allow_network = true`, the extractor downloads the
-required ONNX files and tokenizer from HuggingFace Hub.  The download is
+required ONNX files and tokenizer from HuggingFace Hub. The download is
 serialised per process via a cross-process advisory file lock so concurrent
-first-time callers do not race.  Subsequent calls use the local cache.
+first-time callers do not race. Subsequent calls use the local cache.
 
 Set `allow_network = false` and pre-populate the cache directory if you need
-air-gapped deployments.  When the model is absent and `allow_network = false`,
+air-gapped deployments. When the model is absent and `allow_network = false`,
 extraction returns a `KreuzbergError::Transcription` with the message
 `"network access disabled and model not cached"`.
 
@@ -115,6 +117,6 @@ println!("{}", result.content);
   rate and channel layout are handled automatically.
 - Engine instances are cached per process keyed by model paths, so the ONNX
   sessions are loaded once and reused across calls.
-- Concurrent inference calls are bounded by a semaphore sized to
+- Async inference calls are bounded by a semaphore sized to
   `resolve_thread_budget`, matching the same limit used by the embedding and
-  reranking pipelines.
+  reranking pipelines. Sync calls run on the caller thread.
