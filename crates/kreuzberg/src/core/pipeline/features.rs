@@ -158,14 +158,29 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
             .filter(|s| !s.is_empty())
             .or_else(|| result.metadata.pages.as_ref().and_then(|ps| ps.boundaries.as_deref()));
 
+        // For non-plain output formats, re-derive page boundaries against formatted_content.
+        // The plain-text boundaries above are byte-offset invalid for the formatted string
+        // (e.g. markdown headings shift all subsequent offsets).  recompute_boundaries_from_pages
+        // uses substring search, so the page text is still found verbatim inside the formatted
+        // string and the returned offsets are valid indices into formatted_content.
+        // Caveat: HTML output HTML-escapes special characters (&amp;, &lt;, etc.), so pages
+        // whose content contains &, <, or > will not match and silently produce no provenance.
+        let formatted_boundaries: Option<Vec<PageBoundary>> =
+            if config.output_format != crate::core::config::OutputFormat::Plain {
+                result.formatted_content.as_deref().and_then(|formatted| {
+                    result
+                        .pages
+                        .as_deref()
+                        .map(|pages| recompute_boundaries_from_pages(formatted, pages))
+                })
+            } else {
+                None
+            };
+
         // When a non-plain output format is requested, formatted_content holds the
         // pre-rendered output (markdown, HTML, etc.) that will become result.content after
         // apply_output_format.  Chunk it directly so chunks[].content carries the same
         // formatted representation as the top-level content field.
-        //
-        // Page boundaries were computed against plain-text content via recompute_boundaries_from_pages
-        // and cannot be remapped to the formatted string without re-derivation; they are omitted
-        // in the non-plain path (chunk page metadata is a follow-up improvement).
         //
         // When output_format == Plain, formatted_content may be temporarily set as a heading
         // source only (the chunker_only_markdown path in mod.rs).  In that case chunk the plain
@@ -174,7 +189,10 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
         let (chunk_input, effective_page_boundaries, heading_source) =
             if config.output_format != crate::core::config::OutputFormat::Plain {
                 match result.formatted_content.as_deref() {
-                    Some(formatted) => (formatted, None, None),
+                    Some(formatted) => {
+                        let fmt_boundaries = formatted_boundaries.as_deref().filter(|s| !s.is_empty());
+                        (formatted, fmt_boundaries, None)
+                    }
                     None => (result.content.as_str(), page_boundaries, None),
                 }
             } else {
@@ -444,6 +462,20 @@ mod tests {
         }
     }
 
+    fn make_result_with_pages_and_formatted(
+        plain: &str,
+        formatted: &str,
+        pages: Vec<crate::types::PageContent>,
+    ) -> ExtractionResult {
+        ExtractionResult {
+            content: plain.to_string(),
+            formatted_content: Some(formatted.to_string()),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        }
+    }
+
     fn markdown_chunking_config() -> crate::core::config::ExtractionConfig {
         crate::core::config::ExtractionConfig {
             output_format: crate::core::config::OutputFormat::Markdown,
@@ -596,14 +628,15 @@ mod tests {
     }
 
     #[test]
-    fn chunk_page_metadata_is_none_for_non_plain_output_format() {
-        // Known limitation (#1074): when output_format != Plain, page boundaries computed
-        // against plain-text offsets are not valid for the formatted string and are omitted.
-        // This test documents the expected behaviour so future changes don't silently regress it.
+    fn chunk_page_metadata_is_none_when_pages_field_absent() {
+        // Without result.pages populated there are no page-content substrings to locate
+        // in formatted_content, so formatted_boundaries stays None and no page provenance
+        // can be derived regardless of output_format.
         let plain = "Page one content\n\nPage two content";
         let markdown = "# Page one\n\nPage one content\n\n# Page two\n\nPage two content";
 
         let config = markdown_chunking_config();
+        // result.pages is NOT set — formatted_boundaries will be None.
         let mut result = make_result_with_formatted(plain, markdown);
 
         execute_chunking(&mut result, &config).unwrap();
@@ -613,14 +646,349 @@ mod tests {
         for chunk in &chunks {
             assert!(
                 chunk.metadata.first_page.is_none(),
-                "first_page must be None for non-plain output_format (tracked in #1074), got: {:?}",
+                "first_page must be None when result.pages is absent, got: {:?}",
                 chunk.metadata.first_page
             );
+        }
+    }
+
+    #[test]
+    fn chunk_page_provenance_present_for_markdown_output_with_pages() {
+        // Two-page document: page text appears verbatim inside the markdown formatted string.
+        // recompute_boundaries_from_pages must locate those substrings within formatted_content
+        // so that chunks carry valid first_page / last_page metadata.
+        let p1 = "Introduction text for page one";
+        let p2 = "Conclusion text for page two";
+        let plain = format!("{p1}\n\n{p2}");
+        let markdown = format!("# Introduction\n\n{p1}\n\n# Conclusion\n\n{p2}");
+
+        let pages = vec![make_page(1, p1), make_page(2, p2)];
+        let config = markdown_chunking_config();
+        let mut result = make_result_with_pages_and_formatted(&plain, &markdown, pages);
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated");
+        assert!(!chunks.is_empty(), "chunks must be non-empty");
+        let has_provenance = chunks.iter().any(|c| c.metadata.first_page.is_some());
+        assert!(
+            has_provenance,
+            "at least one chunk must carry first_page when result.pages is populated and output_format=Markdown"
+        );
+    }
+
+    #[test]
+    fn chunk_page_provenance_single_page_markdown_output() {
+        // Single-page document: result.chunks must be Some([...]) (not null) and the chunk
+        // must carry first_page = Some(1) when result.pages is populated.
+        let p1 = "Single page content for the document";
+        let markdown = format!("# Document\n\n{p1}");
+
+        let pages = vec![make_page(1, p1)];
+        let config = markdown_chunking_config();
+        let mut result = ExtractionResult {
+            content: p1.to_string(),
+            formatted_content: Some(markdown),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result
+            .chunks
+            .expect("chunks must be Some(...) — not null — for single-page with chunking configured");
+        assert!(!chunks.is_empty(), "chunks must be non-empty when content is present");
+        let has_page_one = chunks.iter().any(|c| c.metadata.first_page == Some(1));
+        assert!(
+            has_page_one,
+            "single-page chunk must have first_page = Some(1) for markdown output, got: {:?}",
+            chunks.iter().map(|c| c.metadata.first_page).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn chunk_page_provenance_plain_output_unaffected_by_formatted_boundaries() {
+        // Plain output path must still derive boundaries from result.pages against
+        // result.content — not from formatted_content.
+        let p1 = "First page text";
+        let p2 = "Second page text";
+        let plain = format!("{p1}\n\n{p2}");
+        let heading_source = format!("# Doc\n\n{p1}\n\n# End\n\n{p2}");
+
+        let pages = vec![make_page(1, p1), make_page(2, p2)];
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Plain,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Markdown,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = ExtractionResult {
+            content: plain.clone(),
+            formatted_content: Some(heading_source),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated");
+        assert!(!chunks.is_empty());
+        // Plain path: chunk content comes from result.content, not formatted_content
+        for chunk in &chunks {
             assert!(
-                chunk.metadata.last_page.is_none(),
-                "last_page must be None for non-plain output_format (tracked in #1074), got: {:?}",
-                chunk.metadata.last_page
+                !chunk.content.contains("# Doc"),
+                "plain-output chunks must not contain markdown heading syntax"
             );
         }
+        // Boundaries still attributed via plain-content recomputation
+        let has_provenance = chunks.iter().any(|c| c.metadata.first_page.is_some());
+        assert!(
+            has_provenance,
+            "plain-output chunks must carry page provenance when result.pages is set"
+        );
+    }
+
+    #[test]
+    fn chunk_page_provenance_html_output_ascii_content() {
+        // OutputFormat::Html with plain-ASCII page text: page text appears verbatim inside
+        // the HTML string (no HTML-escape transformation needed), so provenance succeeds.
+        let p1 = "Introduction section content";
+        let p2 = "Conclusion section content";
+        let plain = format!("{p1}\n\n{p2}");
+        // Simulate what render_html produces: paragraphs wrapped in <p> tags.
+        let html = format!("<p>{p1}</p>\n<p>{p2}</p>");
+
+        let pages = vec![make_page(1, p1), make_page(2, p2)];
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Html,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = ExtractionResult {
+            content: plain,
+            formatted_content: Some(html),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated for HTML output");
+        assert!(!chunks.is_empty());
+        let has_provenance = chunks.iter().any(|c| c.metadata.first_page.is_some());
+        assert!(
+            has_provenance,
+            "HTML output with ASCII page text must carry page provenance; got: {:?}",
+            chunks.iter().map(|c| c.metadata.first_page).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn chunk_page_provenance_html_output_degrades_silently_for_html_special_chars() {
+        // HTML output HTML-escapes &, <, >: page text "AT&T" becomes "AT&amp;T" in the
+        // formatted string.  The verbatim substring search misses it, so that page produces
+        // no provenance.  This is a known limitation; the test documents it so a future fix
+        // cannot regress the behaviour silently.
+        let p1_raw = "AT&T quarterly report";
+        let plain = p1_raw.to_string();
+        // render_html escapes & → &amp;
+        let html = "<p>AT&amp;T quarterly report</p>".to_string();
+
+        let pages = vec![make_page(1, p1_raw)];
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Html,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = ExtractionResult {
+            content: plain,
+            formatted_content: Some(html),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must still be produced");
+        assert!(!chunks.is_empty());
+        // Page text was not found due to HTML escaping — provenance silently absent.
+        for chunk in &chunks {
+            assert!(
+                chunk.metadata.first_page.is_none(),
+                "HTML-escaped page text must produce no provenance (known limitation), got: {:?}",
+                chunk.metadata.first_page
+            );
+        }
+    }
+
+    #[test]
+    fn chunk_page_provenance_djot_output_with_pages() {
+        // Djot output travels the same non-Plain branch as Markdown.
+        // Verify provenance is populated when page text appears verbatim in djot content.
+        let p1 = "Djot page one text";
+        let p2 = "Djot page two text";
+        let plain = format!("{p1}\n\n{p2}");
+        // Synthetic djot: headings use `#` like markdown; body text is unchanged.
+        let djot = format!("# Section One\n\n{p1}\n\n# Section Two\n\n{p2}");
+
+        let pages = vec![make_page(1, p1), make_page(2, p2)];
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Djot,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = ExtractionResult {
+            content: plain,
+            formatted_content: Some(djot),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated for Djot output");
+        assert!(!chunks.is_empty());
+        let has_provenance = chunks.iter().any(|c| c.metadata.first_page.is_some());
+        assert!(
+            has_provenance,
+            "Djot output must carry page provenance when result.pages is populated"
+        );
+    }
+
+    #[test]
+    fn chunk_page_provenance_multi_chunk_single_page() {
+        // When one page produces multiple chunks (content > max_characters), every
+        // attributed chunk must have first_page == last_page == 1.
+        let p1 = "Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi";
+        let plain = p1.to_string();
+        let markdown = format!("# Doc\n\n{p1}");
+
+        let pages = vec![make_page(1, p1)];
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                // Small cap forces multiple chunks from the single page
+                max_characters: 20,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = ExtractionResult {
+            content: plain,
+            formatted_content: Some(markdown),
+            pages: Some(pages),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated");
+        assert!(chunks.len() > 1, "small cap must produce multiple chunks");
+        for chunk in &chunks {
+            if chunk.metadata.first_page.is_some() {
+                assert_eq!(
+                    chunk.metadata.first_page,
+                    Some(1),
+                    "all chunks of a single-page document must have first_page = Some(1)"
+                );
+                assert_eq!(
+                    chunk.metadata.last_page,
+                    Some(1),
+                    "all chunks of a single-page document must have last_page = Some(1)"
+                );
+            }
+        }
+        let attributed = chunks.iter().filter(|c| c.metadata.first_page.is_some()).count();
+        assert!(attributed > 0, "at least one chunk must be attributed to page 1");
+    }
+
+    fn plain_chunking_config() -> crate::core::config::ExtractionConfig {
+        crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Plain,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn chunk_page_provenance_single_page_plain_output() {
+        // Regression lock: plain branch must pass page_boundaries to the chunker even for
+        // single-page documents.  Do not gate this on "more than one page".
+        let p1 = "Single page plain text content for the document";
+        let config = plain_chunking_config();
+        let mut result = ExtractionResult {
+            content: p1.to_string(),
+            pages: Some(vec![make_page(1, p1)]),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be Some for plain single-page");
+        assert!(!chunks.is_empty());
+        for chunk in &chunks {
+            assert_eq!(chunk.metadata.first_page, Some(1));
+            assert_eq!(chunk.metadata.last_page, Some(1));
+        }
+    }
+
+    #[test]
+    fn chunk_page_provenance_single_page_plain_output_content_empty_produces_empty_chunks() {
+        // Empty content (scanned page without OCR) must yield Some([]), not None.
+        // chunks: null in the API always means chunking was not configured.
+        let config = plain_chunking_config();
+        let mut result = ExtractionResult {
+            content: String::new(),
+            pages: Some(vec![make_page(1, "")]),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result
+            .chunks
+            .expect("chunks must be Some([]) not None for empty content");
+        assert!(chunks.is_empty());
     }
 }
