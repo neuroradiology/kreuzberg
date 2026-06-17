@@ -205,9 +205,10 @@ pub struct ImageExtractionConfig {
     #[serde(default)]
     pub max_images_per_page: Option<u32>,
 
-    /// When `true` (default), extracted images are classified by kind and grouped
+    /// When `true`, extracted images are classified by kind and grouped
     /// into clusters where they appear to belong to one figure.
-    #[serde(default = "default_true")]
+    /// Defaults to `false` — opt in explicitly to avoid unexpected ML overhead.
+    #[serde(default)]
     pub classify: bool,
 
     /// When `true`, full-page renders produced during OCR preprocessing are captured
@@ -302,7 +303,7 @@ impl Default for ImageExtractionConfig {
             min_dpi: 72,
             max_dpi: 600,
             max_images_per_page: None,
-            classify: true,
+            classify: false,
             include_page_rasters: false,
             run_ocr_on_images: true,
             ocr_text_only: false,
@@ -367,12 +368,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_image_extraction_config_default_booleans_are_true() {
+    fn test_image_extraction_config_default_booleans() {
         let cfg = ImageExtractionConfig::default();
         assert!(cfg.extract_images, "extract_images must default to true");
         assert!(cfg.inject_placeholders, "inject_placeholders must default to true");
         assert!(cfg.auto_adjust_dpi, "auto_adjust_dpi must default to true");
-        assert!(cfg.classify, "classify must default to true");
+        assert!(!cfg.classify, "classify must default to false (#1116)");
         assert_eq!(cfg.target_dpi, 300);
         assert_eq!(cfg.max_image_dimension, 4096);
         assert_eq!(cfg.min_dpi, 72);

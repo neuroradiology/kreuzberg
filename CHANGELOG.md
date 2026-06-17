@@ -90,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **[v5.0.0-rc] `ImageExtractionConfig::default()` now returns `classify: false`.** The classify field controls image classification clustering and previously defaulted to `true`, causing unexpected ML overhead for users who didn't need it. Users can still enable it explicitly. Fixes #1116.
 - **alef pin 0.25.16 → 0.25.18.** Adds source-symbol `cfg` propagation across every binding emitter (C FFI, JNI, NAPI, PyO3, Magnus, Rustler, Extendr, ext-php-rs, wasm-bindgen, swift-bridge, flutter_rust_bridge): every emitted export now carries the same `#[cfg(feature = "...")]` as the source type/function it references. Fixes Mobile (Android/iOS) and Windows publish failures where binding crates referenced classification/captioning symbols absent from the active feature aggregate. Transcription engine types (`WhisperEngine`, `TranscriptionError`, `WhisperModelError`) opt out of bridging via `#[cfg_attr(alef, alef(skip))]`.
 
 ### Fixed
