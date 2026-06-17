@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Orphan `docs/reference/api-gleam.md` left behind by `dc268c1c0e chore: drop Gleam binding entirely`. CI Docs `task docs:build:strict` aborted on 8 `unresolved link reference` warnings from this file (e.g. `[\`BatchFileItem\`]`, `[0.0, 1.0]`, `["<https://example.com">]` patterns the strict link checker reads as broken markdown references). The Gleam binding itself was removed earlier; this is just nav cleanup.
+
 ### Fixed
 
 - **alef**: bump `alef_version` to 0.25.30 and regenerate. Adds `excluded_default_features = ["heic"]` to the `[crates.dart]` and `[crates.swift]` blocks so the generated `packages/{dart,swift}/rust/Cargo.toml` `default = [...]` arrays no longer pull `heic` — `libheif-sys` has no cross-compile story for iOS or Android NDK targets, which made CI Mobile (`cargo check kreuzberg-dart` on aarch64-apple-ios / aarch64-apple-ios-sim / aarch64-linux-android / x86_64-linux-android) and the rc.20 Publish `Build Swift package` job fail with `pkg-config has not been configured to support cross-compilation`. The `heic` feature itself is preserved as a forwarding entry so desktop callers can opt in via `--features heic`. The regen also picks up alef 0.25.28–0.25.30 fixes: Java PMD-violation suppressions, removal of generated-file `alef:hash` headers, PHP module-entry version sync, and the per-field `Default` fallback for core types without `Default`.
