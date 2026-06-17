@@ -31,6 +31,8 @@ package dev.kreuzberg
  * for tree structure, and metadata like page number, bounding box, and content layer.
  */
 data class DocumentNode(
+    /** Deterministic identifier (hash of content + position). */
+    val id: String? = null,
     /** Node content — tagged enum, type-specific data only. */
     @field:com.fasterxml.jackson.databind.annotation.JsonSerialize(`as` = NodeContent::class)
     val content: NodeContent,

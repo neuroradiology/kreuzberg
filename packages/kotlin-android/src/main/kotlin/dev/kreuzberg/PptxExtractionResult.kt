@@ -48,6 +48,8 @@ data class PptxExtractionResult(
     val pageContents: List<PageContent>? = null,
     /** Structured document representation */
     val document: DocumentStructure? = null,
+    /** Hyperlinks discovered in slides as (url, optional_label) pairs. */
+    val hyperlinks: List<String>? = null,
     /**
      * Office metadata extracted from docProps/core.xml and docProps/app.xml.
      *

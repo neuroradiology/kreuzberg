@@ -38,6 +38,14 @@ data class KeywordConfig(
      */
     val minScore: Float = 0.0f,
     /**
+     * N-gram range for keyword extraction (min, max).
+     *
+     * (1, 1) = unigrams only
+     * (1, 2) = unigrams and bigrams
+     * (1, 3) = unigrams, bigrams, and trigrams (default)
+     */
+    val ngramRange: List<Long>? = null,
+    /**
      * Language code for stopword filtering (e.g., "en", "de", "fr").
      *
      * If None, no stopword filtering is applied.

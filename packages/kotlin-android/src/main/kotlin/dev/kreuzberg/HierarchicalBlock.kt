@@ -49,4 +49,10 @@ data class HierarchicalBlock(
      * - "body": Body text (no heading level)
      */
     val level: String,
+    /**
+     * Bounding box information for the block
+     *
+     * Contains coordinates as (left, top, right, bottom) in PDF units.
+     */
+    val bbox: List<Float>? = null,
 )

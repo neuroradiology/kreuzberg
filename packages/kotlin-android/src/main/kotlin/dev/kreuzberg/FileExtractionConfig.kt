@@ -71,6 +71,8 @@ data class FileExtractionConfig(
     val keywords: KeywordConfig? = null,
     /** Override post-processor for this file. */
     val postprocessor: PostProcessorConfig? = null,
+    /** Override HTML conversion options for this file. */
+    val htmlOptions: String? = null,
     /** Override result format for this file. */
     val resultFormat: ResultFormat? = null,
     /** Override output content format for this file. */

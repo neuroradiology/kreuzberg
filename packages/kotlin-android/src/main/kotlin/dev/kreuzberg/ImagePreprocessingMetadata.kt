@@ -31,6 +31,10 @@ package dev.kreuzberg
  * including DPI normalization, resizing, and resampling.
  */
 data class ImagePreprocessingMetadata(
+    /** Original image dimensions (width, height) in pixels */
+    val originalDimensions: List<Long>? = null,
+    /** Original image DPI (horizontal, vertical) */
+    val originalDpi: List<Double>? = null,
     /** Target DPI from configuration */
     val targetDpi: Int,
     /** Scaling factor applied to the image */
@@ -39,6 +43,8 @@ data class ImagePreprocessingMetadata(
     val autoAdjusted: Boolean,
     /** Final DPI after processing */
     val finalDpi: Int,
+    /** New dimensions after resizing (if resized) */
+    val newDimensions: List<Long>? = null,
     /** Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) */
     val resampleMethod: String,
     /** Whether dimensions were clamped to max_image_dimension */

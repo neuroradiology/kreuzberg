@@ -34,6 +34,8 @@ data class InlineElement(
     val elementType: InlineType,
     /** Text content */
     val content: String,
+    /** Element attributes */
+    val attributes: String? = null,
     /** Additional metadata (e.g., href for links, src/alt for images) */
     val metadata: Map<String, String>? = null,
 )

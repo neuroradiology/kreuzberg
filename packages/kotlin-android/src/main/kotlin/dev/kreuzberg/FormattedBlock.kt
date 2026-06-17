@@ -36,6 +36,8 @@ data class FormattedBlock(
     val level: Long? = null,
     /** Inline content within the block */
     val inlineContent: List<InlineElement> = emptyList(),
+    /** Element attributes (classes, IDs, key-value pairs) */
+    val attributes: String? = null,
     /** Language identifier for code blocks */
     val language: String? = null,
     /** Raw code content for code blocks */

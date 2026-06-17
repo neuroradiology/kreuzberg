@@ -31,6 +31,8 @@ package dev.kreuzberg
  * unique identifier, and metadata for tracking origin and position.
  */
 data class Element(
+    /** Unique element identifier */
+    val elementId: String? = null,
     /** Semantic type of this element */
     val elementType: ElementType,
     /** Text content of the element */

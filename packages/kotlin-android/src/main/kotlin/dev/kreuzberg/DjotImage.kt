@@ -32,4 +32,6 @@ data class DjotImage(
     val alt: String,
     /** Optional title */
     val title: String? = null,
+    /** Element attributes */
+    val attributes: String? = null,
 )

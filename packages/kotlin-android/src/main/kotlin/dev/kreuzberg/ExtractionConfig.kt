@@ -85,6 +85,13 @@ data class ExtractionConfig(
     /** Post-processor configuration (None = use defaults) */
     val postprocessor: PostProcessorConfig? = null,
     /**
+     * HTML to Markdown conversion options (None = use defaults)
+     *
+     * Configure how HTML documents are converted to Markdown, including heading styles,
+     * list formatting, code block styles, and preprocessing options.
+     */
+    val htmlOptions: String? = null,
+    /**
      * Styled HTML output configuration.
      *
      * When set alongside `output_format = OutputFormat.Html`, the extraction
@@ -241,6 +248,14 @@ data class ExtractionConfig(
      */
     val email: EmailConfig? = null,
     /**
+     * Concurrency limits for constrained environments (None = use defaults).
+     *
+     * Controls Rayon thread pool size, ONNX Runtime intra-op threads, and
+     * (when `max_concurrent_extractions` is unset) the batch concurrency
+     * semaphore. See `ConcurrencyConfig` for details.
+     */
+    val concurrency: String? = null,
+    /**
      * Maximum recursion depth for archive extraction (default: 3).
      * Set to 0 to disable recursive extraction (legacy behavior).
      */
@@ -297,4 +312,16 @@ data class ExtractionConfig(
      * runs at the Middle stage and populates `ExtractedImage.qr_codes`.
      */
     val qrCodes: Boolean? = null,
+    /**
+     * Cancellation token for this extraction (None = no external cancellation).
+     *
+     * Pass a `CancellationToken` clone here and call its `cancel()`
+     * from another thread / task to abort the extraction in progress. The extractor
+     * checks the token at safe checkpoints (before lock acquisition, between pages,
+     * between batch items) and returns `Cancelled` when set.
+     *
+     * The field is excluded from serialization because `CancellationToken` is a
+     * runtime handle, not a configuration value.
+     */
+    val cancelToken: String? = null,
 )

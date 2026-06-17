@@ -261,4 +261,26 @@ data class ExtractionResult(
      * of the pipeline, after post-processors have operated on plain text.
      */
     val formattedContent: String? = null,
+    /**
+     * Structured hOCR document for the OCR+layout pipeline.
+     *
+     * When tesseract produces hOCR output, the parsed `InternalDocument` carries
+     * paragraph structure with bounding boxes and confidence scores. The layout
+     * classification step enriches these elements before final rendering.
+     */
+    val ocrInternalDocument: String? = null,
+    /**
+     * The original `InternalDocument` from the extractor, preserved before derivation.
+     *
+     * Stored by the pipeline before `derive_extraction_result` consumes the document, so
+     * that downstream transformation steps (element-based result format) can walk the
+     * extractor's native reading order instead of reassembling from per-page content.
+     * This is especially important for DOCX, which has no native page boundaries: the
+     * per-page reconstruction scrambles element order, but the flat element list in the
+     * `InternalDocument` is always in reading order.
+     *
+     * `null` for extraction paths that do not go through the async/sync pipeline
+     * (e.g., direct `ExtractionResult.from_ocr` construction).
+     */
+    val internalDocument: String? = null,
 )

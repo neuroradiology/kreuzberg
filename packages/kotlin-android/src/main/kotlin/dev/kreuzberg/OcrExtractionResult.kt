@@ -44,4 +44,10 @@ data class OcrExtractionResult(
      * Available when TSV output is requested or table detection is enabled.
      */
     val ocrElements: List<OcrElement>? = null,
+    /**
+     * Structured document produced from hOCR parsing.
+     * Carries paragraph structure, bounding boxes, and confidence scores
+     * that the flattened `content` string discards.
+     */
+    val internalDocument: String? = null,
 )

@@ -35,6 +35,8 @@ data class PageInfo(
     val number: Int,
     /** Page title (usually for presentations) */
     val title: String? = null,
+    /** Dimensions in points (PDF) or pixels (images): (width, height) */
+    val dimensions: List<Double>? = null,
     /** Number of images on this page */
     val imageCount: Int? = null,
     /** Number of tables on this page */

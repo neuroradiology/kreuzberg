@@ -32,6 +32,10 @@ data class ImageMetadataType(
     val alt: String? = null,
     /** Title attribute */
     val title: String? = null,
+    /** Image dimensions as (width, height) if available */
+    val dimensions: List<Int>? = null,
     /** Image type classification */
     val imageType: ImageType,
+    /** Additional attributes as key-value pairs */
+    val attributes: List<List<String>>? = null,
 )

@@ -53,4 +53,6 @@ data class DjotContent(
     val links: List<DjotLink> = emptyList(),
     /** Footnote definitions */
     val footnotes: List<Footnote> = emptyList(),
+    /** Attributes mapped by element identifier (if present) */
+    val attributes: List<String>? = null,
 )
