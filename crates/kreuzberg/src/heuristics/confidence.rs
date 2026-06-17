@@ -367,4 +367,244 @@ mod tests {
         assert!(conf_all.combined > conf_partial.combined);
         assert!(conf_partial.combined > conf_none.combined);
     }
+
+    // -----------------------------------------------------------------------
+    // Exact-value scoring tests (hand-computed expected values)
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_return_zero_combined_when_all_signals_are_zero_with_ocr() {
+        // text=0.0 * 0.30 + ocr=0.0 * 0.30 + schema_invalid=0.0 * 0.40 = 0.0
+        let signals = ConfidenceSignals {
+            text_coverage: 0.0,
+            ocr_aggregate: Some(0.0),
+            schema_compliance: SchemaCompliance::AllInvalid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert_eq!(result.combined, 0.0);
+    }
+
+    #[test]
+    fn should_return_one_combined_when_all_signals_are_max_with_ocr() {
+        // text=1.0 * 0.30 + ocr=1.0 * 0.30 + schema_valid=1.0 * 0.40 = 1.0
+        let signals = ConfidenceSignals {
+            text_coverage: 1.0,
+            ocr_aggregate: Some(1.0),
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert_eq!(result.combined, 1.0);
+    }
+
+    #[test]
+    fn should_compute_exact_combined_for_mixed_realistic_signals_with_ocr() {
+        // text=0.6 * 0.30 = 0.18
+        // ocr=0.7 * 0.30  = 0.21
+        // schema=PartialValid(0.5) * 0.40 = 0.20
+        // combined = 0.59
+        let signals = ConfidenceSignals {
+            text_coverage: 0.6,
+            ocr_aggregate: Some(0.7),
+            schema_compliance: SchemaCompliance::PartialValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        // f32 arithmetic: check within float precision
+        let expected: f32 = 0.6 * 0.30 + 0.7 * 0.30 + 0.5 * 0.40;
+        assert_eq!(result.combined, expected, "combined should be exactly {expected}");
+    }
+
+    #[test]
+    fn should_compute_exact_combined_for_mixed_signals_without_ocr() {
+        // merged_text_weight = 0.30 + 0.30 = 0.60
+        // text=0.75 * 0.60 = 0.45
+        // schema=AllValid(1.0) * 0.40 = 0.40
+        // combined = 0.85
+        let signals = ConfidenceSignals {
+            text_coverage: 0.75,
+            ocr_aggregate: None,
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        let expected: f32 = 0.75 * 0.60 + 1.0 * 0.40;
+        assert_eq!(result.combined, expected, "combined should be exactly {expected}");
+    }
+
+    #[test]
+    fn should_produce_different_combined_when_weights_are_overridden() {
+        // Default weights: text=0.30, ocr=0.30, schema=0.40
+        // Override: text=0.50, ocr=0.10, schema=0.40
+        // signals: text=0.9, ocr=Some(0.2), schema=AllValid(1.0)
+        //
+        // default: 0.9*0.30 + 0.2*0.30 + 1.0*0.40 = 0.27 + 0.06 + 0.40 = 0.73
+        // custom:  0.9*0.50 + 0.2*0.10 + 1.0*0.40 = 0.45 + 0.02 + 0.40 = 0.87
+        let signals = ConfidenceSignals {
+            text_coverage: 0.9,
+            ocr_aggregate: Some(0.2),
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let default_result = score_confidence(signals, ConfidenceWeights::default());
+        let custom_weights = ConfidenceWeights {
+            text_coverage: 0.50,
+            ocr_aggregate: 0.10,
+            schema_compliance: 0.40,
+        };
+        let custom_result = score_confidence(signals, custom_weights);
+
+        let expected_default: f32 = 0.9 * 0.30 + 0.2 * 0.30 + 1.0 * 0.40;
+        let expected_custom: f32 = 0.9 * 0.50 + 0.2 * 0.10 + 1.0 * 0.40;
+
+        assert_eq!(
+            default_result.combined, expected_default,
+            "default weights: expected {expected_default}"
+        );
+        assert_eq!(
+            custom_result.combined, expected_custom,
+            "custom weights: expected {expected_custom}"
+        );
+        // The two must differ — this confirms weights actually affect the result.
+        assert_ne!(
+            default_result.combined, custom_result.combined,
+            "custom weights must produce a different combined score"
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // Default weight field values
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_have_exact_default_weight_fields() {
+        let w = ConfidenceWeights::default();
+        assert_eq!(w.text_coverage, 0.30, "default text_coverage weight should be 0.30");
+        assert_eq!(w.ocr_aggregate, 0.30, "default ocr_aggregate weight should be 0.30");
+        assert_eq!(w.schema_compliance, 0.40, "default schema_compliance weight should be 0.40");
+    }
+
+    #[test]
+    fn should_is_normalized_return_false_when_weights_do_not_sum_to_one() {
+        let w = ConfidenceWeights {
+            text_coverage: 0.50,
+            ocr_aggregate: 0.50,
+            schema_compliance: 0.50,
+        };
+        assert!(!w.is_normalized(), "weights summing to 1.5 should not be normalized");
+    }
+
+    #[test]
+    fn should_is_normalized_return_false_when_weights_sum_below_one() {
+        let w = ConfidenceWeights {
+            text_coverage: 0.10,
+            ocr_aggregate: 0.10,
+            schema_compliance: 0.10,
+        };
+        assert!(!w.is_normalized(), "weights summing to 0.3 should not be normalized");
+    }
+
+    // -----------------------------------------------------------------------
+    // ExtractionConfidence field pass-through
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_thread_signal_fields_into_extraction_confidence() {
+        let signals = ConfidenceSignals {
+            text_coverage: 0.55,
+            ocr_aggregate: Some(0.65),
+            schema_compliance: SchemaCompliance::PartialValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert_eq!(result.text_coverage, 0.55);
+        assert_eq!(result.ocr_aggregate, Some(0.65));
+        assert_eq!(result.schema_compliance, SchemaCompliance::PartialValid);
+    }
+
+    #[test]
+    fn should_set_ocr_aggregate_to_none_in_confidence_when_signals_have_none() {
+        let signals = ConfidenceSignals {
+            text_coverage: 0.8,
+            ocr_aggregate: None,
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert!(result.ocr_aggregate.is_none());
+    }
+
+    // -----------------------------------------------------------------------
+    // Clamping boundary
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_clamp_combined_to_zero_when_inputs_are_negative() {
+        // Negative inputs are outside documented range but clamping must hold.
+        let signals = ConfidenceSignals {
+            text_coverage: -1.0,
+            ocr_aggregate: Some(-1.0),
+            schema_compliance: SchemaCompliance::AllInvalid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert_eq!(result.combined, 0.0, "negative inputs must clamp to 0.0");
+    }
+
+    #[test]
+    fn should_clamp_combined_to_one_when_inputs_exceed_one() {
+        let signals = ConfidenceSignals {
+            text_coverage: 2.0,
+            ocr_aggregate: Some(2.0),
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let result = score_confidence(signals, ConfidenceWeights::default());
+        assert_eq!(result.combined, 1.0, "inputs > 1.0 must clamp to 1.0");
+    }
+
+    // -----------------------------------------------------------------------
+    // Serde round-trips
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_serialize_schema_compliance_variants_with_snake_case_names() {
+        let all_valid = serde_json::to_string(&SchemaCompliance::AllValid).unwrap();
+        let partial_valid = serde_json::to_string(&SchemaCompliance::PartialValid).unwrap();
+        let all_invalid = serde_json::to_string(&SchemaCompliance::AllInvalid).unwrap();
+
+        assert_eq!(all_valid, r#""all_valid""#);
+        assert_eq!(partial_valid, r#""partial_valid""#);
+        assert_eq!(all_invalid, r#""all_invalid""#);
+    }
+
+    #[test]
+    fn should_deserialize_schema_compliance_from_snake_case_names() {
+        let all_valid: SchemaCompliance = serde_json::from_str(r#""all_valid""#).unwrap();
+        let partial_valid: SchemaCompliance = serde_json::from_str(r#""partial_valid""#).unwrap();
+        let all_invalid: SchemaCompliance = serde_json::from_str(r#""all_invalid""#).unwrap();
+
+        assert_eq!(all_valid, SchemaCompliance::AllValid);
+        assert_eq!(partial_valid, SchemaCompliance::PartialValid);
+        assert_eq!(all_invalid, SchemaCompliance::AllInvalid);
+    }
+
+    #[test]
+    fn should_round_trip_extraction_confidence_through_json() {
+        let signals = ConfidenceSignals {
+            text_coverage: 0.8,
+            ocr_aggregate: Some(0.75),
+            schema_compliance: SchemaCompliance::AllValid,
+        };
+        let original = score_confidence(signals, ConfidenceWeights::default());
+        let json = serde_json::to_string(&original).unwrap();
+        let deserialized: ExtractionConfidence = serde_json::from_str(&json).unwrap();
+        assert_eq!(original, deserialized);
+    }
+
+    #[test]
+    fn should_round_trip_extraction_confidence_with_no_ocr_through_json() {
+        let signals = ConfidenceSignals {
+            text_coverage: 0.5,
+            ocr_aggregate: None,
+            schema_compliance: SchemaCompliance::PartialValid,
+        };
+        let original = score_confidence(signals, ConfidenceWeights::default());
+        let json = serde_json::to_string(&original).unwrap();
+        let deserialized: ExtractionConfidence = serde_json::from_str(&json).unwrap();
+        assert_eq!(original, deserialized);
+        assert!(deserialized.ocr_aggregate.is_none());
+    }
 }
