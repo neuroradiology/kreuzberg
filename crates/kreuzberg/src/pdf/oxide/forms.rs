@@ -3,41 +3,93 @@
 //! Maps pdf_oxide's `FormField` types to Kreuzberg's `PdfFormField` model,
 //! extracting field names, types, values, bounding boxes, and metadata.
 //!
-//! Currently supports **AcroForm only**. XFA-only forms (no AcroForm) return an
-//! empty vector. Mixed AcroForm+XFA documents extract from the AcroForm layer.
+//! Supports both **AcroForm and XFA forms**. When a document contains both, AcroForm
+//! fields are extracted first (canonical layer per PDF spec), and XFA-only fields are
+//! appended. XFA-only forms are fully extracted.
 
 use super::OxideDocument;
 use crate::types::{BoundingBox, PdfFormField, FormFieldType};
 
 /// Extract form fields from a PDF document using pdf_oxide.
 ///
-/// Calls `FormExtractor::extract_fields` to get all AcroForm fields from the document,
-/// then maps each field's type, value, and bounding box to Kreuzberg's types.
+/// Extracts from both AcroForm and XFA layers:
+/// 1. AcroForm extraction via `FormExtractor::extract_fields`
+/// 2. XFA extraction via the `pdf_oxide::xfa` parser
 ///
-/// This function has a fast-path: if the document has no AcroForm catalog entry,
-/// it returns an empty vector immediately without further processing.
+/// When both layers are present, AcroForm fields take priority (canonical layer per PDF spec);
+/// only XFA fields whose names are not already present in the AcroForm set are appended, so
+/// hybrid documents (which mirror the same fields in both layers) are not double-counted.
+/// Extraction failures are logged but do not prevent processing.
 ///
 /// # Arguments
 ///
-/// * `doc` - The opened PDF document
+/// * `doc` - The opened PDF document (mutable: XFA object resolution requires it)
 ///
 /// # Returns
 ///
-/// A `Vec<PdfFormField>` containing all successfully extracted form fields,
-/// or an empty vector if the document has no AcroForm or extraction fails.
-pub(crate) fn extract_form_fields(doc: &OxideDocument) -> Vec<PdfFormField> {
+/// A `Vec<PdfFormField>` containing all successfully extracted form fields from both layers,
+/// or an empty vector if neither AcroForm nor XFA is present or extraction fails completely.
+pub(crate) fn extract_form_fields(doc: &mut OxideDocument) -> Vec<PdfFormField> {
+    let mut fields = Vec::new();
+
+    // Try AcroForm extraction first (canonical layer).
     match pdf_oxide::extractors::forms::FormExtractor::extract_fields(&doc.doc) {
         Ok(oxide_fields) => {
-            oxide_fields
-                .into_iter()
-                .map(map_form_field)
-                .collect()
+            fields.extend(oxide_fields.into_iter().map(map_form_field));
+            tracing::debug!("extracted {} AcroForm fields", fields.len());
         }
         Err(e) => {
-            tracing::debug!("pdf_oxide form field extraction failed: {e}");
-            Vec::new()
+            tracing::debug!("AcroForm extraction not available: {e}");
         }
     }
+
+    // Append XFA-only fields (those not already represented in the AcroForm layer).
+    if let Some(xfa_fields) = extract_xfa_fields(doc) {
+        let known: std::collections::HashSet<String> = fields.iter().map(|f| f.name.clone()).collect();
+        let appended: Vec<PdfFormField> = xfa_fields.into_iter().filter(|f| !known.contains(&f.name)).collect();
+        if !appended.is_empty() {
+            tracing::debug!("appended {} XFA-only fields", appended.len());
+            fields.extend(appended);
+        }
+    }
+
+    fields
+}
+
+/// Extract form fields from XFA layer (if present).
+///
+/// Attempts to detect, parse, and convert XFA form data using pdf_oxide's XFA module.
+/// Returns `None` if XFA is not present or if extraction fails.
+fn extract_xfa_fields(doc: &mut OxideDocument) -> Option<Vec<PdfFormField>> {
+    // Attempt XFA extraction. The extractor requires mutable access to the document
+    // for object resolution and caching.
+    let xfa_data = match pdf_oxide::xfa::XfaExtractor::extract_xfa(&mut doc.doc) {
+        Ok(data) => data,
+        Err(_) => {
+            // No XFA data found or extraction failed
+            return None;
+        }
+    };
+
+    // Parse XFA XML
+    let mut parser = pdf_oxide::xfa::XfaParser::new();
+    let xfa_form = match parser.parse(&xfa_data) {
+        Ok(form) => form,
+        Err(e) => {
+            tracing::debug!("XFA parsing failed: {e}");
+            return None;
+        }
+    };
+
+    // Map XFA fields directly from the parsed form (which contains all field data)
+    let mut fields = Vec::new();
+
+    for xfa_field in &xfa_form.fields {
+        let field = map_xfa_field_direct(xfa_field);
+        fields.push(field);
+    }
+
+    Some(fields)
 }
 
 /// Maps a single pdf_oxide FormField to a Kreuzberg PdfFormField.
@@ -133,6 +185,69 @@ fn map_field_value(oxide_value: &pdf_oxide::extractors::forms::FieldValue) -> Op
             }
         }
         FieldValue::None => None,
+    }
+}
+
+/// Maps a pdf_oxide XfaFieldType to Kreuzberg's FormFieldType.
+///
+/// Handles the XFA field type taxonomy:
+/// - Text/Numeric/DateTime → Text
+/// - Checkbox → Checkbox
+/// - RadioGroup → Radio
+/// - DropDown/ListBox → Choice
+/// - Signature → Signature
+/// - Button → Button
+/// - Everything else → Unknown
+fn map_xfa_field_type(xfa_type: &pdf_oxide::xfa::XfaFieldType) -> FormFieldType {
+    use pdf_oxide::xfa::XfaFieldType;
+    match xfa_type {
+        XfaFieldType::Text | XfaFieldType::Numeric | XfaFieldType::DateTime => FormFieldType::Text,
+        XfaFieldType::Checkbox => FormFieldType::Checkbox,
+        XfaFieldType::RadioGroup => FormFieldType::Radio,
+        XfaFieldType::DropDown | XfaFieldType::ListBox => FormFieldType::Choice,
+        XfaFieldType::Signature => FormFieldType::Signature,
+        XfaFieldType::Button => FormFieldType::Button,
+        _ => FormFieldType::Unknown, // Image, Barcode, Unknown, etc.
+    }
+}
+
+/// Maps a pdf_oxide XfaField (from XFA parsing) to a Kreuzberg PdfFormField.
+///
+/// Extracts field type, name, value, and layout information from the parsed XFA field.
+/// XFA fields contain all necessary metadata: name, field type, current value, default value,
+/// dimensions, and tooltip/caption text.
+fn map_xfa_field_direct(xfa_field: &pdf_oxide::xfa::XfaField) -> PdfFormField {
+    let field_type = map_xfa_field_type(&xfa_field.field_type);
+
+    // Use value if present, otherwise fall back to default_value
+    let value = xfa_field.value.clone().or_else(|| xfa_field.default_value.clone());
+
+    // Construct bounding box from XFA position/dimension hints
+    // XFA fields use f32 coordinates; BoundingBox expects f64, so cast.
+    let bbox = if let (Some(x), Some(y), Some(w), Some(h)) =
+        (xfa_field.x, xfa_field.y, xfa_field.width, xfa_field.height)
+    {
+        Some(BoundingBox {
+            x0: x as f64,
+            y0: y as f64,
+            x1: (x + w) as f64,
+            y1: (y + h) as f64,
+        })
+    } else {
+        None
+    };
+
+    PdfFormField {
+        name: xfa_field.name.clone(),
+        full_name: xfa_field.binding.clone(), // Use binding path as full name
+        field_type,
+        value,
+        default_value: xfa_field.default_value.clone(),
+        flags: 0, // XFA doesn't use the same flag system as AcroForm
+        page: None,
+        bbox,
+        max_length: xfa_field.max_length,
+        tooltip: xfa_field.tooltip.clone().or_else(|| xfa_field.caption.clone()),
     }
 }
 
@@ -271,5 +386,189 @@ mod tests {
         use pdf_oxide::extractors::forms::field_flags;
         let field_type = map_field_type(&FieldType::Button, Some(field_flags::PUSH_BUTTON));
         assert_eq!(field_type, FormFieldType::Button);
+    }
+
+    // === XFA field type mapping tests ===
+
+    #[test]
+    fn test_map_xfa_field_type_text() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Text;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Text);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_numeric() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Numeric;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Text);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_datetime() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::DateTime;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Text);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_checkbox() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Checkbox;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Checkbox);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_radio_group() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::RadioGroup;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Radio);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_dropdown() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::DropDown;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Choice);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_listbox() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::ListBox;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Choice);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_signature() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Signature;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Signature);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_button() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Button;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Button);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_image() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Image;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Unknown);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_barcode() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Barcode;
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Unknown);
+    }
+
+    #[test]
+    fn test_map_xfa_field_type_unknown() {
+        let xfa_type = pdf_oxide::xfa::XfaFieldType::Unknown("CustomType".to_string());
+        assert_eq!(map_xfa_field_type(&xfa_type), FormFieldType::Unknown);
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_text_with_value() {
+        // Test mapping a text field with value
+        let xfa_field = pdf_oxide::xfa::XfaField::new("username", "form.username[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.value = Some("john_doe".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.name, "username");
+        assert_eq!(mapped.full_name, "form.username[0]");
+        assert_eq!(mapped.field_type, FormFieldType::Text);
+        assert_eq!(mapped.value, Some("john_doe".to_string()));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_checkbox_checked() {
+        // Test mapping a checkbox field with a value indicating it's checked
+        let xfa_field = pdf_oxide::xfa::XfaField::new("agree", "form.agree[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Checkbox;
+        xfa_field.value = Some("Yes".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.name, "agree");
+        assert_eq!(mapped.field_type, FormFieldType::Checkbox);
+        assert_eq!(mapped.value, Some("Yes".to_string()));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_with_bbox() {
+        // Test mapping a field with position and dimension info
+        let xfa_field = pdf_oxide::xfa::XfaField::new("name_field", "form.name[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.x = Some(72.0);
+        xfa_field.y = Some(700.0);
+        xfa_field.width = Some(200.0);
+        xfa_field.height = Some(20.0);
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        let bbox = mapped.bbox.expect("bbox should be present");
+        assert_eq!(bbox.x0, 72.0);
+        assert_eq!(bbox.y0, 700.0);
+        assert_eq!(bbox.x1, 272.0); // x + width
+        assert_eq!(bbox.y1, 720.0); // y + height
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_with_tooltip() {
+        // Test that tooltip is extracted
+        let xfa_field = pdf_oxide::xfa::XfaField::new("email", "form.email[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.tooltip = Some("Enter your email address".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.tooltip, Some("Enter your email address".to_string()));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_tooltip_fallback_to_caption() {
+        // Test that caption is used as tooltip fallback when tooltip is absent
+        let xfa_field = pdf_oxide::xfa::XfaField::new("phone", "form.phone[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.caption = Some("Phone Number".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.tooltip, Some("Phone Number".to_string()));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_max_length() {
+        // Test that max_length is preserved
+        let xfa_field = pdf_oxide::xfa::XfaField::new("zip", "form.zip[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Numeric;
+        xfa_field.max_length = Some(5);
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.max_length, Some(5));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_value_prefers_current() {
+        // Test that current value takes precedence over default value
+        let xfa_field = pdf_oxide::xfa::XfaField::new("status", "form.status[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.value = Some("Active".to_string());
+        xfa_field.default_value = Some("Inactive".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.value, Some("Active".to_string()));
+        assert_eq!(mapped.default_value, Some("Inactive".to_string()));
+    }
+
+    #[test]
+    fn test_map_xfa_field_direct_value_fallback_to_default() {
+        // Test that default value is used when current value is absent
+        let xfa_field = pdf_oxide::xfa::XfaField::new("priority", "form.priority[0]");
+        let mut xfa_field = xfa_field;
+        xfa_field.field_type = pdf_oxide::xfa::XfaFieldType::Text;
+        xfa_field.default_value = Some("Normal".to_string());
+
+        let mapped = map_xfa_field_direct(&xfa_field);
+        assert_eq!(mapped.value, Some("Normal".to_string()));
     }
 }

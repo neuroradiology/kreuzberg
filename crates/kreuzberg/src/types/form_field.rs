@@ -1,4 +1,4 @@
-//! PDF form field extracted from a document (AcroForm only; XFA-only forms return empty).
+//! PDF form field extracted from a document (both AcroForm and XFA).
 
 use serde::{Deserialize, Serialize};
 
@@ -32,8 +32,10 @@ pub enum FormFieldType {
 /// A form field extracted from a PDF's AcroForm or XFA structure.
 ///
 /// Populated by the PDF extractor when [`PdfConfig::extract_form_fields`] is
-/// enabled and the document is a fillable form. The collection is empty for
-/// non-form PDFs and for non-PDF formats.
+/// enabled and the document is a fillable form. Supports both AcroForm (standard)
+/// and XFA (XML Forms Architecture) layers. When both are present, AcroForm fields
+/// take priority (canonical fallback per PDF spec), and XFA-only fields are appended.
+/// The collection is empty for non-form PDFs and for non-PDF formats.
 ///
 /// [`PdfConfig::extract_form_fields`]: crate::core::config::PdfConfig::extract_form_fields
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

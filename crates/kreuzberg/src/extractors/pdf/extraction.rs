@@ -263,7 +263,7 @@ pub(crate) fn extract_all_from_oxide_document(
 
     // --- Form fields (AcroForm / XFA) ---
     let form_fields = if config.pdf_options.as_ref().is_none_or(|opts| opts.extract_form_fields) {
-        crate::pdf::oxide::forms::extract_form_fields(&doc)
+        crate::pdf::oxide::forms::extract_form_fields(&mut doc)
     } else {
         Vec::new()
     };
