@@ -213,6 +213,12 @@ pub struct InternalDocument {
     /// `derive_extraction_result` transfers this directly to `ExtractionResult.form_fields`.
     pub form_fields: Vec<crate::types::PdfFormField>,
 
+    /// Mathematical formulas recognized during layout-guided OCR.
+    ///
+    /// Set by the OCR pipeline (per-page formulas, renumbered to document pages).
+    /// `derive_extraction_result` transfers this directly to `ExtractionResult.formulas`.
+    pub formulas: Vec<crate::types::Formula>,
+
     /// When `true`, image OCR results are rendered as plain text without the
     /// `![...](...)` markdown placeholder. Set by the pipeline from
     /// `ImageExtractionConfig.ocr_text_only`.
@@ -240,6 +246,7 @@ impl From<crate::types::extraction::ExtractionResult> for InternalDocument {
         doc.images = result.images.unwrap_or_default();
         doc.revisions = result.revisions;
         doc.form_fields = result.form_fields;
+        doc.formulas = result.formulas;
         doc.pre_rendered_content = if result.content.is_empty() {
             None
         } else {
@@ -281,6 +288,7 @@ impl InternalDocument {
             ocr_text_only: false,
             append_ocr_text: false,
             form_fields: Vec::new(),
+            formulas: Vec::new(),
         }
     }
 
@@ -328,7 +336,7 @@ impl InternalDocument {
     }
 
     /// Concatenate all element text into a single string, separated by newlines.
-    #[cfg(test)]
+    #[cfg(all(test, any(feature = "html", feature = "hwpx")))]
     pub(crate) fn content(&self) -> String {
         self.elements
             .iter()
@@ -428,9 +436,10 @@ impl InternalElement {
         feature = "pdf",
         feature = "paddle-ocr",
         feature = "xml",
-        feature = "hwpx"
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
     ))]
-    #[allow(dead_code)]
     pub(crate) fn with_page(mut self, page: u32) -> Self {
         self.page = Some(page);
         self
@@ -444,7 +453,7 @@ impl InternalElement {
     }
 
     /// Set the content layer.
-    #[cfg(test)]
+    #[cfg(all(test, any(feature = "ocr", feature = "pdf", feature = "paddle-ocr", feature = "xml", feature = "office")))]
     pub(crate) fn with_layer(mut self, layer: ContentLayer) -> Self {
         self.layer = layer;
         self

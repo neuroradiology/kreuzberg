@@ -267,6 +267,24 @@ fn task_for_label(label: crate::layout::LayoutClass, enable_chart_understanding:
 /// Chart output is fenced in a JSON code block.
 /// All other tasks return the text verbatim.
 #[cfg(feature = "layout-detection")]
+/// Strip leading and trailing `$$` delimiters and surrounding whitespace from a string.
+///
+/// Used to normalize formula content that may have been wrapped by the model.
+/// If the content starts with `$$` or ends with `$$`, removes those delimiters
+/// and any immediately adjacent whitespace.
+fn strip_formula_delimiters(content: &str) -> String {
+    let trimmed = content.trim();
+    let stripped = trimmed
+        .strip_prefix("$$")
+        .unwrap_or(trimmed)
+        .trim_start();
+    stripped
+        .strip_suffix("$$")
+        .unwrap_or(stripped)
+        .trim_end()
+        .to_string()
+}
+
 fn wrap_output(task: GlmOcrTask, content: &str) -> String {
     match task {
         GlmOcrTask::Table => content.to_string(),
@@ -589,25 +607,31 @@ async fn process_paired(
                         source: Some(Box::new(e)),
                     })?;
 
-            let wrapped = wrap_output(region_task, &output.content);
+            // For formulas, strip any pre-wrapped `$$` delimiters before storing.
+            // This ensures the Formula.latex field contains clean LaTeX without delimiters.
+            let latex_clean = if detection.class_name == crate::layout::LayoutClass::Formula {
+                strip_formula_delimiters(&output.content)
+            } else {
+                output.content.clone()
+            };
+
+            // Wrap output based on task type (Formula wrapping adds `$$`).
+            let wrapped = wrap_output(region_task, &latex_clean);
 
             // Capture formula content if this is a formula region
-            if detection.class_name == crate::layout::LayoutClass::Formula {
-                let latex = output.content.trim().to_string();
-                if !latex.is_empty() {
-                    formulas.push(crate::types::Formula {
-                        latex,
-                        bbox: crate::types::extraction::BoundingBox {
-                            // Layout BBox is (x1, y1, x2, y2) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
-                            // BoundingBox is (x0, y0, x1, y1) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
-                            x0: bbox.x1 as f64,
-                            y0: bbox.y1 as f64,
-                            x1: bbox.x2 as f64,
-                            y1: bbox.y2 as f64,
-                        },
-                        page: 1, // page is relative to this single-image OCR call; will be set by caller
-                    });
-                }
+            if detection.class_name == crate::layout::LayoutClass::Formula && !latex_clean.is_empty() {
+                formulas.push(crate::types::Formula {
+                    latex: latex_clean,
+                    bbox: crate::types::extraction::BoundingBox {
+                        // Layout BBox is (x1, y1, x2, y2) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
+                        // BoundingBox is (x0, y0, x1, y1) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
+                        x0: bbox.x1 as f64,
+                        y0: bbox.y1 as f64,
+                        x1: bbox.x2 as f64,
+                        y1: bbox.y2 as f64,
+                    },
+                    page: 1, // page is relative to this single-image OCR call; will be set by caller
+                });
             }
 
             parts.push(wrapped);
@@ -668,40 +692,35 @@ mod tests {
 
     #[test]
     fn test_parse_options_custom_task() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"task": "table"}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"task": "table"})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.task, GlmOcrTask::Table);
     }
 
     #[test]
     fn test_parse_options_formula_task() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"task": "formula"}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"task": "formula"})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.task, GlmOcrTask::Formula);
     }
 
     #[test]
     fn test_parse_options_custom_device() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"device": "cpu"}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"device": "cpu"})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.device, DevicePreference::Cpu);
     }
 
     #[test]
     fn test_parse_options_enable_chart_understanding_true() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": true}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": true})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert!(opts.enable_chart_understanding);
     }
 
     #[test]
     fn test_parse_options_enable_chart_understanding_false() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": false}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": false})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert!(!opts.enable_chart_understanding);
     }
@@ -715,12 +734,14 @@ mod tests {
 
     #[test]
     fn test_parse_options_combined() {
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({
-            "task": "chart",
-            "device": "cuda",
-            "enable_chart_understanding": true
-        }));
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({
+                "task": "chart",
+                "device": "cuda",
+                "enable_chart_understanding": true
+            })),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.task, GlmOcrTask::Chart);
         assert_eq!(opts.device, DevicePreference::Cuda);
@@ -775,8 +796,7 @@ mod tests {
     #[test]
     fn test_parse_and_route_chart_with_understanding_enabled() {
         use crate::layout::LayoutClass;
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": true}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": true})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         // Verify that the parsed flag can be used to route charts correctly
         let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);
@@ -787,8 +807,7 @@ mod tests {
     #[test]
     fn test_parse_and_route_chart_with_understanding_disabled() {
         use crate::layout::LayoutClass;
-        let mut config = OcrConfig::default();
-        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": false}));
+        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": false})), ..Default::default() };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         // Verify that disabled flag routes charts to Caption
         let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);
@@ -807,13 +826,40 @@ mod tests {
 
     #[cfg(feature = "layout-detection")]
     #[test]
+    fn test_strip_formula_delimiters_removes_wrapping_dollars() {
+        // Test stripping $$ delimiters added by wrap_output
+        let wrapped = "$$\nE = mc^2\n$$";
+        let result = strip_formula_delimiters(wrapped);
+        assert_eq!(result, "E = mc^2");
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_strip_formula_delimiters_handles_pre_wrapped_content() {
+        // Test that if the model already wrapped the output, we strip it correctly
+        let pre_wrapped = "$$x^2 + y^2 = z^2$$";
+        let result = strip_formula_delimiters(pre_wrapped);
+        assert_eq!(result, "x^2 + y^2 = z^2");
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_strip_formula_delimiters_preserves_undecorated_content() {
+        // Test that content without $$ is left alone
+        let plain = "a + b = c";
+        let result = strip_formula_delimiters(plain);
+        assert_eq!(result, "a + b = c");
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
     fn test_formula_extraction_from_wrapped_output() {
         // Test that we can extract raw latex from formula output
         let task = GlmOcrTask::Formula;
         let raw_latex = "E = mc^2";
         let wrapped = wrap_output(task, raw_latex);
         // The wrapped version has $$ delimiters; stripping them should give us back the original
-        let stripped = wrapped.trim_start_matches("$$\n").trim_end_matches("\n$$").trim();
+        let stripped = strip_formula_delimiters(&wrapped);
         assert_eq!(stripped, raw_latex);
     }
 

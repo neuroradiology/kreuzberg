@@ -47,6 +47,7 @@ async fn run_ocr_with_layout(
     Vec<crate::types::LlmUsage>,
     Vec<String>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
@@ -56,7 +57,7 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts, pipeline_rasters) =
+        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts, pipeline_rasters, pipeline_formulas) =
             ocr::run_ocr_pipeline(
                 Some(content),
                 None,
@@ -75,10 +76,11 @@ async fn run_ocr_with_layout(
             llm_usage,
             ocr_pts,
             pipeline_rasters,
+            pipeline_formulas,
         ));
     }
 
-    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters) = extract_with_ocr(
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas) = extract_with_ocr(
         Some(content),
         None,
         #[cfg(feature = "layout-detection")]
@@ -87,7 +89,7 @@ async fn run_ocr_with_layout(
         path,
     )
     .await?;
-    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters))
+    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas))
 }
 
 /// PDF document extractor using pdf_oxide.
@@ -281,12 +283,14 @@ impl PdfExtractor {
         let mut ocr_results_map: Option<ahash::AHashMap<u32, String>> = None;
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         let mut ocr_page_rasters: Option<Vec<crate::types::ExtractedImage>> = None;
+        #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+        let mut ocr_formulas: Vec<crate::types::Formula> = Vec::new();
 
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         let (text, extraction_method) = if config.effective_disable_ocr() {
             (native_text, ExtractionMethod::Native)
         } else if config.force_ocr {
-            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs) =
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs, formulas) =
                 run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             ocr_elements = ocr_elems;
@@ -294,6 +298,7 @@ impl PdfExtractor {
             ocr_llm_usage = llm_usage;
             ocr_page_texts = Some(ocr_pts);
             ocr_page_rasters = ocr_rstrs;
+            ocr_formulas = formulas;
             (ocr_text, ExtractionMethod::Ocr)
         } else if let Some(ref ocr_pages) = config.force_ocr_pages {
             if !ocr_pages.is_empty() {
@@ -391,13 +396,14 @@ impl PdfExtractor {
                         (native_text, ExtractionMethod::Native)
                     } else {
                         match run_ocr_with_layout(content, config, path).await {
-                            Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs)) => {
+                            Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs, formulas)) => {
                                 ocr_tables = ocr_tbls;
                                 ocr_elements = ocr_elems;
                                 ocr_internal_doc = ocr_doc;
                                 ocr_llm_usage = llm_usage;
                                 ocr_page_texts = Some(ocr_pts);
                                 ocr_page_rasters = ocr_rstrs;
+                                ocr_formulas = formulas;
                                 (ocr_text, ExtractionMethod::Ocr)
                             }
                             Err(e) => {
@@ -809,6 +815,13 @@ impl PdfExtractor {
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         if !ocr_elements.is_empty() {
             doc.prebuilt_ocr_elements = Some(ocr_elements);
+        }
+
+        // Carry formulas on the InternalDocument; derive_extraction_result moves
+        // them into ExtractionResult.formulas (mirrors form_fields/llm_usage).
+        #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+        if !ocr_formulas.is_empty() {
+            doc.formulas = ocr_formulas;
         }
 
         // Attach LLM usage accumulated during OCR so derive_extraction_result can transfer it.
@@ -1480,7 +1493,7 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("per-page-ocr-mock-928").unwrap();
 
-        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts, _rasters) =
+        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts, _rasters, _formulas) =
             result.expect("extract_with_ocr should succeed");
 
         assert_eq!(page_texts.len(), 2, "expected one entry per page");

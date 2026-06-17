@@ -16,11 +16,20 @@ use super::extraction::BoundingBox;
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct Formula {
     /// LaTeX source of the recognized formula, without surrounding `$$` delimiters.
+    ///
+    /// This field contains the raw LaTeX code as produced by the OCR backend.
+    /// To render the formula in Markdown or other formats, wrap with `$$..$$` delimiters as needed.
     pub latex: String,
 
-    /// Bounding box of the formula region on its page.
+    /// Bounding box of the formula region on its page, in rendered-image pixel coordinates.
+    ///
+    /// The coordinates are in the space of the OCR-rendered page image at the OCR DPI
+    /// (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from
+    /// native PDF text extraction, which use PDF point coordinates.
     pub bbox: BoundingBox,
 
-    /// 1-indexed page number the formula appears on.
+    /// 1-indexed page number the formula appears on in the document.
+    ///
+    /// This is set by the extraction pipeline based on which page the formula was found on.
     pub page: u32,
 }

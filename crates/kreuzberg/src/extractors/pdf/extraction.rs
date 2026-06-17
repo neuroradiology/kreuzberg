@@ -50,6 +50,7 @@ pub(crate) fn extract_all_from_oxide_document(
     let mut doc = crate::pdf::oxide::OxideDocument::open_bytes(content)?;
 
     // --- Text + metadata (single pass) ---
+    #[cfg_attr(not(feature = "layout-detection"), allow(unused_mut))]
     let (mut native_text, boundaries, page_contents, pdf_metadata) =
         crate::pdf::oxide::text::extract_text_and_metadata(&mut doc, Some(config)).map_err(|e| {
             crate::error::KreuzbergError::Parsing {
