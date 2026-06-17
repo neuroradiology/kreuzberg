@@ -304,12 +304,15 @@ impl PdfExtractor {
             if !ocr_pages.is_empty() {
                 if let Some(ref bounds) = boundaries {
                     if !bounds.is_empty() {
-                        let (mixed, results_map, mixed_llm_usage, mixed_rstrs) =
+                        let (mixed, results_map, mixed_llm_usage, mixed_rstrs, mixed_formulas) =
                             ocr::extract_mixed_ocr_native(&native_text, bounds, ocr_pages, content, config, path)
                                 .await?;
                         ocr_llm_usage = mixed_llm_usage;
                         ocr_results_map = Some(results_map);
                         ocr_page_rasters = mixed_rstrs;
+                        if !mixed_formulas.is_empty() {
+                            ocr_formulas = mixed_formulas;
+                        }
                         (mixed, ExtractionMethod::Mixed)
                     } else {
                         tracing::warn!("force_ocr_pages set but no page boundaries available; using native text");
@@ -424,10 +427,13 @@ impl PdfExtractor {
                 ocr::OcrGateOutcome::RunFallbackOnPages(pages) => match boundaries.as_deref() {
                     Some(bounds) if !bounds.is_empty() => {
                         match ocr::extract_mixed_ocr_native(&native_text, bounds, &pages, content, config, path).await {
-                            Ok((mixed, results_map, mixed_llm_usage, mixed_rstrs)) => {
+                            Ok((mixed, results_map, mixed_llm_usage, mixed_rstrs, mixed_formulas)) => {
                                 ocr_llm_usage = mixed_llm_usage;
                                 ocr_results_map = Some(results_map);
                                 ocr_page_rasters = mixed_rstrs;
+                                if !mixed_formulas.is_empty() {
+                                    ocr_formulas = mixed_formulas;
+                                }
                                 (mixed, ExtractionMethod::Mixed)
                             }
                             Err(e) => {

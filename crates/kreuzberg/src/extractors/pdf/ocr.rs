@@ -429,6 +429,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     ahash::AHashMap<u32, String>,
     Vec<crate::types::LlmUsage>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     // Deduplicate and validate page numbers (must be >= 1)
     let ocr_set: std::collections::HashSet<u32> = ocr_page_numbers
@@ -445,7 +446,7 @@ pub(crate) async fn extract_mixed_ocr_native(
         .collect();
 
     if ocr_set.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
+        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None, Vec::new()));
     }
 
     // Convert 1-indexed page numbers to 0-indexed for rendering (sorted + deduplicated)
@@ -454,7 +455,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
 
     if page_images.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
+        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None, Vec::new()));
     }
 
     // OCR all selected pages concurrently using the same batched pipeline pattern
@@ -485,6 +486,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     let total = page_images.len();
     let mut ocr_results: ahash::AHashMap<u32, String> = ahash::AHashMap::with_capacity(total);
     let mut accumulated_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
+    let mut accumulated_formulas: Vec<crate::types::Formula> = Vec::new();
     let mut captured_rasters: Vec<crate::types::ExtractedImage> = Vec::new();
 
     // Process in batches to bound peak memory (PNG buffers freed between batches)
@@ -555,6 +557,11 @@ pub(crate) async fn extract_mixed_ocr_native(
                 if let Some(usage) = extraction_result.llm_usage.take() {
                     accumulated_llm_usage.extend(usage);
                 }
+                // Accumulate formulas, renumbering to 1-indexed document page number.
+                for mut formula in std::mem::take(&mut extraction_result.formulas) {
+                    formula.page = (page_idx + 1) as u32;
+                    accumulated_formulas.push(formula);
+                }
                 ocr_results.insert((page_idx + 1) as u32, extraction_result.content); // 1-indexed
             }
         }
@@ -564,6 +571,11 @@ pub(crate) async fn extract_mixed_ocr_native(
                 let mut extraction_result = backend.process_image(data.as_slice(), &ocr_config_owned).await?;
                 if let Some(usage) = extraction_result.llm_usage.take() {
                     accumulated_llm_usage.extend(usage);
+                }
+                // Accumulate formulas, renumbering to 1-indexed document page number.
+                for mut formula in std::mem::take(&mut extraction_result.formulas) {
+                    formula.page = (*page_idx + 1) as u32;
+                    accumulated_formulas.push(formula);
                 }
                 ocr_results.insert((*page_idx + 1) as u32, extraction_result.content); // 1-indexed
             }
@@ -599,6 +611,7 @@ pub(crate) async fn extract_mixed_ocr_native(
         ocr_results,
         accumulated_llm_usage,
         if capture_rasters { Some(captured_rasters) } else { None },
+        accumulated_formulas,
     ))
 }
 
@@ -2554,6 +2567,125 @@ Buffers:           50000 kB
             result.is_ok(),
             "render_selected_pages_for_ocr on wide page (the #1078 bug path) should succeed via safeguard, got: {:?}",
             result.err()
+        );
+    }
+
+    /// Verifies that formulas returned by a per-page OCR backend are accumulated and
+    /// renumbered to 1-indexed document page numbers by `extract_with_ocr`.
+    ///
+    /// This exercises the same `formula.page = (page_idx + 1) as u32` accumulation
+    /// logic that is now replicated in `extract_mixed_ocr_native` for the mixed-OCR
+    /// path. Since `extract_mixed_ocr_native` requires real PDF bytes for rendering,
+    /// this test uses `extract_with_ocr` with in-memory images to validate that the
+    /// accumulation pattern works correctly end-to-end.
+    #[cfg(feature = "ocr")]
+    #[tokio::test]
+    async fn test_formulas_accumulated_and_renumbered_per_page() {
+        use crate::core::config::OcrConfig;
+        use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
+        use crate::types::{BoundingBox, ExtractionResult};
+        use std::sync::Arc;
+
+        struct FormulaMockBackend;
+
+        #[async_trait::async_trait]
+        impl OcrBackend for FormulaMockBackend {
+            fn backend_type(&self) -> OcrBackendType {
+                OcrBackendType::Custom
+            }
+            fn supports_language(&self, _: &str) -> bool {
+                true
+            }
+            // Each page returns one formula. The page field is set to 0 (unset) here;
+            // extract_with_ocr must overwrite it with the 1-indexed document page number.
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+                Ok(ExtractionResult {
+                    content: "page text".to_string(),
+                    formulas: vec![crate::types::Formula {
+                        latex: "E = mc^2".to_string(),
+                        bbox: BoundingBox {
+                            x0: 0.0,
+                            y0: 0.0,
+                            x1: 100.0,
+                            y1: 50.0,
+                        },
+                        page: 0, // intentionally wrong; pipeline must renumber
+                    }],
+                    ..Default::default()
+                })
+            }
+            fn supports_document_processing(&self) -> bool {
+                false
+            }
+        }
+
+        impl Plugin for FormulaMockBackend {
+            fn name(&self) -> &str {
+                "formula-mock-mixed-ocr"
+            }
+            fn version(&self) -> String {
+                "1.0.0".to_string()
+            }
+            fn initialize(&self) -> crate::Result<()> {
+                Ok(())
+            }
+            fn shutdown(&self) -> crate::Result<()> {
+                Ok(())
+            }
+        }
+
+        let backend = Arc::new(FormulaMockBackend);
+        crate::plugins::register_ocr_backend(backend).unwrap();
+
+        // Provide two synthetic 1×1 images so extract_with_ocr processes two pages.
+        let tiny_image = {
+            use image::ImageEncoder;
+            use image::codecs::png::PngEncoder;
+            use std::io::Cursor;
+            let img = image::DynamicImage::new_rgb8(1, 1);
+            let rgb = img.to_rgb8();
+            let (w, h) = rgb.dimensions();
+            let mut buf = Cursor::new(Vec::new());
+            PngEncoder::new(&mut buf)
+                .write_image(&rgb, w, h, image::ColorType::Rgb8.into())
+                .unwrap();
+            image::load_from_memory(&buf.into_inner()).unwrap()
+        };
+        let images = vec![tiny_image.clone(), tiny_image];
+
+        let config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                backend: "formula-mock-mixed-ocr".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = extract_with_ocr(
+            None,
+            Some(&images),
+            #[cfg(feature = "layout-detection")]
+            None,
+            &config,
+            None,
+        )
+        .await;
+
+        crate::plugins::unregister_ocr_backend("formula-mock-mixed-ocr").unwrap();
+
+        let (_, _, _, _, _, _, _, _, formulas) = result.expect("extract_with_ocr should succeed");
+
+        assert_eq!(formulas.len(), 2, "one formula per page, got {}", formulas.len());
+
+        // Page numbers must be 1-indexed document pages, NOT the backend's placeholder 0.
+        let mut pages: Vec<u32> = formulas.iter().map(|f| f.page).collect();
+        pages.sort_unstable();
+        assert_eq!(pages, vec![1, 2], "formula pages must be renumbered to 1-indexed doc pages");
+
+        // LaTeX content must be preserved.
+        assert!(
+            formulas.iter().all(|f| f.latex == "E = mc^2"),
+            "formula latex must be preserved through accumulation"
         );
     }
 
