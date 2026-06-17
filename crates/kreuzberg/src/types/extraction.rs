@@ -275,6 +275,19 @@ pub struct ExtractionResult {
     #[serde(default)]
     pub summary: Option<super::summary::DocumentSummary>,
 
+    /// Confidence score computed by the heuristics pipeline.
+    ///
+    /// Populated when the `heuristics` feature is enabled and confidence
+    /// scoring has been performed.  Combines text-coverage, OCR aggregate
+    /// confidence, and schema-compliance into a single `[0, 1]` value.
+    ///
+    /// `None` when confidence scoring is not configured or the feature is
+    /// absent.
+    #[cfg(feature = "heuristics")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub extraction_confidence: Option<crate::heuristics::confidence::ExtractionConfidence>,
+
     /// Translation of `content` produced by the translation post-processor.
     ///
     /// `None` when translation is not configured.

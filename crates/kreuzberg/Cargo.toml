@@ -287,6 +287,12 @@ reranker = [
 stopwords = []
 quality = ["dep:unicode-normalization", "dep:chardetng", "stopwords"]
 
+# Cloud-upstreamed infrastructure (pure-Rust; see gap-closing plan). Generic overridable
+# defaults only — no domain knowledge. `heuristics` text-layer detection is gated separately
+# under `heuristics-pdf` (added when the pdf_oxide branch lands).
+enrichment = []
+heuristics = []
+
 keywords-yake = ["stopwords"]
 keywords-rake = ["dep:rake", "stopwords"]
 keywords = ["keywords-yake", "keywords-rake"]
@@ -371,6 +377,8 @@ no-ort-target = [
     "chunking-tokenizers",
     "quality",
     "keywords",
+    "enrichment",
+    "heuristics",
     "office",
     "iwork",
     "hwp",
@@ -487,6 +495,8 @@ full = [
     "reranker",
     "transcription",
     "chunking-tokenizers",
+    "enrichment",
+    "heuristics",
     "tree-sitter",
     "liter-llm",
     "tokio-runtime",

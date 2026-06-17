@@ -99,6 +99,12 @@ pub mod stopwords;
 #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
 pub mod keywords;
 
+#[cfg(feature = "enrichment")]
+pub mod enrichment;
+
+#[cfg(feature = "heuristics")]
+pub mod heuristics;
+
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod ocr;
 
