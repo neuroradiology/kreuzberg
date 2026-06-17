@@ -79,6 +79,8 @@ pub enum Pipeline {
     PdfOxide,
     /// pdf_oxide backend + layout detection
     PdfOxideLayout,
+    /// pdf_oxide backend + layout detection + reading-order reordering
+    PdfOxideReadingOrder,
     /// Candle-based TrOCR (force_ocr, plain text)
     CandleTrocr,
     /// Candle-based PaddleOCR-VL (force_ocr, end-to-end markdown)
@@ -119,6 +121,7 @@ impl Pipeline {
             Pipeline::LayoutSlanetAuto => "layout+slanet-auto",
             Pipeline::PdfOxide => "pdf-oxide",
             Pipeline::PdfOxideLayout => "pdf-oxide+layout",
+            Pipeline::PdfOxideReadingOrder => "pdf-oxide+layout+reading-order",
             Pipeline::CandleTrocr => "candle-trocr",
             Pipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
             Pipeline::CandleGlmOcr => "candle-glm-ocr",
@@ -155,6 +158,7 @@ impl Pipeline {
             }
             "pdf-oxide" | "pdf_oxide" | "oxide" => Some(Pipeline::PdfOxide),
             "pdf-oxide+layout" | "pdf-oxide-layout" | "oxide+layout" | "oxide-layout" => Some(Pipeline::PdfOxideLayout),
+            "pdf-oxide+layout+reading-order" | "pdf-oxide-layout-reading-order" | "oxide+layout+reading-order" | "oxide-layout-reading-order" => Some(Pipeline::PdfOxideReadingOrder),
             "candle-trocr" | "candle_trocr" | "trocr" => Some(Pipeline::CandleTrocr),
             "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Some(Pipeline::CandlePaddleocrVl),
             "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Some(Pipeline::CandleGlmOcr),
@@ -379,6 +383,19 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         },
         Pipeline::PdfOxideLayout => kreuzberg::ExtractionConfig {
             pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
+            layout: Some(LayoutDetectionConfig::default()),
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PdfOxideReadingOrder => kreuzberg::ExtractionConfig {
+            pdf_options: Some(kreuzberg::PdfConfig {
+                reading_order: true,
+                ..Default::default()
+            }),
             layout: Some(LayoutDetectionConfig::default()),
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),

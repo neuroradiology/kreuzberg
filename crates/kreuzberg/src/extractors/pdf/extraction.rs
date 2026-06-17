@@ -50,13 +50,32 @@ pub(crate) fn extract_all_from_oxide_document(
     let mut doc = crate::pdf::oxide::OxideDocument::open_bytes(content)?;
 
     // --- Text + metadata (single pass) ---
-    let (native_text, boundaries, page_contents, pdf_metadata) =
+    let (mut native_text, boundaries, page_contents, pdf_metadata) =
         crate::pdf::oxide::text::extract_text_and_metadata(&mut doc, Some(config)).map_err(|e| {
             crate::error::KreuzbergError::Parsing {
                 message: format!("pdf_oxide text extraction failed: {e}"),
                 source: None,
             }
         })?;
+
+    // --- Reading-order reordering (layout-guided) ---
+    // When `reading_order` is enabled and layout hints are available, reorder text spans
+    // to natural reading order (top-to-bottom per column, left-to-right across columns).
+    #[cfg(feature = "layout-detection")]
+    if config.pdf_options.as_ref().is_some_and(|opts| opts.reading_order) && let Some(hints) = layout_hints {
+        native_text = match apply_reading_order_reordering(&mut doc, &native_text, hints) {
+            Ok(reordered) => reordered,
+            Err(e) => {
+                tracing::warn!(
+                    error = %e,
+                    "reading-order reordering failed; using native text extraction order"
+                );
+                native_text
+            }
+        };
+    }
+    #[cfg(not(feature = "layout-detection"))]
+    let _ = layout_hints; // Suppress unused variable warning
 
     // --- Tables ---
     // Three-tier detection, each tier running only on pages the previous left empty:
@@ -260,6 +279,85 @@ pub(crate) fn extract_all_from_oxide_document(
         images,
         form_fields,
     ))
+}
+
+/// Apply reading-order reordering using layout-detected regions.
+///
+/// Extracts text spans from each page, projects them onto layout regions,
+/// performs column detection, and rebuilds the text in natural reading order.
+///
+/// Returns the reordered text string, or an error if extraction/reordering fails.
+#[cfg(feature = "layout-detection")]
+fn apply_reading_order_reordering(
+    doc: &mut crate::pdf::oxide::OxideDocument,
+    native_text: &str,
+    layout_hints_per_page: &[Vec<crate::pdf::structure::types::LayoutHint>],
+) -> Result<String> {
+    use crate::extractors::pdf::reading_order;
+
+    let page_count = doc
+        .doc
+        .page_count()
+        .map_err(|e| crate::error::KreuzbergError::Parsing {
+            message: format!("reading-order reordering: failed to get page count: {e}"),
+            source: None,
+        })?;
+
+    if layout_hints_per_page.len() != page_count {
+        return Err(crate::error::KreuzbergError::Parsing {
+            message: format!(
+                "reading-order reordering: layout hints count ({}) != page count ({})",
+                layout_hints_per_page.len(),
+                page_count
+            ),
+            source: None,
+        });
+    }
+
+    let mut reordered_pages = Vec::with_capacity(page_count);
+
+    for (page_idx, hints) in layout_hints_per_page.iter().enumerate().take(page_count) {
+        // Skip pages with no layout hints
+        if hints.is_empty() {
+            continue;
+        }
+
+        // Extract spans for this page
+        let spans = crate::pdf::oxide::text::extract_spans_from_page(&mut doc.doc, page_idx).map_err(|e| {
+            crate::error::KreuzbergError::Parsing {
+                message: format!("reading-order reordering: failed to extract spans from page {}: {e}", page_idx + 1),
+                source: None,
+            }
+        })?;
+
+        if spans.is_empty() {
+            continue;
+        }
+
+        // Get reading order of span indices
+        let span_order = reading_order::reorder_spans_by_layout(&spans, hints);
+
+        // Rebuild page text in reading order
+        let mut page_text = String::new();
+        for &span_idx in &span_order {
+            if span_idx < spans.len() {
+                page_text.push_str(&spans[span_idx].text);
+            }
+        }
+
+        if !page_text.is_empty() {
+            reordered_pages.push(page_text);
+        }
+    }
+
+    if reordered_pages.is_empty() {
+        // No pages were reordered; return original text
+        return Ok(native_text.to_string());
+    }
+
+    // Reconstruct full text in reading order
+    let result = reordered_pages.join("\n\n");
+    Ok(result)
 }
 
 #[cfg(test)]

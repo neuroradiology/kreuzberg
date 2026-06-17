@@ -10,6 +10,8 @@ mod layout_hints;
 mod layout_runner;
 mod ocr;
 mod pages;
+#[cfg(feature = "layout-detection")]
+pub(crate) mod reading_order;
 #[cfg(all(feature = "liter-llm", feature = "layout-detection"))]
 mod region_vlm;
 
