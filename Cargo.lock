@@ -4543,6 +4543,7 @@ dependencies = [
 name = "kreuzberg-candle-ocr"
 version = "5.0.0-rc.18"
 dependencies = [
+ "base64 0.22.1",
  "candle-core",
  "candle-nn",
  "candle-transformers",
