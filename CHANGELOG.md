@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `crates/kreuzberg-ffi/tests/vtable_bytes_len.rs` initializer for `KreuzbergOcrBackendVTable` was missing the new `emits_structured_markdown` field added in rc.20, which made CI Rust on `macos-latest` and `ubuntu-24.04-arm` fail with E0063 `missing field`. The test now constructs the full vtable; no production code change required.
 - `scripts/publish/update-homebrew-formula.sh` now ensures `depends_on "libheif"` is present in the tap formula at publish time. Homebrew bottle builds were failing during rc.18/rc.19 because `libheif-sys` could not locate `libheif.pc` via `PKG_CONFIG_PATH` in the brew sandbox (the formula declared only `cmake`/`pkg-config`/`rust` as build deps). The injection is idempotent and self-healing for any future formula drift.
 
 ## [5.0.0-rc.20] - 2026-06-17
