@@ -269,8 +269,9 @@ impl ImageExtractor {
         let img_height = rgb.height();
 
         for det in &detections {
-            // Skip picture regions (OCR on an embedded image is not useful)
-            if det.class_name == LayoutClass::Picture {
+            // Skip picture/chart regions (OCR on an embedded image is not useful).
+            // Chart is a refinement of Picture; treat it identically here.
+            if matches!(det.class_name, LayoutClass::Picture | LayoutClass::Chart) {
                 continue;
             }
 

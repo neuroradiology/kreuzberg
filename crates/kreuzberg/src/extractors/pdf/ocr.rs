@@ -657,12 +657,17 @@ pub(crate) async fn extract_with_ocr(
 
     // When layout detections are available, ensure OCR produces elements
     // so the layout assembly module can use them for structured markdown.
+    // Also inject layout-specific backend configuration (e.g., enable_chart_understanding).
     #[cfg(feature = "layout-detection")]
     let layout_ocr_config;
     let ocr_config = {
         #[cfg(feature = "layout-detection")]
         if layout_detections.is_some() {
-            layout_ocr_config = ensure_elements_enabled(base_ocr_config);
+            layout_ocr_config = {
+                let mut cfg = ensure_elements_enabled(base_ocr_config);
+                cfg = inject_layout_config_to_backend(&cfg, config);
+                cfg
+            };
             &layout_ocr_config
         } else {
             base_ocr_config
@@ -1519,6 +1524,35 @@ fn ensure_elements_enabled(config: &crate::core::config::ocr::OcrConfig) -> crat
                 ..Default::default()
             });
         }
+    }
+    config
+}
+
+/// Inject layout-detection settings into OcrConfig backend options for paired-mode backends.
+///
+/// When layout detection is active and provides detections, certain backends (e.g., GLM-OCR)
+/// may need configuration injected from the layout-detection config. This function ensures
+/// that the `enable_chart_understanding` flag from `ExtractionConfig.layout` is propagated
+/// to the OCR backend via `backend_options` so per-region task dispatch can honor it.
+#[cfg(all(feature = "ocr", feature = "layout-detection"))]
+fn inject_layout_config_to_backend(
+    config: &crate::core::config::ocr::OcrConfig,
+    extraction_config: &ExtractionConfig,
+) -> crate::core::config::ocr::OcrConfig {
+    let mut config = config.clone();
+    if let Some(layout_cfg) = &extraction_config.layout {
+        // Prepare or merge backend_options JSON object
+        let mut opts = config.backend_options.take().unwrap_or_else(|| serde_json::json!({}));
+
+        // Inject enable_chart_understanding if the backend_options is already an object
+        if let Some(obj) = opts.as_object_mut() {
+            obj.insert(
+                "enable_chart_understanding".to_string(),
+                serde_json::Value::Bool(layout_cfg.enable_chart_understanding),
+            );
+        }
+
+        config.backend_options = Some(opts);
     }
     config
 }

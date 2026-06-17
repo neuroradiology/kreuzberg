@@ -203,17 +203,39 @@ fn get_or_init_layout_model(
     )
 }
 
+/// Options parsed from backend-specific configuration.
+///
+/// Extracted from [`OcrConfig.backend_options`] to make GLM-OCR configuration
+/// available to both the constructor and the runtime processing paths.
+#[cfg_attr(alef, alef(skip))]
+#[derive(Debug, Clone)]
+struct GlmOcrOptions {
+    task: GlmOcrTask,
+    device: DevicePreference,
+    layout_mode: LayoutMode,
+    enable_chart_understanding: bool,
+}
+
 /// Map a layout detection class to the GLM-OCR task best suited for that region.
 ///
-/// Chart and Picture both go to `Caption` since the model has no standalone
+/// Picture and Chart both go to `Caption` since the model has no standalone
 /// chart-region task; caption elicits a descriptive output from the VLM.
+/// However, Chart is routed to the Chart task when chart understanding is enabled;
+/// otherwise it falls back to Caption for all images.
 /// Header and footer are treated as plain `Ocr`.
 #[cfg(feature = "layout-detection")]
-fn task_for_label(label: crate::layout::LayoutClass) -> GlmOcrTask {
+fn task_for_label(label: crate::layout::LayoutClass, enable_chart_understanding: bool) -> GlmOcrTask {
     use crate::layout::LayoutClass;
     match label {
         LayoutClass::Table => GlmOcrTask::Table,
         LayoutClass::Formula => GlmOcrTask::Formula,
+        LayoutClass::Chart => {
+            if enable_chart_understanding {
+                GlmOcrTask::Chart
+            } else {
+                GlmOcrTask::Caption
+            }
+        }
         LayoutClass::Picture => GlmOcrTask::Caption,
         // Text-like regions
         LayoutClass::Text
@@ -304,9 +326,17 @@ impl GlmOcrBackend {
     ///
     /// Device selection is delegated to [`crate::candle_ocr::resolve_device_preference`]
     /// so the central `AccelerationConfig` is honoured.
-    fn parse_options(config: &OcrConfig) -> (GlmOcrTask, DevicePreference, LayoutMode) {
-        let mut task = GlmOcrTask::default();
-        let mut layout_mode = LayoutMode::default();
+    ///
+    /// Supports the following backend options (as serde_json values):
+    /// - `task` (string): `"ocr"`, `"table"`, `"formula"`, `"chart"`, `"caption"` (default: `"ocr"`)
+    /// - `layout_mode` (string): `"whole_page"`, `"paired"` (default: platform-dependent)
+    /// - `enable_chart_understanding` (bool): route detected charts to chart task (default: `false`)
+    fn parse_options(&self, config: &OcrConfig) -> GlmOcrOptions {
+        // Seed defaults from the backend's constructor arguments; backend_options
+        // (per-call) override them when present.
+        let mut task = self.default_task;
+        let mut layout_mode = self.layout_mode;
+        let mut enable_chart_understanding = false;
 
         if let Some(opts) = &config.backend_options {
             if let Some(t) = opts.get("task").and_then(|v| v.as_str()) {
@@ -326,10 +356,19 @@ impl GlmOcrBackend {
                     _ => LayoutMode::WholePage,
                 };
             }
+
+            if let Some(e) = opts.get("enable_chart_understanding").and_then(|v| v.as_bool()) {
+                enable_chart_understanding = e;
+            }
         }
 
         let device = super::resolve_device_preference(config);
-        (task, device, layout_mode)
+        GlmOcrOptions {
+            task,
+            device,
+            layout_mode,
+            enable_chart_understanding,
+        }
     }
 }
 
@@ -359,7 +398,7 @@ impl Plugin for GlmOcrBackend {
 impl OcrBackend for GlmOcrBackend {
     async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
         // Parse configuration
-        let (task, device, layout_mode) = Self::parse_options(config);
+        let opts = self.parse_options(config);
 
         // Validate image data
         if image_bytes.is_empty() {
@@ -372,10 +411,12 @@ impl OcrBackend for GlmOcrBackend {
         let image_bytes = image_bytes.to_vec();
         let dtype = self.dtype;
 
-        let content = match layout_mode {
+        let (content, formulas) = match opts.layout_mode {
             LayoutMode::WholePage => {
                 // Run whole-page inference in a blocking task.
-                tokio::task::spawn_blocking(move || {
+                let task = opts.task;
+                let device = opts.device;
+                let content = tokio::task::spawn_blocking(move || {
                     let engine = get_or_init_engine(device, dtype)?;
                     let output =
                         engine
@@ -390,15 +431,20 @@ impl OcrBackend for GlmOcrBackend {
                 .map_err(|e| crate::KreuzbergError::Ocr {
                     message: format!("GLM-OCR task execution failed: {e}"),
                     source: None,
-                })??
+                })??;
+                (content, Vec::new())
             }
 
             #[cfg(feature = "layout-detection")]
-            LayoutMode::Paired => process_paired(image_bytes, device, dtype).await?,
+            LayoutMode::Paired => {
+                let enable_chart_understanding = opts.enable_chart_understanding;
+                process_paired(image_bytes, opts.device, dtype, enable_chart_understanding).await?
+            }
         };
 
         Ok(ExtractionResult {
             content,
+            formulas,
             mime_type: Cow::Borrowed("text/markdown"),
             ..Default::default()
         })
@@ -451,9 +497,18 @@ impl OcrBackend for GlmOcrBackend {
 
 /// Paired-mode dispatch: run PP-DocLayout-V3, crop regions, dispatch per-region task.
 ///
+/// Returns both the assembled markdown content and a vector of recognized formulas.
+/// Each formula captures the LaTeX source (without `$$` delimiters) and its bounding box.
+/// The page number must be filled in by the caller.
+///
 /// Only compiled when `layout-detection` feature is enabled.
 #[cfg(feature = "layout-detection")]
-async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: DType) -> crate::Result<String> {
+async fn process_paired(
+    image_bytes: Vec<u8>,
+    device: DevicePreference,
+    dtype: DType,
+    enable_chart_understanding: bool,
+) -> crate::Result<(String, Vec<crate::types::Formula>)> {
     use crate::layout::LayoutModelManager;
     use crate::layout::models::LayoutModel;
 
@@ -497,6 +552,7 @@ async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: D
         let img_height = img.height();
 
         let mut parts: Vec<String> = Vec::with_capacity(sorted.len());
+        let mut formulas: Vec<crate::types::Formula> = Vec::new();
 
         for detection in &sorted {
             let bbox = &detection.bbox;
@@ -518,7 +574,7 @@ async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: D
                     source: Some(Box::new(e)),
                 })?;
 
-            let region_task = task_for_label(detection.class_name);
+            let region_task = task_for_label(detection.class_name, enable_chart_understanding);
 
             let output =
                 engine
@@ -528,10 +584,31 @@ async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: D
                         source: Some(Box::new(e)),
                     })?;
 
-            parts.push(wrap_output(region_task, &output.content));
+            let wrapped = wrap_output(region_task, &output.content);
+
+            // Capture formula content if this is a formula region
+            if detection.class_name == crate::layout::LayoutClass::Formula {
+                let latex = output.content.trim().to_string();
+                if !latex.is_empty() {
+                    formulas.push(crate::types::Formula {
+                        latex,
+                        bbox: crate::types::extraction::BoundingBox {
+                            // Layout BBox is (x1, y1, x2, y2) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
+                            // BoundingBox is (x0, y0, x1, y1) = (top-left-x, top-left-y, bottom-right-x, bottom-right-y)
+                            x0: bbox.x1 as f64,
+                            y0: bbox.y1 as f64,
+                            x1: bbox.x2 as f64,
+                            y1: bbox.y2 as f64,
+                        },
+                        page: 1, // page is relative to this single-image OCR call; will be set by caller
+                    });
+                }
+            }
+
+            parts.push(wrapped);
         }
 
-        Ok::<String, crate::KreuzbergError>(parts.join("\n\n"))
+        Ok::<(String, Vec<crate::types::Formula>), crate::KreuzbergError>((parts.join("\n\n"), formulas))
     })
     .await
     .map_err(|e| crate::KreuzbergError::Ocr {
@@ -578,33 +655,71 @@ mod tests {
     #[test]
     fn test_parse_options_defaults() {
         let config = OcrConfig::default();
-        let (task, device, _layout_mode) = GlmOcrBackend::parse_options(&config);
-        assert_eq!(task, GlmOcrTask::Ocr);
-        assert_eq!(device, DevicePreference::Auto);
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert_eq!(opts.task, GlmOcrTask::Ocr);
+        assert_eq!(opts.device, DevicePreference::Auto);
+        assert!(!opts.enable_chart_understanding);
     }
 
     #[test]
     fn test_parse_options_custom_task() {
         let mut config = OcrConfig::default();
         config.backend_options = Some(serde_json::json!({"task": "table"}));
-        let (task, _device, _layout_mode) = GlmOcrBackend::parse_options(&config);
-        assert_eq!(task, GlmOcrTask::Table);
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert_eq!(opts.task, GlmOcrTask::Table);
     }
 
     #[test]
     fn test_parse_options_formula_task() {
         let mut config = OcrConfig::default();
         config.backend_options = Some(serde_json::json!({"task": "formula"}));
-        let (task, _device, _layout_mode) = GlmOcrBackend::parse_options(&config);
-        assert_eq!(task, GlmOcrTask::Formula);
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert_eq!(opts.task, GlmOcrTask::Formula);
     }
 
     #[test]
     fn test_parse_options_custom_device() {
         let mut config = OcrConfig::default();
         config.backend_options = Some(serde_json::json!({"device": "cpu"}));
-        let (_task, device, _layout_mode) = GlmOcrBackend::parse_options(&config);
-        assert_eq!(device, DevicePreference::Cpu);
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert_eq!(opts.device, DevicePreference::Cpu);
+    }
+
+    #[test]
+    fn test_parse_options_enable_chart_understanding_true() {
+        let mut config = OcrConfig::default();
+        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": true}));
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert!(opts.enable_chart_understanding);
+    }
+
+    #[test]
+    fn test_parse_options_enable_chart_understanding_false() {
+        let mut config = OcrConfig::default();
+        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": false}));
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert!(!opts.enable_chart_understanding);
+    }
+
+    #[test]
+    fn test_parse_options_chart_understanding_default() {
+        let config = OcrConfig::default();
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert!(!opts.enable_chart_understanding);
+    }
+
+    #[test]
+    fn test_parse_options_combined() {
+        let mut config = OcrConfig::default();
+        config.backend_options = Some(serde_json::json!({
+            "task": "chart",
+            "device": "cuda",
+            "enable_chart_understanding": true
+        }));
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        assert_eq!(opts.task, GlmOcrTask::Chart);
+        assert_eq!(opts.device, DevicePreference::Cuda);
+        assert!(opts.enable_chart_understanding);
     }
 
     #[test]
@@ -618,21 +733,61 @@ mod tests {
     #[test]
     fn test_task_for_label_table() {
         use crate::layout::LayoutClass;
-        assert_eq!(task_for_label(LayoutClass::Table), GlmOcrTask::Table);
+        assert_eq!(task_for_label(LayoutClass::Table, false), GlmOcrTask::Table);
     }
 
     #[cfg(feature = "layout-detection")]
     #[test]
     fn test_task_for_label_formula() {
         use crate::layout::LayoutClass;
-        assert_eq!(task_for_label(LayoutClass::Formula), GlmOcrTask::Formula);
+        assert_eq!(task_for_label(LayoutClass::Formula, false), GlmOcrTask::Formula);
     }
 
     #[cfg(feature = "layout-detection")]
     #[test]
     fn test_task_for_label_text() {
         use crate::layout::LayoutClass;
-        assert_eq!(task_for_label(LayoutClass::Text), GlmOcrTask::Ocr);
+        assert_eq!(task_for_label(LayoutClass::Text, false), GlmOcrTask::Ocr);
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_task_for_label_chart_disabled() {
+        use crate::layout::LayoutClass;
+        // When chart understanding is disabled, Chart → Caption
+        assert_eq!(task_for_label(LayoutClass::Chart, false), GlmOcrTask::Caption);
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_task_for_label_chart_enabled() {
+        use crate::layout::LayoutClass;
+        // When chart understanding is enabled, Chart → Chart
+        assert_eq!(task_for_label(LayoutClass::Chart, true), GlmOcrTask::Chart);
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_parse_and_route_chart_with_understanding_enabled() {
+        use crate::layout::LayoutClass;
+        let mut config = OcrConfig::default();
+        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": true}));
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        // Verify that the parsed flag can be used to route charts correctly
+        let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);
+        assert_eq!(routed_task, GlmOcrTask::Chart);
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_parse_and_route_chart_with_understanding_disabled() {
+        use crate::layout::LayoutClass;
+        let mut config = OcrConfig::default();
+        config.backend_options = Some(serde_json::json!({"enable_chart_understanding": false}));
+        let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
+        // Verify that disabled flag routes charts to Caption
+        let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);
+        assert_eq!(routed_task, GlmOcrTask::Caption);
     }
 
     #[cfg(feature = "layout-detection")]
@@ -641,6 +796,20 @@ mod tests {
         let wrapped = wrap_output(GlmOcrTask::Formula, "x^2 + y^2 = r^2");
         assert!(wrapped.starts_with("$$\n"));
         assert!(wrapped.ends_with("\n$$"));
+        // Verify that the latex content is preserved (without the delimiters)
+        assert!(wrapped.contains("x^2 + y^2 = r^2"));
+    }
+
+    #[cfg(feature = "layout-detection")]
+    #[test]
+    fn test_formula_extraction_from_wrapped_output() {
+        // Test that we can extract raw latex from formula output
+        let task = GlmOcrTask::Formula;
+        let raw_latex = "E = mc^2";
+        let wrapped = wrap_output(task, raw_latex);
+        // The wrapped version has $$ delimiters; stripping them should give us back the original
+        let stripped = wrapped.trim_start_matches("$$\n").trim_end_matches("\n$$").trim();
+        assert_eq!(stripped, raw_latex);
     }
 
     #[cfg(feature = "layout-detection")]

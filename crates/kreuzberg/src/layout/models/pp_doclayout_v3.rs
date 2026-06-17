@@ -59,7 +59,7 @@ impl PpDocLayoutV3Model {
             2 => Some(LayoutClass::Picture),
             3 => Some(LayoutClass::Formula),
             4 => Some(LayoutClass::Table),
-            5 => Some(LayoutClass::Picture), // Chart → Picture
+            5 => Some(LayoutClass::Chart),
             6 => Some(LayoutClass::PageFooter),
             7 => Some(LayoutClass::PageHeader),
             _ => None,
@@ -429,7 +429,7 @@ mod tests {
 
     #[test]
     fn test_class_from_id_chart() {
-        assert_eq!(PpDocLayoutV3Model::class_from_id(5), Some(LayoutClass::Picture));
+        assert_eq!(PpDocLayoutV3Model::class_from_id(5), Some(LayoutClass::Chart));
     }
 
     #[test]

@@ -85,6 +85,10 @@ pub enum Pipeline {
     CandlePaddleocrVl,
     /// Candle-based GLM-OCR vision-language backend (force_ocr)
     CandleGlmOcr,
+    /// Candle-based GLM-OCR with layout detection + formula extraction
+    CandleGlmOcrLayout,
+    /// Candle-based GLM-OCR with layout detection + formula + chart understanding
+    CandleGlmOcrLayoutChart,
     /// Candle-based Hunyuan-OCR vision-language backend (force_ocr)
     CandleHunyuanOcr,
     /// Candle-based DeepSeek-OCR vision-language backend (force_ocr)
@@ -118,6 +122,8 @@ impl Pipeline {
             Pipeline::CandleTrocr => "candle-trocr",
             Pipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
             Pipeline::CandleGlmOcr => "candle-glm-ocr",
+            Pipeline::CandleGlmOcrLayout => "candle-glm-ocr+layout",
+            Pipeline::CandleGlmOcrLayoutChart => "candle-glm-ocr+layout+chart",
             Pipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
             Pipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
             Pipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
@@ -152,6 +158,12 @@ impl Pipeline {
             "candle-trocr" | "candle_trocr" | "trocr" => Some(Pipeline::CandleTrocr),
             "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Some(Pipeline::CandlePaddleocrVl),
             "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Some(Pipeline::CandleGlmOcr),
+            "candle-glm-ocr+layout" | "candle_glm_ocr_layout" | "glm-ocr+layout" | "glm-ocr-layout" => {
+                Some(Pipeline::CandleGlmOcrLayout)
+            }
+            "candle-glm-ocr+layout+chart" | "candle_glm_ocr_layout_chart" | "glm-ocr+layout+chart" | "glm-ocr-layout-chart" => {
+                Some(Pipeline::CandleGlmOcrLayoutChart)
+            }
             "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Some(Pipeline::CandleHunyuanOcr),
             "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Some(Pipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {
@@ -435,6 +447,29 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "candle-glm-ocr".to_string(),
                 language: "en".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::CandleGlmOcrLayout => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "candle-glm-ocr".to_string(),
+                language: "en".to_string(),
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig::default()),
+            ..base
+        },
+        Pipeline::CandleGlmOcrLayoutChart => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "candle-glm-ocr".to_string(),
+                language: "en".to_string(),
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig {
+                enable_chart_understanding: true,
                 ..Default::default()
             }),
             ..base
