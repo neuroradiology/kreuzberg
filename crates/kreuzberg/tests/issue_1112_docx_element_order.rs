@@ -14,18 +14,31 @@ mod helpers;
 /// This test does not require any DOCX file on disk and runs on every build.
 #[test]
 fn test_internal_document_walk_preserves_reading_order() {
-    use kreuzberg::types::internal::{ElementKind, InternalDocument, InternalElement};
     use kreuzberg::types::extraction::Element;
+    use kreuzberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 
     // Build a minimal InternalDocument whose elements are in reading order:
     //   Heading → Paragraph → ListItem → Table
     let mut doc = InternalDocument::new("docx");
     doc.mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document".to_string();
 
-    doc.elements.push(InternalElement::text(ElementKind::Heading { level: 1 }, "Introduction", 0));
-    doc.elements.push(InternalElement::text(ElementKind::Paragraph, "Body text goes here.", 0));
-    doc.elements.push(InternalElement::text(ElementKind::ListItem { ordered: false }, "First bullet", 1));
-    doc.elements.push(InternalElement::text(ElementKind::ListItem { ordered: false }, "Second bullet", 1));
+    doc.elements.push(InternalElement::text(
+        ElementKind::Heading { level: 1 },
+        "Introduction",
+        0,
+    ));
+    doc.elements
+        .push(InternalElement::text(ElementKind::Paragraph, "Body text goes here.", 0));
+    doc.elements.push(InternalElement::text(
+        ElementKind::ListItem { ordered: false },
+        "First bullet",
+        1,
+    ));
+    doc.elements.push(InternalElement::text(
+        ElementKind::ListItem { ordered: false },
+        "Second bullet",
+        1,
+    ));
 
     // Insert a table at index 0 in the tables list.
     doc.tables.push(kreuzberg::types::tables::Table {
@@ -37,13 +50,18 @@ fn test_internal_document_walk_preserves_reading_order() {
         page_number: 1,
         bounding_box: None,
     });
-    doc.elements.push(InternalElement::text(ElementKind::Table { table_index: 0 }, "", 0));
+    doc.elements
+        .push(InternalElement::text(ElementKind::Table { table_index: 0 }, "", 0));
 
-    let elements: Vec<Element> =
-        kreuzberg::extraction::transform::convert_internal_elements_to_elements(&doc, &None);
+    let elements: Vec<Element> = kreuzberg::extraction::transform::convert_internal_elements_to_elements(&doc, &None);
 
     // Verify reading order: Title, NarrativeText, ListItem × 2, Table.
-    assert_eq!(elements.len(), 5, "Expected 5 elements (h1, paragraph, 2 list items, table), got {}", elements.len());
+    assert_eq!(
+        elements.len(),
+        5,
+        "Expected 5 elements (h1, paragraph, 2 list items, table), got {}",
+        elements.len()
+    );
 
     assert_eq!(
         elements[0].element_type,
@@ -78,7 +96,10 @@ fn test_internal_document_walk_preserves_reading_order() {
         kreuzberg::types::ElementType::Table,
         "Fifth element must be Table"
     );
-    assert!(elements[4].text.contains("Header A"), "Table text must contain cell content");
+    assert!(
+        elements[4].text.contains("Header A"),
+        "Table text must contain cell content"
+    );
 }
 
 /// Integration test: extract a real DOCX with ElementBased result format and assert
@@ -106,29 +127,29 @@ async fn test_docx_element_based_result_format_preserves_order() {
         .await
         .expect("DOCX extraction should succeed");
 
-    let elements = result.elements.as_deref().expect("ElementBased result must have elements");
+    let elements = result
+        .elements
+        .as_deref()
+        .expect("ElementBased result must have elements");
     assert!(!elements.is_empty(), "Must have at least one element");
 
     // Verify that heading-type elements precede or interleave with body text in document
     // order — never all body text followed by all headings (that would indicate page-order
     // scrambling).
-    let first_heading_pos = elements.iter().position(|e| {
-        matches!(e.element_type, ElementType::Title | ElementType::Heading)
-    });
-    let last_heading_pos = elements.iter().rposition(|e| {
-        matches!(e.element_type, ElementType::Title | ElementType::Heading)
-    });
+    let first_heading_pos = elements
+        .iter()
+        .position(|e| matches!(e.element_type, ElementType::Title | ElementType::Heading));
+    let last_heading_pos = elements
+        .iter()
+        .rposition(|e| matches!(e.element_type, ElementType::Title | ElementType::Heading));
 
     if let (Some(first_h), Some(last_h)) = (first_heading_pos, last_heading_pos) {
         // There must be at least one narrative/list element somewhere between or after the
         // headings — verify that body text appears interspersed with headings, not all bunched
         // at the start before all body text.
-        let narrative_after_first_heading = elements[first_h..].iter().any(|e| {
-            matches!(
-                e.element_type,
-                ElementType::NarrativeText | ElementType::ListItem
-            )
-        });
+        let narrative_after_first_heading = elements[first_h..]
+            .iter()
+            .any(|e| matches!(e.element_type, ElementType::NarrativeText | ElementType::ListItem));
         assert!(
             narrative_after_first_heading,
             "Body text must appear after/alongside headings in document order \

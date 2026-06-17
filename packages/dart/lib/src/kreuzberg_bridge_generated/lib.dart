@@ -6388,8 +6388,9 @@ class ImageExtractionConfig {
   /// `None` (default) means no limit — all images are extracted.
   final PlatformInt64? maxImagesPerPage;
 
-  /// When `true` (default), extracted images are classified by kind and grouped
+  /// When `true`, extracted images are classified by kind and grouped
   /// into clusters where they appear to belong to one figure.
+  /// Defaults to `false` — opt in explicitly to avoid unexpected ML overhead.
   final bool classify;
 
   /// When `true`, full-page renders produced during OCR preprocessing are captured

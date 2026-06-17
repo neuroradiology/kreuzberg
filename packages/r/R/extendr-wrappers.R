@@ -965,7 +965,7 @@ BatchFileItem <- new.env(parent = emptyenv())
 #' @field min_dpi Minimum DPI threshold
 #' @field max_dpi Maximum DPI threshold
 #' @field max_images_per_page Maximum number of image objects to extract per PDF page.
-#' @field classify When `true` (default), extracted images are classified by kind and grouped into clusters where they
+#' @field classify When `true`, extracted images are classified by kind and grouped into clusters where they appear to
 #' @field include_page_rasters When `true`, full-page renders produced during OCR preprocessing are captured and
 #' @field run_ocr_on_images Run OCR on extracted images and include the recognized text in the document content.
 #' @field ocr_text_only When `true`, image OCR results are rendered as plain text without the `![...](...)` markdown

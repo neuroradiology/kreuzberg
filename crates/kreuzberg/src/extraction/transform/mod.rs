@@ -42,6 +42,7 @@ use std::borrow::Cow;
 /// # Returns
 ///
 /// A vector of `Element`s in the extractor's native reading order.
+#[cfg_attr(alef, alef(skip))]
 pub fn convert_internal_elements_to_elements(doc: &InternalDocument, filename: &Option<String>) -> Vec<Element> {
     let mut elements: Vec<Element> = Vec::with_capacity(doc.elements.len());
 

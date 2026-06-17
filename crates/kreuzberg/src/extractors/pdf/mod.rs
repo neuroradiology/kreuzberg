@@ -527,26 +527,22 @@ impl PdfExtractor {
         // invalid byte offsets into the OCR-filled content.  Recompute them here so
         // downstream consumers (the chunker, result.metadata.pages) see valid offsets.
         #[cfg(all(any(feature = "ocr", feature = "ocr-pipeline"), feature = "chunking"))]
-        if extraction_method.used_ocr() {
-            if let Some(ref pages) = page_contents {
-                if !pages.is_empty() {
-                    // Build combined content mirroring what render_plain produces from
-                    // page texts so recompute_boundaries_from_pages can locate each page.
-                    let combined: String = pages
-                        .iter()
-                        .filter(|p| !p.content.trim().is_empty())
-                        .map(|p| p.content.trim())
-                        .collect::<Vec<_>>()
-                        .join("\n\n");
-                    if let Some(ref mut page_structure) = pdf_metadata.page_structure {
-                        page_structure.boundaries = Some(
-                            crate::core::pipeline::features::recompute_boundaries_from_pages(
-                                &combined,
-                                pages,
-                            ),
-                        );
-                    }
-                }
+        if extraction_method.used_ocr()
+            && let Some(ref pages) = page_contents
+            && !pages.is_empty()
+        {
+            // Build combined content mirroring what render_plain produces from
+            // page texts so recompute_boundaries_from_pages can locate each page.
+            let combined: String = pages
+                .iter()
+                .filter(|p| !p.content.trim().is_empty())
+                .map(|p| p.content.trim())
+                .collect::<Vec<_>>()
+                .join("\n\n");
+            if let Some(ref mut page_structure) = pdf_metadata.page_structure {
+                page_structure.boundaries = Some(crate::core::pipeline::features::recompute_boundaries_from_pages(
+                    &combined, pages,
+                ));
             }
         }
 
