@@ -45,6 +45,7 @@ COPY Cargo.toml Cargo.lock ./
 COPY crates/kreuzberg/ crates/kreuzberg/
 COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
 COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
+COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
 COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
 COPY packages/elixir/native/kreuzberg_nif/ packages/elixir/native/kreuzberg_nif/
 

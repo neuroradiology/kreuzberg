@@ -46,6 +46,7 @@ COPY crates/kreuzberg/ crates/kreuzberg/
 COPY crates/kreuzberg-ffi/ crates/kreuzberg-ffi/
 COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
 COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
+COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
 COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
 
 # Remove workspace members that aren't included
