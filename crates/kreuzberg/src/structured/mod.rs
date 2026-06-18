@@ -467,6 +467,14 @@ async fn orchestrate(
 
     // ── 13. Merge ────────────────────────────────────────────────────────────
     let merged = validate_and_merge(responses, &resolved.schema, resolved.merge_mode);
+    if !merged.per_batch_errors.is_empty() {
+        tracing::warn!(
+            outcome = ?merged.outcome,
+            failed_batches = merged.per_batch_errors.len(),
+            errors = ?merged.per_batch_errors,
+            "structured: some vision batches failed schema validation; merged from the rest"
+        );
+    }
 
     // ── 14. Confidence ───────────────────────────────────────────────────────
     let ocr_aggregate = result.ocr_elements.as_deref().and_then(compute_ocr_aggregate);
