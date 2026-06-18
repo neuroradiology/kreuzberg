@@ -23,6 +23,7 @@ use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
 use crate::types::ExtractionResult;
+use kreuzberg_candle_ocr::CandleOcrError;
 use kreuzberg_candle_ocr::DType;
 use kreuzberg_candle_ocr::DevicePreference;
 use kreuzberg_candle_ocr::models::GlmOcrEngine;
@@ -79,7 +80,9 @@ static ENGINE_POOL: LazyLock<EnginePool> = LazyLock::new(|| RwLock::new(AHashMap
 
 /// Pool type alias for the layout model pool keyed by `(model_path, device_preference)`.
 #[cfg(feature = "layout-detection")]
-type LayoutPool = RwLock<AHashMap<(String, DevicePreference), Arc<Mutex<crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model>>>>;
+type LayoutPool = RwLock<
+    AHashMap<(String, DevicePreference), Arc<Mutex<crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model>>>,
+>;
 
 /// Process-wide layout model pool keyed by `(model_path, device_preference)`.
 ///
@@ -274,15 +277,8 @@ fn task_for_label(label: crate::layout::LayoutClass, enable_chart_understanding:
 /// and any immediately adjacent whitespace.
 fn strip_formula_delimiters(content: &str) -> String {
     let trimmed = content.trim();
-    let stripped = trimmed
-        .strip_prefix("$$")
-        .unwrap_or(trimmed)
-        .trim_start();
-    stripped
-        .strip_suffix("$$")
-        .unwrap_or(stripped)
-        .trim_end()
-        .to_string()
+    let stripped = trimmed.strip_prefix("$$").unwrap_or(trimmed).trim_start();
+    stripped.strip_suffix("$$").unwrap_or(stripped).trim_end().to_string()
 }
 
 fn wrap_output(task: GlmOcrTask, content: &str) -> String {
@@ -599,13 +595,27 @@ async fn process_paired(
 
             let region_task = task_for_label(detection.class_name, enable_chart_understanding);
 
-            let output =
-                engine
-                    .process_image_with_task(&crop_bytes, region_task)
-                    .map_err(|e| crate::KreuzbergError::Ocr {
+            let output = match engine.process_image_with_task(&crop_bytes, region_task) {
+                Ok(out) => out,
+                // Extreme-aspect-ratio crops (e.g. single-line inline formulas) exceed the
+                // GLM-OCR preprocessor's 200:1 limit. Skip the region rather than aborting the
+                // entire page so other regions are still processed.
+                Err(CandleOcrError::UnsupportedConfig(ref msg)) => {
+                    tracing::warn!(
+                        class = ?detection.class_name,
+                        bbox = ?bbox,
+                        reason = %msg,
+                        "GLM-OCR paired: skipping region (unsupported config)"
+                    );
+                    continue;
+                }
+                Err(e) => {
+                    return Err(crate::KreuzbergError::Ocr {
                         message: format!("GLM-OCR paired: region inference failed: {e}"),
                         source: Some(Box::new(e)),
-                    })?;
+                    });
+                }
+            };
 
             // For formulas, strip any pre-wrapped `$$` delimiters before storing.
             // This ensures the Formula.latex field contains clean LaTeX without delimiters.
@@ -692,35 +702,50 @@ mod tests {
 
     #[test]
     fn test_parse_options_custom_task() {
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"task": "table"})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"task": "table"})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.task, GlmOcrTask::Table);
     }
 
     #[test]
     fn test_parse_options_formula_task() {
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"task": "formula"})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"task": "formula"})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.task, GlmOcrTask::Formula);
     }
 
     #[test]
     fn test_parse_options_custom_device() {
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"device": "cpu"})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"device": "cpu"})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert_eq!(opts.device, DevicePreference::Cpu);
     }
 
     #[test]
     fn test_parse_options_enable_chart_understanding_true() {
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": true})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"enable_chart_understanding": true})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert!(opts.enable_chart_understanding);
     }
 
     #[test]
     fn test_parse_options_enable_chart_understanding_false() {
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": false})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"enable_chart_understanding": false})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         assert!(!opts.enable_chart_understanding);
     }
@@ -796,7 +821,10 @@ mod tests {
     #[test]
     fn test_parse_and_route_chart_with_understanding_enabled() {
         use crate::layout::LayoutClass;
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": true})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"enable_chart_understanding": true})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         // Verify that the parsed flag can be used to route charts correctly
         let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);
@@ -807,7 +835,10 @@ mod tests {
     #[test]
     fn test_parse_and_route_chart_with_understanding_disabled() {
         use crate::layout::LayoutClass;
-        let config = OcrConfig { backend_options: Some(serde_json::json!({"enable_chart_understanding": false})), ..Default::default() };
+        let config = OcrConfig {
+            backend_options: Some(serde_json::json!({"enable_chart_understanding": false})),
+            ..Default::default()
+        };
         let opts = GlmOcrBackend::new(GlmOcrTask::default(), LayoutMode::default()).parse_options(&config);
         // Verify that disabled flag routes charts to Caption
         let routed_task = task_for_label(LayoutClass::Chart, opts.enable_chart_understanding);

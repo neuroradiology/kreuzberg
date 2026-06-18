@@ -16,8 +16,7 @@
 
 use crate::fixture::{Fixture, GroundTruth};
 use crate::json_quality::{
-    NumericTolerance, field_precision_recall_f1_normalized, flatten_form_fields, latex_token_f1,
-    type_correctness_rate,
+    NumericTolerance, field_precision_recall_f1_normalized, flatten_form_fields, latex_token_f1, type_correctness_rate,
 };
 use anyhow::{Context, Result, bail};
 use std::path::{Path, PathBuf};
@@ -110,9 +109,8 @@ async fn run_form_fields(args: &Args) -> Result<()> {
 
         // Resolve and parse the GT fields JSON
         let fields_json_path = fixture_dir.join(gt.fields_json.as_ref().expect("checked above"));
-        let gt_value: serde_json::Value = load_json_file(&fields_json_path).with_context(|| {
-            format!("failed to load fields_json from {}", fields_json_path.display())
-        })?;
+        let gt_value: serde_json::Value = load_json_file(&fields_json_path)
+            .with_context(|| format!("failed to load fields_json from {}", fields_json_path.display()))?;
 
         // Extract the document — form fields are on by default in PdfConfig
         let doc_path = fixture.resolve_document_path(fixture_dir);
@@ -145,7 +143,11 @@ async fn run_form_fields(args: &Args) -> Result<()> {
         });
     }
 
-    print_table(&rows, "Form-Field Extraction Quality (P/R/F1 + type_rate)", &["precision", "recall", "f1", "type_rate"]);
+    print_table(
+        &rows,
+        "Form-Field Extraction Quality (P/R/F1 + type_rate)",
+        &["precision", "recall", "f1", "type_rate"],
+    );
     Ok(())
 }
 
@@ -175,9 +177,8 @@ async fn run_formula(args: &Args) -> Result<()> {
 
         // Resolve and parse the GT formulas JSON: { "formulas": ["...", ...] }
         let formulas_json_path = fixture_dir.join(gt.formulas_json.as_ref().expect("checked above"));
-        let gt_value: serde_json::Value = load_json_file(&formulas_json_path).with_context(|| {
-            format!("failed to load formulas_json from {}", formulas_json_path.display())
-        })?;
+        let gt_value: serde_json::Value = load_json_file(&formulas_json_path)
+            .with_context(|| format!("failed to load formulas_json from {}", formulas_json_path.display()))?;
         let gt_formulas = parse_formulas_array(&gt_value, &formulas_json_path)?;
 
         // Extract with layout-enabled config so formula detection fires
@@ -206,7 +207,11 @@ async fn run_formula(args: &Args) -> Result<()> {
         });
     }
 
-    print_table(&rows, "Formula Extraction Quality (LaTeX Token F1)", &["precision", "recall", "f1"]);
+    print_table(
+        &rows,
+        "Formula Extraction Quality (LaTeX Token F1)",
+        &["precision", "recall", "f1"],
+    );
     Ok(())
 }
 
@@ -267,11 +272,7 @@ async fn run_structured(args: &Args) -> Result<()> {
         let result = match kreuzberg::extract_file(&fixture.document_path, None, &extraction_config).await {
             Ok(r) => r,
             Err(e) => {
-                eprintln!(
-                    "  ERROR {}: {}",
-                    fixture.document_path.display(),
-                    e
-                );
+                eprintln!("  ERROR {}: {}", fixture.document_path.display(), e);
                 continue;
             }
         };
@@ -337,17 +338,13 @@ fn load_fixtures_with_gt(
             }
         }
 
-        let contents = std::fs::read_to_string(&path)
-            .with_context(|| format!("failed to read fixture {}", path.display()))?;
-        let fixture: Fixture = serde_json::from_str(&contents)
-            .with_context(|| format!("failed to parse fixture {}", path.display()))?;
+        let contents =
+            std::fs::read_to_string(&path).with_context(|| format!("failed to read fixture {}", path.display()))?;
+        let fixture: Fixture =
+            serde_json::from_str(&contents).with_context(|| format!("failed to parse fixture {}", path.display()))?;
 
         // Check if this fixture has the required GT field
-        let has_gt = fixture
-            .ground_truth
-            .as_ref()
-            .map(&predicate)
-            .unwrap_or(false);
+        let has_gt = fixture.ground_truth.as_ref().map(&predicate).unwrap_or(false);
 
         if has_gt {
             out.push((path, fixture));
@@ -365,9 +362,7 @@ fn load_fixtures_with_gt(
 
 /// Recursively collect all `.json` files under `dir`.
 fn collect_fixture_files(dir: &Path, out: &mut Vec<PathBuf>) -> Result<()> {
-    for entry in std::fs::read_dir(dir)
-        .with_context(|| format!("failed to read directory {}", dir.display()))?
-    {
+    for entry in std::fs::read_dir(dir).with_context(|| format!("failed to read directory {}", dir.display()))? {
         let entry = entry.with_context(|| format!("failed to read entry in {}", dir.display()))?;
         let path = entry.path();
         if path.is_dir() {
@@ -381,22 +376,18 @@ fn collect_fixture_files(dir: &Path, out: &mut Vec<PathBuf>) -> Result<()> {
 
 /// Load and deserialize a JSON file.
 fn load_json_file(path: &Path) -> Result<serde_json::Value> {
-    let contents = std::fs::read_to_string(path)
-        .with_context(|| format!("failed to read {}", path.display()))?;
+    let contents = std::fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
     serde_json::from_str(&contents).with_context(|| format!("failed to parse JSON in {}", path.display()))
 }
 
 /// Parse the `"formulas"` array from a `{ "formulas": [...] }` JSON value.
 fn parse_formulas_array(value: &serde_json::Value, path: &Path) -> Result<Vec<String>> {
-    let arr = value
-        .get("formulas")
-        .and_then(|v| v.as_array())
-        .with_context(|| {
-            format!(
-                "formulas_json at {} must have a top-level \"formulas\" array",
-                path.display()
-            )
-        })?;
+    let arr = value.get("formulas").and_then(|v| v.as_array()).with_context(|| {
+        format!(
+            "formulas_json at {} must have a top-level \"formulas\" array",
+            path.display()
+        )
+    })?;
 
     arr.iter()
         .map(|v| {
@@ -425,6 +416,9 @@ fn build_layout_config() -> kreuzberg::ExtractionConfig {
             ..Default::default()
         }),
         layout: Some(kreuzberg::LayoutDetectionConfig::default()),
+        // GLM-OCR inference on CPU is slow; 10 minutes is sufficient for
+        // multi-page formula documents without risking infinite hangs.
+        extraction_timeout_secs: Some(600),
         ..Default::default()
     }
 }
@@ -508,9 +502,5 @@ fn avg_metric(rows: &[FixtureRow], f: impl Fn(&FixtureRow) -> f64) -> f64 {
 }
 
 fn truncate(s: &str, max: usize) -> &str {
-    if s.len() <= max {
-        s
-    } else {
-        &s[..max]
-    }
+    if s.len() <= max { s } else { &s[..max] }
 }

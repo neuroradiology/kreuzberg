@@ -84,11 +84,15 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "pp_doclayout_v3",
-        hf_repo_id: "PaddlePaddle/PP-DocLayoutV3",
-        remote_filename: "layout.onnx",
+        // ONNX export of PaddlePaddle/PP-DocLayoutV3 (PaddleDetection DETR), produced by the
+        // kreuzberg-dev/paddle-to-onnx pipeline (opset 17) and mirrored in the Kreuzberg HF
+        // layout-models repo alongside rtdetr/tatr. Upstream PaddlePaddle/PP-DocLayoutV3 ships
+        // only Paddle-native weights (no ONNX), so it cannot be downloaded directly.
+        hf_repo_id: "Kreuzberg/layout-models",
+        remote_filename: "pp_doclayout_v3/model.onnx",
         local_filename: "pp_doclayout_v3.onnx",
-        sha256_checksum: "", // To be determined after first download
-        size_bytes: 0,       // To be determined after first download
+        sha256_checksum: "93d1197e55f1c9cb6720275a89684e7ea61cd5830008a837d8c51b19d47926c1",
+        size_bytes: 131_731_131,
     },
 ];
 
@@ -293,7 +297,7 @@ mod tests {
     #[test]
     fn test_manifest_returns_all_layout_models() {
         let entries = LayoutModelManager::manifest();
-        assert_eq!(entries.len(), 6);
+        assert_eq!(entries.len(), 7);
 
         let paths: Vec<&str> = entries.iter().map(|e| e.relative_path.as_str()).collect();
         assert!(paths.contains(&"layout/rtdetr/model.onnx"));
@@ -302,6 +306,7 @@ mod tests {
         assert!(paths.contains(&"layout/slanet_wireless/slanet_wireless.onnx"));
         assert!(paths.contains(&"layout/slanet_plus/slanet_plus.onnx"));
         assert!(paths.contains(&"layout/table_classifier/table_cls.onnx"));
+        assert!(paths.contains(&"layout/pp_doclayout_v3/pp_doclayout_v3.onnx"));
     }
 
     #[test]
@@ -335,14 +340,21 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let manager = LayoutModelManager::new(Some(temp_dir.path().to_path_buf()));
 
-        // Pre-populate both models
-        let rtdetr_dir = temp_dir.path().join("rtdetr");
-        fs::create_dir_all(&rtdetr_dir).unwrap();
-        fs::write(rtdetr_dir.join("model.onnx"), "fake").unwrap();
-
-        let tatr_dir = temp_dir.path().join("tatr");
-        fs::create_dir_all(&tatr_dir).unwrap();
-        fs::write(tatr_dir.join("tatr.onnx"), "fake").unwrap();
+        // Pre-populate all models so ensure_all_models short-circuits without downloading.
+        let models_and_files = [
+            ("rtdetr", "model.onnx"),
+            ("tatr", "tatr.onnx"),
+            ("slanet_wired", "slanet_wired.onnx"),
+            ("slanet_wireless", "slanet_wireless.onnx"),
+            ("slanet_plus", "slanet_plus.onnx"),
+            ("table_classifier", "table_cls.onnx"),
+            ("pp_doclayout_v3", "pp_doclayout_v3.onnx"),
+        ];
+        for (model_dir, filename) in &models_and_files {
+            let dir = temp_dir.path().join(model_dir);
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join(filename), "fake").unwrap();
+        }
 
         assert!(manager.ensure_all_models().is_ok());
     }
