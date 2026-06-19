@@ -107,6 +107,18 @@ pub struct ChunkPlan {
     pub reason: ChunkingReason,
 }
 
+impl Default for ChunkingReason {
+    /// A placeholder reason. `ChunkingReason` has no natural default (every variant describes a
+    /// concrete trigger), so this returns a zeroed `LargeFile`. It exists only so container types
+    /// like [`ChunkPlan`] can derive `Default`; callers always overwrite it with a real reason.
+    fn default() -> Self {
+        Self::LargeFile {
+            size_bytes: 0,
+            threshold_bytes: 0,
+        }
+    }
+}
+
 impl Default for ChunkPlan {
     /// An empty plan (no chunks). The `reason` is a placeholder since an empty plan
     /// has no chunking rationale; callers always overwrite it when a real plan is built.
@@ -116,10 +128,7 @@ impl Default for ChunkPlan {
             chunks: Vec::new(),
             total_estimated_time_ms: 0,
             use_disk_processing: false,
-            reason: ChunkingReason::LargeFile {
-                size_bytes: 0,
-                threshold_bytes: 0,
-            },
+            reason: ChunkingReason::default(),
         }
     }
 }

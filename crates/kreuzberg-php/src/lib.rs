@@ -17601,7 +17601,7 @@ impl KreuzbergApi {
             documentBytes.as_ref().map(|s| &s.0[..]),
         )
         .map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
-        Ok(result.into())
+        Ok(serde_json::to_string(&result).unwrap_or_default())
     }
 
     #[cfg(feature = "heuristics")]
@@ -17614,7 +17614,7 @@ impl KreuzbergApi {
         totalPages: u32,
         sizeBytes: i64,
         config: Option<&HeuristicsConfig>,
-    ) -> String {
+    ) -> PhpResult<String> {
         let mut userRanges_core_result: Vec<kreuzberg::PageRange> = Vec::new();
         for (_, item) in userRanges.iter() {
             if let Some(parsed) = <&PageRange as ext_php_rs::convert::FromZval>::from_zval(item) {
@@ -17627,13 +17627,13 @@ impl KreuzbergApi {
         }
         let userRanges_core: Vec<kreuzberg::PageRange> = userRanges_core_result;
         let config_core: Option<kreuzberg::HeuristicsConfig> = config.map(|v| v.clone().into());
-        kreuzberg::analyze_with_user_chunks(
+        Ok(serde_json::to_string(&kreuzberg::analyze_with_user_chunks(
             &userRanges_core[..],
             totalPages,
             sizeBytes as u64,
             &config_core.unwrap_or_default(),
-        )
-        .into()
+        ))
+        .unwrap_or_default())
     }
 
     #[cfg(feature = "heuristics")]
@@ -17765,7 +17765,10 @@ impl KreuzbergApi {
     pub fn choose_call_mode(input: &StructuredInput, t: Option<&StructuredThresholds>) -> String {
         let input_core: kreuzberg::StructuredInput = input.clone().into();
         let t_core: Option<kreuzberg::StructuredThresholds> = t.map(|v| v.clone().into());
-        kreuzberg::choose_call_mode(&input_core, &t_core.unwrap_or_default()).into()
+        serde_json::to_value(&kreuzberg::choose_call_mode(&input_core, &t_core.unwrap_or_default()))
+            .ok()
+            .and_then(|v| v.as_str().map(std::string::ToString::to_string))
+            .unwrap_or_default()
     }
 
     #[cfg(feature = "heuristics")]
@@ -17802,7 +17805,7 @@ impl KreuzbergApi {
         totalPages: u32,
         sizeBytes: i64,
         config: Option<&HeuristicsConfig>,
-    ) -> ChunkPlan {
+    ) -> PhpResult<ChunkPlan> {
         let mut userChunks_core_result: Vec<kreuzberg::PageRange> = Vec::new();
         for (_, item) in userChunks.iter() {
             if let Some(parsed) = <&PageRange as ext_php_rs::convert::FromZval>::from_zval(item) {
@@ -17815,13 +17818,13 @@ impl KreuzbergApi {
         }
         let userChunks_core: Vec<kreuzberg::PageRange> = userChunks_core_result;
         let config_core: Option<kreuzberg::HeuristicsConfig> = config.map(|v| v.clone().into());
-        kreuzberg::calculate_plan_from_overrides(
+        Ok(kreuzberg::calculate_plan_from_overrides(
             &userChunks_core[..],
             totalPages,
             sizeBytes as u64,
             &config_core.unwrap_or_default(),
         )
-        .into()
+        .into())
     }
 
     #[cfg(feature = "presets")]
@@ -17840,12 +17843,22 @@ impl KreuzbergApi {
     #[php(name = "resolve")]
     pub fn resolve(
         preset: &Preset,
-        customSchema: Option<serde_json::Value>,
+        customSchema: Option<String>,
         context: HashMap<String, String>,
     ) -> PhpResult<ResolvedPreset> {
         let preset_core: kreuzberg::Preset = preset.clone().into();
-        let result = kreuzberg::resolve(&preset_core, customSchema, &context)
-            .map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
+        let customSchema_json: Option<serde_json::Value> = customSchema
+            .as_deref()
+            .map(|s| serde_json::from_str(s).unwrap_or_default());
+        let result = kreuzberg::resolve(
+            &preset_core,
+            customSchema_json,
+            &context
+                .iter()
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect::<std::collections::BTreeMap<_, _>>(),
+        )
+        .map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
         Ok(result.into())
     }
 
@@ -25261,7 +25274,7 @@ impl From<EmbeddingModelType> for kreuzberg::EmbeddingModelType {
             "plugin" => kreuzberg::EmbeddingModelType::Plugin {
                 name: val.name.unwrap_or_default(),
             },
-            _ => kreuzberg::EmbeddingModelType::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25319,7 +25332,7 @@ impl From<RerankerModelType> for kreuzberg::RerankerModelType {
             "plugin" => kreuzberg::RerankerModelType::Plugin {
                 name: val.name.unwrap_or_default(),
             },
-            _ => kreuzberg::RerankerModelType::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25515,7 +25528,7 @@ impl From<NodeContent> for kreuzberg::NodeContent {
             "metadata_block" => kreuzberg::NodeContent::MetadataBlock {
                 entries: Default::default(),
             },
-            _ => kreuzberg::NodeContent::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25748,7 +25761,7 @@ impl From<FormatMetadata> for kreuzberg::FormatMetadata {
             "pst" => kreuzberg::FormatMetadata::Pst(val.pst.map(Into::into).unwrap_or_default()),
             "audio" => kreuzberg::FormatMetadata::Audio(val.audio.map(Into::into).unwrap_or_default()),
             "code" => kreuzberg::FormatMetadata::Code,
-            _ => kreuzberg::FormatMetadata::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25790,7 +25803,7 @@ impl From<OcrBoundingGeometry> for kreuzberg::OcrBoundingGeometry {
             "quadrilateral" => kreuzberg::OcrBoundingGeometry::Quadrilateral {
                 points: Default::default(),
             },
-            _ => kreuzberg::OcrBoundingGeometry::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25823,7 +25836,7 @@ impl From<DiffLine> for kreuzberg::DiffLine {
             "context" => kreuzberg::DiffLine::Context(val.context.unwrap_or_default()),
             "added" => kreuzberg::DiffLine::Added(val.added.unwrap_or_default()),
             "removed" => kreuzberg::DiffLine::Removed(val.removed.unwrap_or_default()),
-            _ => kreuzberg::DiffLine::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25884,7 +25897,7 @@ impl From<RevisionAnchor> for kreuzberg::RevisionAnchor {
                 index: val.index.map(|v| v as usize).unwrap_or_default(),
                 name: val.name,
             },
-            _ => kreuzberg::RevisionAnchor::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }
@@ -25920,7 +25933,7 @@ impl From<EnrichStatus> for kreuzberg::enrichment::EnrichStatus {
             "failed" => kreuzberg::enrichment::EnrichStatus::Failed {
                 error: val.error.unwrap_or_default(),
             },
-            _ => kreuzberg::enrichment::EnrichStatus::default(),
+            _ => unreachable!("unrecognised tag for flat enum, not constructible from PHP"),
         }
     }
 }

@@ -14069,6 +14069,14 @@ int32_t kreuzberg_chunk_plan_use_disk_processing(const KREUZBERGChunkPlan *ptr);
 KREUZBERGChunkingReason *kreuzberg_chunk_plan_reason(const KREUZBERGChunkPlan *ptr);
 
 /**
+ * An empty plan (no chunks). The `reason` is a placeholder since an empty plan
+ * has no chunking rationale; callers always overwrite it when a real plan is built.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+KREUZBERGChunkPlan *kreuzberg_chunk_plan_default(void);
+
+/**
  * Get the total number of pages across all chunks.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.

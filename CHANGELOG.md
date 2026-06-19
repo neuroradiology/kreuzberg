@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **heuristics/diff**: derive `Default` on `ExtractionDiff`, `EmbeddedChanges`, and `NoChunkingReason`, and add an empty-plan `Default` for `ChunkPlan`. The generated Python (`#[serde(skip)]` DTO fields) and Node (data-enum binding→core conversion) bindings require these payload types to be `Default`-constructible; without them the binding crates failed to compile (`EmbeddedChanges`/`ExtractionDiff`/`NoChunkingReason`/`ChunkPlan: Default` not satisfied).
+- **heuristics/diff**: derive `Default` on `ExtractionDiff`, `EmbeddedChanges`, and `NoChunkingReason`, and add placeholder `Default` impls for `ChunkPlan` and `ChunkingReason`. The generated Python (`#[serde(skip)]` DTO fields, data-enum wrappers) and Node (data-enum binding→core conversion) bindings require these payload types to be `Default`-constructible; without them the binding crates failed to compile (`EmbeddedChanges`/`ExtractionDiff`/`NoChunkingReason`/`ChunkPlan`/`ChunkingReason: Default` not satisfied).
+- **php**: regenerate against the alef php-backend fixes for data-carrying enums — `ChunkingDecision`/`StructuredCallMode` returns now serialize to JSON/string, `serde_json::Value` params are accepted as JSON strings, `BTreeMap` params are collected from the PHP hash, fallible `Vec<PageRange>` array params force a `PhpResult` return, and the `EnrichStatus` flat-enum conversion no longer assumes a core `Default`. `kreuzberg-php` now compiles.
 - **ci(publish)**: add `kreuzberg-candle-ocr` to the crates.io publish set and its existence gate. It is a new workspace member and path-dependency of `kreuzberg`, so `cargo publish kreuzberg` fails unless it is published first.
 
 ## [5.0.0-rc.24] - 2026-06-19
