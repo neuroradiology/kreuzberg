@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **chunking**: `TableChunkingMode` enum and `ChunkingConfig::table_chunking` field. When set to `RepeatHeader`, the markdown chunker prepends the table header row and separator to every continuation chunk produced by splitting a large table, so each chunk is self-contained for extraction, search, and LLM consumption. Default is `Split` (previous behavior, no header injection). Only applies when `chunker_type` is `Markdown` (#1100).
+
 ### Fixed
 
 - **derive**: `result.pages[*].content` now respects `output_format`. Previously, per-page content was always plain text even when `OutputFormat::Markdown`, `Djot`, or `Html` was requested — only `result.content` was formatted by `apply_output_format`. The new `apply_page_content_format` step re-renders each page's element subset with the same renderer used for the full document. Pages built from prebuilt extractor content that have no page-tagged elements (native PDF, image OCR, Excel, PPTX) are returned unchanged (#1094).
