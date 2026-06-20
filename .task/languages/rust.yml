@@ -32,11 +32,12 @@ tasks:
   build:dev:
     desc: "Build all Rust crates in debug mode"
     cmds:
-      # Exclude kreuzberg-candle-ocr on Linux: its metal feature pulls objc2-metal
-      # which only compiles on macOS/iOS. Candle OCR is tested on macOS.
+      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
+      # --all-features-built on any CI runner.
       - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [darwin]
       # Note: exclude benchmark-harness on Windows as jemalloc doesn't build with MSVC
       - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
@@ -45,11 +46,12 @@ tasks:
   build:release:
     desc: "Build all Rust crates in release mode"
     cmds:
-      # Exclude kreuzberg-candle-ocr on Linux: its metal feature pulls objc2-metal
-      # which only compiles on macOS/iOS. Candle OCR is tested on macOS.
+      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
+      # --all-features-built on any CI runner.
       - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [darwin]
       - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
         platforms: [windows]
@@ -59,11 +61,12 @@ tasks:
     env:
       RUSTFLAGS: "-C debuginfo=2"
     cmds:
-      # Exclude kreuzberg-candle-ocr on Linux: its metal feature pulls objc2-metal
-      # which only compiles on macOS/iOS. Candle OCR is tested on macOS.
+      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
+      # --all-features-built on any CI runner.
       - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
         platforms: [darwin]
       - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
         platforms: [windows]

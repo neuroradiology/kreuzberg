@@ -73,11 +73,12 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
-  # Exclude kreuzberg-candle-ocr on non-Apple platforms: its metal feature pulls
-  # objc2-metal which only compiles on macOS/iOS. Candle OCR is tested on macOS.
-  if [[ "$OSTYPE" != "darwin"* ]]; then
-    extra_excludes+=(--exclude kreuzberg-candle-ocr)
-  fi
+  # Exclude kreuzberg-candle-ocr from --all-features on every platform: its accel
+  # features are mutually platform-hostile under --all-features — `metal` pulls
+  # objc2-metal (Apple-only, breaks Linux) and `cuda` pulls cudarc which needs nvcc
+  # (absent on macOS). It cannot be --all-features-built on any CI runner; its
+  # device features are exercised by a dedicated curated-feature job, not here.
+  extra_excludes+=(--exclude kreuzberg-candle-ocr)
   RUST_BACKTRACE=full cargo test --locked \
     --workspace \
     --exclude kreuzberg \
