@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// The chunking decision made by the analyzer.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum ChunkingDecision {
     /// Process without chunking (small file, text layer detected, etc.)
     NoChunking {
@@ -25,6 +26,7 @@ pub enum ChunkingDecision {
 
 /// Reason for not chunking a document.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum NoChunkingReason {
     /// File is below size threshold.
     SmallFile {
@@ -61,6 +63,7 @@ pub enum NoChunkingReason {
 
 /// Reason for chunking a document.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum ChunkingReason {
     /// File exceeds size threshold.
     LargeFile {
