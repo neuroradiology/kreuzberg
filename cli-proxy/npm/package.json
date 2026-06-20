@@ -1,26 +1,26 @@
 {
-  "name": "@kreuzberg/kreuzberg-cli",
-  "version": "0.0.1",
-  "description": "CLI proxy for kreuzberg — downloads and runs the native kreuzberg binary from GitHub releases.",
-  "type": "module",
-  "license": "MIT",
-  "author": "Na'aman Hirschfeld",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzberg.git",
-    "directory": "cli-proxy/npm"
-  },
-  "bin": {
-    "kreuzberg": "bin/kreuzberg.js"
-  },
-  "files": [
-    "bin/",
-    "install.js"
-  ],
-  "engines": {
-    "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "@kreuzberg/kreuzberg-cli",
+	"version": "0.0.1",
+	"description": "CLI proxy for kreuzberg — downloads and runs the native kreuzberg binary from GitHub releases.",
+	"license": "MIT",
+	"author": "Na'aman Hirschfeld",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kreuzberg-dev/kreuzberg.git",
+		"directory": "cli-proxy/npm"
+	},
+	"bin": {
+		"kreuzberg": "bin/kreuzberg.js"
+	},
+	"files": [
+		"bin/",
+		"install.js"
+	],
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=18"
+	}
 }
