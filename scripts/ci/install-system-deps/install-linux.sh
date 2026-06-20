@@ -86,7 +86,6 @@ else
       -DBUILD_TESTING=OFF
     make -j"$(nproc)"
     sudo make install
-    sudo ldconfig
     echo "✓ libheif ${LIBHEIF_VERSION} installed to $LIBHEIF_PREFIX"
   else
     echo "::error::Failed to download libheif source"
@@ -96,6 +95,9 @@ else
   popd >/dev/null
   rm -rf "$build_dir"
 fi
+
+# Always run ldconfig to update the dynamic linker cache, even if libheif was cached
+sudo ldconfig
 
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   echo "PKG_CONFIG_PATH=$LIBHEIF_PREFIX/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >>"$GITHUB_ENV"
