@@ -73,6 +73,11 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
+  # Exclude kreuzberg-candle-ocr on non-Apple platforms: its metal feature pulls
+  # objc2-metal which only compiles on macOS/iOS. Candle OCR is tested on macOS.
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    extra_excludes+=(--exclude kreuzberg-candle-ocr)
+  fi
   RUST_BACKTRACE=full cargo test --locked \
     --workspace \
     --exclude kreuzberg \
