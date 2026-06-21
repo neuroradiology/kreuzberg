@@ -10383,7 +10383,7 @@ const _: fn() = || {
         let OcrConfig = None::<crate::OcrConfig>.unwrap();
         let _: bool = OcrConfig.enabled;
         let _: String = OcrConfig.backend;
-        let _: String = OcrConfig.language;
+        let _: Vec<String> = OcrConfig.language;
         let _: Option<crate::TesseractConfig> = OcrConfig.tesseract_config;
         let _: Option<crate::OutputFormat> = OcrConfig.output_format;
         let _: Option<String> = OcrConfig.paddle_ocr_config;
@@ -10442,7 +10442,7 @@ const _: fn() = || {
         let OcrPipelineStage = None::<crate::OcrPipelineStage>.unwrap();
         let _: String = OcrPipelineStage.backend;
         let _: i64 = OcrPipelineStage.priority;
-        let _: Option<String> = OcrPipelineStage.language;
+        let _: Option<Vec<String>> = OcrPipelineStage.language;
         let _: Option<crate::TesseractConfig> = OcrPipelineStage.tesseract_config;
         let _: Option<String> = OcrPipelineStage.paddle_ocr_config;
         let _: Option<crate::LlmConfig> = OcrPipelineStage.vlm_config;
@@ -10992,7 +10992,7 @@ const _: fn() = || {
     }
     {
         let TesseractConfig = None::<crate::TesseractConfig>.unwrap();
-        let _: String = TesseractConfig.language;
+        let _: Vec<String> = TesseractConfig.language;
         let _: i64 = TesseractConfig.psm;
         let _: String = TesseractConfig.output_format;
         let _: i64 = TesseractConfig.oem;
@@ -16244,7 +16244,7 @@ impl SseDecode for crate::OcrConfig {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_enabled = <bool>::sse_decode(deserializer);
         let mut var_backend = <String>::sse_decode(deserializer);
-        let mut var_language = <String>::sse_decode(deserializer);
+        let mut var_language = <Vec<String>>::sse_decode(deserializer);
         let mut var_tesseractConfig = <Option<crate::TesseractConfig>>::sse_decode(deserializer);
         let mut var_outputFormat = <Option<crate::OutputFormat>>::sse_decode(deserializer);
         let mut var_paddleOcrConfig = <Option<String>>::sse_decode(deserializer);
@@ -16388,7 +16388,7 @@ impl SseDecode for crate::OcrPipelineStage {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_backend = <String>::sse_decode(deserializer);
         let mut var_priority = <i64>::sse_decode(deserializer);
-        let mut var_language = <Option<String>>::sse_decode(deserializer);
+        let mut var_language = <Option<Vec<String>>>::sse_decode(deserializer);
         let mut var_tesseractConfig = <Option<crate::TesseractConfig>>::sse_decode(deserializer);
         let mut var_paddleOcrConfig = <Option<String>>::sse_decode(deserializer);
         let mut var_vlmConfig = <Option<crate::LlmConfig>>::sse_decode(deserializer);
@@ -19022,7 +19022,7 @@ impl SseDecode for crate::TableModel {
 impl SseDecode for crate::TesseractConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_language = <String>::sse_decode(deserializer);
+        let mut var_language = <Vec<String>>::sse_decode(deserializer);
         let mut var_psm = <i64>::sse_decode(deserializer);
         let mut var_outputFormat = <String>::sse_decode(deserializer);
         let mut var_oem = <i64>::sse_decode(deserializer);
@@ -28952,7 +28952,7 @@ impl SseEncode for crate::OcrConfig {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.enabled, serializer);
         <String>::sse_encode(self.backend, serializer);
-        <String>::sse_encode(self.language, serializer);
+        <Vec<String>>::sse_encode(self.language, serializer);
         <Option<crate::TesseractConfig>>::sse_encode(self.tesseract_config, serializer);
         <Option<crate::OutputFormat>>::sse_encode(self.output_format, serializer);
         <Option<String>>::sse_encode(self.paddle_ocr_config, serializer);
@@ -29047,7 +29047,7 @@ impl SseEncode for crate::OcrPipelineStage {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.backend, serializer);
         <i64>::sse_encode(self.priority, serializer);
-        <Option<String>>::sse_encode(self.language, serializer);
+        <Option<Vec<String>>>::sse_encode(self.language, serializer);
         <Option<crate::TesseractConfig>>::sse_encode(self.tesseract_config, serializer);
         <Option<String>>::sse_encode(self.paddle_ocr_config, serializer);
         <Option<crate::LlmConfig>>::sse_encode(self.vlm_config, serializer);
@@ -31220,7 +31220,7 @@ impl SseEncode for crate::TableModel {
 impl SseEncode for crate::TesseractConfig {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <String>::sse_encode(self.language, serializer);
+        <Vec<String>>::sse_encode(self.language, serializer);
         <i64>::sse_encode(self.psm, serializer);
         <String>::sse_encode(self.output_format, serializer);
         <i64>::sse_encode(self.oem, serializer);

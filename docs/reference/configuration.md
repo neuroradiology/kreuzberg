@@ -377,7 +377,7 @@ OCR configuration.
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `True` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `True`. When `False`, all other OCR settings are ignored. |
 | `backend` | `str` | — | OCR backend: tesseract, easyocr, paddleocr |
-| `language` | `str` | — | Language code (e.g., "eng", "deu") |
+| `language` | `list\[str\]` | `\[\]` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). Defaults to \["eng"\]. For Tesseract, languages are joined with "+". |
 | `tesseract_config` | `TesseractConfig \| None` | `None` | Tesseract-specific configuration (optional) |
 | `output_format` | `OutputFormat \| None` | `None` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `dict\[str, Any\] \| None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
@@ -992,7 +992,7 @@ for specific document types (invoices, handwriting, etc.).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `language` | `str` | `"eng"` | Language code (e.g., "eng", "deu", "fra") |
+| `language` | `list\[str\]` | `\[\]` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). For Tesseract backend, languages are joined with "+". |
 | `psm` | `int` | `3` | Page Segmentation Mode (0-13). Common values: - 3: Fully automatic page segmentation (native default) - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang) - 11: Sparse text with no particular order |
 | `output_format` | `str` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `int` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |

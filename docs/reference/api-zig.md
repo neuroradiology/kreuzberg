@@ -5752,7 +5752,7 @@ OCR configuration.
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `true` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `true`. When `false`, all other OCR settings are ignored. |
 | `backend` | `\[:0\]const u8` | — | OCR backend: tesseract, easyocr, paddleocr |
-| `language` | `\[:0\]const u8` | — | Language code (e.g., "eng", "deu") |
+| `language` | `\[\]const \[:0\]const u8` | `\[\]` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). Defaults to \["eng"\]. For Tesseract, languages are joined with "+". |
 | `tesseractConfig` | `TesseractConfig?` | `null` | Tesseract-specific configuration (optional) |
 | `outputFormat` | `OutputFormat?` | `null` | Output format for OCR results (optional, for format conversion) |
 | `paddleOcrConfig` | `\[:0\]const u8?` | `null` | PaddleOCR-specific configuration (optional, JSON passthrough) |
@@ -5879,7 +5879,7 @@ A single backend stage in the OCR pipeline.
 |-------|------|---------|-------------|
 | `backend` | `\[:0\]const u8` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `u32` | `serde(default = "default_priority")` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `\[:0\]const u8?` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `language` | `\[\]const \[:0\]const u8?` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). |
 | `tesseractConfig` | `TesseractConfig?` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddleOcrConfig` | `\[:0\]const u8?` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlmConfig` | `LlmConfig?` | `/* serde(default) */` | VLM config override for this pipeline stage. |
@@ -8341,7 +8341,7 @@ for specific document types (invoices, handwriting, etc.).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `language` | `\[:0\]const u8` | `"eng"` | Language code (e.g., "eng", "deu", "fra") |
+| `language` | `\[\]const \[:0\]const u8` | `\[\]` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). For Tesseract backend, languages are joined with "+". |
 | `psm` | `i32` | `3` | Page Segmentation Mode (0-13). Common values: - 3: Fully automatic page segmentation (native default) - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang) - 11: Sparse text with no particular order |
 | `outputFormat` | `\[:0\]const u8` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `i32` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |

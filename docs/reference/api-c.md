@@ -5694,7 +5694,7 @@ OCR configuration.
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `true` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `true`. When `false`, all other OCR settings are ignored. |
 | `backend` | `const char*` | — | OCR backend: tesseract, easyocr, paddleocr |
-| `language` | `const char*` | — | Language code (e.g., "eng", "deu") |
+| `language` | `const char**` | `NULL` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). Defaults to \["eng"\]. For Tesseract, languages are joined with "+". |
 | `tesseract_config` | `KreuzbergTesseractConfig*` | `NULL` | Tesseract-specific configuration (optional) |
 | `output_format` | `KreuzbergOutputFormat*` | `NULL` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `void**` | `NULL` | PaddleOCR-specific configuration (optional, JSON passthrough) |
@@ -5821,7 +5821,7 @@ A single backend stage in the OCR pipeline.
 |-------|------|---------|-------------|
 | `backend` | `const char*` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `uint32_t` | `serde(default = "default_priority")` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `const char**` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `language` | `const char***` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). |
 | `tesseract_config` | `KreuzbergTesseractConfig*` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `void**` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlm_config` | `KreuzbergLlmConfig*` | `/* serde(default) */` | VLM config override for this pipeline stage. |
@@ -8283,7 +8283,7 @@ for specific document types (invoices, handwriting, etc.).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `language` | `const char*` | `"eng"` | Language code (e.g., "eng", "deu", "fra") |
+| `language` | `const char**` | `NULL` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). For Tesseract backend, languages are joined with "+". |
 | `psm` | `int32_t` | `3` | Page Segmentation Mode (0-13). Common values: - 3: Fully automatic page segmentation (native default) - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang) - 11: Sparse text with no particular order |
 | `output_format` | `const char*` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `int32_t` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |

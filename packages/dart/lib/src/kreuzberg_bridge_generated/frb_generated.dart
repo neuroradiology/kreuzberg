@@ -16543,7 +16543,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return OcrConfig(
       enabled: dco_decode_bool(arr[0]),
       backend: dco_decode_String(arr[1]),
-      language: dco_decode_String(arr[2]),
+      language: dco_decode_list_String(arr[2]),
       tesseractConfig: dco_decode_opt_box_autoadd_tesseract_config(arr[3]),
       outputFormat: dco_decode_opt_box_autoadd_output_format(arr[4]),
       paddleOcrConfig: dco_decode_opt_String(arr[5]),
@@ -16654,7 +16654,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return OcrPipelineStage(
       backend: dco_decode_String(arr[0]),
       priority: dco_decode_i_64(arr[1]),
-      language: dco_decode_opt_String(arr[2]),
+      language: dco_decode_opt_list_String(arr[2]),
       tesseractConfig: dco_decode_opt_box_autoadd_tesseract_config(arr[3]),
       paddleOcrConfig: dco_decode_opt_String(arr[4]),
       vlmConfig: dco_decode_opt_box_autoadd_llm_config(arr[5]),
@@ -18471,7 +18471,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 21)
       throw Exception('unexpected arr length: expect 21 but see ${arr.length}');
     return TesseractConfig(
-      language: dco_decode_String(arr[0]),
+      language: dco_decode_list_String(arr[0]),
       psm: dco_decode_i_64(arr[1]),
       outputFormat: dco_decode_String(arr[2]),
       oem: dco_decode_i_64(arr[3]),
@@ -24124,7 +24124,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_enabled = sse_decode_bool(deserializer);
     var var_backend = sse_decode_String(deserializer);
-    var var_language = sse_decode_String(deserializer);
+    var var_language = sse_decode_list_String(deserializer);
     var var_tesseractConfig = sse_decode_opt_box_autoadd_tesseract_config(
       deserializer,
     );
@@ -24272,7 +24272,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_backend = sse_decode_String(deserializer);
     var var_priority = sse_decode_i_64(deserializer);
-    var var_language = sse_decode_opt_String(deserializer);
+    var var_language = sse_decode_opt_list_String(deserializer);
     var var_tesseractConfig = sse_decode_opt_box_autoadd_tesseract_config(
       deserializer,
     );
@@ -26856,7 +26856,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   TesseractConfig sse_decode_tesseract_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_language = sse_decode_String(deserializer);
+    var var_language = sse_decode_list_String(deserializer);
     var var_psm = sse_decode_i_64(deserializer);
     var var_outputFormat = sse_decode_String(deserializer);
     var var_oem = sse_decode_i_64(deserializer);
@@ -32194,7 +32194,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_bool(self.enabled, serializer);
     sse_encode_String(self.backend, serializer);
-    sse_encode_String(self.language, serializer);
+    sse_encode_list_String(self.language, serializer);
     sse_encode_opt_box_autoadd_tesseract_config(
       self.tesseractConfig,
       serializer,
@@ -32301,7 +32301,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.backend, serializer);
     sse_encode_i_64(self.priority, serializer);
-    sse_encode_opt_String(self.language, serializer);
+    sse_encode_opt_list_String(self.language, serializer);
     sse_encode_opt_box_autoadd_tesseract_config(
       self.tesseractConfig,
       serializer,
@@ -34552,7 +34552,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_String(self.language, serializer);
+    sse_encode_list_String(self.language, serializer);
     sse_encode_i_64(self.psm, serializer);
     sse_encode_String(self.outputFormat, serializer);
     sse_encode_i_64(self.oem, serializer);

@@ -953,7 +953,7 @@ OcrQualityThresholds$from_json <- function(json) {
 #' A single backend stage in the OCR pipeline
 #' @field backend Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name.
 #' @field priority Priority weight (higher = tried first). Stages are sorted by priority descending.
-#' @field language Language override for this stage (None = use parent OcrConfig.language).
+#' @field language Language override for this stage (None = use parent OcrConfig.language). Accepts either a single
 #' @field tesseract_config Tesseract-specific config override for this stage.
 #' @field paddle_ocr_config PaddleOCR-specific config for this stage.
 #' @field vlm_config VLM config override for this pipeline stage.
@@ -974,7 +974,7 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 #' OCR configuration
 #' @field enabled Whether OCR is enabled.
 #' @field backend OCR backend: tesseract, easyocr, paddleocr
-#' @field language Language code (e.g., "eng", "deu")
+#' @field language Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list
 #' @field tesseract_config Tesseract-specific configuration (optional)
 #' @field output_format Output format for OCR results (optional, for format conversion)
 #' @field paddle_ocr_config PaddleOCR-specific configuration (optional, JSON passthrough)
@@ -2198,7 +2198,7 @@ ImagePreprocessingConfig$from_json <- function(json) {
 #' Provides fine-grained control over Tesseract OCR engine parameters.
 #' Most users can use the defaults, but these settings allow optimization
 #' for specific document types (invoices, handwriting, etc.).
-#' @field language Language code (e.g., "eng", "deu", "fra")
+#' @field language Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list
 #' @field psm Page Segmentation Mode (0-13).
 #' @field output_format Output format ("text" or "markdown")
 #' @field oem OCR Engine Mode (0-3).

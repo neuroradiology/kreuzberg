@@ -9435,8 +9435,10 @@ class OcrConfig {
   /// OCR backend: tesseract, easyocr, paddleocr
   final String backend;
 
-  /// Language code (e.g., "eng", "deu")
-  final String language;
+  /// Language code(s) for OCR recognition.
+  /// Accepts either a single language code ("eng") or a list (["eng", "deu"]).
+  /// Defaults to ["eng"]. For Tesseract, languages are joined with "+".
+  final List<String> language;
 
   /// Tesseract-specific configuration (optional)
   final TesseractConfig? tesseractConfig;
@@ -9871,7 +9873,8 @@ class OcrPipelineStage {
   final PlatformInt64 priority;
 
   /// Language override for this stage (None = use parent OcrConfig.language).
-  final String? language;
+  /// Accepts either a single language code ("eng") or a list (["eng", "deu"]).
+  final List<String>? language;
 
   /// Tesseract-specific config override for this stage.
   final TesseractConfig? tesseractConfig;
@@ -13474,8 +13477,10 @@ enum TableModel {
 /// Most users can use the defaults, but these settings allow optimization
 /// for specific document types (invoices, handwriting, etc.).
 class TesseractConfig {
-  /// Language code (e.g., "eng", "deu", "fra")
-  final String language;
+  /// Language code(s) for OCR recognition.
+  /// Accepts either a single language code ("eng") or a list (["eng", "deu"]).
+  /// For Tesseract backend, languages are joined with "+".
+  final List<String> language;
 
   /// Page Segmentation Mode (0-13).
   ///
