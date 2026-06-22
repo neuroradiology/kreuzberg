@@ -217,6 +217,40 @@ See [Docker guide](https://docs.kreuzberg.dev/guides/docker/) for API, CLI, and 
 
 </details>
 
+<details>
+<summary><strong>MCP Server</strong></summary>
+
+Run Kreuzberg as a [Model Context Protocol](https://modelcontextprotocol.io/) server. The prebuilt
+binaries (Homebrew, `install.sh`, Docker) include it; from source, enable the `mcp` feature.
+
+```sh
+# Prebuilt (Homebrew / install.sh / Docker) — MCP is included
+brew install kreuzberg-dev/tap/kreuzberg
+kreuzberg mcp                                   # stdio (default)
+
+# From source — enable the mcp feature
+cargo install kreuzberg-cli --features mcp
+kreuzberg mcp
+
+# HTTP transport instead of stdio
+kreuzberg mcp --transport http --host 127.0.0.1 --port 8001
+```
+
+Add it to an MCP client (Claude Desktop `claude_desktop_config.json`, Cursor `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "kreuzberg": { "command": "kreuzberg", "args": ["mcp"] }
+  }
+}
+```
+
+See the [MCP integration guide](https://docs.kreuzberg.dev/guides/mcp-integration/) for tools,
+resources, prompts, HTTP transport, and configuration.
+
+</details>
+
 ### AI Coding Assistants
 
 Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.com/kreuzberg-dev/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.

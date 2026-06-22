@@ -208,6 +208,13 @@ typedef struct KREUZBERGChunkingReason KREUZBERGChunkingReason;
  */
 typedef struct KREUZBERGChunkingResult KREUZBERGChunkingResult;
 /**
+ * A structured citation from a citation block.
+ *
+ * Parsed from entries like:
+ * `[^srcN]: source, locator, excerpt: "text"`
+ */
+typedef struct KREUZBERGCitation KREUZBERGCitation;
+/**
  * Citation file metadata (RIS, PubMed, EndNote).
  */
 typedef struct KREUZBERGCitationMetadata KREUZBERGCitationMetadata;
@@ -763,6 +770,22 @@ typedef struct KREUZBERGFileExtractionConfig KREUZBERGFileExtractionConfig;
  * Footnote in Djot.
  */
 typedef struct KREUZBERGFootnote KREUZBERGFootnote;
+/**
+ * A footnote anchor reference in markdown text.
+ *
+ * Represents a `[^label]` use-site (not a definition).
+ */
+typedef struct KREUZBERGFootnoteAnchor KREUZBERGFootnoteAnchor;
+/**
+ * Configuration for markdown footnote and citation parsing.
+ */
+typedef struct KREUZBERGFootnoteConfig KREUZBERGFootnoteConfig;
+/**
+ * A footnote definition from markdown text.
+ *
+ * Represents `[^label]: content` declarations (including multi-line continuations).
+ */
+typedef struct KREUZBERGFootnoteDefinition KREUZBERGFootnoteDefinition;
 /**
  * Kind of a PDF form field.
  *
@@ -7057,6 +7080,182 @@ char *kreuzberg_pattern_match_text(const KREUZBERGPatternMatch *ptr);
 void kreuzberg_token_counter_free(KREUZBERGTokenCounter *ptr);
 
 KREUZBERGTokenCounter *kreuzberg_token_counter_new(void);
+
+/**
+ * Create a `FootnoteConfig` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_footnote_config_free`.
+ */
+KREUZBERGFootnoteConfig *kreuzberg_footnote_config_from_json(const char *json);
+
+/**
+ * Serialize a `FootnoteConfig` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_footnote_config_to_json(const KREUZBERGFootnoteConfig *ptr);
+
+/**
+ * Free a `FootnoteConfig` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_footnote_config_free(KREUZBERGFootnoteConfig *ptr);
+
+/**
+ * Get the `parse_citations` field from a `FootnoteConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_footnote_config_parse_citations(const KREUZBERGFootnoteConfig *ptr);
+
+/**
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+KREUZBERGFootnoteConfig *kreuzberg_footnote_config_default(void);
+
+/**
+ * Set whether to parse the citation block.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+KREUZBERGFootnoteConfig *kreuzberg_footnote_config_with_parse_citations(KREUZBERGFootnoteConfig *this_,
+                                                                        int32_t enabled);
+
+/**
+ * Create a `FootnoteAnchor` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_footnote_anchor_free`.
+ */
+KREUZBERGFootnoteAnchor *kreuzberg_footnote_anchor_from_json(const char *json);
+
+/**
+ * Serialize a `FootnoteAnchor` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_footnote_anchor_to_json(const KREUZBERGFootnoteAnchor *ptr);
+
+/**
+ * Free a `FootnoteAnchor` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_footnote_anchor_free(KREUZBERGFootnoteAnchor *ptr);
+
+/**
+ * Get the `label` field from a `FootnoteAnchor`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_footnote_anchor_label(const KREUZBERGFootnoteAnchor *ptr);
+
+/**
+ * Get the `offset` field from a `FootnoteAnchor`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_footnote_anchor_offset(const KREUZBERGFootnoteAnchor *ptr);
+
+/**
+ * Create a `FootnoteDefinition` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_footnote_definition_free`.
+ */
+KREUZBERGFootnoteDefinition *kreuzberg_footnote_definition_from_json(const char *json);
+
+/**
+ * Serialize a `FootnoteDefinition` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_footnote_definition_to_json(const KREUZBERGFootnoteDefinition *ptr);
+
+/**
+ * Free a `FootnoteDefinition` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_footnote_definition_free(KREUZBERGFootnoteDefinition *ptr);
+
+/**
+ * Get the `label` field from a `FootnoteDefinition`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_footnote_definition_label(const KREUZBERGFootnoteDefinition *ptr);
+
+/**
+ * Get the `content` field from a `FootnoteDefinition`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_footnote_definition_content(const KREUZBERGFootnoteDefinition *ptr);
+
+/**
+ * Get the `offset` field from a `FootnoteDefinition`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_footnote_definition_offset(const KREUZBERGFootnoteDefinition *ptr);
+
+/**
+ * Create a `Citation` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_citation_free`.
+ */
+KREUZBERGCitation *kreuzberg_citation_from_json(const char *json);
+
+/**
+ * Serialize a `Citation` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_citation_to_json(const KREUZBERGCitation *ptr);
+
+/**
+ * Free a `Citation` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_citation_free(KREUZBERGCitation *ptr);
+
+/**
+ * Get the `label` field from a `Citation`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_citation_label(const KREUZBERGCitation *ptr);
+
+/**
+ * Get the `source` field from a `Citation`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_citation_source(const KREUZBERGCitation *ptr);
+
+/**
+ * Get the `locator` field from a `Citation`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_citation_locator(const KREUZBERGCitation *ptr);
+
+/**
+ * Get the `excerpt` field from a `Citation`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_citation_excerpt(const KREUZBERGCitation *ptr);
 
 /**
  * Create a `PdfAnnotation` from a JSON string. Returns null on failure.
@@ -18673,6 +18872,184 @@ uint32_t kreuzberg_token_count(const char *text);
  */
 int32_t kreuzberg_translate_result(KREUZBERGExtractionResult *result,
                                    const KREUZBERGTranslationConfig *config);
+
+/**
+ * Find all footnote anchor references in markdown text.
+ *
+ * Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+ * Footnote definitions (`[^label]: ...`) are NOT included in the results.
+ * \param markdown The markdown text to search
+ * \return A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = "Text[^src1] more text[^src2].";
+ * let anchors = find_footnote_anchors(text);
+ * assert_eq!(anchors.len(), 2);
+ * assert_eq!(anchors[0].label, "src1");
+ * assert_eq!(anchors[1].label, "src2");
+ * \endcode
+ */
+char *kreuzberg_find_footnote_anchors(const char *markdown);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_find_footnote_anchors`
+ * on this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_find_footnote_anchors`.
+ */
+uintptr_t kreuzberg_find_footnote_anchors_len(const char *_markdown);
+
+/**
+ * Parse footnote definitions from markdown text.
+ *
+ * Returns a vector of footnote definitions found in the markdown.
+ * Handles multi-line definitions with continuation/indented lines (CommonMark format).
+ * \param markdown The markdown text to search
+ * \return A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = r#"[^1]: First footnote.
+ * [^2]: Second footnote.
+ *   Continued line."#;
+ * let defs = parse_footnote_definitions(text);
+ * assert_eq!(defs.len(), 2);
+ * \endcode
+ */
+char *kreuzberg_parse_footnote_definitions(const char *markdown);
+
+/**
+ * Return the byte length of the C string most recently returned by
+ * `kreuzberg_parse_footnote_definitions` on this thread. Returns 0 when the primary call returned null
+ * or failed before producing a string. Enables safe slice construction in Zig and Java FFM Panama
+ * without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_parse_footnote_definitions`.
+ */
+uintptr_t kreuzberg_parse_footnote_definitions_len(const char *_markdown);
+
+/**
+ * Find inference markers in markdown text.
+ *
+ * Returns byte offsets of every `[*inference*]` marker found in the text.
+ * \param markdown The markdown text to search
+ * \return A vector of byte offsets where inference markers appear.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = "A claim [*inference*] with inference marker.";
+ * let offsets = find_inference_markers(text);
+ * assert_eq!(offsets.len(), 1);
+ * \endcode
+ */
+char *kreuzberg_find_inference_markers(const char *markdown);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_find_inference_markers`
+ * on this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_find_inference_markers`.
+ */
+uintptr_t kreuzberg_find_inference_markers_len(const char *_markdown);
+
+/**
+ * Find unmarked claims in markdown text.
+ *
+ * Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+ * nor an inference marker (`[*inference*]`).
+ *
+ * The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+ * and is not a heading, blank line, or markup-only line is considered a claim.
+ * Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+ * \param markdown The markdown text to search
+ * \return A vector of trimmed line text strings for unmarked claims.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = r#"This is a claim without citation.
+ * Another claim with citation.[^1]
+ * This is a claim with inference.[*inference*]
+ *
+ * [^1]: Citation"#;
+ * let unmarked = find_unmarked_claims(text);
+ * assert_eq!(unmarked.len(), 1);
+ * assert!(unmarked[0].contains("without citation"));
+ * \endcode
+ */
+char *kreuzberg_find_unmarked_claims(const char *markdown);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_find_unmarked_claims` on
+ * this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_find_unmarked_claims`.
+ */
+uintptr_t kreuzberg_find_unmarked_claims_len(const char *_markdown);
+
+/**
+ * Parse the structured citation block from markdown.
+ *
+ * Extracts citations from the block after a `---` thematic break followed by
+ * `<!-- citations ... -->` comment. Parses each entry as:
+ * `[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+ *
+ * Returns parsed citations with source, optional locator, and optional excerpt.
+ * \param markdown The markdown text to search
+ * \return A vector of `Citation` entries parsed from the citation block.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let text = r#"Body text.
+ *
+ * ---
+ * <!-- citations -->
+ * [^src1]: docs/paper.pdf, page 3, excerpt: "Exact quoted text."
+ * "#;
+ * let citations = parse_citations(text);
+ * assert_eq!(citations.len(), 1);
+ * assert_eq!(citations[0].source, "docs/paper.pdf");
+ * assert_eq!(citations[0].locator, Some("page 3".to_string()));
+ * \endcode
+ */
+char *kreuzberg_parse_citations(const char *markdown);
+
+/**
+ * Return the byte length of the C string most recently returned by `kreuzberg_parse_citations` on this
+ * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
+ * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
+ * with `kreuzberg_parse_citations`.
+ */
+uintptr_t kreuzberg_parse_citations_len(const char *_markdown);
+
+/**
+ * Verify that an excerpt appears verbatim in source text.
+ *
+ * Performs exact matching by default. Also tries whitespace-normalized matching
+ * (collapsing runs of whitespace on both sides) since PDF-extracted text often
+ * has irregular spacing.
+ * \param excerpt The text snippet to find
+ * \param source_text The full source text to search
+ * \return `true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ * \code
+ * let source = "The document states: Exact quoted text.";
+ * let excerpt = "Exact quoted text";
+ * assert!(verify_excerpt(excerpt, source));
+ *
+ * // Whitespace normalization
+ * let source2 = "Text with  irregular   spacing.";
+ * let excerpt2 = "Text with irregular spacing";
+ * assert!(verify_excerpt(excerpt2, source2));
+ * \endcode
+ */
+int32_t kreuzberg_verify_excerpt(const char *excerpt,
+                                 const char *source_text);
 
 /**
  * Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.

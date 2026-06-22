@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "dev.kreuzberg"
-version = "5.0.0-rc.28"
+version = "5.0.0-rc.29"
 
 repositories {
   mavenCentral()

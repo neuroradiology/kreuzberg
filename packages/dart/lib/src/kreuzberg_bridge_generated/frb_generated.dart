@@ -16954,8 +16954,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   OcrConfig dco_decode_ocr_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 16)
-      throw Exception('unexpected arr length: expect 16 but see ${arr.length}');
+    if (arr.length != 17)
+      throw Exception('unexpected arr length: expect 17 but see ${arr.length}');
     return OcrConfig(
       enabled: dco_decode_bool(arr[0]),
       backend: dco_decode_String(arr[1]),
@@ -16977,6 +16977,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       tessdataBytes: dco_decode_opt_Map_String_list_prim_u_8_strict_None(
         arr[15],
       ),
+      tessdataPath: dco_decode_opt_String(arr[16]),
     );
   }
 
@@ -24652,6 +24653,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_tessdataBytes = sse_decode_opt_Map_String_list_prim_u_8_strict_None(
       deserializer,
     );
+    var var_tessdataPath = sse_decode_opt_String(deserializer);
     return OcrConfig(
       enabled: var_enabled,
       backend: var_backend,
@@ -24669,6 +24671,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       vlmPrompt: var_vlmPrompt,
       acceleration: var_acceleration,
       tessdataBytes: var_tessdataBytes,
+      tessdataPath: var_tessdataPath,
     );
   }
 
@@ -32796,6 +32799,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       self.tessdataBytes,
       serializer,
     );
+    sse_encode_opt_String(self.tessdataPath, serializer);
   }
 
   @protected

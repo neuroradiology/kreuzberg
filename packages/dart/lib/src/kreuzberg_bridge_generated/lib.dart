@@ -9744,6 +9744,14 @@ class OcrConfig {
   /// at runtime.
   final Map<String, Uint8List>? tessdataBytes;
 
+  /// Runtime override for tessdata directory path.
+  ///
+  /// When set, uses this path as the highest-priority tessdata location,
+  /// bypassing environment variables and cache directories. Useful for
+  /// embedding pre-installed tessdata in applications. When `None`, uses
+  /// the standard resolution chain: TESSDATA_PREFIX env, cache dir, system paths.
+  final String? tessdataPath;
+
   const OcrConfig({
     required this.enabled,
     required this.backend,
@@ -9761,6 +9769,7 @@ class OcrConfig {
     this.vlmPrompt,
     this.acceleration,
     this.tessdataBytes,
+    this.tessdataPath,
   });
 
   @override
@@ -9780,7 +9789,8 @@ class OcrConfig {
       vlmConfig.hashCode ^
       vlmPrompt.hashCode ^
       acceleration.hashCode ^
-      tessdataBytes.hashCode;
+      tessdataBytes.hashCode ^
+      tessdataPath.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -9802,7 +9812,8 @@ class OcrConfig {
           vlmConfig == other.vlmConfig &&
           vlmPrompt == other.vlmPrompt &&
           acceleration == other.acceleration &&
-          tessdataBytes == other.tessdataBytes;
+          tessdataBytes == other.tessdataBytes &&
+          tessdataPath == other.tessdataPath;
 }
 
 /// A unified OCR element representing detected text with full metadata.

@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.28"
+version = "5.0.0-rc.29"
 edition = "2024"
 license = "Elastic-2.0"
 
@@ -12,7 +12,7 @@ ignored = ["kreuzberg"]
 [lib]
 crate-type = ["cdylib", "staticlib"]
 [features]
-default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "markdown-footnotes", "ner-llm", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "enrichment", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "markdown-footnotes", "ner-llm", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
 api = ["kreuzberg/api"]
 api-types = ["kreuzberg/api-types"]
 auto-rotate-types = ["kreuzberg/auto-rotate-types"]

@@ -103,7 +103,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:kreuzberg, "~> 5.0.0-rc.28"}
+    {:kreuzberg, "~> 5.0.0-rc.29"}
   ]
 end
 ```

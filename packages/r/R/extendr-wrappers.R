@@ -988,6 +988,7 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 #' @field vlm_prompt Custom Jinja2 prompt template for VLM OCR.
 #' @field acceleration Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection).
 #' @field tessdata_bytes Caller-supplied Tesseract `traineddata` bytes per language code.
+#' @field tessdata_path Runtime override for tessdata directory path.
 #' @export
 OcrConfig <- new.env(parent = emptyenv())
 OcrConfig$default <- function() .Call("wrap__OcrConfig__default", PACKAGE = "kreuzberg")

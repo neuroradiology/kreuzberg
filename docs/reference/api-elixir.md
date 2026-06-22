@@ -2,7 +2,7 @@
 title: "Elixir API Reference"
 ---
 
-## Elixir API Reference <span class="version-badge">v5.0.0-rc.28</span>
+## Elixir API Reference <span class="version-badge">v5.0.0-rc.29</span>
 
 ### Functions
 
@@ -6155,6 +6155,7 @@ OCR configuration.
 | `vlm_prompt` | `String.t() \| nil` | `nil` | Custom Jinja2 prompt template for VLM OCR. When `nil`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
 | `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `map() \| nil` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
+| `tessdata_path` | `String.t() \| nil` | `nil` | Runtime override for tessdata directory path. When set, uses this path as the highest-priority tessdata location, bypassing environment variables and cache directories. Useful for embedding pre-installed tessdata in applications. When `nil`, uses the standard resolution chain: TESSDATA_PREFIX env, cache dir, system paths. |
 
 ##### Functions
 
