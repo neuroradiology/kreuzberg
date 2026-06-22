@@ -290,6 +290,7 @@ jobs:
         uses: ./.github/actions/setup-onnx-runtime
         with:
           ort-version: ${{ env.ORT_VERSION }}
+          strategy: ${{ matrix.lang == 'r' && 'bundled' || 'system' }}
 
       - name: Stage ORT libraries alongside FFI
         shell: bash
