@@ -44,6 +44,10 @@ No SDK, no code — just your terminal.
     docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
     ```
 
+!!! Note "MCP Server included"
+
+    Prebuilt binaries (Homebrew, install.sh, Docker full) include the MCP server. If building from source with `cargo install kreuzberg-cli`, add `--features mcp` (or `--features mcp-http` for HTTP transport) to include it.
+
 [CLI Usage](../cli/usage.md){ .install-btn .install-btn--ghost }
 [API Server Guide](../guides/api-server.md){ .install-btn .install-btn--solid }
 

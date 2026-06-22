@@ -2,10 +2,16 @@
 
 Kreuzberg speaks [Model Context Protocol](https://modelcontextprotocol.io/). That means any AI agent — Claude, Cursor, a custom LangChain pipeline — can extract documents, generate embeddings, and manage caches through a standard tool interface without writing extraction code.
 
-Two commands to get started:
+Prebuilt binaries (Homebrew, install.sh, Docker) include the MCP server. To get started:
 
 ```bash title="Terminal"
-pip install "kreuzberg[all]"
+kreuzberg mcp
+```
+
+If building from source:
+
+```bash title="Terminal"
+cargo install kreuzberg-cli --features mcp
 kreuzberg mcp
 ```
 
@@ -42,9 +48,28 @@ This is what Claude Desktop, Cursor, and most MCP clients expect.
 
 ### HTTP Transport
 
-!!! Info "Feature flag: `mcp-http`" HTTP transport requires the `mcp-http` feature flag at build time.
+!!! Info "Feature flag: `mcp-http`"
 
-For remote deployments or multi-client setups where stdio doesn't work — shared servers, team environments, cloud-hosted agents — HTTP transport exposes the same tool interface over the network.
+    HTTP transport requires the `mcp-http` feature flag at build time.
+
+For remote deployments or multi-client setups where stdio doesn't work — shared servers, team environments, cloud-hosted agents — HTTP transport exposes the same tool interface over the network:
+
+```bash title="Terminal"
+kreuzberg mcp --transport http --host 127.0.0.1 --port 8001
+```
+
+Configure in Claude Desktop or Cursor:
+
+```json
+{
+  "mcpServers": {
+    "kreuzberg": {
+      "command": "kreuzberg",
+      "args": ["mcp", "--transport", "http", "--host", "127.0.0.1", "--port", "8001"]
+    }
+  }
+}
+```
 
 ---
 
