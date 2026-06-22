@@ -81,6 +81,10 @@ repos:
     - id: typos
       args: ["--force-exclude"]
     - id: check-json
+      # Test fixtures (e.g. minified tokenizer vocabs) may contain duplicate keys that the
+      # tokenizers crate accepts (last-wins) but strict JSON validation rejects. Excluded like
+      # the oxfmt/typos testdata exclusions.
+      exclude: (^|/)testdata/
     - id: check-yaml
       args:
       - --allow-multiple-documents
