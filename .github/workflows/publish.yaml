@@ -617,6 +617,40 @@ jobs:
           path: crates/kreuzberg-node/*.node
           retention-days: 14
 
+  node-bindings-musl:
+    # Alpine container build via Dockerfile.musl-node (system onnxruntime-dev).
+    name: Build Node bindings (linux-musl-${{ matrix.arch }})
+    needs: [prepare, check-npm]
+    if: ${{ needs.prepare.outputs.release_node == 'true' && (needs.check-npm.outputs.node_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: x86_64, target: x86_64-unknown-linux-musl }
+          - { arch: aarch64, target: aarch64-unknown-linux-musl }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build Node NAPI binding via Alpine Docker
+        run: |
+          docker build -f docker/Dockerfile.musl-node \
+            --build-arg TARGET=${{ matrix.target }} \
+            --output type=local,dest=./build-output .
+      - name: Stage .node file for npm
+        run: |
+          mkdir -p dist/node-bindings
+          find build-output -name "*.node" -exec cp {} dist/node-bindings/ \;
+      - uses: actions/upload-artifact@v7
+        with:
+          name: node-bindings-${{ matrix.target }}
+          path: dist/node-bindings
+          if-no-files-found: error
+          retention-days: 14
+
   wasm-bindings:
     name: Build WASM package
     needs: [prepare, check-npm]
@@ -1956,7 +1990,7 @@ jobs:
 
   publish-node:
     name: Publish Node packages
-    needs: [prepare, node-bindings, check-npm]
+    needs: [prepare, node-bindings, node-bindings-musl, check-npm]
     if: ${{ needs.prepare.outputs.release_node == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-npm.outputs.node_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
     permissions:
