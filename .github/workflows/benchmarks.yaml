@@ -226,6 +226,9 @@ jobs:
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
 
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
+
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
         with:
@@ -296,6 +299,9 @@ jobs:
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
 
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
+
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
         with:
@@ -359,6 +365,9 @@ jobs:
 
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -430,6 +439,9 @@ jobs:
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
 
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
+
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
         with:
@@ -499,6 +511,9 @@ jobs:
 
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
@@ -575,6 +590,9 @@ jobs:
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
 
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
+
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
         with:
@@ -643,6 +661,9 @@ jobs:
 
       - name: Restore benchmark binary permissions
         run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies (libheif + native libs for harness binary)
+        uses: ./.github/actions/install-system-deps
 
       - name: Setup ONNX Runtime
         uses: ./.github/actions/setup-onnx-runtime
