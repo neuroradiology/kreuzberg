@@ -441,10 +441,14 @@ jobs:
       fail-fast: false
       matrix:
         # Intel macOS dropped (rc.20+): Apple killed x86_64 Macs and GitHub is
-        # deprecating macos-13 runners. macos-latest builds arm64-only wheels
-        # against the runner's native min-target, matching libheif's macos-15
-        # 15.0-min Homebrew bottle.
-        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest]
+        # deprecating macos-13 runners. macОS is PINNED to macos-15 (Sequoia),
+        # NOT macos-latest: when macos-latest rolled forward to macOS 26 (Tahoe)
+        # its Homebrew HEIF/AV1 bottles became 26.0-min, which exceeds the wheel's
+        # MACOSX_DEPLOYMENT_TARGET=15.0 (set below) and delocate refused to vendor
+        # them ("Library dependencies do not satisfy target MacOS version 15.0").
+        # Pinning the runner keeps the bottles' min-target aligned with the 15.0
+        # wheel tag; bump both together when intentionally raising the floor.
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-15]
     steps:
       - uses: actions/checkout@v6
         with:
@@ -491,8 +495,8 @@ jobs:
             export CC="gcc ${CFLAGS}"
             export CXX="g++ ${CXXFLAGS}"
           cibw-environment: 'MATURIN_BUILD_ARGS="--compatibility manylinux_2_28" CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=gcc CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=gcc CC_x86_64_unknown_linux_gnu=gcc CC_aarch64_unknown_linux_gnu=gcc CXX_x86_64_unknown_linux_gnu=g++ CXX_aarch64_unknown_linux_gnu=g++'
-          # macos-latest is now macOS 15 (Sequoia), and the Homebrew HEIF/AV1
-          # dylibs libheif pulls in (libx265, libheif, libaom, libvmaf,
+          # The runner is pinned to macos-15 (Sequoia) above, and the Homebrew
+          # HEIF/AV1 dylibs libheif pulls in (libx265, libheif, libaom, libvmaf,
           # libsharpyuv, libde265) are built with LC_BUILD_VERSION minos 15.0.
           # Pin MACOSX_DEPLOYMENT_TARGET=15.0 so the arm64 wheel is tagged
           # macosx_15_0_arm64 and delocate's min-version check passes (an 11.0
