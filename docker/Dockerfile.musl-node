@@ -24,17 +24,20 @@ WORKDIR /build
 # so tesseract C++ compilation works without glibc conflicts. nodejs + npm are
 # needed to run the napi CLI (via npx).
 #
-# nodejs, openssl, and onnxruntime are ALL pulled from edge: Alpine edge's
-# `node` is built against OpenSSL 3.4+ (it needs `EVP_MD_CTX_get_size_ex`), so
-# the stable 3.21 openssl libs leave `node` unable to relocate that symbol
-# ("Error relocating /usr/bin/node: EVP_MD_CTX_get_size_ex: symbol not found").
-# Keeping node + openssl + onnxruntime on the same (edge) repo avoids the skew.
+# nodejs, the openssl runtime libs, and onnxruntime are ALL pulled from edge:
+# Alpine edge's `node` is built against OpenSSL 3.4+ (it needs
+# `EVP_MD_CTX_get_size_ex`), so the stable 3.21 openssl libs leave `node` unable
+# to relocate that symbol ("Error relocating /usr/bin/node:
+# EVP_MD_CTX_get_size_ex: symbol not found"). Keeping node + libssl3/libcrypto3 +
+# onnxruntime on the same (edge) repo avoids the skew. The Rust build itself uses
+# rustls (no openssl), so only the runtime shared libs are needed here — not
+# openssl-dev / openssl-libs-static.
 RUN apk add --no-cache \
     curl musl-dev cmake make pkgconf \
     perl linux-headers git file && \
     apk add --no-cache \
         gcc g++ libstdc++ libstdc++-dev \
-        nodejs npm \
+        nodejs npm libssl3 libcrypto3 \
         onnxruntime-dev libheif-dev libde265-dev aom-dev x265-dev dav1d-dev \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main

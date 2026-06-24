@@ -863,8 +863,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          # gnu CLI builds natively (no zigbuild): the executable statically
+          # links C++ deps (tesseract/leptonica/libheif) that reference GNU
+          # libstdc++ `__cxx11` symbols, which zig's bundled libc++ does not
+          # provide — a PIE executable link then fails on undefined symbols.
+          # Native gcc links real libstdc++ and lets ORT's glibc prebuilt load
+          # at runtime. Floor = the runner's glibc (2.35); older/Alpine systems
+          # are served by the static musl CLI below.
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-22.04-arm, target: aarch64-unknown-linux-gnu }
           - { os: macos-latest, target: aarch64-apple-darwin }
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
     steps:
@@ -881,15 +888,6 @@ jobs:
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
 
-      - name: Setup Zig for glibc 2.28 floor
-        if: contains(matrix.target, '-linux-gnu')
-        uses: kreuzberg-dev/actions/setup-zig@v1
-
-      - name: Install cargo-zigbuild for glibc 2.28 floor
-        if: contains(matrix.target, '-linux-gnu')
-        shell: bash
-        run: command -v cargo-zigbuild || cargo install --locked cargo-zigbuild
-
       - uses: kreuzberg-dev/actions/build-rust-cli@v1
         id: build
         with:
@@ -902,7 +900,6 @@ jobs:
           # is deliberately excluded — it needs vcpkg libheif on the Windows
           # release target. Docker images already build with `--features all`.
           extra-cargo-args: --features mcp,mcp-http,api
-          glibc-version: "2.28"
 
       - name: Package CLI artifact
         # Inline: archive layout (.tar.gz on Unix, .zip on Windows) varies per
