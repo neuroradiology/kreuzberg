@@ -4,7 +4,7 @@
 	"title": "Kreuzberg",
 	"description": "Extract text, tables, metadata, and images from documents via local CLI.",
 	"version": "5.0.0-rc.10",
-	"websiteUrl": "https://kreuzberg.dev",
+	"websiteUrl": "https://xberg.io",
 	"repository": {
 		"url": "https://github.com/xberg-io/kreuzberg",
 		"source": "github",

@@ -7,7 +7,7 @@ description: >-
 type: application
 version: 0.1.0
 appVersion: "4.8.4"
-home: https://kreuzberg.dev
+home: https://xberg.io
 sources:
   - https://github.com/xberg-io/kreuzberg
 keywords:
@@ -26,6 +26,6 @@ annotations:
   artifacthub.io/license: Elastic-2.0
   artifacthub.io/links: |
     - name: Documentation
-      url: https://kreuzberg.dev
+      url: https://xberg.io
     - name: Source
       url: https://github.com/xberg-io/kreuzberg

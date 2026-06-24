@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://kreuzberg.dev/schemas/document-content.schema.json",
+	"$id": "https://xberg.io/schemas/document-content.schema.json",
 	"title": "JsonDocument",
 	"description": "Kreuzberg structured JSON content output. A heading-driven tree where headings create nested sections.",
 	"type": "object",

@@ -29,7 +29,7 @@ OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whispe
 
 ### Supported Formats
 
-96 file formats across 8 categories — Office documents, images (OCR-enabled), web and structured data, email, archives, academic, and audio/video — plus code intelligence for 306 programming languages. See the [format reference](https://docs.kreuzberg.dev/reference/formats/) for the complete list.
+96 file formats across 8 categories — Office documents, images (OCR-enabled), web and structured data, email, archives, academic, and audio/video — plus code intelligence for 306 programming languages. See the [format reference](https://docs.xberg.io/reference/formats/) for the complete list.
 
 <div align="center">
   <a href="https://github.com/xberg-io/kreuzberg/stargazers">
@@ -202,7 +202,7 @@ Build from source as part of this workspace. See [C (FFI) README](https://github
 brew install xberg-io/tap/kreuzberg
 ```
 
-See [CLI usage](https://docs.kreuzberg.dev/cli/usage/) for full documentation.
+See [CLI usage](https://docs.xberg.io/cli/usage/) for full documentation.
 
 </details>
 
@@ -213,7 +213,7 @@ See [CLI usage](https://docs.kreuzberg.dev/cli/usage/) for full documentation.
 docker pull ghcr.io/xberg-io/kreuzberg:latest
 ```
 
-See [Docker guide](https://docs.kreuzberg.dev/guides/docker/) for API, CLI, and MCP server modes.
+See [Docker guide](https://docs.xberg.io/guides/docker/) for API, CLI, and MCP server modes.
 
 </details>
 
@@ -246,7 +246,7 @@ Add it to an MCP client (Claude Desktop `claude_desktop_config.json`, Cursor `.c
 }
 ```
 
-See the [MCP integration guide](https://docs.kreuzberg.dev/guides/mcp-integration/) for tools,
+See the [MCP integration guide](https://docs.xberg.io/guides/mcp-integration/) for tools,
 resources, prompts, HTTP transport, and configuration.
 
 </details>
@@ -328,7 +328,7 @@ Add the package to `opencode.json`:
 
 ## Documentation
 
-Full guides, API references for every binding, and the complete format and configuration reference live at **[kreuzberg.dev](https://kreuzberg.dev/)**. Try it in the browser with the [live demo](https://docs.kreuzberg.dev/demo.html).
+Full guides, API references for every binding, and the complete format and configuration reference live at **[xberg.io](https://xberg.io/)**. Try it in the browser with the [live demo](https://docs.xberg.io/demo.html).
 
 ## Contributing
 

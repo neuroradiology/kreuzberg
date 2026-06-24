@@ -61,7 +61,7 @@ includedir=`${prefix}/include
 Name: kreuzberg-ffi
 Description: C FFI bindings for Kreuzberg document intelligence library
 Version: $ffiVersion
-URL: https://kreuzberg.dev
+URL: https://xberg.io
 Libs: -L`${libdir} -lkreuzberg_ffi
 Cflags: -I`${includedir}
 "@ | Set-Content "$StagingDir\share\pkgconfig\kreuzberg-ffi.pc"

@@ -4094,7 +4094,7 @@ github_repo = "https://github.com/xberg-io/kreuzberg"
 description = "High-performance document intelligence library"
 license = "Elastic-2.0"
 repository = "https://github.com/xberg-io/kreuzberg"
-homepage = "https://kreuzberg.dev"
+homepage = "https://xberg.io"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 keywords = ["document", "extraction", "pdf", "ocr", "text"]
 
@@ -4136,7 +4136,7 @@ output_path = "crates/kreuzberg/README.md"
 name = "Rust"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "High-performance document intelligence library for Rust. Extract text, tables, metadata, and code intelligence from 96 file formats and 306 programming languages."
 package_manager = ["cargo"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4149,7 +4149,7 @@ template = "python.md"
 name = "Python"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system."
 package_manager = ["pip"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4163,7 +4163,7 @@ output_path = "crates/kreuzberg-node/README.md"
 name = "TypeScript (Node.js)"
 package_name = "@kreuzberg/node"
 badge_url = "https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions."
 package_manager = ["pnpm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, worker_pools = true, config_discovery = true, code_intelligence = true }
@@ -4182,7 +4182,7 @@ output_path = "packages/go/v5/README.md"
 name = "Go"
 package_name = "github.com/xberg-io/kreuzberg/v5"
 badge_url = "https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance."
 package_manager = ["go get"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4195,7 +4195,7 @@ template = "language_package.md"
 name = "Java"
 package_name = "dev.kreuzberg:kreuzberg"
 badge_url = "https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance."
 package_manager = ["maven", "gradle"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4208,7 +4208,7 @@ template = "language_package.md"
 name = "PHP"
 package_name = "xberg-io/kreuzberg"
 badge_url = "https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. PHP bindings with modern PHP 8.2+ support and type-safe API."
 package_manager = ["composer"]
 features = { ocr = true, async = false, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4221,7 +4221,7 @@ template = "ruby.md"
 name = "Ruby"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Ruby bindings with idiomatic Ruby API and native performance."
 package_manager = ["rubygems", "bundler"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4234,7 +4234,7 @@ template = "language_package.md"
 name = "C#"
 package_name = "Kreuzberg"
 badge_url = "https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. .NET bindings with full type safety, async/await support, and .NET 10.0+ compatibility."
 package_manager = ["nuget"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4247,7 +4247,7 @@ template = "language_package.md"
 name = "Elixir"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Elixir bindings with native BEAM concurrency, OTP integration, and idiomatic Elixir API."
 package_manager = ["mix"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4261,7 +4261,7 @@ output_path = "crates/kreuzberg-wasm/README.md"
 name = "WebAssembly"
 package_name = "@kreuzberg/wasm"
 badge_url = "https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support."
 package_manager = ["pnpm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = false, code_intelligence = true }
@@ -4274,7 +4274,7 @@ template = "language_package.md"
 name = "R"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/badge/R-kreuzberg-007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. R bindings with native R API, data frame integration, and high-performance document extraction."
 package_manager = ["install.packages"]
 features = { ocr = true, async = false, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4288,7 +4288,7 @@ output_path = "crates/kreuzberg-ffi/README.md"
 name = "FFI (C/C++)"
 package_name = "kreuzberg-ffi"
 badge_url = "https://img.shields.io/badge/C%2FC%2B%2B-kreuzberg--ffi-007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. C/C++ FFI bindings providing a stable ABI for native integration, shared library distribution, and cross-language interop."
 package_manager = ["cargo"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4298,7 +4298,7 @@ template = "language_package.md"
 name = "Kotlin (Android)"
 package_name = "dev.kreuzberg:kreuzberg-android"
 badge_url = "https://img.shields.io/badge/Android-kreuzberg-3DDC84"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Android library (AAR) with bundled jniLibs/arm64-v8a and jniLibs/x86_64 — Gradle automatically picks up the native cdylib for emulator and device builds. Server-side Kotlin/JVM consumers can use the Java binding directly via standard Kotlin/Java interop."
 package_manager = ["gradle", "maven"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4311,7 +4311,7 @@ template = "language_package.md"
 name = "Swift"
 package_name = "Kreuzberg"
 badge_url = "https://img.shields.io/badge/Swift-kreuzberg-007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Swift bindings via swift-bridge for macOS, iOS, and Linux, with native Swift types and async/await support."
 package_manager = ["spm"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4324,7 +4324,7 @@ template = "language_package.md"
 name = "Dart / Flutter"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/badge/Dart-kreuzberg-007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Dart bindings via flutter_rust_bridge for both Flutter apps and pure-Dart server contexts, with isolate-safe Future/Stream APIs."
 package_manager = ["pub"]
 features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
@@ -4337,7 +4337,7 @@ template = "language_package.md"
 name = "Zig"
 package_name = "kreuzberg"
 badge_url = "https://img.shields.io/badge/Zig-kreuzberg-007ec6"
-docs_url = "https://kreuzberg.dev/"
+docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Zig bindings consuming the C FFI surface via @cImport, idiomatic error sets, optional types, and slice-based memory management."
 package_manager = ["zig"]
 features = { ocr = true, async = false, plugin_system = true, embeddings = true, code_intelligence = true }

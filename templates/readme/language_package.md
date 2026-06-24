@@ -90,7 +90,7 @@ This binding provides full async/await support for non-blocking document process
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
-For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
+For detailed plugin documentation, visit [Plugin System Guide](https://docs.xberg.io/guides/plugins/).
 
 {% if snippets.plugin_system %}
 
@@ -106,7 +106,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreu
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
-**[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
+**[Embeddings Guide](https://docs.xberg.io/features/#embeddings)**
 {% endif %}
 
 {% if snippets.batch_processing %}
@@ -123,13 +123,13 @@ Process multiple documents efficiently:
 
 For advanced configuration options including language detection, table extraction, OCR settings, and more:
 
-**[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)**
+**[Configuration Guide](https://docs.xberg.io/guides/configuration/)**
 
 ## Documentation
 
-- **[Official Documentation](https://docs.kreuzberg.dev/)**
-- **[API Reference](https://docs.kreuzberg.dev/reference/api-python/)**
-- **[Examples & Guides](https://docs.kreuzberg.dev/)**
+- **[Official Documentation](https://docs.xberg.io/)**
+- **[API Reference](https://docs.xberg.io/reference/api-python/)**
+- **[Examples & Guides](https://docs.xberg.io/)**
 
 ## Contributing
 

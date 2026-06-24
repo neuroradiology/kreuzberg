@@ -294,7 +294,7 @@ These snippets follow these conventions:
 
 ## Links
 
-- **Documentation**: <https://kreuzberg.dev>
+- **Documentation**: <https://xberg.io>
 - **GitHub**: <https://github.com/xberg-io/Kreuzberg>
 - **Issues**: <https://github.com/xberg-io/kreuzberg/issues>
 - **Package**: <https://packagist.org/packages/kreuzberg/Kreuzberg>

@@ -365,7 +365,7 @@ end
 
 ## Documentation
 
-For comprehensive documentation, visit [https://kreuzberg.dev](https://kreuzberg.dev)
+For comprehensive documentation, visit [https://xberg.io](https://xberg.io)
 
 ## Part of Kreuzberg.dev
 

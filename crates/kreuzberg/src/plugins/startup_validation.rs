@@ -132,7 +132,7 @@ pub(crate) fn validate_plugins_at_startup() -> Result<PluginHealthStatus> {
              2. TESSDATA_PREFIX environment variable is set (e.g., /usr/share/tesseract-ocr/tessdata) \
              3. Tessdata files exist and are readable (tessdata/*.traineddata) \
              4. In containers, mount tessdata volume or install tesseract-ocr package. \
-             See https://docs.kreuzberg.dev/guides/docker/ for Kubernetes setup."
+             See https://docs.xberg.io/guides/docker/ for Kubernetes setup."
         );
     } else {
         tracing::info!(

@@ -166,7 +166,7 @@ includedir=\${prefix}/include
 Name: kreuzberg-ffi
 Description: C FFI bindings for Kreuzberg document intelligence library
 Version: ${version}
-URL: https://kreuzberg.dev
+URL: https://xberg.io
 Libs: -L\${libdir} -lkreuzberg_ffi
 Libs.private: ${libs_private}
 Cflags: -I\${includedir}

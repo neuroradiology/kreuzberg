@@ -12,7 +12,7 @@
 [![C#](https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Kreuzberg/)
 
 [![License: Elastic-2.0](https://img.shields.io/badge/License-Elastic--2.0-007ec6)](https://www.elastic.co/licensing/elastic-license)
-[![Documentation](https://img.shields.io/badge/Docs-kreuzberg-007ec6)](https://kreuzberg.dev/)
+[![Documentation](https://img.shields.io/badge/Docs-kreuzberg-007ec6)](https://xberg.io/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Kreuzberg-007ec6)](https://huggingface.co/Kreuzberg)
 [![Discord](https://img.shields.io/badge/Discord-Chat-007ec6)](https://discord.gg/xt9WY3GnKR)
 
@@ -64,7 +64,7 @@ kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-bundled"] }
 kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-system"] }
 ```
 
-For more details on feature flags and configuration options, see the [Kreuzberg documentation](https://docs.kreuzberg.dev).
+For more details on feature flags and configuration options, see the [Kreuzberg documentation](https://docs.xberg.io).
 
 ## System Requirements
 
@@ -194,7 +194,7 @@ fn main() -> kreuzberg::Result<()> {
 
 ## Code Intelligence
 
-Kreuzberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev) to parse and analyze source code files across **306 programming languages**. When you extract a source code file, Kreuzberg automatically detects the language and produces structured analysis including functions, classes, imports, exports, symbols, diagnostics, and semantic code chunks.
+Kreuzberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) to parse and analyze source code files across **306 programming languages**. When you extract a source code file, Kreuzberg automatically detects the language and produces structured analysis including functions, classes, imports, exports, symbols, diagnostics, and semantic code chunks.
 
 Code intelligence data is available via the `metadata.format` field as a `FormatMetadata::Code` variant containing a `ProcessResult`.
 
@@ -238,7 +238,7 @@ fn main() -> kreuzberg::Result<()> {
 }
 ```
 
-Requires the `tree-sitter` feature flag (included in `full`). See the [Kreuzberg docs](https://docs.kreuzberg.dev/) for configuration details and examples in all languages.
+Requires the `tree-sitter` feature flag (included in `full`). See the [Kreuzberg docs](https://docs.xberg.io/) for configuration details and examples in all languages.
 
 ## Features
 
@@ -289,7 +289,7 @@ No native libraries required. Works on all platforms including musl, Docker, and
 
 **[API Documentation](https://docs.rs/kreuzberg)** – Complete API reference with examples
 
-**[https://docs.kreuzberg.dev](https://docs.kreuzberg.dev)** – User guide and tutorials
+**[https://docs.xberg.io](https://docs.xberg.io)** – User guide and tutorials
 
 ## License
 

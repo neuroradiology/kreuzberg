@@ -2269,7 +2269,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
   - New `tree-sitter` and `tree-sitter-wasm` feature flags (included in `full` and `wasm-target`)
   - `TreeSitterConfig` and `TreeSitterProcessConfig` in `ExtractionConfig`
   - Re-exported TSLP types (`ProcessResult`, `StructureItem`, `FileMetrics`, etc.)
-  - [TSLP documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev)
+  - [TSLP documentation](https://docs.tree-sitter-language-pack.xberg.io)
 
 ### Typed Metadata
 
@@ -4593,7 +4593,7 @@ Complete architectural rewrite from Python-only to Rust-core with polyglot bindi
 - TypeScript/Node.js package renamed to `@kreuzberg/node`.
 - `char_start`/`char_end` -> `byte_start`/`byte_end`.
 
-See the [API Reference](https://docs.kreuzberg.dev/reference/api-python/) for details.
+See the [API Reference](https://docs.xberg.io/reference/api-python/) for details.
 
 ---
 
@@ -4971,10 +4971,10 @@ See the [API Reference](https://docs.kreuzberg.dev/reference/api-python/) for de
 
 ## See Also
 
-- [Configuration Reference](https://docs.kreuzberg.dev/reference/configuration/) - Detailed configuration options
-- [Migration Guides](https://docs.kreuzberg.dev/migration/from-unstructured/) - Migration from other libraries
-- [Format Support](https://docs.kreuzberg.dev/reference/formats/) - Supported file formats
-- [Extraction Guide](https://docs.kreuzberg.dev/guides/extraction/) - Extraction examples
+- [Configuration Reference](https://docs.xberg.io/reference/configuration/) - Detailed configuration options
+- [Migration Guides](https://docs.xberg.io/migration/from-unstructured/) - Migration from other libraries
+- [Format Support](https://docs.xberg.io/reference/formats/) - Supported file formats
+- [Extraction Guide](https://docs.xberg.io/guides/extraction/) - Extraction examples
 
 [4.10.0-rc.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.4
 [4.10.0-rc.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.2

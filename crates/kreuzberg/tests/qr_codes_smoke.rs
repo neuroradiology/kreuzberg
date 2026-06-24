@@ -21,7 +21,7 @@ use kreuzberg::plugins::PostProcessor;
 use kreuzberg::types::{ExtractedImage, ExtractionResult};
 use qrcode::QrCode;
 
-const PAYLOAD: &str = "https://kreuzberg.dev/hello-world";
+const PAYLOAD: &str = "https://xberg.io/hello-world";
 
 fn render_qr_png(payload: &str) -> Vec<u8> {
     let code = QrCode::new(payload.as_bytes()).expect("failed to build QR code");
@@ -83,12 +83,12 @@ fn detect_qr_codes_returns_empty_when_no_grid_present() {
 fn detect_qr_codes_returns_all_grids_in_multi_code_image() {
     use kreuzberg::extractors::qr::detect_qr_codes;
 
-    let left = QrCode::new(b"https://kreuzberg.dev/a")
+    let left = QrCode::new(b"https://xberg.io/a")
         .expect("failed to build QR code")
         .render::<Luma<u8>>()
         .min_dimensions(192, 192)
         .build();
-    let right = QrCode::new(b"https://kreuzberg.dev/b")
+    let right = QrCode::new(b"https://xberg.io/b")
         .expect("failed to build QR code")
         .render::<Luma<u8>>()
         .min_dimensions(192, 192)
@@ -111,7 +111,7 @@ fn detect_qr_codes_returns_all_grids_in_multi_code_image() {
     assert_eq!(codes.len(), 2, "expected two QR codes, got {codes:?}");
     let mut payloads: Vec<&str> = codes.iter().map(|c| c.payload.as_str()).collect();
     payloads.sort();
-    assert_eq!(payloads, vec!["https://kreuzberg.dev/a", "https://kreuzberg.dev/b"]);
+    assert_eq!(payloads, vec!["https://xberg.io/a", "https://xberg.io/b"]);
 }
 
 /// Drive the public `QrCodeProcessor` via its `PostProcessor` trait against a

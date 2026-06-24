@@ -22,7 +22,7 @@ Want to work on something bigger or propose a new feature? [Open a discussion](h
 
 **Larger contributions** (features, new bindings, bug fixes):
 
-1. Read the full [Contributing Guide](https://docs.kreuzberg.dev/contributing/) on our docs site
+1. Read the full [Contributing Guide](https://docs.xberg.io/contributing/) on our docs site
 2. Set up your development environment (see below)
 3. Follow our workflow: branch → code → test → PR
 
@@ -88,7 +88,7 @@ This installs all toolchains and dependencies across every language. Safe to re-
 
 For language-specific commands, use the namespace pattern: `task rust:test`, `task python:build`, `task node:format`, etc.
 
-For the complete development workflow, build profiles, coding standards, and PR guidelines, see the full [Contributing Guide](https://docs.kreuzberg.dev/contributing/).
+For the complete development workflow, build profiles, coding standards, and PR guidelines, see the full [Contributing Guide](https://docs.xberg.io/contributing/).
 
 ## Commit messages
 
@@ -105,7 +105,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). Prefix your
 ## Community
 
 - **Star the repo:** [Give us a star on GitHub](https://github.com/xberg-io/kreuzberg) — it helps others discover Kreuzberg!
-- **Documentation:** [docs.kreuzberg.dev](https://docs.kreuzberg.dev)
+- **Documentation:** [docs.xberg.io](https://docs.xberg.io)
 - **Discord:** [Join our community](https://discord.gg/xt9WY3GnKR)
 - **Issues:** [GitHub Issues](https://github.com/xberg-io/kreuzberg/issues)
 - **License:** [Elastic License 2.0 (ELv2)](LICENSE)

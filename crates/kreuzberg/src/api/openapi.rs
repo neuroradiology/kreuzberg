@@ -19,7 +19,7 @@ use utoipa::OpenApi;
         description = "High-performance document intelligence API for extracting text, metadata, and structured data from PDFs, Office documents, images, and 96 formats.",
         contact(
             name = "Kreuzberg",
-            url = "https://kreuzberg.dev"
+            url = "https://xberg.io"
         ),
         license(
             name = "Apache-2.0 OR MIT"
@@ -27,7 +27,7 @@ use utoipa::OpenApi;
     ),
     servers(
         (url = "http://localhost:8000", description = "Local development server"),
-        (url = "https://api.kreuzberg.dev", description = "Production server (example)")
+        (url = "https://api.xberg.io", description = "Production server (example)")
     ),
     paths(
         crate::api::handlers::health_handler,

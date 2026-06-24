@@ -237,7 +237,7 @@ rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "MIT"
 repository = "https://github.com/xberg-io/kreuzberg"
-homepage = "https://kreuzberg.dev"
+homepage = "https://xberg.io"
 
 [workspace.dependencies]
 {deps_str}

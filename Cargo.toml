@@ -32,7 +32,7 @@ rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"
 repository = "https://github.com/xberg-io/kreuzberg"
-homepage = "https://kreuzberg.dev"
+homepage = "https://xberg.io"
 
 [workspace.lints.rust]
 unsafe_code = "deny"

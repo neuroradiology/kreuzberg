@@ -64,7 +64,7 @@
   <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
-  <a href="https://docs.kreuzberg.dev">
+  <a href="https://docs.xberg.io">
     <img src="https://img.shields.io/badge/Docs-kreuzberg-007ec6" alt="Documentation">
   </a>
   <a href="https://huggingface.co/Kreuzberg">
@@ -76,7 +76,7 @@
   <a href="https://discord.gg/xt9WY3GnKR">
     <img height="22" src="https://img.shields.io/badge/Discord-Chat-007ec6?logo=discord&logoColor=white" alt="Join Discord">
   </a>
-  <a href="https://docs.kreuzberg.dev/demo.html">
+  <a href="https://docs.xberg.io/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
   <a href="https://github.com/xberg-io/kreuzberg/stargazers">
@@ -322,7 +322,7 @@ func init() {
 ## API Reference
 
 - **GoDoc**: [pkg.go.dev/github.com/xberg-io/kreuzberg/v5](<https://pkg.go.dev/github.com/xberg-io/kreuzberg/v5>)
-- **Full documentation**: [kreuzberg.dev](https://kreuzberg.dev) (configuration, formats, OCR backends)
+- **Full documentation**: [xberg.io](https://xberg.io) (configuration, formats, OCR backends)
 
 ## Troubleshooting
 

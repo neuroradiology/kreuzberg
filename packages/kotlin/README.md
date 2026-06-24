@@ -47,10 +47,10 @@
   <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
   </a>
-  <a href="https://docs.kreuzberg.dev">
-    <img src="https://img.shields.io/badge/docs-kreuzberg.dev-007ec6" alt="Documentation">
+  <a href="https://docs.xberg.io">
+    <img src="https://img.shields.io/badge/docs-xberg.io-007ec6" alt="Documentation">
   </a>
-  <a href="https://docs.kreuzberg.dev/demo.html">
+  <a href="https://docs.xberg.io/demo.html">
     <img src="https://img.shields.io/badge/%E2%96%B6%EF%B8%8F_Live_Demo-007ec6" alt="Live Demo">
   </a>
   <a href="https://huggingface.co/Kreuzberg">
@@ -92,7 +92,7 @@ implementation 'dev.kreuzberg:kreuzberg:4.0.0'
 
 ### System Requirements
 
-- See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
+- See [Installation Guide](https://xberg.io/getting-started/installation/) for requirements
 
 ## Quick Start
 
@@ -114,7 +114,7 @@ Most use cases benefit from configuration to control extraction behavior:
 
 #### Table Extraction
 
-See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) for detailed examples.
+See [Table Extraction Guide](https://xberg.io/features/table-extraction/) for detailed examples.
 
 #### Processing Multiple Files
 
@@ -128,10 +128,10 @@ For non-blocking document processing:
 
 ### Next Steps
 
-- **[Installation Guide](https://kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
-- **[API Documentation](https://kreuzberg.dev/api/)** - Complete API reference
-- **[Examples & Guides](https://kreuzberg.dev/guides/)** - Full code examples and usage guides
-- **[Configuration Guide](https://kreuzberg.dev/guides/configuration/)** - Advanced configuration options
+- **[Installation Guide](https://xberg.io/getting-started/installation/)** - Platform-specific setup
+- **[API Documentation](https://xberg.io/api/)** - Complete API reference
+- **[Examples & Guides](https://xberg.io/guides/)** - Full code examples and usage guides
+- **[Configuration Guide](https://xberg.io/guides/configuration/)** - Advanced configuration options
 
 ## Features
 
@@ -193,9 +193,9 @@ For non-blocking document processing:
 | **Diagnostics**            | Parse errors with line/column positions                       |
 | **Syntax-Aware Chunking**  | Split code by semantic boundaries, not arbitrary byte offsets |
 
-Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — [documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev).
+Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — [documentation](https://docs.tree-sitter-language-pack.xberg.io).
 
-**[Complete Format Reference](https://kreuzberg.dev/reference/formats/)**
+**[Complete Format Reference](https://xberg.io/reference/formats/)**
 
 ### Key Capabilities
 
@@ -215,7 +215,7 @@ Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-l
 - **Memory Efficient** - Stream large files without loading entirely into memory
 - **Language Detection** - Detect and support multiple languages in documents
 
-- **Code Intelligence** - Extract structure, imports, exports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter
+- **Code Intelligence** - Extract structure, imports, exports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.xberg.io) via tree-sitter
 
 - **Configuration** - Fine-grained control over extraction behavior
 
@@ -251,13 +251,13 @@ This binding provides full async/await support for non-blocking document process
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
-For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg.dev/guides/plugins/).
+For detailed plugin documentation, visit [Plugin System Guide](https://xberg.io/guides/plugins/).
 
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
-**[Embeddings Guide](https://kreuzberg.dev/features/#embeddings)**
+**[Embeddings Guide](https://xberg.io/features/#embeddings)**
 
 ## Batch Processing
 
@@ -269,13 +269,13 @@ Process multiple documents efficiently:
 
 For advanced configuration options including language detection, table extraction, OCR settings, and more:
 
-**[Configuration Guide](https://kreuzberg.dev/guides/configuration/)**
+**[Configuration Guide](https://xberg.io/guides/configuration/)**
 
 ## Documentation
 
-- **[Official Documentation](https://kreuzberg.dev/)**
-- **[API Reference](https://kreuzberg.dev/reference/api-kotlin/)**
-- **[Examples & Guides](https://kreuzberg.dev/guides/)**
+- **[Official Documentation](https://xberg.io/)**
+- **[API Reference](https://xberg.io/reference/api-kotlin/)**
+- **[Examples & Guides](https://xberg.io/guides/)**
 
 ## Contributing
 

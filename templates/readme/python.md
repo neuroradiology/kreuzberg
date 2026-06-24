@@ -436,7 +436,7 @@ PDFium adds approximately 8-15 MB to the package size depending on platform. Thi
 
 ## Documentation
 
-For comprehensive documentation, visit [https://kreuzberg.dev](https://kreuzberg.dev)
+For comprehensive documentation, visit [https://xberg.io](https://xberg.io)
 
 ## Part of Kreuzberg.dev
 

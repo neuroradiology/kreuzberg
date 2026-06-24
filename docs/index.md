@@ -102,7 +102,7 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 
 ## Part of Kreuzberg.dev
 
-Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://kreuzberg.dev) ecosystem.
+Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://xberg.io) ecosystem.
 
 <div class="grid cards" markdown>
 
@@ -110,19 +110,19 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://kreuz
 
   Managed extraction API with SDKs, dashboards, and observability.
 
-- :material-spider-web:{ .lg .middle } **[kreuzcrawl](https://docs.kreuzcrawl.kreuzberg.dev)**
+- :material-spider-web:{ .lg .middle } **[kreuzcrawl](https://docs.kreuzcrawl.xberg.io)**
 
   Web crawling and scraping with HTML to Markdown and headless-Chrome fallback.
 
-- :material-language-html5:{ .lg .middle } **[html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev)**
+- :material-language-html5:{ .lg .middle } **[html-to-markdown](https://docs.html-to-markdown.xberg.io)**
 
   Fast, lossless HTML to Markdown engine.
 
-- :material-robot-outline:{ .lg .middle } **[liter-llm](https://docs.liter-llm.kreuzberg.dev)**
+- :material-robot-outline:{ .lg .middle } **[liter-llm](https://docs.liter-llm.xberg.io)**
 
   Universal LLM API client with native bindings for 14 languages and 143 providers.
 
-- :material-code-tags:{ .lg .middle } **[tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev)**
+- :material-code-tags:{ .lg .middle } **[tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io)**
 
   Tree-sitter grammars and code-intelligence primitives.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Kreuzberg CLI installer
-# Usage: curl -fsSL https://kreuzberg.dev/install.sh | bash
+# Usage: curl -fsSL https://xberg.io/install.sh | bash
 #
 # Environment variables:
 #   KREUZBERG_VERSION  - Specific version to install (default: latest)

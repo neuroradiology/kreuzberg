@@ -1,8 +1,8 @@
 [project]
 site_name = "Kreuzberg"
 site_description = "A modern text extraction library supporting PDFs, images, office documents and more"
-site_url = "https://docs.kreuzberg.dev"
-site_author = "kreuzberg.dev"
+site_url = "https://docs.xberg.io"
+site_author = "xberg.io"
 repo_name = "xberg-io/kreuzberg"
 repo_url = "https://github.com/xberg-io/kreuzberg"
 edit_uri = "edit/main/docs/"
@@ -96,7 +96,7 @@ nav = [
     { "File Size Limits" = "reference/file-size-limits.md" },
     { "Format Support" = "reference/formats.md" },
     { "OCR Languages" = "reference/ocr-languages.md" },
-    { "Benchmarks" = "https://kreuzberg.dev/benchmarks" },
+    { "Benchmarks" = "https://xberg.io/benchmarks" },
   ] },
 
   { "More" = [
