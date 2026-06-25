@@ -21,7 +21,7 @@ use crate::error::XbergError;
 use super::types::OrientationResult;
 
 /// HuggingFace repository containing the model.
-const HF_REPO_ID: &str = "Xberg/paddleocr-onnx-models";
+const HF_REPO_ID: &str = "xberg-io/paddleocr-onnx-models";
 const REMOTE_FILENAME: &str = "v2/classifiers/PP-LCNet_x1_0_doc_ori.onnx";
 const SHA256: &str = "6b742aebce6f0f7f71f747931ac7becfc7c96c51641e14943b291eeb334e7947";
 

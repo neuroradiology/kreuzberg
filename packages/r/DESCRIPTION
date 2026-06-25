@@ -1,7 +1,7 @@
 Package: xberg
 Title: High-performance document intelligence library
 Version: 1.0.0.9001
-Authors@R: person("Na'aman", "Hirschfeld", email = "naaman@kreuzberg.dev", role = c("aut", "cre"))
+Authors@R: person("Na'aman", "Hirschfeld", email = "naaman@xberg.io", role = c("aut", "cre"))
 Description: High-performance document intelligence library
     Rust bindings generated with extendr.
 URL: https://github.com/xberg-io/xberg

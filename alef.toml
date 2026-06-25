@@ -4095,7 +4095,7 @@ description = "High-performance document intelligence library"
 license = "Elastic-2.0"
 repository = "https://github.com/xberg-io/xberg"
 homepage = "https://xberg.io"
-authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
+authors = ["Na'aman Hirschfeld <naaman@xberg.io>"]
 keywords = ["document", "extraction", "pdf", "ocr", "text"]
 
 [crates.scaffold.cargo]

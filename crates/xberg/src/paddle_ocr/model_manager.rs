@@ -42,7 +42,7 @@ use crate::model_download;
 
 /// HuggingFace repository containing PaddleOCR ONNX models.
 #[cfg(feature = "paddle-ocr")]
-const HF_REPO_ID: &str = "Xberg/paddleocr-onnx-models";
+const HF_REPO_ID: &str = "xberg-io/paddleocr-onnx-models";
 
 /// Shared model definition (detection and classification).
 #[cfg(feature = "paddle-ocr")]

@@ -73,7 +73,7 @@ struct ModelDefinition {
 const MODELS: &[ModelDefinition] = &[
     ModelDefinition {
         model_type: "rtdetr",
-        hf_repo_id: "Xberg/layout-models",
+        hf_repo_id: "xberg-io/layout-models",
         remote_filename: "rtdetr/model.onnx",
         local_filename: "model.onnx",
         sha256_checksum: "3bf2fb0ee6df87435b7ae47f0f3930ec3dc97ec56fd824acc6d57bc7a6b89ef2",
@@ -81,7 +81,7 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "tatr",
-        hf_repo_id: "Xberg/layout-models",
+        hf_repo_id: "xberg-io/layout-models",
         remote_filename: "tatr/model.onnx",
         local_filename: "tatr.onnx",
         sha256_checksum: "c11f4033da75e9c4d41c403ef356e89caa0a37a7d111b55461e7d5ba856bb6b6",
@@ -89,7 +89,7 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "slanet_wired",
-        hf_repo_id: "Xberg/paddleocr-onnx-models",
+        hf_repo_id: "xberg-io/paddleocr-onnx-models",
         remote_filename: "v2/table/SLANeXt_wired.onnx",
         local_filename: "slanet_wired.onnx",
         sha256_checksum: "64990fa026a7e2e2c2d4ad2c810bc9c6992da76d5f91b54771dfc900927ca3d0",
@@ -97,7 +97,7 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "slanet_wireless",
-        hf_repo_id: "Xberg/paddleocr-onnx-models",
+        hf_repo_id: "xberg-io/paddleocr-onnx-models",
         remote_filename: "v2/table/SLANeXt_wireless.onnx",
         local_filename: "slanet_wireless.onnx",
         sha256_checksum: "b29ae2b4fe0ff8bbf7efd73fda0951227eb1abaedcaa046ad016191c779b7766",
@@ -105,7 +105,7 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "slanet_plus",
-        hf_repo_id: "Xberg/paddleocr-onnx-models",
+        hf_repo_id: "xberg-io/paddleocr-onnx-models",
         remote_filename: "v2/table/SLANet_plus.onnx",
         local_filename: "slanet_plus.onnx",
         sha256_checksum: "e48a401a4ebcddd47fe3822427db24d867a557324f58e438692f588bbe9231de",
@@ -113,7 +113,7 @@ const MODELS: &[ModelDefinition] = &[
     },
     ModelDefinition {
         model_type: "table_classifier",
-        hf_repo_id: "Xberg/paddleocr-onnx-models",
+        hf_repo_id: "xberg-io/paddleocr-onnx-models",
         remote_filename: "v2/classifiers/PP-LCNet_x1_0_table_cls.onnx",
         local_filename: "table_cls.onnx",
         sha256_checksum: "f02bf087e924dadfb109e3b7887d7d56dc961b80e08c64cacf1030f97345b3c3",
@@ -125,7 +125,7 @@ const MODELS: &[ModelDefinition] = &[
         // xberg-io/paddle-to-onnx pipeline (opset 17) and mirrored in the Xberg HF
         // layout-models repo alongside rtdetr/tatr. Upstream PaddlePaddle/PP-DocLayoutV3 ships
         // only Paddle-native weights (no ONNX), so it cannot be downloaded directly.
-        hf_repo_id: "Xberg/layout-models",
+        hf_repo_id: "xberg-io/layout-models",
         remote_filename: "pp_doclayout_v3/model.onnx",
         local_filename: "pp_doclayout_v3.onnx",
         sha256_checksum: "93d1197e55f1c9cb6720275a89684e7ea61cd5830008a837d8c51b19d47926c1",

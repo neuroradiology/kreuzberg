@@ -14,7 +14,7 @@ This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `xbe
 
 ## Models
 
-The action downloads pre-converted ONNX format models from the `Xberg/paddleocr-onnx-models` Hugging Face repository:
+The action downloads pre-converted ONNX format models from the `xberg-io/paddleocr-onnx-models` Hugging Face repository:
 
 | Model Type           | File                                  | Size    | Purpose                                   |
 | -------------------- | ------------------------------------- | ------- | ----------------------------------------- |
@@ -132,7 +132,7 @@ The action downloads models sequentially and will fail if a required model downl
 Models are downloaded from:
 
 ```text
-https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/
+https://huggingface.co/xberg-io/paddleocr-onnx-models/resolve/main/
 ```
 
 If this repository becomes unavailable, the action will fail gracefully. Alternative sources can be configured by modifying the `MODEL_URL` environment variables in the action.

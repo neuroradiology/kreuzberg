@@ -51,7 +51,7 @@ runs:
       if: contains(inputs.models, 'rtdetr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Xberg/layout-models/resolve/main/rtdetr/model.onnx"
+        MODEL_URL="https://huggingface.co/xberg-io/layout-models/resolve/main/rtdetr/model.onnx"
         CACHE_DIR="$HOME/.cache/xberg/layout"
         MODEL_DIR="$CACHE_DIR/rtdetr"
         MODEL_FILE="$MODEL_DIR/model.onnx"
@@ -104,7 +104,7 @@ runs:
       if: contains(inputs.models, 'tatr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Xberg/layout-models/resolve/main/tatr/model.onnx"
+        MODEL_URL="https://huggingface.co/xberg-io/layout-models/resolve/main/tatr/model.onnx"
         CACHE_DIR="$HOME/.cache/xberg/layout"
         MODEL_DIR="$CACHE_DIR/tatr"
         MODEL_FILE="$MODEL_DIR/tatr.onnx"

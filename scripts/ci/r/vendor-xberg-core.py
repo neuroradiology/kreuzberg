@@ -234,7 +234,7 @@ members = [{members_str}]
 version = "{core_version}"
 edition = "2024"
 rust-version = "1.91"
-authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
+authors = ["Na'aman Hirschfeld <naaman@xberg.io>"]
 license = "MIT"
 repository = "https://github.com/xberg-io/xberg"
 homepage = "https://xberg.io"
@@ -329,7 +329,7 @@ def main() -> None:
             content = re.sub(r"^rust-version\.workspace = true$", 'rust-version = "1.91"', content, flags=re.MULTILINE)
             content = re.sub(
                 r"^authors\.workspace = true$",
-                'authors = ["Na\'aman Hirschfeld <naaman@kreuzberg.dev>"]',
+                'authors = ["Na\'aman Hirschfeld <naaman@xberg.io>"]',
                 content,
                 flags=re.MULTILINE,
             )

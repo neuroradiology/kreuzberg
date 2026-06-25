@@ -51,7 +51,7 @@ runs:
       if: contains(inputs.models, 'det') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/PP-OCRv5_server_det_infer.onnx"
+        MODEL_URL="https://huggingface.co/xberg-io/paddleocr-onnx-models/resolve/main/PP-OCRv5_server_det_infer.onnx"
         CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/det"
         MODEL_FILE="$MODEL_DIR/model.onnx"
@@ -81,7 +81,7 @@ runs:
       if: contains(inputs.models, 'cls') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/ch_ppocr_mobile_v2.0_cls_infer.onnx"
+        MODEL_URL="https://huggingface.co/xberg-io/paddleocr-onnx-models/resolve/main/ch_ppocr_mobile_v2.0_cls_infer.onnx"
         CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/cls"
         MODEL_FILE="$MODEL_DIR/model.onnx"
@@ -111,7 +111,7 @@ runs:
       if: contains(inputs.models, 'rec') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/rec/english/model.onnx"
+        MODEL_URL="https://huggingface.co/xberg-io/paddleocr-onnx-models/resolve/main/rec/english/model.onnx"
         CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/rec/english"
         MODEL_FILE="$MODEL_DIR/model.onnx"
@@ -141,7 +141,7 @@ runs:
       if: contains(inputs.models, 'rec') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        DICT_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/rec/english/dict.txt"
+        DICT_URL="https://huggingface.co/xberg-io/paddleocr-onnx-models/resolve/main/rec/english/dict.txt"
         CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/rec/english"
         DICT_FILE="$MODEL_DIR/dict.txt"

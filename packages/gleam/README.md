@@ -53,7 +53,7 @@
   <a href="https://docs.xberg.io/demo.html">
     <img src="https://img.shields.io/badge/%E2%96%B6%EF%B8%8F_Live_Demo-007ec6" alt="Live Demo">
   </a>
-  <a href="https://huggingface.co/Xberg">
+  <a href="https://huggingface.co/xberg-io">
     <img src="https://img.shields.io/badge/%F0%9F%A4%97_Hugging_Face-007ec6" alt="Hugging Face">
   </a>
 </div>

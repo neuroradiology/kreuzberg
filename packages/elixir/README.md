@@ -67,7 +67,7 @@
   <a href="https://docs.xberg.io">
     <img src="https://img.shields.io/badge/Docs-xberg-007ec6" alt="Documentation">
   </a>
-  <a href="https://huggingface.co/Xberg">
+  <a href="https://huggingface.co/xberg-io">
     <img src="https://img.shields.io/badge/Hugging%20Face-Xberg-007ec6" alt="Hugging Face">
   </a>
 </div>
@@ -498,7 +498,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 ## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
-- [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
+- [crawlberg](https://github.com/xberg-io/crawlberg) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
 - [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
