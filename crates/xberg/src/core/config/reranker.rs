@@ -97,7 +97,7 @@ pub enum RerankerModelType {
 
     /// Use a custom ONNX cross-encoder from HuggingFace.
     Custom {
-        /// HuggingFace model repository ID (e.g. "cross-encoder/ms-marco-MiniLM-L-6-v2").
+        /// HuggingFace model repository ID (e.g. "cross-encoder/ms-marco-MiniLM-L6-v2").
         model_id: String,
         /// Path to the ONNX file within the repo.
         ///
@@ -224,7 +224,7 @@ mod tests {
     fn serde_roundtrip_custom() {
         let config = RerankerConfig {
             model: RerankerModelType::Custom {
-                model_id: "cross-encoder/ms-marco-MiniLM-L-6-v2".to_string(),
+                model_id: "cross-encoder/ms-marco-MiniLM-L6-v2".to_string(),
                 model_file: None,
                 additional_files: Vec::new(),
                 max_length: Some(512),

@@ -8,7 +8,7 @@
 //!   encoder.onnx
 //!   decoder.onnx
 //!   decoder_with_past.onnx
-//!   decoder_model_merged.onnx_data   (Small, Medium, LargeV3 only)
+//!   decoder_model_merged.onnx_data   (LargeV3 only)
 //!   tokenizer.json
 //!   config.json
 //! ```
@@ -20,14 +20,18 @@
 //!
 //! # HF repos
 //!
-//! All models are fetched from `onnx-community/whisper-{size}`.
+//! Tiny, Base, and Small are fetched from `onnx-community/whisper-{size}`;
+//! Medium and LargeV3 from `Xenova/whisper-{size}` (onnx-community does not
+//! publish ONNX exports for those two sizes). All use the same file layout.
 //!
-//! # Shards
+//! # Decoder layout
 //!
 //! Small, Medium, and LargeV3 export a single merged decoder file
-//! (`onnx/decoder_model_merged.onnx`) accompanied by a shard data file
-//! (`onnx/decoder_model_merged.onnx_data`). Tiny and Base ship unsharded
-//! individual ONNX files that fit within the 2 GiB protobuf limit.
+//! (`onnx/decoder_model_merged.onnx`) used for both the initial and KV-cache
+//! passes. LargeV3 additionally carries its weights in an external
+//! `onnx/decoder_model_merged.onnx_data` shard (its decoder exceeds the 2 GiB
+//! protobuf limit); Small and Medium are self-contained. Tiny and Base ship
+//! separate `decoder_model.onnx` / `decoder_with_past_model.onnx` files.
 
 #[cfg(feature = "transcription")]
 use std::path::{Path, PathBuf};
@@ -102,8 +106,8 @@ pub(crate) fn hf_repo(model: WhisperModel) -> &'static str {
         WhisperModel::Tiny => "onnx-community/whisper-tiny",
         WhisperModel::Base => "onnx-community/whisper-base",
         WhisperModel::Small => "onnx-community/whisper-small",
-        WhisperModel::Medium => "onnx-community/whisper-medium",
-        WhisperModel::LargeV3 => "onnx-community/whisper-large-v3",
+        WhisperModel::Medium => "Xenova/whisper-medium",
+        WhisperModel::LargeV3 => "Xenova/whisper-large-v3",
     }
 }
 
@@ -119,15 +123,25 @@ pub(crate) fn n_mels(model: WhisperModel) -> u32 {
 }
 
 /// Returns `true` when the model ships its decoder as a single merged file
-/// accompanied by an external `.onnx_data` shard (Small, Medium, LargeV3).
+/// (`decoder_model_merged.onnx`), used for both the initial and KV-cache
+/// passes (Small, Medium, LargeV3).
 ///
-/// Tiny and Base are small enough to ship without a shard.
+/// Tiny and Base ship separate `decoder_model.onnx` /
+/// `decoder_with_past_model.onnx` files instead.
 #[cfg(feature = "transcription")]
 fn is_sharded(model: WhisperModel) -> bool {
     matches!(
         model,
         WhisperModel::Small | WhisperModel::Medium | WhisperModel::LargeV3
     )
+}
+
+/// Returns `true` when the merged decoder carries its weights in a separate
+/// external `.onnx_data` shard. Only LargeV3's decoder exceeds the 2 GB
+/// protobuf limit; Small and Medium ship a self-contained merged decoder.
+#[cfg(feature = "transcription")]
+fn has_external_data_shard(model: WhisperModel) -> bool {
+    matches!(model, WhisperModel::LargeV3)
 }
 
 /// Remote paths (relative to the repo root on HF Hub) for the files that
@@ -139,15 +153,19 @@ fn is_sharded(model: WhisperModel) -> bool {
 #[cfg(feature = "transcription")]
 fn model_files(model: WhisperModel) -> Vec<(&'static str, &'static str)> {
     if is_sharded(model) {
-        // Merged decoder: one ONNX + one external data shard.
-        // Both `decoder` and `decoder_with_past` point at the merged file.
-        vec![
+        // Merged decoder: a single ONNX used for both passes. LargeV3 also
+        // carries an external `.onnx_data` weight shard; Small and Medium are
+        // self-contained.
+        let mut files = vec![
             ("onnx/encoder_model.onnx", "encoder.onnx"),
             ("onnx/decoder_model_merged.onnx", "decoder.onnx"),
-            ("onnx/decoder_model_merged.onnx_data", "decoder.onnx_data"),
-            ("tokenizer.json", "tokenizer.json"),
-            ("config.json", "config.json"),
-        ]
+        ];
+        if has_external_data_shard(model) {
+            files.push(("onnx/decoder_model_merged.onnx_data", "decoder.onnx_data"));
+        }
+        files.push(("tokenizer.json", "tokenizer.json"));
+        files.push(("config.json", "config.json"));
+        files
     } else {
         // Tiny and Base: individual ONNX files, no data shards.
         vec![
@@ -470,12 +488,31 @@ mod tests {
 
     #[cfg(feature = "transcription")]
     #[test]
-    fn hf_repo_pattern_is_onnx_community() {
+    fn hf_repo_points_at_published_onnx_exports() {
         assert_eq!(hf_repo(WhisperModel::Tiny), "onnx-community/whisper-tiny");
         assert_eq!(hf_repo(WhisperModel::Base), "onnx-community/whisper-base");
         assert_eq!(hf_repo(WhisperModel::Small), "onnx-community/whisper-small");
-        assert_eq!(hf_repo(WhisperModel::Medium), "onnx-community/whisper-medium");
-        assert_eq!(hf_repo(WhisperModel::LargeV3), "onnx-community/whisper-large-v3");
+        assert_eq!(hf_repo(WhisperModel::Medium), "Xenova/whisper-medium");
+        assert_eq!(hf_repo(WhisperModel::LargeV3), "Xenova/whisper-large-v3");
+    }
+
+    #[cfg(feature = "transcription")]
+    #[test]
+    fn only_large_v3_uses_external_data_shard() {
+        assert!(!has_external_data_shard(WhisperModel::Small));
+        assert!(!has_external_data_shard(WhisperModel::Medium));
+        assert!(has_external_data_shard(WhisperModel::LargeV3));
+        // Small/Medium merged decoders are self-contained (no .onnx_data download).
+        assert!(
+            !model_files(WhisperModel::Small)
+                .iter()
+                .any(|(remote, _)| remote.ends_with(".onnx_data"))
+        );
+        assert!(
+            model_files(WhisperModel::LargeV3)
+                .iter()
+                .any(|(remote, _)| remote.ends_with(".onnx_data"))
+        );
     }
 
     #[cfg(feature = "transcription")]
