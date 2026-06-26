@@ -115,6 +115,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `cache_namespace` | `str \| None` | `None` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cache_ttl_secs` | `int \| None` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
 | `email` | `EmailConfig \| None` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `url` | `UrlExtractionConfig` | — | URL ingestion and crawl configuration. |
 | `max_archive_depth` | `int` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `TreeSitterConfig \| None` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `StructuredExtractionConfig \| None` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
@@ -179,7 +180,7 @@ cannot be overridden per file:
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat.Svg`. Available when the `svg` feature is active.
+`ImageOutputFormat.Svg`.  Available when the `svg` feature is active.
 
 Used via `ImageExtractionConfig.svg`.
 
@@ -187,6 +188,78 @@ Used via `ImageExtractionConfig.svg`.
 |-------|------|---------|-------------|
 | `sanitize` | `bool` | `True` | Run SVG bytes through `usvg` sanitization (strips external `href` attributes, JavaScript event handlers, and `foreignObject` elements) even when the output format is `Native`.  Defaults to `True`. |
 | `render_dpi` | `float` | `96` | Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's viewBox is scaled by `render_dpi / 96.0` before the pixel buffer is allocated.  Defaults to `96.0` (1× CSS pixel density). |
+
+---
+
+### ExtractInput
+
+Unified extraction input for all public extraction entry points.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `kind` | `ExtractInputKind` | `ExtractInputKind.URI` | Source kind. `bytes` requires `bytes`; `uri` requires `uri`. |
+| `bytes` | `bytes \| None` | `None` | Raw bytes for `kind = "bytes"`. |
+| `uri` | `str \| None` | `None` | Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`. |
+| `mime_type` | `str \| None` | `None` | MIME type hint. |
+| `filename` | `str \| None` | `None` | Filename hint used for MIME detection and metadata. |
+| `config` | `FileExtractionConfig \| None` | `None` | Per-input extraction overrides. |
+
+---
+
+### ExtractionSummary
+
+Summary for a unified extraction call.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `inputs` | `int` | — | Number of inputs submitted by the caller. |
+| `results` | `int` | — | Number of extraction results produced. |
+| `errors` | `int` | — | Number of per-input errors. |
+| `remote_urls` | `int` | — | Number of URI inputs that resolved to remote HTTP(S) URLs. |
+| `pages_crawled` | `int` | — | Number of HTML pages crawled or scraped. |
+| `documents_downloaded` | `int` | — | Number of downloaded non-HTML documents extracted from URLs. |
+
+---
+
+### ExtractionOutput
+
+Unified extraction output envelope.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `list\[ExtractionResult\]` | `\[\]` | Extraction results in discovery order. |
+| `errors` | `list\[ExtractionErrorItem\]` | `\[\]` | Non-fatal per-input errors. |
+| `summary` | `ExtractionSummary` | — | Aggregate counts for the operation. |
+| `crawl` | `dict\[str, dict\[str, Any\]\]` | `{}` | Optional implementation-specific crawl metadata. |
+
+---
+
+### UrlExtractionConfig
+
+URL ingestion and crawl configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | `UrlExtractionMode` | `UrlExtractionMode.AUTO` | URL extraction mode. |
+| `max_depth` | `int \| None` | `None` | Maximum crawl depth from a seed URL. |
+| `max_pages` | `int \| None` | `None` | Maximum pages to crawl. |
+| `max_concurrent` | `int \| None` | `None` | Maximum concurrent requests. |
+| `stay_on_domain` | `bool` | `True` | Stay on the seed domain. |
+| `allow_subdomains` | `bool` | `True` | Allow subdomains when staying on domain. |
+| `include_paths` | `list\[str\]` | `\[\]` | Regex path include filters. |
+| `exclude_paths` | `list\[str\]` | `\[\]` | Regex path exclude filters. |
+| `respect_robots_txt` | `bool` | `True` | Respect robots.txt. |
+| `user_agent` | `str \| None` | `None` | Custom user agent. |
+| `request_timeout_secs` | `int \| None` | `None` | Per-request timeout in seconds. |
+| `download_documents` | `bool` | `True` | Download non-HTML documents discovered during crawl. |
+| `document_max_size_bytes` | `int \| None` | `None` | Maximum size for downloaded documents. |
+| `allowed_file_types` | `list\[str\]` | `\[\]` | MIME allowlist for downloaded documents. |
+| `follow_document_urls` | `bool` | `False` | Follow URLs discovered inside extracted documents. |
+| `document_url_depth` | `int \| None` | `None` | Maximum recursive document URL depth. |
+| `document_url_pattern` | `str \| None` | `None` | Optional regex filter for document-discovered URLs. |
+| `max_document_urls_per_result` | `int \| None` | `None` | Maximum URLs to follow per extraction result. |
+| `max_total_urls` | `int \| None` | `None` | Maximum URLs followed across the whole extraction call. |
+| `allow_file_uris` | `bool` | `True` | Allow local `file://` URI inputs. |
 
 ---
 
@@ -381,7 +454,7 @@ OCR configuration.
 | `tesseract_config` | `TesseractConfig \| None` | `None` | Tesseract-specific configuration (optional) |
 | `output_format` | `OutputFormat \| None` | `None` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `dict\[str, Any\] \| None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backend_options` | `dict\[str, Any\] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backend_options` | `dict\[str, Any\] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `OcrElementConfig \| None` | `None` | OCR element extraction configuration |
 | `quality_thresholds` | `OcrQualityThresholds \| None` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `OcrPipelineConfig \| None` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -1647,7 +1720,7 @@ All fields are public; callers override any subset via struct-update syntax.
 
 Thresholds for the structured-extraction call-mode heuristic.
 
-All defaults are **conservative starting points**. Deployments should
+All defaults are **conservative starting points**.  Deployments should
 measure their own document corpus and override via their own config;
 these values are chosen to be safe-by-default, not to be optimal for
 any particular workload.
@@ -1872,6 +1945,17 @@ Determines which hardware backend is used for model inference.
 | `CoreMl` | `coreml` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
 | `Cuda` | `cuda` | NVIDIA CUDA GPU acceleration. |
 | `TensorRt` | `tensorrt` | NVIDIA TensorRT (optimized CUDA inference). |
+
+---
+
+#### ExtractInputKind
+
+Source kind for `ExtractInput`.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Bytes` | `bytes` | Raw in-memory bytes. |
+| `Uri` | `uri` | A filesystem path, `file://` URI, or HTTP(S) URL. |
 
 ---
 
@@ -2200,6 +2284,18 @@ Text direction enumeration for HTML documents.
 | `LeftToRight` | `ltr` | Left-to-right text direction |
 | `RightToLeft` | `rtl` | Right-to-left text direction |
 | `Auto` | `auto` | Automatic text direction detection |
+
+---
+
+#### UrlExtractionMode
+
+URL extraction mode.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Auto` | `auto` | Classify HTTP(S) resources after fetch. |
+| `Document` | `document` | Treat the URI as a single remote document/page. |
+| `Crawl` | `crawl` | Crawl from the seed URI and extract discovered pages/documents. |
 
 ---
 

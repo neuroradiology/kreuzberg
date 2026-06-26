@@ -1,6 +1,6 @@
 using Xberg;
 
-var result = await XbergClient.ExtractFileAsync("document.pdf");
+var result = await XbergClient.ExtractAsync("document.pdf");
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"Tables: {result.Tables.Count}");

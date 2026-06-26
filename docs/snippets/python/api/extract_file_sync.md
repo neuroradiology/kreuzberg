@@ -1,7 +1,7 @@
 ```python title="Python"
-from xberg import extract_file_sync, ExtractionConfig
+from xberg import extract_sync, ExtractionConfig
 
-result = extract_file_sync("document.pdf", config=ExtractionConfig())
+result = extract_sync("document.pdf", config=ExtractionConfig())
 
 print(result.content[:200])
 print(f"Tables: {len(result.tables)}")

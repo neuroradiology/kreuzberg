@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractFile("document.pdf", nil, xberg.ExtractionConfig{})
+	result, err := xberg.Extract("document.pdf", nil, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

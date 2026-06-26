@@ -2,7 +2,7 @@
 using Xberg;
 
 var config = new ExtractionConfig { OutputFormat = OutputFormat.Text };
-var result = await XbergLib.ExtractFile("document.pdf", null, config);
+var result = await XbergLib.Extract("document.pdf", null, config);
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");

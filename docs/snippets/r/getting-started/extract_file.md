@@ -2,7 +2,7 @@
 library(xberg)
 
 # Extract a file and inspect the result
-result <- extract_file_sync("document.pdf")
+result <- extract_sync("document.pdf")
 
 # Print result information
 cat(sprintf("MIME type: %s\n", mime_type(result)))

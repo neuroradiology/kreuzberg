@@ -8,7 +8,7 @@ let content = RustVec<UInt8>()
 for byte in data { content.push(value: byte) }
 
 let config = try extractionConfigFromJson("{}")
-let result = try extractBytesSync(content, "application/pdf", config)
+let result = try extractSync(content, "application/pdf", config)
 
 print(result.content().toString())
 print("Tables: \(result.tables().count)")

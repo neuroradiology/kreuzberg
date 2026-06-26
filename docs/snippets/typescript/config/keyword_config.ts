@@ -1,6 +1,6 @@
 import {
   type ExtractionConfig,
-  extractFile,
+  extract,
   type RakeParams,
   type YakeParams,
 } from "@xberg/node";
@@ -20,7 +20,7 @@ async function basicYake(): Promise<void> {
     },
   };
 
-  const result = await extractFile("document.pdf", null, config);
+  const result = await extract("document.pdf", null, config);
   console.log("Keywords:", result.keywords);
 }
 
@@ -41,7 +41,7 @@ async function _advancedYake(): Promise<void> {
     },
   };
 
-  const result = await extractFile("document.pdf", null, config);
+  const result = await extract("document.pdf", null, config);
   console.log("Keywords:", result.keywords);
 }
 
@@ -63,7 +63,7 @@ async function _rakeConfig(): Promise<void> {
     },
   };
 
-  const result = await extractFile("document.pdf", null, config);
+  const result = await extract("document.pdf", null, config);
   console.log("Keywords:", result.keywords);
 }
 

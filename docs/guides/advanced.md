@@ -558,12 +558,12 @@ extract_form_fields = false
 === "Python"
 
     ```python
-    from xberg import extract_file, ExtractionConfig, PdfConfig
+    from xberg import extract, ExtractionConfig, PdfConfig
 
     config = ExtractionConfig(
         pdf=PdfConfig(extract_form_fields=True)
     )
-    result = extract_file("form.pdf", config=config)
+    result = extract("form.pdf", config=config)
 
     for field in result.form_fields:
         print(f"Field: {field.full_name} = {field.value or '(empty)'}")
@@ -589,7 +589,7 @@ extract_form_fields = false
 === "Rust"
 
     ```rust
-    use xberg::{extract_file, ExtractionConfig, PdfConfig};
+    use xberg::{extract, ExtractionConfig, PdfConfig};
 
     let config = ExtractionConfig {
         pdf: Some(PdfConfig {
@@ -599,7 +599,7 @@ extract_form_fields = false
         ..Default::default()
     };
 
-    let result = extract_file("form.pdf", None, &config).await?;
+    let result = extract("form.pdf", None, &config).await?;
     for field in &result.form_fields {
         println!("Field: {} = {}", field.full_name, field.value.as_deref().unwrap_or("(empty)"));
         println!("  Type: {:?}, Page: {:?}", field.field_type, field.page);
@@ -643,7 +643,7 @@ extract_form_fields = false
 Extract field values to populate templates or CRMs:
 
 ```python
-result = extract_file("invoice_form.pdf")
+result = extract("invoice_form.pdf")
 form_data = {f.full_name: f.value for f in result.form_fields if f.value}
 # Submit form_data to downstream system
 ```

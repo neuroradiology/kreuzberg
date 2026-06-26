@@ -4,14 +4,14 @@ import io.xberg.ExtractionResult;
 import io.xberg.ExtractionConfig;
 import java.io.IOException;
 
-public class ExtractFile {
+public class Extract {
     public static void main(String[] args) throws IOException {
         ExtractionConfig config = ExtractionConfig.builder()
             .useCache(true)
             .enableQualityProcessing(true)
             .build();
 
-        ExtractionResult result = Xberg.extractFile("contract.pdf", config);
+        ExtractionResult result = Xberg.extract("contract.pdf", config);
 
         System.out.println("Extracted " + result.getContent().length() + " characters");
         System.out.println("Quality score: " + result.getQualityScore());

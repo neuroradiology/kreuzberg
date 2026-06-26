@@ -3,7 +3,7 @@ library(xberg)
 
 # Batch extract from multiple files
 files <- c("report.pdf", "slides.pptx", "data.xlsx")
-results <- batch_extract_files_sync(files)
+results <- extract_batch_sync(files)
 
 for (i in seq_along(results)) {
   cat(sprintf("File: %s\n", files[i]))

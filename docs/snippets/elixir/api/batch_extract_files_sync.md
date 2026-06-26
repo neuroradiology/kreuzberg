@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule Example do
-  def batch_extract_files do
+  def extract_batch do
     files = ["doc1.pdf", "doc2.docx", "report.pdf"]
     config = nil
 
@@ -8,7 +8,7 @@ defmodule Example do
       files
       |> Task.async_stream(
         fn file ->
-          Xberg.extract_file_sync(file, nil, config)
+          Xberg.extract_sync(file, nil, config)
         end,
         max_concurrency: 4
       )

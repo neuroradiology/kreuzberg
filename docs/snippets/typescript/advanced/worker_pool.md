@@ -5,8 +5,8 @@ Use worker pools for CPU-bound batch processing to maximize parallelism and thro
 ```typescript title="worker_pool.ts"
 import {
   createWorkerPool,
-  extractFileInWorker,
-  batchExtractFilesInWorker,
+  extractInWorker,
+  extractBatchInWorker,
   closeWorkerPool,
 } from "@xberg/node";
 
@@ -15,14 +15,14 @@ const pool = createWorkerPool(4);
 
 try {
   // Extract single file in worker
-  const result = await extractFileInWorker(pool, "document.pdf", null, {
+  const result = await extractInWorker(pool, "document.pdf", null, {
     useCache: true,
   });
   console.log(result.content);
 
   // Extract multiple files concurrently
   const files = ["doc1.pdf", "doc2.docx", "doc3.xlsx"];
-  const results = await batchExtractFilesInWorker(pool, files, {
+  const results = await extractBatchInWorker(pool, files, {
     useCache: true,
   });
 

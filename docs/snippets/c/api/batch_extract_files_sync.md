@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 int main(void) {
-    /* Items is a JSON array of BatchFileItem objects.
+    /* Items is a JSON array of ExtractInput objects.
      * Each entry has a "path" field and an optional "config" override. */
     const char *items_json =
         "["
@@ -17,7 +17,7 @@ int main(void) {
 
     /* Returns a JSON array of ExtractionResult objects, or NULL on failure. */
     char *results_json =
-        xberg_batch_extract_files_sync(items_json, config);
+        xberg_extract_batch_sync(items_json, config);
     if (!results_json) {
         fprintf(stderr, "batch extraction failed (code %d): %s\n",
                 xberg_last_error_code(),

@@ -1,13 +1,13 @@
 ```r title="R"
 library(xberg)
 
-# extract_bytes is the async variant; the call blocks the calling R thread
+# extract is the async variant; the call blocks the calling R thread
 # until the underlying tokio task completes. Use future/promises if you need
 # to fan out without blocking.
 path <- "document.pdf"
 content <- readBin(path, what = "raw", n = file.info(path)$size)
 
-json <- extract_bytes(
+json <- extract(
   content = content,
   mime_type = "application/pdf",
   config = ExtractionConfig$default()

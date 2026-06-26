@@ -9,7 +9,7 @@ items <- jsonlite::toJSON(lapply(seq_along(paths), function(i) {
   list(content = as.integer(bytes), mime_type = mimes[i])
 }), auto_unbox = TRUE)
 
-json <- batch_extract_bytes_sync(items = items, config = ExtractionConfig$default())
+json <- extract_batch_sync(items = items, config = ExtractionConfig$default())
 results <- jsonlite::fromJSON(json, simplifyVector = FALSE)
 
 for (i in seq_along(results)) {

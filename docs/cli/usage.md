@@ -826,9 +826,9 @@ xberg mcp --config xberg.toml --transport stdio
 
 The MCP server provides tools for AI agents:
 
-- `extract_file` - Extract text from a file path
-- `extract_bytes` - Extract text from base64-encoded bytes
-- `batch_extract` - Extract from multiple files
+- `extract` - Extract text from a file path
+- `extract` - Extract text from base64-encoded bytes
+- `extract_batch` - Extract from multiple files
 
 See [API Server Guide](../guides/api-server.md) for MCP integration details.
 

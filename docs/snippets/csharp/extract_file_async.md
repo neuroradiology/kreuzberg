@@ -1,7 +1,7 @@
 ```csharp title="C#"
 using Xberg;
 
-var result = await XbergLib.ExtractFileAsync("document.pdf");
+var result = await XbergLib.ExtractAsync("document.pdf");
 
 Console.WriteLine(result.Content);
 Console.WriteLine(result.MimeType);

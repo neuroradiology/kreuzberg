@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* xberg_extract_bytes schedules work on the global Tokio runtime and
+/* xberg_extract schedules work on the global Tokio runtime and
  * returns once extraction is complete.  For true non-blocking use, call it
  * from a dedicated OS thread and synchronize via a semaphore or callback. */
 int main(void) {
@@ -15,7 +15,7 @@ int main(void) {
     XBERGExtractionConfig *config = xberg_extraction_config_default();
 
     XBERGExtractionResult *result =
-        xberg_extract_bytes(bytes, len, "text/plain", config);
+        xberg_extract(bytes, len, "text/plain", config);
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
                 xberg_last_error_code(),

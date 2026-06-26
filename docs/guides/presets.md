@@ -14,7 +14,7 @@ A preset encapsulates the configuration needed to extract structured data from a
 - **Call mode** — Whether to extract from text only, vision only, or both.
 - **Citations** — Whether the prompt asks the model to emit field citations (page, bbox).
 
-The OSS library ships exactly one preset (`generic_document`) as a synthetic example. Downstream consumers (Xberg Enterprise, internal applications) load additional presets at runtime via `Registry::extend_from_dir`.
+The OSS library ships exactly one preset (`generic_document`) as a synthetic example. Downstream applications load additional presets at runtime via `Registry::extend_from_dir`.
 
 ## Loading Presets
 

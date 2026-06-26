@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractFilesSync } from "xberg";
+import { extractBatchSync } from "xberg";
 
 const items = [
   { path: "doc1.pdf", config: undefined },
@@ -7,7 +7,7 @@ const items = [
   { path: "report.pdf", config: undefined },
 ];
 
-const results = batchExtractFilesSync(items);
+const results = extractBatchSync(items);
 
 results.forEach((result, i) => {
   console.log(`File ${i}: ${result.content.length} chars`);

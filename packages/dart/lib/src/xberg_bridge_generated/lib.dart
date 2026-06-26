@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -67,6 +67,19 @@ Future<ExtractionResult> extractFile({
   mimeType: mimeType,
   config: config,
 );
+
+/// Synchronous wrapper for `extract`.
+Future<ExtractionOutput> extractSync({
+  required ExtractInput input,
+  required ExtractionConfig config,
+}) => RustLib.instance.api.crateExtractSync(input: input, config: config);
+
+/// Synchronous wrapper for `extract_batch`.
+Future<ExtractionOutput> extractBatchSync({
+  required List<ExtractInput> inputs,
+  required ExtractionConfig config,
+}) =>
+    RustLib.instance.api.crateExtractBatchSync(inputs: inputs, config: config);
 
 /// Synchronous wrapper for `extract_file`.
 ///
@@ -130,6 +143,18 @@ Future<List<ExtractionResult>> batchExtractBytesSync({
   items: items,
   config: config,
 );
+
+/// Extract content from a single bytes or URI input.
+Future<ExtractionOutput> extract({
+  required ExtractInput input,
+  required ExtractionConfig config,
+}) => RustLib.instance.api.crateExtract(input: input, config: config);
+
+/// Extract content from multiple bytes or URI inputs.
+Future<ExtractionOutput> extractBatch({
+  required List<ExtractInput> inputs,
+  required ExtractionConfig config,
+}) => RustLib.instance.api.crateExtractBatch(inputs: inputs, config: config);
 
 /// Extract content from multiple files concurrently.
 ///
@@ -1069,6 +1094,25 @@ Future<FileExtractionConfig> createFileExtractionConfigFromJson({
 
 Future<SvgOptions> createSvgOptionsFromJson({required String json}) =>
     RustLib.instance.api.crateCreateSvgOptionsFromJson(json: json);
+
+Future<ExtractInput> createExtractInputFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateExtractInputFromJson(json: json);
+
+Future<ExtractionErrorItem> createExtractionErrorItemFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateExtractionErrorItemFromJson(json: json);
+
+Future<ExtractionSummary> createExtractionSummaryFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateExtractionSummaryFromJson(json: json);
+
+Future<ExtractionOutput> createExtractionOutputFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateExtractionOutputFromJson(json: json);
+
+Future<UrlExtractionConfig> createUrlExtractionConfigFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateUrlExtractionConfigFromJson(json: json);
 
 Future<BatchBytesItem> createBatchBytesItemFromJson({required String json}) =>
     RustLib.instance.api.crateCreateBatchBytesItemFromJson(json: json);
@@ -5624,6 +5668,66 @@ enum ExecutionProviderType {
   tensorRt,
 }
 
+/// Unified extraction input for all public extraction entry points.
+class ExtractInput {
+  /// Source kind. `bytes` requires `bytes`; `uri` requires `uri`.
+  final ExtractInputKind kind;
+
+  /// Raw bytes for `kind = "bytes"`.
+  final Uint8List? bytes;
+
+  /// Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`.
+  final String? uri;
+
+  /// MIME type hint.
+  final String? mimeType;
+
+  /// Filename hint used for MIME detection and metadata.
+  final String? filename;
+
+  /// Per-input extraction overrides.
+  final FileExtractionConfig? config;
+
+  const ExtractInput({
+    required this.kind,
+    this.bytes,
+    this.uri,
+    this.mimeType,
+    this.filename,
+    this.config,
+  });
+
+  @override
+  int get hashCode =>
+      kind.hashCode ^
+      bytes.hashCode ^
+      uri.hashCode ^
+      mimeType.hashCode ^
+      filename.hashCode ^
+      config.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractInput &&
+          runtimeType == other.runtimeType &&
+          kind == other.kind &&
+          bytes == other.bytes &&
+          uri == other.uri &&
+          mimeType == other.mimeType &&
+          filename == other.filename &&
+          config == other.config;
+}
+
+/// Source kind for [`ExtractInput`].
+enum ExtractInputKind {
+  /// Raw in-memory bytes.
+  bytes,
+
+  /// A filesystem path, `file://` URI, or HTTP(S) URL.
+  uri,
+}
+
 /// Extracted image from a document.
 ///
 /// Contains raw image data, metadata, and optional nested OCR results.
@@ -6077,6 +6181,9 @@ class ExtractionConfig {
   /// that do not specify one. See `EmailConfig` for details.
   final EmailConfig? email;
 
+  /// URL ingestion and crawl configuration.
+  final UrlExtractionConfig url;
+
   /// Maximum recursion depth for archive extraction (default: 3).
   /// Set to 0 to disable recursive extraction (legacy behavior).
   final PlatformInt64 maxArchiveDepth;
@@ -6155,6 +6262,7 @@ class ExtractionConfig {
     this.cacheNamespace,
     this.cacheTtlSecs,
     this.email,
+    required this.url,
     required this.maxArchiveDepth,
     this.treeSitter,
     this.structuredExtraction,
@@ -6199,6 +6307,7 @@ class ExtractionConfig {
       cacheNamespace.hashCode ^
       cacheTtlSecs.hashCode ^
       email.hashCode ^
+      url.hashCode ^
       maxArchiveDepth.hashCode ^
       treeSitter.hashCode ^
       structuredExtraction.hashCode ^
@@ -6245,6 +6354,7 @@ class ExtractionConfig {
           cacheNamespace == other.cacheNamespace &&
           cacheTtlSecs == other.cacheTtlSecs &&
           email == other.email &&
+          url == other.url &&
           maxArchiveDepth == other.maxArchiveDepth &&
           treeSitter == other.treeSitter &&
           structuredExtraction == other.structuredExtraction &&
@@ -6318,6 +6428,51 @@ class ExtractionDiff {
           embeddedChanges == other.embeddedChanges;
 }
 
+/// Non-fatal per-input extraction error captured by [`ExtractionOutput`].
+class ExtractionErrorItem {
+  /// Input index in the original request.
+  final PlatformInt64 index;
+
+  /// Stable numeric error code.
+  final PlatformInt64 code;
+
+  /// Stable snake_case error kind.
+  final String errorType;
+
+  /// Best-effort source identifier.
+  final String source;
+
+  /// Error message.
+  final String message;
+
+  const ExtractionErrorItem({
+    required this.index,
+    required this.code,
+    required this.errorType,
+    required this.source,
+    required this.message,
+  });
+
+  @override
+  int get hashCode =>
+      index.hashCode ^
+      code.hashCode ^
+      errorType.hashCode ^
+      source.hashCode ^
+      message.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractionErrorItem &&
+          runtimeType == other.runtimeType &&
+          index == other.index &&
+          code == other.code &&
+          errorType == other.errorType &&
+          source == other.source &&
+          message == other.message;
+}
+
 /// How the extracted text was produced.
 enum ExtractionMethod {
   /// Text extracted directly from the document's native format (no OCR).
@@ -6328,6 +6483,42 @@ enum ExtractionMethod {
 
   /// Text came from a combination of native extraction and OCR.
   mixed,
+}
+
+/// Unified extraction output envelope.
+class ExtractionOutput {
+  /// Extraction results in discovery order.
+  final List<ExtractionResult> results;
+
+  /// Non-fatal per-input errors.
+  final List<ExtractionErrorItem> errors;
+
+  /// Aggregate counts for the operation.
+  final ExtractionSummary summary;
+
+  /// Optional implementation-specific crawl metadata.
+  final Map<String, String> crawl;
+
+  const ExtractionOutput({
+    required this.results,
+    required this.errors,
+    required this.summary,
+    required this.crawl,
+  });
+
+  @override
+  int get hashCode =>
+      results.hashCode ^ errors.hashCode ^ summary.hashCode ^ crawl.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractionOutput &&
+          runtimeType == other.runtimeType &&
+          results == other.results &&
+          errors == other.errors &&
+          summary == other.summary &&
+          crawl == other.crawl;
 }
 
 /// General extraction result used by the core extraction API.
@@ -6673,6 +6864,57 @@ class ExtractionResult {
           formulas == other.formulas &&
           formFields == other.formFields &&
           formattedContent == other.formattedContent;
+}
+
+/// Summary for a unified extraction call.
+class ExtractionSummary {
+  /// Number of inputs submitted by the caller.
+  final PlatformInt64 inputs;
+
+  /// Number of extraction results produced.
+  final PlatformInt64 results;
+
+  /// Number of per-input errors.
+  final PlatformInt64 errors;
+
+  /// Number of URI inputs that resolved to remote HTTP(S) URLs.
+  final PlatformInt64 remoteUrls;
+
+  /// Number of HTML pages crawled or scraped.
+  final PlatformInt64 pagesCrawled;
+
+  /// Number of downloaded non-HTML documents extracted from URLs.
+  final PlatformInt64 documentsDownloaded;
+
+  const ExtractionSummary({
+    required this.inputs,
+    required this.results,
+    required this.errors,
+    required this.remoteUrls,
+    required this.pagesCrawled,
+    required this.documentsDownloaded,
+  });
+
+  @override
+  int get hashCode =>
+      inputs.hashCode ^
+      results.hashCode ^
+      errors.hashCode ^
+      remoteUrls.hashCode ^
+      pagesCrawled.hashCode ^
+      documentsDownloaded.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractionSummary &&
+          runtimeType == other.runtimeType &&
+          inputs == other.inputs &&
+          results == other.results &&
+          errors == other.errors &&
+          remoteUrls == other.remoteUrls &&
+          pagesCrawled == other.pagesCrawled &&
+          documentsDownloaded == other.documentsDownloaded;
 }
 
 /// FictionBook (FB2) metadata.
@@ -14391,6 +14633,153 @@ enum UriKind {
 
   /// An email address (`mailto:` link or bare email).
   email,
+}
+
+/// URL ingestion and crawl configuration.
+class UrlExtractionConfig {
+  /// URL extraction mode.
+  final UrlExtractionMode mode;
+
+  /// Maximum crawl depth from a seed URL.
+  final PlatformInt64? maxDepth;
+
+  /// Maximum pages to crawl.
+  final PlatformInt64? maxPages;
+
+  /// Maximum concurrent requests.
+  final PlatformInt64? maxConcurrent;
+
+  /// Stay on the seed domain.
+  final bool stayOnDomain;
+
+  /// Allow subdomains when staying on domain.
+  final bool allowSubdomains;
+
+  /// Regex path include filters.
+  final List<String> includePaths;
+
+  /// Regex path exclude filters.
+  final List<String> excludePaths;
+
+  /// Respect robots.txt.
+  final bool respectRobotsTxt;
+
+  /// Custom user agent.
+  final String? userAgent;
+
+  /// Per-request timeout in seconds.
+  final PlatformInt64? requestTimeoutSecs;
+
+  /// Download non-HTML documents discovered during crawl.
+  final bool downloadDocuments;
+
+  /// Maximum size for downloaded documents.
+  final PlatformInt64? documentMaxSizeBytes;
+
+  /// MIME allowlist for downloaded documents.
+  final List<String> allowedFileTypes;
+
+  /// Follow URLs discovered inside extracted documents.
+  final bool followDocumentUrls;
+
+  /// Maximum recursive document URL depth.
+  final PlatformInt64? documentUrlDepth;
+
+  /// Optional regex filter for document-discovered URLs.
+  final String? documentUrlPattern;
+
+  /// Maximum URLs to follow per extraction result.
+  final PlatformInt64? maxDocumentUrlsPerResult;
+
+  /// Maximum URLs followed across the whole extraction call.
+  final PlatformInt64? maxTotalUrls;
+
+  /// Allow local `file://` URI inputs.
+  final bool allowFileUris;
+
+  const UrlExtractionConfig({
+    required this.mode,
+    this.maxDepth,
+    this.maxPages,
+    this.maxConcurrent,
+    required this.stayOnDomain,
+    required this.allowSubdomains,
+    required this.includePaths,
+    required this.excludePaths,
+    required this.respectRobotsTxt,
+    this.userAgent,
+    this.requestTimeoutSecs,
+    required this.downloadDocuments,
+    this.documentMaxSizeBytes,
+    required this.allowedFileTypes,
+    required this.followDocumentUrls,
+    this.documentUrlDepth,
+    this.documentUrlPattern,
+    this.maxDocumentUrlsPerResult,
+    this.maxTotalUrls,
+    required this.allowFileUris,
+  });
+
+  @override
+  int get hashCode =>
+      mode.hashCode ^
+      maxDepth.hashCode ^
+      maxPages.hashCode ^
+      maxConcurrent.hashCode ^
+      stayOnDomain.hashCode ^
+      allowSubdomains.hashCode ^
+      includePaths.hashCode ^
+      excludePaths.hashCode ^
+      respectRobotsTxt.hashCode ^
+      userAgent.hashCode ^
+      requestTimeoutSecs.hashCode ^
+      downloadDocuments.hashCode ^
+      documentMaxSizeBytes.hashCode ^
+      allowedFileTypes.hashCode ^
+      followDocumentUrls.hashCode ^
+      documentUrlDepth.hashCode ^
+      documentUrlPattern.hashCode ^
+      maxDocumentUrlsPerResult.hashCode ^
+      maxTotalUrls.hashCode ^
+      allowFileUris.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UrlExtractionConfig &&
+          runtimeType == other.runtimeType &&
+          mode == other.mode &&
+          maxDepth == other.maxDepth &&
+          maxPages == other.maxPages &&
+          maxConcurrent == other.maxConcurrent &&
+          stayOnDomain == other.stayOnDomain &&
+          allowSubdomains == other.allowSubdomains &&
+          includePaths == other.includePaths &&
+          excludePaths == other.excludePaths &&
+          respectRobotsTxt == other.respectRobotsTxt &&
+          userAgent == other.userAgent &&
+          requestTimeoutSecs == other.requestTimeoutSecs &&
+          downloadDocuments == other.downloadDocuments &&
+          documentMaxSizeBytes == other.documentMaxSizeBytes &&
+          allowedFileTypes == other.allowedFileTypes &&
+          followDocumentUrls == other.followDocumentUrls &&
+          documentUrlDepth == other.documentUrlDepth &&
+          documentUrlPattern == other.documentUrlPattern &&
+          maxDocumentUrlsPerResult == other.maxDocumentUrlsPerResult &&
+          maxTotalUrls == other.maxTotalUrls &&
+          allowFileUris == other.allowFileUris;
+}
+
+/// URL extraction mode.
+enum UrlExtractionMode {
+  /// Classify HTTP(S) resources after fetch.
+  auto,
+
+  /// Treat the URI as a single remote document/page.
+  document,
+
+  /// Crawl from the seed URI and extract discovered pages/documents.
+  crawl,
 }
 
 /// User-provided chunk configuration.

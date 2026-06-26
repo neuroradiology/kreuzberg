@@ -13,7 +13,7 @@ pub fn main() !void {
     ;
     const config_json = "{}";
 
-    const results_json = try xberg.batch_extract_files_sync(items_json, config_json);
+    const results_json = try xberg.extract_batch_sync(items_json, config_json);
     defer std.heap.c_allocator.free(results_json);
 
     const stdout = std.io.getStdOut().writer();

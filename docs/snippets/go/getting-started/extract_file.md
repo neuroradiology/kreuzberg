@@ -17,7 +17,7 @@ func main() {
 		EnableQualityProcessing: &enableQP,
 	}
 
-	result, err := xberg.ExtractFileSync("contract.pdf", config)
+	result, err := xberg.ExtractSync("contract.pdf", config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

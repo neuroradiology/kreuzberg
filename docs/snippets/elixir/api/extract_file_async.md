@@ -1,10 +1,10 @@
 ```elixir title="Elixir"
 defmodule Example do
-  def extract_file_async do
+  def extract_async do
     config = nil
 
     task = Task.async(fn ->
-      Xberg.extract_file_async("document.pdf", nil, config)
+      Xberg.extract_async("document.pdf", nil, config)
     end)
 
     case Task.await(task) do

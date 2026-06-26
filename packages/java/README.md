@@ -56,10 +56,6 @@
   <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/xberg-io/xberg/pkgs/container/charts%2Fxberg">
-    <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
-  </a>
-
   <!-- Project Info -->
   <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
@@ -121,7 +117,6 @@ implementation 'io.xberg:xberg:1.0.0-rc.1'
 ```
 
 ### System Requirements
-
 - **Java 25+** required (Foreign Function & Memory API; build run with `--enable-preview` and `--enable-native-access=ALL-UNNAMED`)
 - Native libraries bundled in the JAR for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -141,7 +136,7 @@ import java.util.Map;
 
 public class BasicUsage {
     public static void main(String[] args) throws IOException {
-        ExtractionResult result = Xberg.extractFile("document.pdf");
+        ExtractionResult result = Xberg.extract("document.pdf");
 
         System.out.println("Content:");
         System.out.println(result.getContent());
@@ -185,7 +180,7 @@ public class Main {
                     .build())
                 .build();
 
-            ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
+            ExtractionResult result = Xberg.extract("scanned.pdf", config);
             System.out.println(result.getContent());
         } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
@@ -200,45 +195,13 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-```java title="Java"
-import io.xberg.Xberg;
-import io.xberg.ExtractionResult;
-import io.xberg.BatchFileItem;
-import io.xberg.ExtractionConfig;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Arrays;
-
-List<BatchFileItem> items = Arrays.asList(
-    new BatchFileItem(Paths.get("doc1.pdf"), null),
-    new BatchFileItem(Paths.get("doc2.docx"), null),
-    new BatchFileItem(Paths.get("doc3.pptx"), null)
-);
-
-ExtractionConfig config = ExtractionConfig.builder().build();
-List<ExtractionResult> results = Xberg.batchExtractFilesSync(items, config);
-
-for (ExtractionResult result : results) {
-    System.out.println("Content length: " + result.content().length());
-}
-```
+<!-- snippet not found: api/extract_batch.md -->
 
 #### Async Processing
 
 For non-blocking document processing:
 
-```java title="Java"
-import io.xberg.Xberg;
-import io.xberg.ExtractionResult;
-import io.xberg.ExtractionConfig;
-import java.nio.file.Paths;
-
-ExtractionConfig config = ExtractionConfig.builder().build();
-ExtractionResult result = Xberg.extractFile(Paths.get("document.pdf"), config);
-
-System.out.println(result.content());
-System.out.println(result.mimeType());
-```
+<!-- snippet not found: api/extract.md -->
 
 ### Next Steps
 
@@ -375,7 +338,7 @@ public class Main {
                     .build())
                 .build();
 
-            ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
+            ExtractionResult result = Xberg.extract("scanned.pdf", config);
             System.out.println(result.getContent());
         } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
@@ -388,18 +351,7 @@ public class Main {
 
 This binding provides full async/await support for non-blocking document processing:
 
-```java title="Java"
-import io.xberg.Xberg;
-import io.xberg.ExtractionResult;
-import io.xberg.ExtractionConfig;
-import java.nio.file.Paths;
-
-ExtractionConfig config = ExtractionConfig.builder().build();
-ExtractionResult result = Xberg.extractFile(Paths.get("document.pdf"), config);
-
-System.out.println(result.content());
-System.out.println(result.mimeType());
-```
+<!-- snippet not found: api/extract.md -->
 
 ## Plugin System
 
@@ -417,28 +369,7 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-```java title="Java"
-import io.xberg.Xberg;
-import io.xberg.ExtractionResult;
-import io.xberg.BatchFileItem;
-import io.xberg.ExtractionConfig;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Arrays;
-
-List<BatchFileItem> items = Arrays.asList(
-    new BatchFileItem(Paths.get("doc1.pdf"), null),
-    new BatchFileItem(Paths.get("doc2.docx"), null),
-    new BatchFileItem(Paths.get("doc3.pptx"), null)
-);
-
-ExtractionConfig config = ExtractionConfig.builder().build();
-List<ExtractionResult> results = Xberg.batchExtractFilesSync(items, config);
-
-for (ExtractionResult result : results) {
-    System.out.println("Content length: " + result.content().length());
-}
-```
+<!-- snippet not found: api/extract_batch.md -->
 
 ## Configuration
 
@@ -458,7 +389,6 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Xberg.dev
 
-- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [crawlberg](https://github.com/xberg-io/crawlberg) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

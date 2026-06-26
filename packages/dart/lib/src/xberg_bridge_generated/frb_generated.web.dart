@@ -666,6 +666,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExcelMetadata dco_decode_box_autoadd_excel_metadata(dynamic raw);
 
   @protected
+  ExtractInput dco_decode_box_autoadd_extract_input(dynamic raw);
+
+  @protected
   ExtractionConfidence dco_decode_box_autoadd_extraction_confidence(
     dynamic raw,
   );
@@ -1116,6 +1119,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExecutionProviderType dco_decode_execution_provider_type(dynamic raw);
 
   @protected
+  ExtractInput dco_decode_extract_input(dynamic raw);
+
+  @protected
+  ExtractInputKind dco_decode_extract_input_kind(dynamic raw);
+
+  @protected
   ExtractedImage dco_decode_extracted_image(dynamic raw);
 
   @protected
@@ -1131,10 +1140,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExtractionDiff dco_decode_extraction_diff(dynamic raw);
 
   @protected
+  ExtractionErrorItem dco_decode_extraction_error_item(dynamic raw);
+
+  @protected
   ExtractionMethod dco_decode_extraction_method(dynamic raw);
 
   @protected
+  ExtractionOutput dco_decode_extraction_output(dynamic raw);
+
+  @protected
   ExtractionResult dco_decode_extraction_result(dynamic raw);
+
+  @protected
+  ExtractionSummary dco_decode_extraction_summary(dynamic raw);
 
   @protected
   double dco_decode_f_64(dynamic raw);
@@ -1355,10 +1373,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ExcelSheet> dco_decode_list_excel_sheet(dynamic raw);
 
   @protected
+  List<ExtractInput> dco_decode_list_extract_input(dynamic raw);
+
+  @protected
   List<ExtractedImage> dco_decode_list_extracted_image(dynamic raw);
 
   @protected
   List<ExtractedUri> dco_decode_list_extracted_uri(dynamic raw);
+
+  @protected
+  List<ExtractionErrorItem> dco_decode_list_extraction_error_item(dynamic raw);
 
   @protected
   List<ExtractionResult> dco_decode_list_extraction_result(dynamic raw);
@@ -2228,6 +2252,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UriKind dco_decode_uri_kind(dynamic raw);
 
   @protected
+  UrlExtractionConfig dco_decode_url_extraction_config(dynamic raw);
+
+  @protected
+  UrlExtractionMode dco_decode_url_extraction_mode(dynamic raw);
+
+  @protected
   UserChunkConfig dco_decode_user_chunk_config(dynamic raw);
 
   @protected
@@ -2791,6 +2821,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ExtractInput sse_decode_box_autoadd_extract_input(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ExtractionConfidence sse_decode_box_autoadd_extraction_confidence(
     SseDeserializer deserializer,
   );
@@ -3341,6 +3376,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ExtractInput sse_decode_extract_input(SseDeserializer deserializer);
+
+  @protected
+  ExtractInputKind sse_decode_extract_input_kind(SseDeserializer deserializer);
+
+  @protected
   ExtractedImage sse_decode_extracted_image(SseDeserializer deserializer);
 
   @protected
@@ -3358,10 +3399,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ExtractionDiff sse_decode_extraction_diff(SseDeserializer deserializer);
 
   @protected
+  ExtractionErrorItem sse_decode_extraction_error_item(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ExtractionMethod sse_decode_extraction_method(SseDeserializer deserializer);
 
   @protected
+  ExtractionOutput sse_decode_extraction_output(SseDeserializer deserializer);
+
+  @protected
   ExtractionResult sse_decode_extraction_result(SseDeserializer deserializer);
+
+  @protected
+  ExtractionSummary sse_decode_extraction_summary(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_64(SseDeserializer deserializer);
@@ -3628,12 +3680,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ExcelSheet> sse_decode_list_excel_sheet(SseDeserializer deserializer);
 
   @protected
+  List<ExtractInput> sse_decode_list_extract_input(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<ExtractedImage> sse_decode_list_extracted_image(
     SseDeserializer deserializer,
   );
 
   @protected
   List<ExtractedUri> sse_decode_list_extracted_uri(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ExtractionErrorItem> sse_decode_list_extraction_error_item(
     SseDeserializer deserializer,
   );
 
@@ -4745,6 +4807,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UriKind sse_decode_uri_kind(SseDeserializer deserializer);
 
   @protected
+  UrlExtractionConfig sse_decode_url_extraction_config(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  UrlExtractionMode sse_decode_url_extraction_mode(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   UserChunkConfig sse_decode_user_chunk_config(SseDeserializer deserializer);
 
   @protected
@@ -5552,6 +5624,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_extract_input(
+    ExtractInput self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_extraction_confidence(
     ExtractionConfidence self,
     SseSerializer serializer,
@@ -6284,6 +6362,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_extract_input(ExtractInput self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_extract_input_kind(
+    ExtractInputKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_extracted_image(
     ExtractedImage self,
     SseSerializer serializer,
@@ -6311,14 +6398,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_extraction_error_item(
+    ExtractionErrorItem self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_extraction_method(
     ExtractionMethod self,
     SseSerializer serializer,
   );
 
   @protected
+  void sse_encode_extraction_output(
+    ExtractionOutput self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_extraction_result(
     ExtractionResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_extraction_summary(
+    ExtractionSummary self,
     SseSerializer serializer,
   );
 
@@ -6662,6 +6767,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_extract_input(
+    List<ExtractInput> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_extracted_image(
     List<ExtractedImage> self,
     SseSerializer serializer,
@@ -6670,6 +6781,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_extracted_uri(
     List<ExtractedUri> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_extraction_error_item(
+    List<ExtractionErrorItem> self,
     SseSerializer serializer,
   );
 
@@ -8082,6 +8199,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_uri_kind(UriKind self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_url_extraction_config(
+    UrlExtractionConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_url_extraction_mode(
+    UrlExtractionMode self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_user_chunk_config(

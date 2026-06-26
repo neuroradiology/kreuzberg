@@ -56,10 +56,6 @@
   <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/xberg-io/xberg/pkgs/container/charts%2Fxberg">
-    <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
-  </a>
-
   <!-- Project Info -->
   <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
@@ -115,7 +111,6 @@ mix deps.get
 ```
 
 ### System Requirements
-
 - **Elixir 1.14+** and **Erlang/OTP 26+** required
 - Pre-compiled NIFs bundled via `rustler_precompiled` for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -132,7 +127,7 @@ Extract text, metadata, and structure from any supported document format:
 # Basic document extraction workflow
 # Load file -> extract -> access results
 
-{:ok, result} = Xberg.extract_file("document.pdf")
+{:ok, result} = Xberg.extract("document.pdf")
 
 IO.puts("Extracted Content:")
 IO.puts(result.content)
@@ -141,8 +136,7 @@ IO.puts("\nMetadata:")
 IO.puts("Format: #{inspect(result.metadata.format)}")
 IO.puts("Tables found: #{length(result.tables)}")
 ```
-
-```text
+```
 
 ### Common Use Cases
 
@@ -160,15 +154,14 @@ config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, result} = Xberg.extract_file("scanned_document.pdf", nil, config)
+{:ok, result} = Xberg.extract("scanned_document.pdf", nil, config)
 
 content = result.content
 IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
-
-```text
+```
 
 #### Table Extraction
 
@@ -176,44 +169,13 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-```exs
-```elixir title="Elixir"
-file_paths = ["document1.pdf", "document2.pdf", "document3.pdf"]
-
-{:ok, results} = Xberg.batch_extract_files(file_paths)
-
-Enum.each(results, fn result ->
-  IO.puts("File: #{result.mime_type}")
-  IO.puts("Content length: #{byte_size(result.content)} characters")
-  IO.puts("Tables: #{length(result.tables)}")
-  IO.puts("---")
-end)
-
-IO.puts("Total files processed: #{length(results)}")
-```
-
-```text
+<!-- snippet not found: core/extract_batch.exs -->
 
 #### Async Processing
 
 For non-blocking document processing:
 
-```exs
-```elixir title="Elixir"
-# Extract from different file types (PDF, DOCX, etc.)
-
-case Xberg.extract_file("document.pdf") do
-  {:ok, result} ->
-    IO.puts("Content: #{result.content}")
-    IO.puts("Format: #{inspect(result.metadata.format)}")
-    IO.puts("Tables: #{length(result.tables)}")
-
-  {:error, reason} ->
-    IO.puts("Extraction failed: #{inspect(reason)}")
-end
-```
-
-```text
+<!-- snippet not found: getting-started/extract.exs -->
 
 ### Next Steps
 
@@ -340,36 +302,20 @@ config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, result} = Xberg.extract_file("scanned_document.pdf", nil, config)
+{:ok, result} = Xberg.extract("scanned_document.pdf", nil, config)
 
 content = result.content
 IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
-
-```text
+```
 
 ## Async Support
 
 This binding provides full async/await support for non-blocking document processing:
 
-```exs
-```elixir title="Elixir"
-# Extract from different file types (PDF, DOCX, etc.)
-
-case Xberg.extract_file("document.pdf") do
-  {:ok, result} ->
-    IO.puts("Content: #{result.content}")
-    IO.puts("Format: #{inspect(result.metadata.format)}")
-    IO.puts("Tables: #{length(result.tables)}")
-
-  {:error, reason} ->
-    IO.puts("Extraction failed: #{inspect(reason)}")
-end
-```
-
-```text
+<!-- snippet not found: getting-started/extract.exs -->
 
 ## Plugin System
 
@@ -457,8 +403,7 @@ end
 {:ok, processors} = Plugin.list_post_processors()
 IO.inspect(processors, label: "Registered Post-Processors")
 ```
-
-```text
+```
 
 ## Embeddings Support
 
@@ -470,23 +415,7 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-```exs
-```elixir title="Elixir"
-file_paths = ["document1.pdf", "document2.pdf", "document3.pdf"]
-
-{:ok, results} = Xberg.batch_extract_files(file_paths)
-
-Enum.each(results, fn result ->
-  IO.puts("File: #{result.mime_type}")
-  IO.puts("Content length: #{byte_size(result.content)} characters")
-  IO.puts("Tables: #{length(result.tables)}")
-  IO.puts("---")
-end)
-
-IO.puts("Total files processed: #{length(results)}")
-```
-
-```text
+<!-- snippet not found: core/extract_batch.exs -->
 
 ## Configuration
 
@@ -506,7 +435,6 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Xberg.dev
 
-- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [crawlberg](https://github.com/xberg-io/crawlberg) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

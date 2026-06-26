@@ -1,8 +1,8 @@
 ```typescript title="TypeScript"
-import { extractFile } from "xberg";
+import { extract } from "xberg";
 
 async function main() {
-  const result = await extractFile("document.pdf");
+  const result = await extract("document.pdf");
 
   console.log(result.content);
   console.log(`Tables: ${result.tables?.length ?? 0}`);

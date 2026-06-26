@@ -1,6 +1,6 @@
 ```ts title="TypeScript"
 import {
-  extractFileSync,
+  extractSync,
   registerValidator,
   unregisterValidator,
   ValidationError,
@@ -20,7 +20,7 @@ class MinLengthValidator {
 
 registerValidator(new MinLengthValidator());
 
-const result = extractFileSync("document.pdf");
+const result = extractSync("document.pdf");
 console.log(`Validated content length: ${result.content.length}`);
 
 unregisterValidator("min_length_validator");

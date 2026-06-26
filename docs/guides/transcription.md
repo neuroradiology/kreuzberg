@@ -70,7 +70,7 @@ xberg = { version = "5", features = ["transcription"] }
 ### Async
 
 ```rust
-use xberg::extract_bytes;
+use xberg::extract;
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
 
@@ -85,14 +85,14 @@ let config = ExtractionConfig {
 };
 
 let bytes = std::fs::read("recording.wav")?;
-let result = extract_bytes(&bytes, "audio/wav", &config).await?;
+let result = extract(&bytes, "audio/wav", &config).await?;
 println!("{}", result.content); // transcript
 ```
 
 ### Sync
 
 ```rust
-use xberg::extract_bytes_sync;
+use xberg::extract;
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
 
@@ -106,7 +106,7 @@ let config = ExtractionConfig {
 };
 
 let bytes = std::fs::read("recording.mp3")?;
-let result = extract_bytes_sync(&bytes, "audio/mpeg", &config)?;
+let result = extract(&bytes, "audio/mpeg", &config)?;
 println!("{}", result.content);
 ```
 

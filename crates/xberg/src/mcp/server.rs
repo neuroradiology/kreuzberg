@@ -219,8 +219,8 @@ impl XbergMcp {
     ) -> Result<CallToolResult, rmcp::ErrorData> {
         use super::errors::map_xberg_error_to_mcp;
         use super::format::build_config;
-        use crate::BatchFileItem;
-        use crate::batch_extract_files;
+        use crate::core::config::BatchFileItem;
+        use crate::core::extractor::batch_extract_files;
 
         if params.paths.is_empty() {
             return Err(rmcp::ErrorData::invalid_params("paths array must not be empty", None));

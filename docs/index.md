@@ -88,15 +88,31 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 
 === "Python"
 
-    --8<-- "snippets/python/api/extract_file_sync.md"
+    ```python
+    from xberg import ExtractInput, extract
+
+    result = await extract(ExtractInput.file("document.pdf"))
+    print(result.content)
+    ```
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
+    ```typescript
+    import { ExtractInput, extract } from "@xberg/node";
+
+    const result = await extract(ExtractInput.file("document.pdf"));
+    console.log(result.content);
+    ```
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/extract_file_sync.md"
+    ```rust
+    use xberg::{extract, ExtractInput, ExtractionConfig};
+
+    let config = ExtractionConfig::default();
+    let result = extract(ExtractInput::file("document.pdf"), &config).await?;
+    println!("{}", result.content);
+    ```
 
 ---
 
@@ -105,10 +121,6 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 Xberg is the document intelligence core in the [Xberg.io](https://xberg.io) ecosystem.
 
 <div class="grid cards" markdown>
-
-- :material-cloud:{ .lg .middle } **[Xberg Enterprise](https://enterprise.xberg.io)**
-
-  Managed extraction API with SDKs, dashboards, and observability.
 
 - :material-spider-web:{ .lg .middle } **[crawlberg](https://docs.crawlberg.xberg.io)**
 

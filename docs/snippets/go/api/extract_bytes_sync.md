@@ -14,7 +14,7 @@ func main() {
 		log.Fatalf("failed to read file: %v", err)
 	}
 
-	result, err := xberg.ExtractBytesSync(content, "application/pdf", xberg.ExtractionConfig{})
+	result, err := xberg.ExtractSync(content, "application/pdf", xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

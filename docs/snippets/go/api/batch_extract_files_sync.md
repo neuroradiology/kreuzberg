@@ -8,13 +8,13 @@ import (
 )
 
 func main() {
-	items := []xberg.BatchFileItem{
+	items := []xberg.ExtractInput{
 		{Path: "doc1.pdf"},
 		{Path: "doc2.docx"},
 		{Path: "doc3.pptx"},
 	}
 
-	results, err := xberg.BatchExtractFilesSync(items, xberg.ExtractionConfig{})
+	results, err := xberg.ExtractBatchSync(items, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("batch extraction failed: %v", err)
 	}

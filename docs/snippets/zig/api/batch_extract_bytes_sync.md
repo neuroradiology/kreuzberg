@@ -4,7 +4,7 @@ const xberg = @import("xberg");
 
 pub fn main() !void {
     // Batch items are passed as a JSON-encoded array across the FFI boundary.
-    // `content` is base64-encoded bytes per the FFI schema for BatchBytesItem.
+    // `content` is base64-encoded bytes per the FFI schema for ExtractInput.
     const items_json =
         \\[
         \\  {"content": "SGVsbG8sIHdvcmxkIQ==", "mime_type": "text/plain", "config": null},
@@ -13,7 +13,7 @@ pub fn main() !void {
     ;
     const config_json = "{}";
 
-    const results_json = try xberg.batch_extract_bytes_sync(items_json, config_json);
+    const results_json = try xberg.extract_batch_sync(items_json, config_json);
     defer std.heap.c_allocator.free(results_json);
 
     const stdout = std.io.getStdOut().writer();

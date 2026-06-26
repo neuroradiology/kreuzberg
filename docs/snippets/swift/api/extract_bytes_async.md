@@ -11,7 +11,7 @@ struct App {
         for byte in data { content.push(value: byte) }
 
         let config = try extractionConfigFromJson("{}")
-        let result = try await extractBytes(content, "application/pdf", config)
+        let result = try await extract(content, "application/pdf", config)
 
         print(result.content().toString())
         print("Tables: \(result.tables().count)")

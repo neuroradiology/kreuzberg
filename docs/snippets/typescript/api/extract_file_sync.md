@@ -1,7 +1,7 @@
 ```typescript title="TypeScript"
-import { extractFileSync } from "xberg";
+import { extractSync } from "xberg";
 
-const result = extractFileSync("document.pdf");
+const result = extractSync("document.pdf");
 
 console.log(result.content);
 console.log(`MIME type: ${result.mime_type}`);

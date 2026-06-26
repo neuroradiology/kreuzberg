@@ -1,7 +1,7 @@
 ```csharp title="C#"
 using Xberg;
 
-var items = new List<BatchFileItem>
+var items = new List<ExtractInput>
 {
     new() { Path = "document1.pdf", Config = null },
     new()
@@ -12,7 +12,7 @@ var items = new List<BatchFileItem>
 };
 
 var config = new ExtractionConfig { OutputFormat = OutputFormat.Text };
-var results = XbergLib.BatchExtractFilesSync(items, config);
+var results = XbergLib.ExtractBatchSync(items, config);
 
 foreach (var result in results)
 {

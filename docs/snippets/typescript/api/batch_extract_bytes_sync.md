@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractBytesSync } from "xberg";
+import { extractBatchSync } from "xberg";
 import { readFileSync } from "fs";
 
 const doc1 = readFileSync("doc1.pdf");
@@ -10,7 +10,7 @@ const items = [
   { content: doc2, mimeType: "application/pdf", config: undefined },
 ];
 
-const results = batchExtractBytesSync(items);
+const results = extractBatchSync(items);
 
 results.forEach((result, i) => {
   console.log(`Document ${i}: ${result.content.length} chars`);

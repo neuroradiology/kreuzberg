@@ -12,7 +12,7 @@ use Xberg\ExtractionConfig;
 
 $config = new ExtractionConfig();
 // Note: This is labeled "async" in the API but blocks in PHP like the sync version
-$result = Xberg::extractFileAsync('document.pdf', null, $config);
+$result = Xberg::extractAsync('document.pdf', null, $config);
 
 echo $result->getContent();
 echo 'MIME type: ' . $result->getMimeType() . "\n";

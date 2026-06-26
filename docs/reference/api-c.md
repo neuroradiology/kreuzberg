@@ -101,6 +101,64 @@ XbergExtractionResult *result = xberg_extract_file("value", "value", NULL);
 
 ---
 
+#### xberg_extract_sync()
+
+Synchronous wrapper for `extract`.
+
+**Signature:**
+
+```c
+XbergExtractionOutput* xberg_extract_sync(XbergExtractInput input, XbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+XbergExtractionOutput *result = xberg_extract_sync((XbergExtractInput){0}, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `XbergExtractInput` | Yes | The input data |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `XbergExtractionOutput`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### xberg_extract_batch_sync()
+
+Synchronous wrapper for `extract_batch`.
+
+**Signature:**
+
+```c
+XbergExtractionOutput* xberg_extract_batch_sync(XbergExtractInput* inputs, XbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+XbergExtractionOutput *result = xberg_extract_batch_sync(NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `XbergExtractInput*` | Yes | The inputs |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `XbergExtractionOutput`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### xberg_extract_file_sync()
 
 Synchronous wrapper for `extract_file`.
@@ -301,6 +359,64 @@ XbergExtractionResult* result = xberg_batch_extract_bytes_sync(NULL, NULL);
 | `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `XbergExtractionResult*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### xberg_extract()
+
+Extract content from a single bytes or URI input.
+
+**Signature:**
+
+```c
+XbergExtractionOutput* xberg_extract(XbergExtractInput input, XbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+XbergExtractionOutput *result = xberg_extract((XbergExtractInput){0}, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `XbergExtractInput` | Yes | The input data |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `XbergExtractionOutput`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### xberg_extract_batch()
+
+Extract content from multiple bytes or URI inputs.
+
+**Signature:**
+
+```c
+XbergExtractionOutput* xberg_extract_batch(XbergExtractInput* inputs, XbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+XbergExtractionOutput *result = xberg_extract_batch(NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `XbergExtractInput*` | Yes | The inputs |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `XbergExtractionOutput`
 
 **Errors:** Returns `NULL` on error.
 
@@ -1623,7 +1739,7 @@ Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 
 Delegates to `chunk_text` using the caller's config (defaulting to
 `ChunkerType.Markdown` when the config uses the default `Text` type, so that
-heading hierarchy is resolved). After chunking, derives
+heading hierarchy is resolved).  After chunking, derives
 `ChunkMetadata.heading_path` from each chunk's `heading_context`.
 
   underlying splitter; use `ChunkerType.Markdown` for documents with ATX
@@ -1838,7 +1954,7 @@ Decision logic (in priority order):
 **Errors:**
 
 Returns an error only when the `heuristics-pdf` feature is active and
-the PDF text-layer analysis itself returns a hard error. In all other
+the PDF text-layer analysis itself returns a hard error.  In all other
 cases the function returns a `ChunkingDecision`.
 
 **Signature:**
@@ -1981,7 +2097,7 @@ Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
 `PageContent` does not carry a pre-computed density score.
 This function approximates density as
 `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
-reasonable proxy for how text-dense a page is relative to itself. Pass a
+reasonable proxy for how text-dense a page is relative to itself.  Pass a
 custom `MultidocInput` to `detect_boundaries` directly when you need a
 higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
 
@@ -2013,7 +2129,7 @@ XbergDocumentBoundary* result = xberg_boundaries_from_extraction_result(NULL, NU
 Detect document boundaries in a multi-document PDF.
 
 Returns a list of detected boundaries, always including implicit boundaries
-at start (page 1) and end (page_count). Boundaries are returned in ascending
+at start (page 1) and end (page_count).  Boundaries are returned in ascending
 order of `start_page`.
 
 **Returns:**
@@ -2051,7 +2167,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
-   `text_coverage` or embedded image count. Xberg's OCR + text-layer
+   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2224,7 +2340,7 @@ Extract structured JSON from a document using JSON-encoded preset spec and optio
 This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
 language-binding call paths.
 
-  `cache`). Pass `"{}"` to use all defaults.
+  `cache`).  Pass `"{}"` to use all defaults.
 
 **Returns:**
 
@@ -2233,7 +2349,7 @@ JSON-serialised `StructuredOutput` on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -2280,7 +2396,7 @@ JSON-serialised `const StructuredOutput*` (a JSON array) on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -3294,7 +3410,7 @@ Build `ConfidenceSignals` from an `ExtractionResult`.
   (e.g. 1.0 for native text formats, value from PDF analysis for PDFs).
 
 The `ocr_aggregate` is computed as the arithmetic mean of all
-`ocr_elements[].confidence.recognition` values. When `ocr_elements` is
+`ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
 `NULL` or empty the field is set to `NULL`.
 
 **Signature:**
@@ -4436,6 +4552,89 @@ extracted content and metadata.
 
 ---
 
+#### XbergExtractInput
+
+Unified extraction input for all public extraction entry points.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `kind` | `XbergExtractInputKind` | `XBERG_XBERG_URI` | Source kind. `bytes` requires `bytes`; `uri` requires `uri`. |
+| `bytes` | `const uint8_t**` | `NULL` | Raw bytes for `kind = "bytes"`. |
+| `uri` | `const char**` | `NULL` | Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`. |
+| `mime_type` | `const char**` | `NULL` | MIME type hint. |
+| `filename` | `const char**` | `NULL` | Filename hint used for MIME detection and metadata. |
+| `config` | `XbergFileExtractionConfig*` | `NULL` | Per-input extraction overrides. |
+
+##### Methods
+
+###### xberg_default()
+
+**Signature:**
+
+```c
+XbergExtractInput xberg_default();
+```
+
+**Example:**
+
+```c
+XbergExtractInput *result = xberg_default();
+```
+
+**Returns:** `XbergExtractInput`
+
+###### xberg_bytes()
+
+Build a bytes input with a MIME type and optional filename hint.
+
+**Signature:**
+
+```c
+XbergExtractInput xberg_bytes(const uint8_t* bytes, const char* mime_type, const char* filename);
+```
+
+**Example:**
+
+```c
+XbergExtractInput *result = xberg_bytes((const uint8_t *)"data", "value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `bytes` | `const uint8_t*` | Yes | The bytes |
+| `mime_type` | `const char*` | Yes | The mime type |
+| `filename` | `const char**` | No | The filename |
+
+**Returns:** `XbergExtractInput`
+
+###### xberg_uri()
+
+Build a URI input from a local path, `file://` URI, or HTTP(S) URL.
+
+**Signature:**
+
+```c
+XbergExtractInput xberg_uri(const char* uri);
+```
+
+**Example:**
+
+```c
+XbergExtractInput *result = xberg_uri("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `uri` | `const char*` | Yes | The uri |
+
+**Returns:** `XbergExtractInput`
+
+---
+
 #### XbergExtractedImage
 
 Extracted image from a document.
@@ -4540,6 +4739,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `cache_namespace` | `const char**` | `NULL` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cache_ttl_secs` | `uint64_t*` | `NULL` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `NULL`, the global TTL applies. |
 | `email` | `XbergEmailConfig*` | `NULL` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `url` | `XbergUrlExtractionConfig` | — | URL ingestion and crawl configuration. |
 | `max_archive_depth` | `uintptr_t` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `XbergTreeSitterConfig*` | `NULL` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `XbergStructuredExtractionConfig*` | `NULL` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
@@ -4579,7 +4779,6 @@ Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
 ##### Optimization Impact
-
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -4641,6 +4840,59 @@ The complete diff between two `ExtractionResult` values.
 | `tables_changed` | `XbergTableDiff*` | `NULL` | Cell-level changes for table pairs that share the same index and dimensions. |
 | `metadata_changed` | `void*` | — | Metadata difference, encoded as a JSON object with three top-level keys: `added` (keys present in `b` but not `a`), `removed` (keys present in `a` but not `b`), and `changed` (keys whose values differ — each entry is `{ "from": <value-in-a>, "to": <value-in-b> }`). This is NOT RFC 6902 JSON Patch — we deliberately chose a flatter shape to avoid pulling in a json-patch crate. If you need RFC 6902 semantics (with JSON Pointer paths) feed `a.metadata` and `b.metadata` to your preferred json-patch impl directly. |
 | `embedded_changes` | `XbergEmbeddedChanges` | — | Changes to embedded archive children. |
+
+---
+
+#### XbergExtractionErrorItem
+
+Non-fatal per-input extraction error captured by `ExtractionOutput`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `uintptr_t` | — | Input index in the original request. |
+| `code` | `uint32_t` | — | Stable numeric error code. |
+| `error_type` | `const char*` | — | Stable snake_case error kind. |
+| `source` | `const char*` | — | Best-effort source identifier. |
+| `message` | `const char*` | — | Error message. |
+
+---
+
+#### XbergExtractionOutput
+
+Unified extraction output envelope.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `XbergExtractionResult*` | `NULL` | Extraction results in discovery order. |
+| `errors` | `XbergExtractionErrorItem*` | `NULL` | Non-fatal per-input errors. |
+| `summary` | `XbergExtractionSummary` | — | Aggregate counts for the operation. |
+| `crawl` | `void*` | `NULL` | Optional implementation-specific crawl metadata. |
+
+##### Methods
+
+###### xberg_single()
+
+Build an output containing one successful result.
+
+**Signature:**
+
+```c
+XbergExtractionOutput xberg_single(XbergExtractionResult result);
+```
+
+**Example:**
+
+```c
+XbergExtractionOutput *result = xberg_single((XbergExtractionResult){0});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+
+**Returns:** `XbergExtractionOutput`
 
 ---
 
@@ -4710,6 +4962,21 @@ XbergExtractionResult *result = xberg_from_ocr((XbergOcrExtractionResult){0});
 | `ocr` | `XbergOcrExtractionResult` | Yes | The ocr extraction result |
 
 **Returns:** `XbergExtractionResult`
+
+---
+
+#### XbergExtractionSummary
+
+Summary for a unified extraction call.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `inputs` | `uintptr_t` | — | Number of inputs submitted by the caller. |
+| `results` | `uintptr_t` | — | Number of extraction results produced. |
+| `errors` | `uintptr_t` | — | Number of per-input errors. |
+| `remote_urls` | `uintptr_t` | — | Number of URI inputs that resolved to remote HTTP(S) URLs. |
+| `pages_crawled` | `uintptr_t` | — | Number of HTML pages crawled or scraped. |
+| `documents_downloaded` | `uintptr_t` | — | Number of downloaded non-HTML documents extracted from URLs. |
 
 ---
 
@@ -6038,7 +6305,7 @@ OCR configuration.
 | `tesseract_config` | `XbergTesseractConfig*` | `NULL` | Tesseract-specific configuration (optional) |
 | `output_format` | `XbergOutputFormat*` | `NULL` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `void**` | `NULL` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backend_options` | `void**` | `NULL` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `NULL`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backend_options` | `void**` | `NULL` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `NULL`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `XbergOcrElementConfig*` | `NULL` | OCR element extraction configuration |
 | `quality_thresholds` | `XbergOcrQualityThresholds*` | `NULL` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `XbergOcrPipelineConfig*` | `NULL` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -6166,7 +6433,7 @@ A single backend stage in the OCR pipeline.
 | `tesseract_config` | `XbergTesseractConfig*` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `void**` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlm_config` | `XbergLlmConfig*` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `void**` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
+| `backend_options` | `void**` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -6769,15 +7036,15 @@ Per-page signals extracted from PDF content.
 Derive signals from raw page text.
 
 Callers that already have structured per-page data (e.g. from a PDF extractor)
-can set individual fields directly. This constructor is for callers that only
+can set individual fields directly.  This constructor is for callers that only
 have the plain-text content of a page (e.g. from `PageContent`).
 
   when unknown (disables density-shift detection for this page).
 
 ##### Heuristics
 
-All signal derivations are *conservative starting points*. Each is documented
-inline. They err on the side of fewer false positives; tune thresholds via
+All signal derivations are *conservative starting points*.  Each is documented
+inline.  They err on the side of fewer false positives; tune thresholds via
 `MultidocThresholds` rather than by changing these heuristics.
 
 **Signature:**
@@ -7544,7 +7811,7 @@ XbergRakeParams *result = xberg_default();
 Pre-computed table markdown for a table detection region.
 
 Produced by the TATR-based table structure recognizer and surfaced as part of
-layout-aware OCR results. The struct lives here (under `layout-types`, pure-Rust)
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
 
@@ -8462,7 +8729,7 @@ xberg extraction types so it can be constructed from any source.
 
 Thresholds for the structured-extraction call-mode heuristic.
 
-All defaults are **conservative starting points**. Deployments should
+All defaults are **conservative starting points**.  Deployments should
 measure their own document corpus and override via their own config;
 these values are chosen to be safe-by-default, not to be optimal for
 any particular workload.
@@ -8528,7 +8795,7 @@ Represents a file extension and its corresponding MIME type that Xberg can proce
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat.Svg`. Available when the `svg` feature is active.
+`ImageOutputFormat.Svg`.  Available when the `svg` feature is active.
 
 Used via `ImageExtractionConfig.svg`.
 
@@ -8978,6 +9245,53 @@ XbergTreeSitterProcessConfig *result = xberg_default();
 
 ---
 
+#### XbergUrlExtractionConfig
+
+URL ingestion and crawl configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | `XbergUrlExtractionMode` | `XBERG_XBERG_AUTO` | URL extraction mode. |
+| `max_depth` | `uint32_t*` | `NULL` | Maximum crawl depth from a seed URL. |
+| `max_pages` | `uint32_t*` | `NULL` | Maximum pages to crawl. |
+| `max_concurrent` | `uint32_t*` | `NULL` | Maximum concurrent requests. |
+| `stay_on_domain` | `bool` | `true` | Stay on the seed domain. |
+| `allow_subdomains` | `bool` | `true` | Allow subdomains when staying on domain. |
+| `include_paths` | `const char**` | `NULL` | Regex path include filters. |
+| `exclude_paths` | `const char**` | `NULL` | Regex path exclude filters. |
+| `respect_robots_txt` | `bool` | `true` | Respect robots.txt. |
+| `user_agent` | `const char**` | `NULL` | Custom user agent. |
+| `request_timeout_secs` | `uint64_t*` | `NULL` | Per-request timeout in seconds. |
+| `download_documents` | `bool` | `true` | Download non-HTML documents discovered during crawl. |
+| `document_max_size_bytes` | `uint64_t*` | `NULL` | Maximum size for downloaded documents. |
+| `allowed_file_types` | `const char**` | `NULL` | MIME allowlist for downloaded documents. |
+| `follow_document_urls` | `bool` | `false` | Follow URLs discovered inside extracted documents. |
+| `document_url_depth` | `uint32_t*` | `NULL` | Maximum recursive document URL depth. |
+| `document_url_pattern` | `const char**` | `NULL` | Optional regex filter for document-discovered URLs. |
+| `max_document_urls_per_result` | `uint32_t*` | `NULL` | Maximum URLs to follow per extraction result. |
+| `max_total_urls` | `uint32_t*` | `NULL` | Maximum URLs followed across the whole extraction call. |
+| `allow_file_uris` | `bool` | `true` | Allow local `file://` URI inputs. |
+
+##### Methods
+
+###### xberg_default()
+
+**Signature:**
+
+```c
+XbergUrlExtractionConfig xberg_default();
+```
+
+**Example:**
+
+```c
+XbergUrlExtractionConfig *result = xberg_default();
+```
+
+**Returns:** `XbergUrlExtractionConfig`
+
+---
+
 #### XbergUserChunkConfig
 
 User-provided chunk configuration.
@@ -9260,6 +9574,29 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 | `XBERG_WEBP` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
 | `XBERG_HEIF` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
 | `XBERG_SVG` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
+
+---
+
+#### XbergExtractInputKind
+
+Source kind for `ExtractInput`.
+
+| Value | Description |
+|-------|-------------|
+| `XBERG_BYTES` | Raw in-memory bytes. |
+| `XBERG_URI` | A filesystem path, `file://` URI, or HTTP(S) URL. |
+
+---
+
+#### XbergUrlExtractionMode
+
+URL extraction mode.
+
+| Value | Description |
+|-------|-------------|
+| `XBERG_AUTO` | Classify HTTP(S) resources after fetch. |
+| `XBERG_DOCUMENT` | Treat the URI as a single remote document/page. |
+| `XBERG_CRAWL` | Crawl from the seed URI and extract discovered pages/documents. |
 
 ---
 
@@ -10230,7 +10567,7 @@ Reason for boundary detection.
 Outcome of the structured-extraction call-mode heuristic.
 
 **Distinct from `crate.core.config.CallMode`** which has three variants
-and governs extraction-engine behaviour. This enum governs whether and how
+and governs extraction-engine behaviour.  This enum governs whether and how
 an already-extracted document is sent to an LLM structured-extraction
 pipeline.
 

@@ -1,21 +1,21 @@
 ```rust title="Rust"
-use xberg::{batch_extract_bytes_sync, BatchBytesItem, ExtractionConfig};
+use xberg::{extract_batch_sync, ExtractInput, ExtractionConfig};
 
 fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let items = vec![
-        BatchBytesItem {
+        ExtractInput {
             content: b"Hello, world!".to_vec(),
             mime_type: "text/plain".to_string(),
             config: None,
         },
-        BatchBytesItem {
+        ExtractInput {
             content: b"# Heading\n\nParagraph text.".to_vec(),
             mime_type: "text/markdown".to_string(),
             config: None,
         },
     ];
-    let results = batch_extract_bytes_sync(items, &config)?;
+    let results = extract_batch_sync(items, &config)?;
 
     for (i, result) in results.iter().enumerate() {
         println!("Item {}: {} chars", i, result.content.len());

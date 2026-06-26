@@ -1,7 +1,7 @@
 ```r title="R"
 library(xberg)
 
-json <- extract_file_sync(
+json <- extract_sync(
   path = "document.pdf",
   mime_type = "application/pdf",
   config = ExtractionConfig$default()

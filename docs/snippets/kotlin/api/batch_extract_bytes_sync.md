@@ -4,10 +4,10 @@ import io.xberg.*
 fun main() {
     val config = ExtractionConfig.builder().build()
     val items = listOf(
-        BatchBytesItem("Hello, world!".toByteArray(), "text/plain", null),
-        BatchBytesItem("# Heading\n\nParagraph text.".toByteArray(), "text/markdown", null),
+        ExtractInput("Hello, world!".toByteArray(), "text/plain", null),
+        ExtractInput("# Heading\n\nParagraph text.".toByteArray(), "text/markdown", null),
     )
-    val results = Xberg.batchExtractBytesSync(items, config)
+    val results = Xberg.extractBatchSync(items, config)
 
     results.forEachIndexed { index, result ->
         println("Item $index: ${result.content().length} chars")

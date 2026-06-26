@@ -72,6 +72,6 @@ await mockBackend.initialize();
 registerOcrBackend(mockBackend);
 
 // Usage in tests
-// const result = await extractFile("image.png");
+// const result = await extract("image.png");
 // console.log(mockBackend.getStats()); // { callCount: 1 }
 ```

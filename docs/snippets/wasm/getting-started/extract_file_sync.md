@@ -1,5 +1,5 @@
 ```typescript title="WASM"
-import { extractFromFile, initWasm } from "@xberg/wasm";
+import { extract, initWasm } from "@xberg/wasm";
 
 await initWasm();
 
@@ -7,7 +7,7 @@ const fileInput = document.getElementById("file") as HTMLInputElement;
 const file = fileInput.files?.[0];
 
 if (file) {
-  const result = await extractFromFile(file);
+  const result = await extract(file);
   console.log(result.content);
   console.log(`Tables: ${result.tables.length}`);
   console.log(`Metadata: ${JSON.stringify(result.metadata)}`);

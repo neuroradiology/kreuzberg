@@ -45,6 +45,18 @@ extract_bytes <- function(content, mime_type, config = ExtractionConfig$default(
 #' Returns `XbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
 extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "xberg")
+#' Extract content from a single bytes or URI input
+#' @param input ExtractInput object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionOutput object (list with class attribute).
+#' @export
+extract <- function(input = ExtractInput$default(), config = ExtractionConfig$default()) .Call("wrap__extract", input, config, PACKAGE = "xberg")
+#' Extract content from multiple bytes or URI inputs
+#' @param inputs List of extractinput object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionOutput object (list with class attribute).
+#' @export
+extract_batch <- function(inputs, config = ExtractionConfig$default()) .Call("wrap__extract_batch", inputs, config, PACKAGE = "xberg")
 #' Detect MIME type from raw file bytes
 #'
 #' Uses magic byte signatures to detect file type from content.
@@ -239,7 +251,9 @@ detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type",
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -276,7 +290,9 @@ clear_ocr_backends <- function() .Call("wrap__clear_ocr_backends", PACKAGE = "xb
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -311,7 +327,9 @@ clear_post_processors <- function() .Call("wrap__clear_post_processors", PACKAGE
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -345,7 +363,9 @@ clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "xberg"
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -382,7 +402,9 @@ clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", P
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -415,7 +437,9 @@ clear_document_extractors <- function() .Call("wrap__clear_document_extractors",
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -448,7 +472,9 @@ clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "xberg")
 #'
 #' Each method receiving a known struct argument is handed the native binding object
 #' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings; return values must be JSON strings.
+#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
+#' binding object (an external pointer, for representable struct return types) or a
+#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
 #'
 #' @param r_backend Named list of R closures implementing the trait surface.
 #'
@@ -629,6 +655,7 @@ EmailConfig$from_json <- function(json) {
 #' @field cache_namespace Cache namespace for tenant isolation.
 #' @field cache_ttl_secs Per-request cache TTL in seconds.
 #' @field email Email extraction configuration (None = use defaults).
+#' @field url URL ingestion and crawl configuration.
 #' @field max_archive_depth Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive
 #' @field tree_sitter Tree-sitter language pack configuration (None = tree-sitter disabled).
 #' @field structured_extraction Structured extraction via LLM (None = disabled).
@@ -740,6 +767,112 @@ SvgOptions$from_json <- function(json) {
 }
 #' @export
 `[[.SvgOptions` <- `$.SvgOptions`
+#' Unified extraction input for all public extraction entry points
+#' @field kind Source kind. `bytes` requires `bytes`; `uri` requires `uri`.
+#' @field bytes Raw bytes for `kind = "bytes"`.
+#' @field uri Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`.
+#' @field mime_type MIME type hint.
+#' @field filename Filename hint used for MIME detection and metadata.
+#' @field config Per-input extraction overrides.
+#' @export
+ExtractInput <- new.env(parent = emptyenv())
+ExtractInput$default <- function() .Call("wrap__ExtractInput__default", PACKAGE = "xberg")
+ExtractInput$bytes <- function(bytes, mime_type, filename) .Call("wrap__ExtractInput__bytes", bytes, mime_type, filename, PACKAGE = "xberg")
+ExtractInput$uri <- function(uri) .Call("wrap__ExtractInput__uri", uri, PACKAGE = "xberg")
+ExtractInput$from_json <- function(json) {
+  .Call("wrap__ExtractInput__from_json", json, PACKAGE = "xberg")
+}
+#' @export
+`$.ExtractInput` <- function(self, name) {
+  func <- ExtractInput[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ExtractInput` <- `$.ExtractInput`
+#' Non-fatal per-input extraction error captured by [`ExtractionOutput`]
+#' @field index Input index in the original request.
+#' @field code Stable numeric error code.
+#' @field error_type Stable snake_case error kind.
+#' @field source Best-effort source identifier.
+#' @field message Error message.
+#' @export
+ExtractionErrorItem <- new.env(parent = emptyenv())
+#' @export
+`$.ExtractionErrorItem` <- function(self, name) {
+  func <- ExtractionErrorItem[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ExtractionErrorItem` <- `$.ExtractionErrorItem`
+#' Summary for a unified extraction call
+#' @field inputs Number of inputs submitted by the caller.
+#' @field results Number of extraction results produced.
+#' @field errors Number of per-input errors.
+#' @field remote_urls Number of URI inputs that resolved to remote HTTP(S) URLs.
+#' @field pages_crawled Number of HTML pages crawled or scraped.
+#' @field documents_downloaded Number of downloaded non-HTML documents extracted from URLs.
+#' @export
+ExtractionSummary <- new.env(parent = emptyenv())
+ExtractionSummary$from_json <- function(json) {
+  .Call("wrap__ExtractionSummary__from_json", json, PACKAGE = "xberg")
+}
+#' @export
+`$.ExtractionSummary` <- function(self, name) {
+  func <- ExtractionSummary[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ExtractionSummary` <- `$.ExtractionSummary`
+#' URL ingestion and crawl configuration
+#' @field mode URL extraction mode.
+#' @field max_depth Maximum crawl depth from a seed URL.
+#' @field max_pages Maximum pages to crawl.
+#' @field max_concurrent Maximum concurrent requests.
+#' @field stay_on_domain Stay on the seed domain.
+#' @field allow_subdomains Allow subdomains when staying on domain.
+#' @field include_paths Regex path include filters.
+#' @field exclude_paths Regex path exclude filters.
+#' @field respect_robots_txt Respect robots.txt.
+#' @field user_agent Custom user agent.
+#' @field request_timeout_secs Per-request timeout in seconds.
+#' @field download_documents Download non-HTML documents discovered during crawl.
+#' @field document_max_size_bytes Maximum size for downloaded documents.
+#' @field allowed_file_types MIME allowlist for downloaded documents.
+#' @field follow_document_urls Follow URLs discovered inside extracted documents.
+#' @field document_url_depth Maximum recursive document URL depth.
+#' @field document_url_pattern Optional regex filter for document-discovered URLs.
+#' @field max_document_urls_per_result Maximum URLs to follow per extraction result.
+#' @field max_total_urls Maximum URLs followed across the whole extraction call.
+#' @field allow_file_uris Allow local `file://` URI inputs.
+#' @export
+UrlExtractionConfig <- new.env(parent = emptyenv())
+UrlExtractionConfig$default <- function() .Call("wrap__UrlExtractionConfig__default", PACKAGE = "xberg")
+UrlExtractionConfig$from_json <- function(json) {
+  .Call("wrap__UrlExtractionConfig__from_json", json, PACKAGE = "xberg")
+}
+#' @export
+`$.UrlExtractionConfig` <- function(self, name) {
+  func <- UrlExtractionConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.UrlExtractionConfig` <- `$.UrlExtractionConfig`
 #' Batch item for byte array extraction
 #'
 #' Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
@@ -4441,6 +4574,20 @@ ChunkingDecision <- new.env(parent = emptyenv())
 #' @return A ExecutionProviderType enum value
 #' @export
 ExecutionProviderType  <- function() list() |> structure(class = "ExecutionProviderType")
+#' Create a ExtractInputKind enum value
+#'
+#' Returns the default ExtractInputKind variant.
+#'
+#' @return A ExtractInputKind enum value
+#' @export
+ExtractInputKind  <- function() list() |> structure(class = "ExtractInputKind")
+#' Create a UrlExtractionMode enum value
+#'
+#' Returns the default UrlExtractionMode variant.
+#'
+#' @return A UrlExtractionMode enum value
+#' @export
+UrlExtractionMode  <- function() list() |> structure(class = "UrlExtractionMode")
 #' Create a HtmlTheme enum value
 #'
 #' Returns the default HtmlTheme variant.
@@ -4773,7 +4920,6 @@ EmbeddingModelType$default <- function() .Call("wrap__EmbeddingModelType__defaul
 EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__from_json", json, PACKAGE = "xberg")
 EmbeddingModelType$preset <- function(name) .Call("wrap__EmbeddingModelType___factory_preset", name, PACKAGE = "xberg")
 EmbeddingModelType$custom <- function(model_id, dimensions) .Call("wrap__EmbeddingModelType___factory_custom", model_id, dimensions, PACKAGE = "xberg")
-EmbeddingModelType$llm <- function(llm) .Call("wrap__EmbeddingModelType___factory_llm", llm, PACKAGE = "xberg")
 EmbeddingModelType$plugin <- function(name) .Call("wrap__EmbeddingModelType___factory_plugin", name, PACKAGE = "xberg")
 #' @export
 `$.EmbeddingModelType` <- function(self, name) {
@@ -4795,7 +4941,6 @@ RerankerModelType$default <- function() .Call("wrap__RerankerModelType__default"
 RerankerModelType$from_json <- function(json) .Call("wrap__RerankerModelType__from_json", json, PACKAGE = "xberg")
 RerankerModelType$preset <- function(name) .Call("wrap__RerankerModelType___factory_preset", name, PACKAGE = "xberg")
 RerankerModelType$custom <- function(model_id, model_file, additional_files, max_length) .Call("wrap__RerankerModelType___factory_custom", model_id, model_file, additional_files, max_length, PACKAGE = "xberg")
-RerankerModelType$llm <- function(llm) .Call("wrap__RerankerModelType___factory_llm", llm, PACKAGE = "xberg")
 RerankerModelType$plugin <- function(name) .Call("wrap__RerankerModelType___factory_plugin", name, PACKAGE = "xberg")
 #' @export
 `$.RerankerModelType` <- function(self, name) {
@@ -4821,7 +4966,6 @@ NodeContent$heading <- function(level, text) .Call("wrap__NodeContent___factory_
 NodeContent$paragraph <- function(text) .Call("wrap__NodeContent___factory_paragraph", text, PACKAGE = "xberg")
 NodeContent$list <- function(ordered) .Call("wrap__NodeContent___factory_list", ordered, PACKAGE = "xberg")
 NodeContent$list_item <- function(text) .Call("wrap__NodeContent___factory_list_item", text, PACKAGE = "xberg")
-NodeContent$table <- function(grid) .Call("wrap__NodeContent___factory_table", grid, PACKAGE = "xberg")
 NodeContent$image <- function(description, image_index, src) .Call("wrap__NodeContent___factory_image", description, image_index, src, PACKAGE = "xberg")
 NodeContent$code <- function(text, language) .Call("wrap__NodeContent___factory_code", text, language, PACKAGE = "xberg")
 NodeContent$formula <- function(text) .Call("wrap__NodeContent___factory_formula", text, PACKAGE = "xberg")

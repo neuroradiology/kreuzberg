@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-task = Xberg.extract_file_async("document.pdf")
+task = Xberg.extract_async("document.pdf")
 {:ok, result} = Task.await(task)
 
 content = result.content

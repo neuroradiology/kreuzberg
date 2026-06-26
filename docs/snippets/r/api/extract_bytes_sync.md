@@ -4,7 +4,7 @@ library(xberg)
 path <- "document.pdf"
 content <- readBin(path, what = "raw", n = file.info(path)$size)
 
-json <- extract_bytes_sync(
+json <- extract_sync(
   content = content,
   mime_type = "application/pdf",
   config = ExtractionConfig$default()

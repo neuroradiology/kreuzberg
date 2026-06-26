@@ -112,7 +112,7 @@ flowchart LR
 
 | Module          | Responsibility                                                                                                                                                                                                          |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **core/**       | Main entry points (`extract_file`, `extract_bytes`), MIME detection, config loading, pipeline orchestration                                                                                                             |
+| **core/**       | Main entry points (`extract`, `extract`), MIME detection, config loading, pipeline orchestration                                                                                                             |
 | **plugins/**    | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`, `Renderer`) and the registry system (ExtractorRegistry, OcrRegistry, ValidatorRegistry, ProcessorRegistry, RendererRegistry) |
 | **extractors/** | Maps MIME types to the correct extractor implementation and registers them with the plugin system                                                                                                                       |
 | **extraction/** | Format-specific extraction logic - PDF via pdf_oxide, Excel via calamine, email parsing, and so on.                                                                                                                     |
@@ -191,11 +191,11 @@ For detailed performance analysis, see [Performance](../guides/development.md#pe
 The Rust core is a standalone library. You don't need Python or Node.js to use it:
 
 ```rust title="main.rs"
-use xberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract, ExtractionConfig};
 
 fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
-    let result = extract_file_sync("document.pdf", None, &config)?;
+    let result = extract("document.pdf", None, &config)?;
     println!("Extracted: {}", result.content);
     Ok(())
 }

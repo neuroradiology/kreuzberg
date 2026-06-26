@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFileSync } from "@xberg/node";
+import { extractSync } from "@xberg/node";
 
 const config = {
   images: {
@@ -11,6 +11,6 @@ const config = {
   },
 };
 
-const result = extractFileSync("document.pdf", config);
+const result = extractSync("document.pdf", config);
 console.log(`content length: ${result.content.length}`);
 ```

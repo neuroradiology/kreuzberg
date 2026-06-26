@@ -6,7 +6,7 @@ config = Xberg::ExtractionConfig.new(
   enable_quality_processing: true
 )
 
-result = Xberg.extract_file_async('document.pdf', config: config)
+result = Xberg.extract_async('document.pdf', config: config)
 
 puts "Async extraction complete"
 puts "Extracted #{result.content.length} characters"

@@ -9,7 +9,7 @@ items <- jsonlite::toJSON(list(
 
 result <- tryCatch(
   {
-    json <- batch_extract_files_sync(items = items, config = ExtractionConfig$default())
+    json <- extract_batch_sync(items = items, config = ExtractionConfig$default())
     jsonlite::fromJSON(json, simplifyVector = FALSE)
   },
   error = function(e) {

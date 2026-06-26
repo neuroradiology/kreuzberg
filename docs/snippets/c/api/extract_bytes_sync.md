@@ -12,7 +12,7 @@ int main(void) {
     XBERGExtractionConfig *config = xberg_extraction_config_default();
 
     XBERGExtractionResult *result =
-        xberg_extract_bytes_sync(bytes, len, "text/plain", config);
+        xberg_extract_sync(bytes, len, "text/plain", config);
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
                 xberg_last_error_code(),

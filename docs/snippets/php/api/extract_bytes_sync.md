@@ -7,7 +7,7 @@ use Xberg\ExtractionConfig;
 
 $content = file_get_contents('document.pdf');
 $config = new ExtractionConfig();
-$result = Xberg::extractBytesSync($content, 'application/pdf', $config);
+$result = Xberg::extractSync($content, 'application/pdf', $config);
 
 echo $result->getContent();
 echo 'Tables: ' . count($result->getTables()) . "\n";

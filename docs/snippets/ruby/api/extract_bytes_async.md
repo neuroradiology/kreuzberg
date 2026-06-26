@@ -6,7 +6,7 @@ config = Xberg::ExtractionConfig.new(
   enable_quality_processing: true
 )
 
-result = Xberg.extract_bytes_async(
+result = Xberg.extract_async(
   pdf_bytes,
   'application/pdf',
   config: config

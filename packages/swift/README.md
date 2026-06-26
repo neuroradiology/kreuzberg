@@ -56,10 +56,6 @@
   <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/xberg-io/xberg/pkgs/container/charts%2Fxberg">
-    <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
-  </a>
-
   <!-- Project Info -->
   <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
@@ -116,7 +112,6 @@ Then add the product to the relevant target:
 ```
 
 ### System Requirements
-
 - **Swift 6.0+** (`swift-tools-version: 6.0`) on macOS 13+ or iOS 16+
 - Native runtime delivered through the C FFI surface from `xberg-ffi`; published artifacts ship as a binary target
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -128,18 +123,7 @@ Then add the product to the relevant target:
 
 Extract text, metadata, and structure from any supported document format:
 
-```swift title="Swift"
-import Foundation
-import Xberg
-import RustBridge
-
-let config = try extractionConfigFromJson("{}")
-let result = try extractFileSync("document.pdf", nil, config)
-
-print(result.content().toString())
-print("MIME type: \(result.mime_type().toString())")
-print("Tables: \(result.tables().count)")
-```
+<!-- snippet not found: api/extract.md -->
 
 ### Common Use Cases
 
@@ -164,7 +148,7 @@ let configJson = """
 """
 
 let config = try extractionConfigFromJson(configJson)
-let result = try extractFileSync("scanned.pdf", nil, config)
+let result = try extractSync("scanned.pdf", nil, config)
 
 print(result.content().toString())
 ```
@@ -175,51 +159,13 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-```swift title="Swift"
-import Foundation
-import Xberg
-import RustBridge
-
-// `BatchFileItem` is an opaque swift-bridge class with no public Swift
-// constructor — build items from JSON via `batchFileItemFromJson`.
-let items = RustVec<BatchFileItem>()
-for path in ["doc1.pdf", "doc2.docx", "report.pdf"] {
-    let json = "{\"path\": \"\(path)\"}"
-    items.push(value: try batchFileItemFromJson(json))
-}
-
-let config = try extractionConfigFromJson("{}")
-let results = try batchExtractFilesSync(items, config)
-
-for (index, result) in results.enumerated() {
-    print("File \(index): \(result.content().toString().count) chars")
-}
-```
+<!-- snippet not found: api/extract_batch.md -->
 
 #### Async Processing
 
 For non-blocking document processing:
 
-```swift title="Swift"
-import Foundation
-import Xberg
-import RustBridge
-
-@main
-struct App {
-    static func main() async throws {
-        let config = try extractionConfigFromJson("{}")
-        // The Swift binding exposes async-compatible entrypoints; even though
-        // the bridge calls are synchronous internally, callers may `await` them
-        // to integrate with Swift Concurrency.
-        let result = try await extractFile("document.pdf", nil, config)
-
-        print(result.content().toString())
-        print("MIME type: \(result.mime_type().toString())")
-        print("Tables: \(result.tables().count)")
-    }
-}
-```
+<!-- snippet not found: api/extract.md -->
 
 ### Next Steps
 
@@ -353,7 +299,7 @@ let configJson = """
 """
 
 let config = try extractionConfigFromJson(configJson)
-let result = try extractFileSync("scanned.pdf", nil, config)
+let result = try extractSync("scanned.pdf", nil, config)
 
 print(result.content().toString())
 ```
@@ -362,26 +308,7 @@ print(result.content().toString())
 
 This binding provides full async/await support for non-blocking document processing:
 
-```swift title="Swift"
-import Foundation
-import Xberg
-import RustBridge
-
-@main
-struct App {
-    static func main() async throws {
-        let config = try extractionConfigFromJson("{}")
-        // The Swift binding exposes async-compatible entrypoints; even though
-        // the bridge calls are synchronous internally, callers may `await` them
-        // to integrate with Swift Concurrency.
-        let result = try await extractFile("document.pdf", nil, config)
-
-        print(result.content().toString())
-        print("MIME type: \(result.mime_type().toString())")
-        print("Tables: \(result.tables().count)")
-    }
-}
-```
+<!-- snippet not found: api/extract.md -->
 
 ## Plugin System
 
@@ -399,26 +326,7 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-```swift title="Swift"
-import Foundation
-import Xberg
-import RustBridge
-
-// `BatchFileItem` is an opaque swift-bridge class with no public Swift
-// constructor — build items from JSON via `batchFileItemFromJson`.
-let items = RustVec<BatchFileItem>()
-for path in ["doc1.pdf", "doc2.docx", "report.pdf"] {
-    let json = "{\"path\": \"\(path)\"}"
-    items.push(value: try batchFileItemFromJson(json))
-}
-
-let config = try extractionConfigFromJson("{}")
-let results = try batchExtractFilesSync(items, config)
-
-for (index, result) in results.enumerated() {
-    print("File \(index): \(result.content().toString().count) chars")
-}
-```
+<!-- snippet not found: api/extract_batch.md -->
 
 ## Configuration
 
@@ -438,7 +346,6 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Xberg.dev
 
-- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [crawlberg](https://github.com/xberg-io/crawlberg) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

@@ -233,7 +233,7 @@ Code examples in the docs aren't inline — they're pulled from `docs/snippets/`
 ```text
 docs/snippets/
 ├── python/           # Python examples
-│   ├── api/          #   extract_file, batch_extract, etc.
+│   ├── api/          #   extract, extract_batch, etc.
 │   ├── config/       #   ExtractionConfig, OcrConfig, etc.
 │   ├── ocr/          #   OCR backends
 │   ├── plugins/      #   Plugin implementations

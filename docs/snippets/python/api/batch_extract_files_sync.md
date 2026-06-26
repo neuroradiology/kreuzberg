@@ -1,13 +1,13 @@
 ```python title="Python"
-from xberg import batch_extract_files_sync, BatchFileItem, ExtractionConfig
+from xberg import extract_batch_sync, ExtractInput, ExtractionConfig
 
 items = [
-    BatchFileItem(path="doc1.pdf"),
-    BatchFileItem(path="doc2.docx"),
-    BatchFileItem(path="doc3.html"),
+    ExtractInput(path="doc1.pdf"),
+    ExtractInput(path="doc2.docx"),
+    ExtractInput(path="doc3.html"),
 ]
 
-results = batch_extract_files_sync(items, ExtractionConfig())
+results = extract_batch_sync(items, ExtractionConfig())
 
 for i, result in enumerate(results):
     print(f"Document {i}: {len(result.content)} chars, {len(result.tables)} tables")

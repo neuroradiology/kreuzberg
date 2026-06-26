@@ -1,21 +1,21 @@
 ```python title="Python"
 from xberg import (
-    batch_extract_files_sync,
-    BatchFileItem,
+    extract_batch_sync,
+    ExtractInput,
     ExtractionConfig,
     XbergError,
 )
 
 items = [
-    BatchFileItem(path="doc1.pdf"),
-    BatchFileItem(path="doc2.docx"),
-    BatchFileItem(path="missing.html"),
+    ExtractInput(path="doc1.pdf"),
+    ExtractInput(path="doc2.docx"),
+    ExtractInput(path="missing.html"),
 ]
 
 config = ExtractionConfig()
 
 try:
-    results = batch_extract_files_sync(items, config=config)
+    results = extract_batch_sync(items, config=config)
     for i, result in enumerate(results):
         if result.metadata.error:
             print(f"Document {i}: ERROR - {result.metadata.error}")

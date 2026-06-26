@@ -1,320 +1,165 @@
 # Extraction Basics
 
-Eight core extraction functions are available, organized by input type (file path vs bytes), cardinality (single vs batch), and execution model (sync vs async).
+Two extraction functions are the public entry points:
 
-| Input         | Single sync          | Single async    | Batch sync                 | Batch async           |
-| ------------- | -------------------- | --------------- | -------------------------- | --------------------- |
-| **File path** | `extract_file_sync`  | `extract_file`  | `batch_extract_files_sync` | `batch_extract_files` |
-| **Bytes**     | `extract_bytes_sync` | `extract_bytes` | `batch_extract_bytes_sync` | `batch_extract_bytes` |
+| Function          | Input model      | Purpose                                      |
+| ----------------- | ---------------- | -------------------------------------------- |
+| `extract`         | `ExtractInput`   | Extract one file path or in-memory byte blob |
+| `extract_batch`   | `ExtractInput[]` | Extract mixed file and byte inputs together  |
 
-!!! Tip "Sync vs Async" Use async variants when you're already in an async context or processing multiple files concurrently. For scripts and simple pipelines, sync variants are simpler and just as fast for single files.
+`ExtractInput` carries the input kind and source-specific metadata. File inputs use a path and can optionally override MIME type. Byte inputs carry the bytes and must include a MIME type because there is no file extension to infer from.
 
-## Extract from Files
-
-Pass a file path. Xberg detects the MIME type from the extension and selects the right parser automatically.
-
-### Synchronous
+## Extract One Input
 
 === "Python"
 
-    --8<-- "snippets/python/api/extract_file_sync.md"
+    ```python title="extract_one.py"
+    from xberg import ExtractInput, extract
+
+    result = await extract(ExtractInput.file("document.pdf"))
+    print(result.content)
+    ```
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
+    ```typescript title="extract-one.ts"
+    import { ExtractInput, extract } from "@xberg/node";
+
+    const result = await extract(ExtractInput.file("document.pdf"));
+    console.log(result.content);
+    ```
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/extract_file_sync.md"
+    ```rust title="extract_one.rs"
+    use xberg::{extract, ExtractInput, ExtractionConfig};
 
-=== "Go"
-
-    --8<-- "snippets/go/api/extract_file_sync.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/api/extract_file_sync.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/extract_file_sync.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/extract_file_sync.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/extract_file_sync.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/extract_file_sync.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/extract_file_sync.md"
-
-### Asynchronous
-
-=== "Python"
-
-    --8<-- "snippets/python/api/extract_file_async.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/getting-started/extract_file_async.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/api/extract_file_async.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/api/extract_file_async.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/api/extract_file_async.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/extract_file_async.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/extract_file_async.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/extract_file_async.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/extract_file_async.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/extract_file_async.md"
+    let config = ExtractionConfig::default();
+    let result = extract(ExtractInput::file("document.pdf"), &config).await?;
+    println!("{}", result.content);
+    ```
 
 ## Extract from Bytes
 
-When the file is already loaded in memory (for example, from an upload or network response), pass the byte array with its MIME type. Unlike file extraction, the MIME type is required since there's no file extension to infer it from.
-
-### Synchronous
+When the file is already loaded in memory, pass bytes through `ExtractInput` with an explicit MIME type.
 
 === "Python"
 
-    --8<-- "snippets/python/api/extract_bytes_sync.md"
+    ```python title="extract_from_bytes.py"
+    from xberg import ExtractInput, extract
+
+    with open("document.pdf", "rb") as file:
+        data = file.read()
+
+    result = await extract(ExtractInput.bytes(data, mime_type="application/pdf"))
+    ```
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/extract_bytes_sync.md"
+    ```typescript title="extract-bytes.ts"
+    import { readFile } from "node:fs/promises";
+    import { ExtractInput, extract } from "@xberg/node";
+
+    const data = await readFile("document.pdf");
+    const result = await extract(ExtractInput.bytes(data, "application/pdf"));
+    ```
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/extract_bytes_sync.md"
+    ```rust title="extract_from_bytes.rs"
+    use xberg::{extract, ExtractInput, ExtractionConfig};
 
-=== "Go"
-
-    --8<-- "snippets/go/api/extract_bytes_sync.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/api/extract_bytes_sync.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/extract_bytes_sync.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/extract_bytes_sync.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/extract_bytes_sync.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/extract_bytes_sync.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/extract_bytes_sync.md"
-
-### Asynchronous
-
-=== "Python"
-
-    --8<-- "snippets/python/api/extract_bytes_async.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/getting-started/extract_bytes_async.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/api/extract_bytes_async.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/api/extract_bytes_async.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/api/extract_bytes_async.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/extract_bytes_async.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/extract_bytes_async.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/extract_bytes_async.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/extract_bytes_async.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/extract_bytes_async.md"
+    let data = std::fs::read("document.pdf")?;
+    let config = ExtractionConfig::default();
+    let result = extract(ExtractInput::bytes(data, "application/pdf"), &config).await?;
+    ```
 
 ## Batch Processing
 
-Batch functions accept an array of file paths (or byte arrays) and process them concurrently. This is typically 2-5x faster than looping over single-file functions because Xberg parallelizes internally.
-
-### Batch Extract Files
+`extract_batch` accepts a list of `ExtractInput` values. Mix file and byte inputs in the same request when a pipeline receives documents from multiple sources.
 
 === "Python"
 
-    --8<-- "snippets/python/api/batch_extract_files_sync.md"
+    ```python title="extract_batch.py"
+    from xberg import ExtractInput, extract_batch
+
+    inputs = [
+        ExtractInput.file("report.pdf"),
+        ExtractInput.file("scan.tiff", mime_type="image/tiff"),
+    ]
+
+    results = await extract_batch(inputs)
+    ```
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/batch_extract_files_sync.md"
+    ```typescript title="extract-batch.ts"
+    import { ExtractInput, extractBatch } from "@xberg/node";
+
+    const results = await extractBatch([
+      ExtractInput.file("report.pdf"),
+      ExtractInput.file("scan.tiff", { mimeType: "image/tiff" }),
+    ]);
+    ```
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/batch_extract_files_sync.md"
+    ```rust title="extract_batch.rs"
+    use xberg::{extract_batch, ExtractInput, ExtractionConfig};
 
-=== "Go"
+    let config = ExtractionConfig::default();
+    let inputs = vec![
+        ExtractInput::file("report.pdf"),
+        ExtractInput::file("scan.tiff").with_mime_type("image/tiff"),
+    ];
 
-    --8<-- "snippets/go/api/batch_extract_files_sync.md"
+    let results = extract_batch(inputs, &config).await?;
+    ```
 
-=== "Java"
+### Per-Input Configuration
 
-    --8<-- "snippets/java/api/batch_extract_files_sync.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/batch_extract_files_sync.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/batch_extract_files_sync.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/batch_extract_files_sync.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/batch_extract_files_sync.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/batch_extract_files_sync.md"
-
-### Batch Extract Bytes
-
-=== "Python"
-
-    --8<-- "snippets/python/api/batch_extract_bytes_sync.md"
-
-=== "TypeScript"
-
-    --8<-- "snippets/typescript/getting-started/batch_extract_bytes_sync.md"
-
-=== "Rust"
-
-    --8<-- "snippets/rust/api/batch_extract_bytes_sync.md"
-
-=== "Go"
-
-    --8<-- "snippets/go/api/batch_extract_bytes_sync.md"
-
-=== "Java"
-
-    --8<-- "snippets/java/api/batch_extract_bytes_sync.md"
-
-=== "C#"
-
-    --8<-- "snippets/csharp/batch_extract_bytes_sync.md"
-
-=== "Ruby"
-
-    --8<-- "snippets/ruby/api/batch_extract_bytes_sync.md"
-
-=== "R"
-
-    --8<-- "snippets/r/api/batch_extract_bytes_sync.md"
-
-=== "C"
-
-    --8<-- "snippets/c/api/batch_extract_bytes_sync.md"
-
-=== "Wasm"
-
-    --8<-- "snippets/wasm/api/batch_extract_bytes_sync.md"
-
-### Per-File Configuration
-
-When a batch contains a mix of document types that need different settings (for example, scanned images needing OCR alongside text-based PDFs), use `FileExtractionConfig` to override options per file while sharing a common batch config.
+When a batch contains a mix of document types that need different settings, attach per-input overrides to `ExtractInput` while sharing a common batch config.
 
 === "Python"
 
     ```python title="mixed_batch.py"
     from xberg import (
-        batch_extract_files_sync,
         ExtractionConfig,
-        FileExtractionConfig,
+        ExtractInput,
         OcrConfig,
+        extract_batch,
     )
 
     config = ExtractionConfig(output_format="markdown")
 
-    paths = ["report.pdf", "scan.tiff", "notes.html"]
-    file_configs = [
-        None,
-        FileExtractionConfig(
+    inputs = [
+        ExtractInput.file("report.pdf"),
+        ExtractInput.file(
+            "scan.tiff",
             force_ocr=True,
             ocr=OcrConfig(backend="tesseract", language="deu"),
         ),
-        FileExtractionConfig(output_format="plain"),
+        ExtractInput.file("notes.html", output_format="plain"),
     ]
 
-    results = batch_extract_files_sync(paths, config, file_configs=file_configs)
+    results = await extract_batch(inputs, config)
     ```
 
 === "TypeScript"
 
     ```typescript title="mixed_batch.ts"
-    import { batchExtractFilesSync } from '@xberg/node';
+    import { ExtractInput, extractBatch } from "@xberg/node";
 
-    const results = batchExtractFilesSync(
-      ['report.pdf', 'scan.tiff', 'notes.html'],
-      { outputFormat: 'markdown' },
+    const results = await extractBatch(
       [
-        null,
-        { forceOcr: true, ocr: { backend: 'tesseract', language: 'deu' } },
-        { outputFormat: 'plain' },
+        ExtractInput.file("report.pdf"),
+        ExtractInput.file("scan.tiff", {
+          forceOcr: true,
+          ocr: { backend: "tesseract", language: "deu" },
+        }),
+        ExtractInput.file("notes.html", { outputFormat: "plain" }),
       ],
+      { outputFormat: 'markdown' },
     );
     ```
 
@@ -322,25 +167,18 @@ When a batch contains a mix of document types that need different settings (for 
 
     ```rust title="mixed_batch.rs"
     use xberg::{
-        batch_extract_files, ExtractionConfig, FileExtractionConfig,
+        extract_batch, ExtractInput, ExtractionConfig, FileExtractionConfig,
         OcrConfig, OutputFormat,
     };
-    use std::path::PathBuf;
 
     let config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
 
-    let paths = vec![
-        PathBuf::from("report.pdf"),
-        PathBuf::from("scan.tiff"),
-        PathBuf::from("notes.html"),
-    ];
-
-    let file_configs = vec![
-        None,
-        Some(FileExtractionConfig {
+    let inputs = vec![
+        ExtractInput::file("report.pdf"),
+        ExtractInput::file("scan.tiff").with_config(FileExtractionConfig {
             force_ocr: Some(true),
             ocr: Some(OcrConfig {
                 backend: "tesseract".to_string(),
@@ -349,16 +187,16 @@ When a batch contains a mix of document types that need different settings (for 
             }),
             ..Default::default()
         }),
-        Some(FileExtractionConfig {
+        ExtractInput::file("notes.html").with_config(FileExtractionConfig {
             output_format: Some(OutputFormat::Plain),
             ..Default::default()
         }),
     ];
 
-    let results = batch_extract_files(paths, &config, Some(&file_configs)).await?;
+    let results = extract_batch(inputs, &config).await?;
     ```
 
-Fields set to `None` in `FileExtractionConfig` inherit the batch default. Batch-level concerns like `max_concurrent_extractions`, `use_cache`, and `security_limits` cannot be overridden per file. See the [Configuration Reference](../reference/configuration.md#fileextractionconfig) for the full list of overridable fields.
+Fields set to `None` in `FileExtractionConfig` inherit the batch default. Batch-level concerns like `max_concurrent_extractions`, `use_cache`, and `security_limits` cannot be overridden per input. See the [Configuration Reference](../reference/configuration.md#fileextractionconfig) for the full list of overridable fields.
 
 ## Content Filtering
 
@@ -370,9 +208,10 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
 
     ```python title="keep_headers_footers.py"
     from xberg import (
-        extract_file_sync,
         ContentFilterConfig,
         ExtractionConfig,
+        ExtractInput,
+        extract,
     )
 
     # Legal/forms work: keep header and footer text
@@ -383,7 +222,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
         ),
     )
 
-    result = extract_file_sync("contract.pdf", config=config)
+    result = await extract(ExtractInput.file("contract.pdf"), config=config)
     ```
 
 === "TypeScript"
@@ -402,7 +241,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
 === "Rust"
 
     ```rust title="content_filter.rs"
-    use xberg::{extract_file_sync, ContentFilterConfig, ExtractionConfig};
+    use xberg::{extract, ContentFilterConfig, ExtractInput, ExtractionConfig};
 
     let config = ExtractionConfig {
         content_filter: Some(ContentFilterConfig {
@@ -414,7 +253,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
         ..Default::default()
     };
 
-    let result = extract_file_sync("contract.pdf", None, &config)?;
+    let result = extract(ExtractInput::file("contract.pdf"), &config).await?;
     ```
 
 When a layout-detection model is active, it can independently classify regions as page headers or footers and strip them per page. Setting `include_headers=True` / `include_footers=True` also disables that per-page stripping. See the [reference page](../reference/configuration.md#contentfilterconfig) for the full field semantics and per-format behavior.
@@ -517,15 +356,18 @@ Render individual PDF pages as PNG images. Unlike the extraction pipeline (which
 
 ## MIME Type Detection
 
-When extracting from bytes, Xberg requires an explicit MIME type since there's no file extension to infer it from. For file paths, auto-detection from the extension is automatic.
+When extracting from bytes, `ExtractInput` requires an explicit MIME type since there's no file extension to infer it from. For file paths, auto-detection from the extension is automatic.
 
 ### Example: Override MIME Type
 
 ```python title="Python"
-from xberg import extract_file
+from xberg import ExtractInput, extract
 
 # File without extension — provide MIME type explicitly
-result = extract_file("document_copy", mime_type="application/pdf", config=config)
+result = await extract(
+    ExtractInput.file("document_copy", mime_type="application/pdf"),
+    config=config,
+)
 ```
 
 ## Error Handling

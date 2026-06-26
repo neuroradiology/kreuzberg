@@ -6,7 +6,7 @@ config = Xberg::ExtractionConfig.new(
   enable_quality_processing: true
 )
 
-result = Xberg.extract_file_sync('contract.pdf', config: config)
+result = Xberg.extract_sync('contract.pdf', config: config)
 
 puts "Extracted #{result.content.length} characters"
 puts "Quality score: #{result.quality_score}"

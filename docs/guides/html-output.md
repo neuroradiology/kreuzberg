@@ -15,13 +15,13 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "Python"
 
     ```python title="html_output.py"
-    from xberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme, extract_file
+    from xberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme, extract
 
     config = ExtractionConfig(
         output_format="html",
         html_output=HtmlOutputConfig(theme=HtmlTheme.GitHub),
     )
-    result = await extract_file("doc.pdf", config=config)
+    result = await extract("doc.pdf", config=config)
     print(result.content)  # styled HTML string
     ```
 
@@ -40,7 +40,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "Rust"
 
     ```rust title="html_output.rs"
-    use xberg::{extract_file, ExtractionConfig, HtmlOutputConfig, HtmlTheme};
+    use xberg::{extract, ExtractionConfig, HtmlOutputConfig, HtmlTheme};
 
     let config = ExtractionConfig {
         output_format: "html".to_string(),
@@ -50,7 +50,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
         }),
         ..Default::default()
     };
-    let result = extract_file("doc.pdf", None, &config).await?;
+    let result = extract("doc.pdf", None, &config).await?;
     println!("{}", result.content);
     ```
 

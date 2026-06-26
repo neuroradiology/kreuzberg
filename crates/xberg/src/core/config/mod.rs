@@ -35,9 +35,11 @@ pub use concurrency::ConcurrencyConfig;
 pub use content_filter::ContentFilterConfig;
 pub use email::EmailConfig;
 pub use extraction::{
-    BatchBytesItem, BatchFileItem, ExtractionConfig, FileExtractionConfig, ImageExtractionConfig,
-    LanguageDetectionConfig, TokenReductionOptions,
+    ExtractInput, ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary,
+    FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions, UrlExtractionConfig,
+    UrlExtractionMode,
 };
+pub(crate) use extraction::{BatchBytesItem, BatchFileItem};
 pub use formats::OutputFormat;
 #[cfg(feature = "html")]
 pub use html_output::{HtmlOutputConfig, HtmlTheme};

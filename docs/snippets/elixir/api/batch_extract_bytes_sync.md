@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule Example do
-  def batch_extract_bytes do
+  def extract_batch do
     # Note: Batch extraction in Elixir is done via Task.async_stream over sync calls
     files = ["doc1.pdf", "doc2.docx", "report.pdf"]
     config = nil
@@ -10,7 +10,7 @@ defmodule Example do
       |> Task.async_stream(
         fn file ->
           content = File.read!(file)
-          Xberg.extract_bytes_sync(content, "application/pdf", config)
+          Xberg.extract_sync(content, "application/pdf", config)
         end,
         max_concurrency: 4
       )

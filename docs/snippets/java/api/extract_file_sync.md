@@ -5,7 +5,7 @@ import io.xberg.ExtractionConfig;
 import java.nio.file.Paths;
 
 ExtractionConfig config = ExtractionConfig.builder().build();
-ExtractionResult result = Xberg.extractFileSync(Paths.get("document.pdf"), config);
+ExtractionResult result = Xberg.extractSync(Paths.get("document.pdf"), config);
 
 System.out.println(result.content());
 System.out.println("Tables: " + (result.tables() != null ? result.tables().size() : 0));

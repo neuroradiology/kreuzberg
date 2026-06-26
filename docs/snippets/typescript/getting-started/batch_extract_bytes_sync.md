@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractBytesSync } from "@xberg/node";
+import { extractBatchSync } from "@xberg/node";
 import { readFileSync } from "fs";
 
 const files = ["doc1.pdf", "doc2.docx"];
@@ -9,7 +9,7 @@ const mimeTypes = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-const results = batchExtractBytesSync(dataList, mimeTypes);
+const results = extractBatchSync(dataList, mimeTypes);
 
 results.forEach((result, i) => {
   console.log(`Document ${i + 1}: ${result.content.length} characters`);

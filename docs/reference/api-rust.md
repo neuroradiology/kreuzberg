@@ -112,6 +112,64 @@ println!("Content: {}", result.content);
 
 ---
 
+#### extract_sync()
+
+Synchronous wrapper for `extract`.
+
+**Signature:**
+
+```rust
+pub fn extract_sync(input: ExtractInput, config: ExtractionConfig) -> Result<ExtractionOutput, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract_sync(ExtractInput::default(), ExtractionConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `ExtractInput` | Yes | The input data |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### extract_batch_sync()
+
+Synchronous wrapper for `extract_batch`.
+
+**Signature:**
+
+```rust
+pub fn extract_batch_sync(inputs: Vec<ExtractInput>, config: ExtractionConfig) -> Result<ExtractionOutput, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract_batch_sync(vec![], ExtractionConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `Vec<ExtractInput>` | Yes | The inputs |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### extract_file_sync()
 
 Synchronous wrapper for `extract_file`.
@@ -346,6 +404,64 @@ let result = batch_extract_bytes_sync(vec![], ExtractionConfig::default())?;
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `Vec<ExtractionResult>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### extract()
+
+Extract content from a single bytes or URI input.
+
+**Signature:**
+
+```rust
+pub async fn extract(input: ExtractInput, config: ExtractionConfig) -> Result<ExtractionOutput, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract(ExtractInput::default(), ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `ExtractInput` | Yes | The input data |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### extract_batch()
+
+Extract content from multiple bytes or URI inputs.
+
+**Signature:**
+
+```rust
+pub async fn extract_batch(inputs: Vec<ExtractInput>, config: ExtractionConfig) -> Result<ExtractionOutput, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract_batch(vec![], ExtractionConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `Vec<ExtractInput>` | Yes | The inputs |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
 
 **Errors:** Returns `Err(Error)`.
 
@@ -2244,7 +2360,7 @@ Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
 `PageContent` does not carry a pre-computed density score.
 This function approximates density as
 `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
-reasonable proxy for how text-dense a page is relative to itself. Pass a
+reasonable proxy for how text-dense a page is relative to itself.  Pass a
 custom `MultidocInput` to `detect_boundaries` directly when you need a
 higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
 
@@ -2276,7 +2392,7 @@ let result = boundaries_from_extraction_result(ExtractionResult::default(), Mult
 Detect document boundaries in a multi-document PDF.
 
 Returns a list of detected boundaries, always including implicit boundaries
-at start (page 1) and end (page_count). Boundaries are returned in ascending
+at start (page 1) and end (page_count).  Boundaries are returned in ascending
 order of `start_page`.
 
 **Returns:**
@@ -2314,7 +2430,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode::VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode::TextOnly` regardless of
-   `text_coverage` or embedded image count. Xberg's OCR + text-layer
+   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2487,7 +2603,7 @@ Extract structured JSON from a document using JSON-encoded preset spec and optio
 This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
 language-binding call paths.
 
-  `cache`). Pass `"{}"` to use all defaults.
+  `cache`).  Pass `"{}"` to use all defaults.
 
 **Returns:**
 
@@ -2496,7 +2612,7 @@ JSON-serialised `StructuredOutput` on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -2543,7 +2659,7 @@ JSON-serialised `Vec<StructuredOutput>` (a JSON array) on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -3640,7 +3756,7 @@ Build `ConfidenceSignals` from an `ExtractionResult`.
   (e.g. 1.0 for native text formats, value from PDF analysis for PDFs).
 
 The `ocr_aggregate` is computed as the arithmetic mean of all
-`ocr_elements[].confidence.recognition` values. When `ocr_elements` is
+`ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
 `None` or empty the field is set to `None`.
 
 **Signature:**
@@ -4807,6 +4923,89 @@ extracted content and metadata.
 
 ---
 
+#### ExtractInput
+
+Unified extraction input for all public extraction entry points.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `kind` | `ExtractInputKind` | `ExtractInputKind::Uri` | Source kind. `bytes` requires `bytes`; `uri` requires `uri`. |
+| `bytes` | `Option<Vec<u8>>` | `None` | Raw bytes for `kind = "bytes"`. |
+| `uri` | `Option<String>` | `None` | Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`. |
+| `mime_type` | `Option<String>` | `None` | MIME type hint. |
+| `filename` | `Option<String>` | `None` | Filename hint used for MIME detection and metadata. |
+| `config` | `Option<FileExtractionConfig>` | `None` | Per-input extraction overrides. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> ExtractInput
+```
+
+**Example:**
+
+```rust
+let result = ExtractInput::default();
+```
+
+**Returns:** `ExtractInput`
+
+###### bytes()
+
+Build a bytes input with a MIME type and optional filename hint.
+
+**Signature:**
+
+```rust
+pub fn bytes(bytes: &[u8], mime_type: &str, filename: Option<String>) -> ExtractInput
+```
+
+**Example:**
+
+```rust
+let result = ExtractInput::bytes(b"data", "value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `bytes` | `Vec<u8>` | Yes | The bytes |
+| `mime_type` | `String` | Yes | The mime type |
+| `filename` | `Option<String>` | No | The filename |
+
+**Returns:** `ExtractInput`
+
+###### uri()
+
+Build a URI input from a local path, `file://` URI, or HTTP(S) URL.
+
+**Signature:**
+
+```rust
+pub fn uri(uri: &str) -> ExtractInput
+```
+
+**Example:**
+
+```rust
+let result = ExtractInput::uri("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `uri` | `String` | Yes | The uri |
+
+**Returns:** `ExtractInput`
+
+---
+
 #### ExtractedImage
 
 Extracted image from a document.
@@ -4913,6 +5112,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `cache_ttl_secs` | `Option<u64>` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
 | `email` | `Option<EmailConfig>` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
 | `concurrency` | `Option<String>` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
+| `url` | `UrlExtractionConfig` | — | URL ingestion and crawl configuration. |
 | `max_archive_depth` | `usize` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `Option<TreeSitterConfig>` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `Option<StructuredExtractionConfig>` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult::structured_output`. |
@@ -4953,7 +5153,6 @@ Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
 ##### Optimization Impact
-
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -5015,6 +5214,59 @@ The complete diff between two `ExtractionResult` values.
 | `tables_changed` | `Vec<TableDiff>` | `vec!\[\]` | Cell-level changes for table pairs that share the same index and dimensions. |
 | `metadata_changed` | `serde_json::Value` | — | Metadata difference, encoded as a JSON object with three top-level keys: `added` (keys present in `b` but not `a`), `removed` (keys present in `a` but not `b`), and `changed` (keys whose values differ — each entry is `{ "from": <value-in-a>, "to": <value-in-b> }`). This is NOT RFC 6902 JSON Patch — we deliberately chose a flatter shape to avoid pulling in a json-patch crate. If you need RFC 6902 semantics (with JSON Pointer paths) feed `a.metadata` and `b.metadata` to your preferred json-patch impl directly. |
 | `embedded_changes` | `EmbeddedChanges` | — | Changes to embedded archive children. |
+
+---
+
+#### ExtractionErrorItem
+
+Non-fatal per-input extraction error captured by `ExtractionOutput`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `usize` | — | Input index in the original request. |
+| `code` | `u32` | — | Stable numeric error code. |
+| `error_type` | `String` | — | Stable snake_case error kind. |
+| `source` | `String` | — | Best-effort source identifier. |
+| `message` | `String` | — | Error message. |
+
+---
+
+#### ExtractionOutput
+
+Unified extraction output envelope.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Vec<ExtractionResult>` | `vec!\[\]` | Extraction results in discovery order. |
+| `errors` | `Vec<ExtractionErrorItem>` | `vec!\[\]` | Non-fatal per-input errors. |
+| `summary` | `ExtractionSummary` | — | Aggregate counts for the operation. |
+| `crawl` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Optional implementation-specific crawl metadata. |
+
+##### Methods
+
+###### single()
+
+Build an output containing one successful result.
+
+**Signature:**
+
+```rust
+pub fn single(result: ExtractionResult) -> ExtractionOutput
+```
+
+**Example:**
+
+```rust
+let result = ExtractionOutput::single(ExtractionResult::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `ExtractionOutput`
 
 ---
 
@@ -5086,6 +5338,21 @@ let result = ExtractionResult::from_ocr(OcrExtractionResult::default());
 | `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
 
 **Returns:** `ExtractionResult`
+
+---
+
+#### ExtractionSummary
+
+Summary for a unified extraction call.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `inputs` | `usize` | — | Number of inputs submitted by the caller. |
+| `results` | `usize` | — | Number of extraction results produced. |
+| `errors` | `usize` | — | Number of per-input errors. |
+| `remote_urls` | `usize` | — | Number of URI inputs that resolved to remote HTTP(S) URLs. |
+| `pages_crawled` | `usize` | — | Number of HTML pages crawled or scraped. |
+| `documents_downloaded` | `usize` | — | Number of downloaded non-HTML documents extracted from URLs. |
 
 ---
 
@@ -6429,7 +6696,7 @@ OCR configuration.
 | `tesseract_config` | `Option<TesseractConfig>` | `None` | Tesseract-specific configuration (optional) |
 | `output_format` | `Option<OutputFormat>` | `None` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `Option<serde_json::Value>` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backend_options` | `Option<serde_json::Value>` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backend_options` | `Option<serde_json::Value>` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `Option<OcrElementConfig>` | `None` | OCR element extraction configuration |
 | `quality_thresholds` | `Option<OcrQualityThresholds>` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `Option<OcrPipelineConfig>` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -6558,7 +6825,7 @@ A single backend stage in the OCR pipeline.
 | `tesseract_config` | `Option<TesseractConfig>` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `Option<serde_json::Value>` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlm_config` | `Option<LlmConfig>` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
+| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -7169,15 +7436,15 @@ Per-page signals extracted from PDF content.
 Derive signals from raw page text.
 
 Callers that already have structured per-page data (e.g. from a PDF extractor)
-can set individual fields directly. This constructor is for callers that only
+can set individual fields directly.  This constructor is for callers that only
 have the plain-text content of a page (e.g. from `PageContent`).
 
   when unknown (disables density-shift detection for this page).
 
 ##### Heuristics
 
-All signal derivations are *conservative starting points*. Each is documented
-inline. They err on the side of fewer false positives; tune thresholds via
+All signal derivations are *conservative starting points*.  Each is documented
+inline.  They err on the side of fewer false positives; tune thresholds via
 `MultidocThresholds` rather than by changing these heuristics.
 
 **Signature:**
@@ -7977,7 +8244,7 @@ let result = RakeParams::default();
 Pre-computed table markdown for a table detection region.
 
 Produced by the TATR-based table structure recognizer and surfaced as part of
-layout-aware OCR results. The struct lives here (under `layout-types`, pure-Rust)
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
 
@@ -8983,7 +9250,7 @@ Represents a file extension and its corresponding MIME type that Xberg can proce
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat::Svg`. Available when the `svg` feature is active.
+`ImageOutputFormat::Svg`.  Available when the `svg` feature is active.
 
 Used via `ImageExtractionConfig::svg`.
 
@@ -9437,6 +9704,53 @@ let result = TreeSitterProcessConfig::default();
 
 ---
 
+#### UrlExtractionConfig
+
+URL ingestion and crawl configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | `UrlExtractionMode` | `UrlExtractionMode::Auto` | URL extraction mode. |
+| `max_depth` | `Option<u32>` | `Default::default()` | Maximum crawl depth from a seed URL. |
+| `max_pages` | `Option<u32>` | `Default::default()` | Maximum pages to crawl. |
+| `max_concurrent` | `Option<u32>` | `Default::default()` | Maximum concurrent requests. |
+| `stay_on_domain` | `bool` | `true` | Stay on the seed domain. |
+| `allow_subdomains` | `bool` | `true` | Allow subdomains when staying on domain. |
+| `include_paths` | `Vec<String>` | `vec!\[\]` | Regex path include filters. |
+| `exclude_paths` | `Vec<String>` | `vec!\[\]` | Regex path exclude filters. |
+| `respect_robots_txt` | `bool` | `true` | Respect robots.txt. |
+| `user_agent` | `Option<String>` | `None` | Custom user agent. |
+| `request_timeout_secs` | `Option<u64>` | `Default::default()` | Per-request timeout in seconds. |
+| `download_documents` | `bool` | `true` | Download non-HTML documents discovered during crawl. |
+| `document_max_size_bytes` | `Option<u64>` | `Default::default()` | Maximum size for downloaded documents. |
+| `allowed_file_types` | `Vec<String>` | `vec!\[\]` | MIME allowlist for downloaded documents. |
+| `follow_document_urls` | `bool` | `false` | Follow URLs discovered inside extracted documents. |
+| `document_url_depth` | `Option<u32>` | `Default::default()` | Maximum recursive document URL depth. |
+| `document_url_pattern` | `Option<String>` | `None` | Optional regex filter for document-discovered URLs. |
+| `max_document_urls_per_result` | `Option<u32>` | `Default::default()` | Maximum URLs to follow per extraction result. |
+| `max_total_urls` | `Option<u32>` | `Default::default()` | Maximum URLs followed across the whole extraction call. |
+| `allow_file_uris` | `bool` | `true` | Allow local `file://` URI inputs. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> UrlExtractionConfig
+```
+
+**Example:**
+
+```rust
+let result = UrlExtractionConfig::default();
+```
+
+**Returns:** `UrlExtractionConfig`
+
+---
+
 #### UserChunkConfig
 
 User-provided chunk configuration.
@@ -9725,6 +10039,29 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 | `Webp` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
 | `Heif` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
 | `Svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions::sanitize` is `true`. Requires the `svg` feature. |
+
+---
+
+#### ExtractInputKind
+
+Source kind for `ExtractInput`.
+
+| Value | Description |
+|-------|-------------|
+| `Bytes` | Raw in-memory bytes. |
+| `Uri` | A filesystem path, `file://` URI, or HTTP(S) URL. |
+
+---
+
+#### UrlExtractionMode
+
+URL extraction mode.
+
+| Value | Description |
+|-------|-------------|
+| `Auto` | Classify HTTP(S) resources after fetch. |
+| `Document` | Treat the URI as a single remote document/page. |
+| `Crawl` | Crawl from the seed URI and extract discovered pages/documents. |
 
 ---
 
@@ -10695,7 +11032,7 @@ Reason for boundary detection.
 Outcome of the structured-extraction call-mode heuristic.
 
 **Distinct from `crate::core::config::CallMode`** which has three variants
-and governs extraction-engine behaviour. This enum governs whether and how
+and governs extraction-engine behaviour.  This enum governs whether and how
 an already-extracted document is sent to an LLM structured-extraction
 pipeline.
 

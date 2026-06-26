@@ -1,6 +1,6 @@
 ```typescript title="WASM"
-// WASM has no batch helper; await extractBytes for each input (in parallel via Promise.all).
-import init, { extractBytes } from "xberg-wasm";
+// WASM has no batch helper; await extract for each input (in parallel via Promise.all).
+import init, { extract } from "xberg-wasm";
 
 await init();
 
@@ -10,7 +10,7 @@ const results = await Promise.all(
   urls.map(async (url) => {
     const resp = await fetch(url);
     const bytes = new Uint8Array(await resp.arrayBuffer());
-    return extractBytes(bytes, "application/pdf", undefined);
+    return extract(bytes, "application/pdf", undefined);
   }),
 );
 

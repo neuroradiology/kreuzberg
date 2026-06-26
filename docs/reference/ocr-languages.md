@@ -464,7 +464,7 @@ Use the `language-detection` feature to auto-detect document language, then pass
 from xberg import Client
 
 client = Client()
-result = client.extract_file(
+result = client.extract(
     "document.pdf",
     {
         "language_detection": True,

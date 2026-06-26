@@ -1,7 +1,7 @@
 ```elixir title="Elixir"
 # Extract from different file types (PDF, DOCX, etc.)
 
-case Xberg.extract_file("document.pdf") do
+case Xberg.extract("document.pdf") do
   {:ok, result} ->
     IO.puts("Content: #{result.content}")
     IO.puts("Format: #{inspect(result.metadata.format)}")

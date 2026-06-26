@@ -209,7 +209,7 @@ PDF coordinates use bottom-left origin in points (1/72 inch).
 
 ```python
 config = ExtractionConfig(result_format="element_based")
-result = extract_file_sync("document.pdf", config=config)
+result = extract("document.pdf", config=config)
 
 titles = [e for e in result.elements if e.element_type == "title"]
 tables = [e for e in result.elements if e.element_type == "table"]

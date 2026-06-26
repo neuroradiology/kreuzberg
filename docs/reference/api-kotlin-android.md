@@ -103,6 +103,66 @@ val result = extractFile("value", "value", ExtractionConfig())
 
 ---
 
+#### extractSync()
+
+Synchronous wrapper for `extract`.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun extractSync(input: ExtractInput, config: ExtractionConfig): ExtractionOutput
+```
+
+**Example:**
+
+```kotlin
+val result = extractSync(ExtractInput(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `ExtractInput` | Yes | The input data |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### extractBatchSync()
+
+Synchronous wrapper for `extract_batch`.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun extractBatchSync(inputs: List<ExtractInput>, config: ExtractionConfig): ExtractionOutput
+```
+
+**Example:**
+
+```kotlin
+val result = extractBatchSync([], ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `List<ExtractInput>` | Yes | The inputs |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### extractFileSync()
 
 Synchronous wrapper for `extract_file`.
@@ -309,6 +369,66 @@ val result = batchExtractBytesSync([], ExtractionConfig())
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `List<ExtractionResult>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### extract()
+
+Extract content from a single bytes or URI input.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun extract(input: ExtractInput, config: ExtractionConfig): ExtractionOutput
+```
+
+**Example:**
+
+```kotlin
+val result = extract(ExtractInput(), ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `ExtractInput` | Yes | The input data |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### extractBatch()
+
+Extract content from multiple bytes or URI inputs.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun extractBatch(inputs: List<ExtractInput>, config: ExtractionConfig): ExtractionOutput
+```
+
+**Example:**
+
+```kotlin
+val result = extractBatch([], ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `inputs` | `List<ExtractInput>` | Yes | The inputs |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionOutput`
 
 **Errors:** Throws `Error`.
 
@@ -1658,7 +1778,7 @@ Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 
 Delegates to `chunk_text` using the caller's config (defaulting to
 `ChunkerType.Markdown` when the config uses the default `Text` type, so that
-heading hierarchy is resolved). After chunking, derives
+heading hierarchy is resolved).  After chunking, derives
 `ChunkMetadata.heading_path` from each chunk's `heading_context`.
 
   underlying splitter; use `ChunkerType.Markdown` for documents with ATX
@@ -1877,7 +1997,7 @@ Decision logic (in priority order):
 **Errors:**
 
 Returns an error only when the `heuristics-pdf` feature is active and
-the PDF text-layer analysis itself returns a hard error. In all other
+the PDF text-layer analysis itself returns a hard error.  In all other
 cases the function returns a `ChunkingDecision`.
 
 **Signature:**
@@ -2021,7 +2141,7 @@ Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
 `PageContent` does not carry a pre-computed density score.
 This function approximates density as
 `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
-reasonable proxy for how text-dense a page is relative to itself. Pass a
+reasonable proxy for how text-dense a page is relative to itself.  Pass a
 custom `MultidocInput` to `detect_boundaries` directly when you need a
 higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
 
@@ -2053,7 +2173,7 @@ val result = boundariesFromExtractionResult(ExtractionResult(), MultidocThreshol
 Detect document boundaries in a multi-document PDF.
 
 Returns a list of detected boundaries, always including implicit boundaries
-at start (page 1) and end (page_count). Boundaries are returned in ascending
+at start (page 1) and end (page_count).  Boundaries are returned in ascending
 order of `start_page`.
 
 **Returns:**
@@ -2091,7 +2211,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
-   `text_coverage` or embedded image count. Xberg's OCR + text-layer
+   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2265,7 +2385,7 @@ Extract structured JSON from a document using JSON-encoded preset spec and optio
 This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
 language-binding call paths.
 
-  `cache`). Pass `"{}"` to use all defaults.
+  `cache`).  Pass `"{}"` to use all defaults.
 
 **Returns:**
 
@@ -2274,7 +2394,7 @@ JSON-serialised `StructuredOutput` on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -2322,7 +2442,7 @@ JSON-serialised `List<StructuredOutput>` (a JSON array) on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed. All other failures from the underlying
+malformed.  All other failures from the underlying
 `split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -3293,7 +3413,7 @@ Build `ConfidenceSignals` from an `ExtractionResult`.
   (e.g. 1.0 for native text formats, value from PDF analysis for PDFs).
 
 The `ocr_aggregate` is computed as the arithmetic mean of all
-`ocr_elements[].confidence.recognition` values. When `ocr_elements` is
+`ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
 `null` or empty the field is set to `null`.
 
 **Signature:**
@@ -4444,6 +4564,92 @@ extracted content and metadata.
 
 ---
 
+#### ExtractInput
+
+Unified extraction input for all public extraction entry points.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `kind` | `ExtractInputKind` | `ExtractInputKind.Uri` | Source kind. `bytes` requires `bytes`; `uri` requires `uri`. |
+| `bytes` | `ByteArray?` | `null` | Raw bytes for `kind = "bytes"`. |
+| `uri` | `String?` | `null` | Local path, `file://` URI, or HTTP(S) URL for `kind = "uri"`. |
+| `mimeType` | `String?` | `null` | MIME type hint. |
+| `filename` | `String?` | `null` | Filename hint used for MIME detection and metadata. |
+| `config` | `FileExtractionConfig?` | `null` | Per-input extraction overrides. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```kotlin
+@JvmStatic
+fun default(): ExtractInput
+```
+
+**Example:**
+
+```kotlin
+val result = ExtractInput.default()
+```
+
+**Returns:** `ExtractInput`
+
+###### bytes()
+
+Build a bytes input with a MIME type and optional filename hint.
+
+**Signature:**
+
+```kotlin
+@JvmStatic
+fun bytes(bytes: ByteArray, mimeType: String, filename: String? = null): ExtractInput
+```
+
+**Example:**
+
+```kotlin
+val result = ExtractInput.bytes("data".toByteArray(), "value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `bytes` | `ByteArray` | Yes | The bytes |
+| `mimeType` | `String` | Yes | The mime type |
+| `filename` | `String?` | No | The filename |
+
+**Returns:** `ExtractInput`
+
+###### uri()
+
+Build a URI input from a local path, `file://` URI, or HTTP(S) URL.
+
+**Signature:**
+
+```kotlin
+@JvmStatic
+fun uri(uri: String): ExtractInput
+```
+
+**Example:**
+
+```kotlin
+val result = ExtractInput.uri("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `uri` | `String` | Yes | The uri |
+
+**Returns:** `ExtractInput`
+
+---
+
 #### ExtractedImage
 
 Extracted image from a document.
@@ -4548,6 +4754,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `cacheNamespace` | `String?` | `null` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cacheTtlSecs` | `Long?` | `null` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `null`, the global TTL applies. |
 | `email` | `EmailConfig?` | `null` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `url` | `UrlExtractionConfig` | — | URL ingestion and crawl configuration. |
 | `maxArchiveDepth` | `Long` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `treeSitter` | `TreeSitterConfig?` | `null` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structuredExtraction` | `StructuredExtractionConfig?` | `null` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
@@ -4588,7 +4795,6 @@ Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
 ##### Optimization Impact
-
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -4650,6 +4856,60 @@ The complete diff between two `ExtractionResult` values.
 | `tablesChanged` | `List<TableDiff>` | `\[\]` | Cell-level changes for table pairs that share the same index and dimensions. |
 | `metadataChanged` | `Any` | — | Metadata difference, encoded as a JSON object with three top-level keys: `added` (keys present in `b` but not `a`), `removed` (keys present in `a` but not `b`), and `changed` (keys whose values differ — each entry is `{ "from": <value-in-a>, "to": <value-in-b> }`). This is NOT RFC 6902 JSON Patch — we deliberately chose a flatter shape to avoid pulling in a json-patch crate. If you need RFC 6902 semantics (with JSON Pointer paths) feed `a.metadata` and `b.metadata` to your preferred json-patch impl directly. |
 | `embeddedChanges` | `EmbeddedChanges` | — | Changes to embedded archive children. |
+
+---
+
+#### ExtractionErrorItem
+
+Non-fatal per-input extraction error captured by `ExtractionOutput`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `Long` | — | Input index in the original request. |
+| `code` | `Int` | — | Stable numeric error code. |
+| `errorType` | `String` | — | Stable snake_case error kind. |
+| `source` | `String` | — | Best-effort source identifier. |
+| `message` | `String` | — | Error message. |
+
+---
+
+#### ExtractionOutput
+
+Unified extraction output envelope.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `List<ExtractionResult>` | `\[\]` | Extraction results in discovery order. |
+| `errors` | `List<ExtractionErrorItem>` | `\[\]` | Non-fatal per-input errors. |
+| `summary` | `ExtractionSummary` | — | Aggregate counts for the operation. |
+| `crawl` | `Map<String, Any>` | `{}` | Optional implementation-specific crawl metadata. |
+
+##### Methods
+
+###### single()
+
+Build an output containing one successful result.
+
+**Signature:**
+
+```kotlin
+@JvmStatic
+fun single(result: ExtractionResult): ExtractionOutput
+```
+
+**Example:**
+
+```kotlin
+val result = ExtractionOutput.single(ExtractionResult())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+
+**Returns:** `ExtractionOutput`
 
 ---
 
@@ -4720,6 +4980,21 @@ val result = ExtractionResult.fromOcr(OcrExtractionResult())
 | `ocr` | `OcrExtractionResult` | Yes | The ocr extraction result |
 
 **Returns:** `ExtractionResult`
+
+---
+
+#### ExtractionSummary
+
+Summary for a unified extraction call.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `inputs` | `Long` | — | Number of inputs submitted by the caller. |
+| `results` | `Long` | — | Number of extraction results produced. |
+| `errors` | `Long` | — | Number of per-input errors. |
+| `remoteUrls` | `Long` | — | Number of URI inputs that resolved to remote HTTP(S) URLs. |
+| `pagesCrawled` | `Long` | — | Number of HTML pages crawled or scraped. |
+| `documentsDownloaded` | `Long` | — | Number of downloaded non-HTML documents extracted from URLs. |
 
 ---
 
@@ -6068,7 +6343,7 @@ OCR configuration.
 | `tesseractConfig` | `TesseractConfig?` | `null` | Tesseract-specific configuration (optional) |
 | `outputFormat` | `OutputFormat?` | `null` | Output format for OCR results (optional, for format conversion) |
 | `paddleOcrConfig` | `Any?` | `null` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backendOptions` | `Any?` | `null` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `null`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backendOptions` | `Any?` | `null` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `null`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `elementConfig` | `OcrElementConfig?` | `null` | OCR element extraction configuration |
 | `qualityThresholds` | `OcrQualityThresholds?` | `null` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `OcrPipelineConfig?` | `null` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -6197,7 +6472,7 @@ A single backend stage in the OCR pipeline.
 | `tesseractConfig` | `TesseractConfig?` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddleOcrConfig` | `Any?` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlmConfig` | `LlmConfig?` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backendOptions` | `Any?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
+| `backendOptions` | `Any?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -6803,15 +7078,15 @@ Per-page signals extracted from PDF content.
 Derive signals from raw page text.
 
 Callers that already have structured per-page data (e.g. from a PDF extractor)
-can set individual fields directly. This constructor is for callers that only
+can set individual fields directly.  This constructor is for callers that only
 have the plain-text content of a page (e.g. from `PageContent`).
 
   when unknown (disables density-shift detection for this page).
 
 ##### Heuristics
 
-All signal derivations are *conservative starting points*. Each is documented
-inline. They err on the side of fewer false positives; tune thresholds via
+All signal derivations are *conservative starting points*.  Each is documented
+inline.  They err on the side of fewer false positives; tune thresholds via
 `MultidocThresholds` rather than by changing these heuristics.
 
 **Signature:**
@@ -7585,7 +7860,7 @@ val result = RakeParams.default()
 Pre-computed table markdown for a table detection region.
 
 Produced by the TATR-based table structure recognizer and surfaced as part of
-layout-aware OCR results. The struct lives here (under `layout-types`, pure-Rust)
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
 
@@ -8517,7 +8792,7 @@ xberg extraction types so it can be constructed from any source.
 
 Thresholds for the structured-extraction call-mode heuristic.
 
-All defaults are **conservative starting points**. Deployments should
+All defaults are **conservative starting points**.  Deployments should
 measure their own document corpus and override via their own config;
 these values are chosen to be safe-by-default, not to be optimal for
 any particular workload.
@@ -8584,7 +8859,7 @@ Represents a file extension and its corresponding MIME type that Xberg can proce
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat.Svg`. Available when the `svg` feature is active.
+`ImageOutputFormat.Svg`.  Available when the `svg` feature is active.
 
 Used via `ImageExtractionConfig.svg`.
 
@@ -9042,6 +9317,54 @@ val result = TreeSitterProcessConfig.default()
 
 ---
 
+#### UrlExtractionConfig
+
+URL ingestion and crawl configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mode` | `UrlExtractionMode` | `UrlExtractionMode.Auto` | URL extraction mode. |
+| `maxDepth` | `Int?` | `null` | Maximum crawl depth from a seed URL. |
+| `maxPages` | `Int?` | `null` | Maximum pages to crawl. |
+| `maxConcurrent` | `Int?` | `null` | Maximum concurrent requests. |
+| `stayOnDomain` | `Boolean` | `true` | Stay on the seed domain. |
+| `allowSubdomains` | `Boolean` | `true` | Allow subdomains when staying on domain. |
+| `includePaths` | `List<String>` | `\[\]` | Regex path include filters. |
+| `excludePaths` | `List<String>` | `\[\]` | Regex path exclude filters. |
+| `respectRobotsTxt` | `Boolean` | `true` | Respect robots.txt. |
+| `userAgent` | `String?` | `null` | Custom user agent. |
+| `requestTimeoutSecs` | `Long?` | `null` | Per-request timeout in seconds. |
+| `downloadDocuments` | `Boolean` | `true` | Download non-HTML documents discovered during crawl. |
+| `documentMaxSizeBytes` | `Long?` | `null` | Maximum size for downloaded documents. |
+| `allowedFileTypes` | `List<String>` | `\[\]` | MIME allowlist for downloaded documents. |
+| `followDocumentUrls` | `Boolean` | `false` | Follow URLs discovered inside extracted documents. |
+| `documentUrlDepth` | `Int?` | `null` | Maximum recursive document URL depth. |
+| `documentUrlPattern` | `String?` | `null` | Optional regex filter for document-discovered URLs. |
+| `maxDocumentUrlsPerResult` | `Int?` | `null` | Maximum URLs to follow per extraction result. |
+| `maxTotalUrls` | `Int?` | `null` | Maximum URLs followed across the whole extraction call. |
+| `allowFileUris` | `Boolean` | `true` | Allow local `file://` URI inputs. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```kotlin
+@JvmStatic
+fun default(): UrlExtractionConfig
+```
+
+**Example:**
+
+```kotlin
+val result = UrlExtractionConfig.default()
+```
+
+**Returns:** `UrlExtractionConfig`
+
+---
+
 #### UserChunkConfig
 
 User-provided chunk configuration.
@@ -9326,6 +9649,29 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 | `Webp` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `Byte` |
 | `Heif` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `Byte` |
 | `Svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
+
+---
+
+#### ExtractInputKind
+
+Source kind for `ExtractInput`.
+
+| Value | Description |
+|-------|-------------|
+| `Bytes` | Raw in-memory bytes. |
+| `Uri` | A filesystem path, `file://` URI, or HTTP(S) URL. |
+
+---
+
+#### UrlExtractionMode
+
+URL extraction mode.
+
+| Value | Description |
+|-------|-------------|
+| `Auto` | Classify HTTP(S) resources after fetch. |
+| `Document` | Treat the URI as a single remote document/page. |
+| `Crawl` | Crawl from the seed URI and extract discovered pages/documents. |
 
 ---
 
@@ -10296,7 +10642,7 @@ Reason for boundary detection.
 Outcome of the structured-extraction call-mode heuristic.
 
 **Distinct from `crate.core.config.CallMode`** which has three variants
-and governs extraction-engine behaviour. This enum governs whether and how
+and governs extraction-engine behaviour.  This enum governs whether and how
 an already-extracted document is sent to an LLM structured-extraction
 pipeline.
 

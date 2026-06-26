@@ -6,7 +6,7 @@ config = Xberg::ExtractionConfig.new(
   use_cache: true
 )
 
-result = Xberg.extract_bytes_sync(
+result = Xberg.extract_sync(
   pdf_bytes,
   'application/pdf',
   config: config

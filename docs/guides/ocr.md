@@ -234,10 +234,10 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "Python"
 
     ```python title="disable_ocr.py"
-    from xberg import ExtractionConfig, extract_file_sync
+    from xberg import ExtractionConfig, extract
 
     config = ExtractionConfig(disable_ocr=True)
-    result = extract_file_sync("scanned.png", config=config)
+    result = extract("scanned.png", config=config)
     # result.content will be empty — OCR was skipped
     ```
 
@@ -255,13 +255,13 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "Rust"
 
     ```rust title="disable_ocr.rs"
-    use xberg::{ExtractionConfig, extract_file};
+    use xberg::{ExtractionConfig, extract};
 
     let config = ExtractionConfig {
         disable_ocr: true,
         ..Default::default()
     };
-    let result = extract_file("scanned.png", &config).await?;
+    let result = extract("scanned.png", &config).await?;
     // result.content will be empty — OCR was skipped
     ```
 
@@ -323,7 +323,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "Python"
 
     ```python title="candle_glm_ocr.py"
-    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract
 
     # Paired mode: per-region dispatch (default)
     config = ExtractionConfig(
@@ -334,7 +334,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
             backend_options={"layout_mode": "paired"},
         ),
     )
-    result = extract_file_sync("document.pdf", config=config)
+    result = extract("document.pdf", config=config)
     print(result.content)
 
     # Whole-page mode: single OCR pass over entire page
@@ -346,7 +346,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
             backend_options={"layout_mode": "whole_page"},
         ),
     )
-    result_whole = extract_file_sync("document.pdf", config=config_whole)
+    result_whole = extract("document.pdf", config=config_whole)
     ```
 
 === "TypeScript"
@@ -379,7 +379,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "Rust"
 
     ```rust title="candle_glm_ocr.rs"
-    use xberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     // Paired mode: per-region dispatch (default)
@@ -393,7 +393,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
         }),
         ..Default::default()
     };
-    let result = extract_file("document.pdf", &config).await?;
+    let result = extract("document.pdf", &config).await?;
     println!("{}", result.content);
 
     // Whole-page mode
@@ -407,7 +407,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
         }),
         ..Default::default()
     };
-    let result_whole = extract_file("document.pdf", &config_whole).await?;
+    let result_whole = extract("document.pdf", &config_whole).await?;
     ```
 
 **Backend options:**
@@ -446,7 +446,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "Python"
 
     ```python title="candle_hunyuan_ocr.py"
-    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -456,7 +456,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
             backend_options={"device": "auto", "model_path": "~/.cache/huggingface/"},
         ),
     )
-    result = extract_file_sync("document.pdf", config=config)
+    result = extract("document.pdf", config=config)
     print(result.content)
     ```
 
@@ -479,7 +479,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "Rust"
 
     ```rust title="candle_hunyuan_ocr.rs"
-    use xberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -492,7 +492,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
         }),
         ..Default::default()
     };
-    let result = extract_file("document.pdf", &config).await?;
+    let result = extract("document.pdf", &config).await?;
     println!("{}", result.content);
     ```
 
@@ -534,7 +534,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "Python"
 
     ```python title="candle_deepseek_ocr.py"
-    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -544,7 +544,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
             backend_options={"device": "auto", "model_path": "~/.cache/huggingface/"},
         ),
     )
-    result = extract_file_sync("document.pdf", config=config)
+    result = extract("document.pdf", config=config)
     print(result.content)
     ```
 
@@ -567,7 +567,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "Rust"
 
     ```rust title="candle_deepseek_ocr.rs"
-    use xberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -580,7 +580,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
         }),
         ..Default::default()
     };
-    let result = extract_file("document.pdf", &config).await?;
+    let result = extract("document.pdf", &config).await?;
     println!("{}", result.content);
     ```
 
@@ -622,7 +622,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "Python"
 
     ```python title="candle_paddleocr_vl.py"
-    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -632,7 +632,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
             backend_options={"device": "auto", "model_path": "~/.cache/huggingface/"},
         ),
     )
-    result = extract_file_sync("document.pdf", config=config)
+    result = extract("document.pdf", config=config)
     print(result.content)
     ```
 
@@ -655,7 +655,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "Rust"
 
     ```rust title="candle_paddleocr_vl.rs"
-    use xberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -668,7 +668,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
         }),
         ..Default::default()
     };
-    let result = extract_file("document.pdf", &config).await?;
+    let result = extract("document.pdf", &config).await?;
     println!("{}", result.content);
     ```
 
@@ -697,7 +697,7 @@ Use a vision-language model (e.g. GPT-4o, Claude) as the OCR backend — each pa
 === "Rust"
 
     ```rust title="Rust"
-    use xberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
+    use xberg::{extract, ExtractionConfig, OcrConfig, LlmConfig};
 
     let config = ExtractionConfig {
         force_ocr: true,
@@ -711,7 +711,7 @@ Use a vision-language model (e.g. GPT-4o, Claude) as the OCR backend — each pa
         }),
         ..Default::default()
     };
-    let result = extract_file("scan.pdf", None, &config).await?;
+    let result = extract("scan.pdf", None, &config).await?;
     ```
 
 === "CLI"

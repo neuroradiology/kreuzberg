@@ -3,14 +3,14 @@ import Foundation
 import Xberg
 import RustBridge
 
-// `BatchBytesItem` is an opaque swift-bridge class with no public Swift
+// `ExtractInput` is an opaque swift-bridge class with no public Swift
 // constructor — build items from JSON via `batchBytesItemFromJson`.
 // `content` must be encoded as a JSON byte array.
 func encodeBytesAsJsonArray(_ bytes: [UInt8]) -> String {
     "[" + bytes.map { String($0) }.joined(separator: ",") + "]"
 }
 
-let items = RustVec<BatchBytesItem>()
+let items = RustVec<ExtractInput>()
 
 let first = Array("Hello, world!".utf8)
 items.push(value: try batchBytesItemFromJson(
@@ -23,7 +23,7 @@ items.push(value: try batchBytesItemFromJson(
 ))
 
 let config = try extractionConfigFromJson("{}")
-let results = try batchExtractBytesSync(items, config)
+let results = try extractBatchSync(items, config)
 
 for (index, result) in results.enumerated() {
     print("Item \(index): \(result.content().toString().count) chars")

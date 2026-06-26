@@ -12,63 +12,63 @@ Pass a file path to get its text content. Xberg detects the format automatically
 
 === "C"
 
-    --8<-- "snippets/c/api/extract_file_sync.md"
+    --8<-- "snippets/c/api/extract.md"
 
 === "C#"
 
-    --8<-- "snippets/csharp/extract_file_sync.md"
+    --8<-- "snippets/csharp/extract.md"
 
 === "Dart"
 
-    --8<-- "snippets/dart/api/extract_file_sync.md"
+    --8<-- "snippets/dart/api/extract.md"
 
 === "Go"
 
-    --8<-- "snippets/go/api/extract_file_sync.md"
+    --8<-- "snippets/go/api/extract.md"
 
 === "Java"
 
-    --8<-- "snippets/java/api/extract_file_sync.md"
+    --8<-- "snippets/java/api/extract.md"
 
 === "Kotlin"
 
-    --8<-- "snippets/kotlin/api/extract_file_sync.md"
+    --8<-- "snippets/kotlin/api/extract.md"
 
 === "Python"
 
-    --8<-- "snippets/python/api/extract_file_sync.md"
+    --8<-- "snippets/python/api/extract.md"
 
 === "Ruby"
 
-    --8<-- "snippets/ruby/api/extract_file_sync.md"
+    --8<-- "snippets/ruby/api/extract.md"
 
 === "R"
 
-    --8<-- "snippets/r/api/extract_file_sync.md"
+    --8<-- "snippets/r/api/extract.md"
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/extract_file_sync.md"
+    --8<-- "snippets/rust/api/extract.md"
 
 === "Swift"
 
-    --8<-- "snippets/swift/api/extract_file_sync.md"
+    --8<-- "snippets/swift/api/extract.md"
 
 === "Elixir"
 
-    --8<-- "snippets/elixir/core/extract_file_sync.exs"
+    --8<-- "snippets/elixir/core/extract.exs"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/extract_file_sync.md"
+    --8<-- "snippets/typescript/getting-started/extract.md"
 
 === "Wasm"
 
-    --8<-- "snippets/wasm/getting-started/extract_file_sync.md"
+    --8<-- "snippets/wasm/getting-started/extract.md"
 
 === "Zig"
 
-    --8<-- "snippets/zig/api/extract_file_sync.md"
+    --8<-- "snippets/zig/api/extract.md"
 
 === "CLI"
 
@@ -214,63 +214,63 @@ Pass a list of paths to extract them in parallel:
 
 === "C"
 
-    --8<-- "snippets/c/api/batch_extract_files_sync.md"
+    --8<-- "snippets/c/api/extract_batch.md"
 
 === "C#"
 
-    --8<-- "snippets/csharp/batch_extract_files_sync.md"
+    --8<-- "snippets/csharp/extract_batch.md"
 
 === "Dart"
 
-    --8<-- "snippets/dart/api/batch_extract_files_sync.md"
+    --8<-- "snippets/dart/api/extract_batch.md"
 
 === "Go"
 
-    --8<-- "snippets/go/api/batch_extract_files_sync.md"
+    --8<-- "snippets/go/api/extract_batch.md"
 
 === "Java"
 
-    --8<-- "snippets/java/api/batch_extract_files_sync.md"
+    --8<-- "snippets/java/api/extract_batch.md"
 
 === "Kotlin"
 
-    --8<-- "snippets/kotlin/api/batch_extract_files_sync.md"
+    --8<-- "snippets/kotlin/api/extract_batch.md"
 
 === "Python"
 
-    --8<-- "snippets/python/api/batch_extract_files_sync.md"
+    --8<-- "snippets/python/api/extract_batch.md"
 
 === "Ruby"
 
-    --8<-- "snippets/ruby/api/batch_extract_files_sync.md"
+    --8<-- "snippets/ruby/api/extract_batch.md"
 
 === "R"
 
-    --8<-- "snippets/r/api/batch_extract_files_sync.md"
+    --8<-- "snippets/r/api/extract_batch.md"
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/batch_extract_files_sync.md"
+    --8<-- "snippets/rust/api/extract_batch.md"
 
 === "Swift"
 
-    --8<-- "snippets/swift/api/batch_extract_files_sync.md"
+    --8<-- "snippets/swift/api/extract_batch.md"
 
 === "Elixir"
 
-    --8<-- "snippets/elixir/core/batch_extract_files_sync.exs"
+    --8<-- "snippets/elixir/core/extract_batch.exs"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/batch_extract_files_sync.md"
+    --8<-- "snippets/typescript/getting-started/extract_batch.md"
 
 === "Wasm"
 
-    --8<-- "snippets/wasm/getting-started/batch_extract_files_sync.md"
+    --8<-- "snippets/wasm/getting-started/extract_batch.md"
 
 === "Zig"
 
-    --8<-- "snippets/zig/api/batch_extract_files_sync.md"
+    --8<-- "snippets/zig/api/extract_batch.md"
 
 === "CLI"
 
@@ -510,63 +510,63 @@ non-blocking I/O:
 
 === "C"
 
-    --8<-- "snippets/c/api/extract_file_async.md"
+    --8<-- "snippets/c/api/extract.md"
 
 === "C#"
 
-    --8<-- "snippets/csharp/extract_file_async.md"
+    --8<-- "snippets/csharp/extract.md"
 
 === "Dart"
 
-    --8<-- "snippets/dart/api/extract_file_async.md"
+    --8<-- "snippets/dart/api/extract.md"
 
 === "Go"
 
-    --8<-- "snippets/go/api/extract_file_async.md"
+    --8<-- "snippets/go/api/extract.md"
 
 === "Java"
 
-    --8<-- "snippets/java/api/extract_file_async.md"
+    --8<-- "snippets/java/api/extract.md"
 
 === "Kotlin"
 
-    --8<-- "snippets/kotlin/api/extract_file_async.md"
+    --8<-- "snippets/kotlin/api/extract.md"
 
 === "Python"
 
-    --8<-- "snippets/python/api/extract_file_async.md"
+    --8<-- "snippets/python/api/extract.md"
 
 === "Ruby"
 
-    --8<-- "snippets/ruby/api/extract_file_async.md"
+    --8<-- "snippets/ruby/api/extract.md"
 
 === "R"
 
-    --8<-- "snippets/r/api/extract_file_async.md"
+    --8<-- "snippets/r/api/extract.md"
 
 === "Rust"
 
-    --8<-- "snippets/rust/api/extract_file_async.md"
+    --8<-- "snippets/rust/api/extract.md"
 
 === "Swift"
 
-    --8<-- "snippets/swift/api/extract_file_async.md"
+    --8<-- "snippets/swift/api/extract.md"
 
 === "Elixir"
 
-    --8<-- "snippets/elixir/core/extract_file_async.exs"
+    --8<-- "snippets/elixir/core/extract.exs"
 
 === "TypeScript"
 
-    --8<-- "snippets/typescript/getting-started/extract_file_async.md"
+    --8<-- "snippets/typescript/getting-started/extract.md"
 
 === "Wasm"
 
-    --8<-- "snippets/wasm/getting-started/extract_file_async.md"
+    --8<-- "snippets/wasm/getting-started/extract.md"
 
 === "Zig"
 
-    --8<-- "snippets/zig/api/extract_file_async.md"
+    --8<-- "snippets/zig/api/extract.md"
 
 === "CLI"
 
@@ -579,7 +579,7 @@ non-blocking I/O:
 You've covered the core API. Go deeper:
 
 - **[Configuration Guide](../guides/configuration.md)** — OCR backends, chunking, language detection, config files
-- **[Extract from Bytes](../reference/api-python.md#extract_bytes_sync)** — Process in-memory data without writing to disk
+- **[Extract from Bytes](../reference/api-python.md#extract)** — Process in-memory data without writing to disk
 - **[OCR Setup](../guides/ocr.md)** — Tesseract, PaddleOCR, EasyOCR backends
 - **[Types Reference](../reference/types.md)** — Full metadata fields for every format
 - **[Docker Deployment](../guides/docker.md)** — Run Xberg in containers

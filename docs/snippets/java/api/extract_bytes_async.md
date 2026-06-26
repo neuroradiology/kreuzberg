@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 byte[] data = Files.readAllBytes(Paths.get("document.pdf"));
 ExtractionConfig config = ExtractionConfig.builder().build();
-ExtractionResult result = Xberg.extractBytes(data, "application/pdf", config);
+ExtractionResult result = Xberg.extract(data, "application/pdf", config);
 
 System.out.println(result.content());
 System.out.println(result.mimeType());

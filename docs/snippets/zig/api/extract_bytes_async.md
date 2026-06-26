@@ -4,9 +4,9 @@
 const std = @import("std");
 const xberg = @import("xberg");
 
-// Note: the Zig binding is sync-only. There is no `extract_bytes` async variant —
+// Note: the Zig binding is sync-only. There is no `extract` async variant —
 // the FFI surface exposes blocking entry points that internally drive the global
-// Tokio runtime. Use `extract_bytes_sync` from any thread.
+// Tokio runtime. Use `extract_sync` from any thread.
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -16,7 +16,7 @@ pub fn main() !void {
     defer allocator.free(content);
 
     const config_json = "{}";
-    const result_json = try xberg.extract_bytes_sync(content, "application/pdf", config_json);
+    const result_json = try xberg.extract_sync(content, "application/pdf", config_json);
     defer std.heap.c_allocator.free(result_json);
 
     const stdout = std.io.getStdOut().writer();

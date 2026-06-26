@@ -1,10 +1,10 @@
 ```r title="R"
 library(xberg)
 
-# extract_file is the async variant; extendr drives the tokio runtime so the
+# extract is the async variant; extendr drives the tokio runtime so the
 # call returns once extraction completes. R has no native async, so wrap with
 # the future/promises packages if non-blocking dispatch is required.
-json <- extract_file(
+json <- extract(
   path = "document.pdf",
   mime_type = "application/pdf",
   config = ExtractionConfig$default()

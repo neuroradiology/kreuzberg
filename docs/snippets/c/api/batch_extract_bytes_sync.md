@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 int main(void) {
-    /* Items is a JSON array of BatchBytesItem objects.
+    /* Items is a JSON array of ExtractInput objects.
      * Each entry has "content" (array of byte integers), "mime_type", and an optional "config". */
     const char *items_json =
         "["
@@ -16,7 +16,7 @@ int main(void) {
 
     /* Returns a JSON array of ExtractionResult objects, or NULL on failure. */
     char *results_json =
-        xberg_batch_extract_bytes_sync(items_json, config);
+        xberg_extract_batch_sync(items_json, config);
     if (!results_json) {
         fprintf(stderr, "batch extraction failed (code %d): %s\n",
                 xberg_last_error_code(),

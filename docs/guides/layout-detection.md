@@ -32,7 +32,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 === "Python"
 
     ```python
-    from xberg import ExtractionConfig, LayoutDetectionConfig, extract_file
+    from xberg import ExtractionConfig, LayoutDetectionConfig, extract
 
     config = ExtractionConfig(
         layout=LayoutDetectionConfig(
@@ -41,7 +41,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
             table_model="tatr",
         )
     )
-    result = await extract_file("document.pdf", config=config)
+    result = await extract("document.pdf", config=config)
     ```
 
 === "TypeScript"
@@ -150,9 +150,9 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "Python"
 
     ```python
-    from xberg import extract_file, ExtractionConfig, LayoutDetectionConfig, PagesConfig
+    from xberg import extract, ExtractionConfig, LayoutDetectionConfig, PagesConfig
 
-    result = await extract_file(
+    result = await extract(
         "document.pdf",
         config=ExtractionConfig(
             layout=LayoutDetectionConfig(),
@@ -197,7 +197,7 @@ When layout detection is enabled AND page extraction is enabled, each page in th
     ```rust
     use xberg::core::{ExtractionConfig, LayoutDetectionConfig, PagesConfig};
 
-    let result = extract_file(
+    let result = extract(
         "document.pdf",
         ExtractionConfig {
             layout: Some(LayoutDetectionConfig::default()),

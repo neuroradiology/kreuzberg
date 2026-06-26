@@ -220,7 +220,7 @@ The `TextOnlyWithVisionFallback` mode is the bridge between heuristics and orche
 
 ```rust
 use xberg::{
-    extract_file, ExtractionConfig,
+    extract, ExtractionConfig,
     presets::{Registry, resolve},
     heuristics::{
         score_confidence, ConfidenceSignals, StructuredInput, StructuredThresholds,
@@ -231,7 +231,7 @@ use std::collections::BTreeMap;
 
 // Extract the document
 let config = ExtractionConfig::default();
-let result = extract_file("invoice.pdf", None, &config).await?;
+let result = extract("invoice.pdf", None, &config).await?;
 
 // Load the invoice preset
 let registry = Registry::global();

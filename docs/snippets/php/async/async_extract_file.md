@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 use Xberg\Xberg;
 use Xberg\Exceptions\XbergException;
-use function Xberg\extract_file_async;
+use function Xberg\extract_async;
 
 // OOP API: async file extraction
 $xberg = new Xberg();
-$deferred = $xberg->extractFileAsync('document.pdf');
+$deferred = $xberg->extractAsync('document.pdf');
 
 // Non-blocking: check if ready
 if ($deferred->isReady()) {
@@ -36,12 +36,12 @@ if ($result !== null) {
 }
 
 // Procedural API
-$deferred = extract_file_async('document.pdf');
+$deferred = extract_async('document.pdf');
 $result = $deferred->getResult();
 echo $result->content;
 
 // Static API
-$deferred = Xberg::extractFileAsyncStatic('document.pdf');
+$deferred = Xberg::extractAsyncStatic('document.pdf');
 $result = $deferred->getResult();
 echo $result->content;
 ```

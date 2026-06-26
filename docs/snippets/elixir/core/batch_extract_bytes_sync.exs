@@ -10,7 +10,7 @@
 data_list = [pdf_data_1, pdf_data_2, pdf_data_3]
 
 # Option 1: Use single MIME type for all inputs
-{:ok, results} = Xberg.batch_extract_bytes(data_list, "application/pdf")
+{:ok, results} = Xberg.extract_batch(data_list, "application/pdf")
 
 # Process results
 Enum.each(results, fn result ->
@@ -24,7 +24,7 @@ IO.puts("Total documents processed: #{length(results)}")
 
 # Option 2: Use different MIME types for each input
 mime_types = ["application/pdf", "text/html", "application/pdf"]
-{:ok, mixed_results} = Xberg.batch_extract_bytes(data_list, mime_types)
+{:ok, mixed_results} = Xberg.extract_batch(data_list, mime_types)
 
 # Option 3: Batch extraction with configuration
 config = %Xberg.ExtractionConfig{
@@ -32,7 +32,7 @@ config = %Xberg.ExtractionConfig{
   extract_images: true
 }
 
-case Xberg.batch_extract_bytes(data_list, "application/pdf", config) do
+case Xberg.extract_batch(data_list, "application/pdf", config) do
   {:ok, results} ->
     IO.puts("Successfully extracted #{length(results)} documents")
     Enum.each(results, fn result ->
@@ -45,7 +45,7 @@ end
 
 # Option 4: Using the bang variant (raises on error)
 try do
-  results = Xberg.batch_extract_bytes!(data_list, "application/pdf")
+  results = Xberg.extract_batch!(data_list, "application/pdf")
   IO.puts("Extracted #{length(results)} documents successfully")
 rescue
   error in Xberg.Error ->
