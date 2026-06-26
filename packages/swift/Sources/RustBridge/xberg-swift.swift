@@ -31,9 +31,6 @@ public func detectQrCodes<GenericIntoRustString: IntoRustString>(_ image_bytes: 
 public func listEmbeddingBackends() throws -> RustVec<RustString> {
     try { let val = __swift_bridge__$list_embedding_backends(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func listDocumentExtractors() throws -> RustVec<RustString> {
-    try { let val = __swift_bridge__$list_document_extractors(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func listOcrBackends() throws -> RustVec<RustString> {
     try { let val = __swift_bridge__$list_ocr_backends(); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -124,12 +121,6 @@ public func renderPdfPageToPng<GenericIntoRustString: IntoRustString>(_ pdf_byte
 public func pdfPageCount<GenericIntoRustString: IntoRustString>(_ pdf_bytes: RustVec<UInt8>, _ password: Optional<GenericIntoRustString>) throws -> UInt {
     try { let val = __swift_bridge__$pdf_page_count({ let val = pdf_bytes; val.isOwned = false; return val.ptr }(), { if let rustString = optionalStringIntoRustString(password) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); switch val.tag { case __swift_bridge__$ResultUIntAndString$ResultOk: return val.payload.ok case __swift_bridge__$ResultUIntAndString$ResultErr: throw RustString(ptr: val.payload.err) default: fatalError() } }()
 }
-public func extractSync(_ input: ExtractInput, _ config: ExtractionConfig) throws -> ExtractionOutput {
-    try { let val = __swift_bridge__$extract_sync({input.isOwned = false; return input.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionOutput(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func extractBatchSync(_ inputs: RustVec<ExtractInput>, _ config: ExtractionConfig) throws -> ExtractionOutput {
-    try { let val = __swift_bridge__$extract_batch_sync({ let val = inputs; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionOutput(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
     RustVec(ptr: __swift_bridge__$alef_phantom_vec_ocr_backend())
 }
@@ -165,15 +156,6 @@ public func embedding_backend_call_dimensions(_ this: EmbeddingBackendBoxRef) ->
 }
 public func embedding_backend_call_embed<GenericIntoRustString: IntoRustString>(_ this: EmbeddingBackendBoxRef, _ texts: RustVec<GenericIntoRustString>) -> RustString {
     RustString(ptr: __swift_bridge__$embedding_backend_call_embed(this.ptr, { let val = texts; val.isOwned = false; return val.ptr }()))
-}
-public func alef_phantom_vec_document_extractor() -> RustVec<DocumentExtractorBox> {
-    RustVec(ptr: __swift_bridge__$alef_phantom_vec_document_extractor())
-}
-public func document_extractor_call_extract_bytes<GenericIntoRustString: IntoRustString>(_ this: DocumentExtractorBoxRef, _ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig) -> RustString {
-    RustString(ptr: __swift_bridge__$document_extractor_call_extract_bytes(this.ptr, { let val = content; val.isOwned = false; return val.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()))
-}
-public func document_extractor_call_supported_mime_types(_ this: DocumentExtractorBoxRef) -> RustVec<RustString> {
-    RustVec(ptr: __swift_bridge__$document_extractor_call_supported_mime_types(this.ptr))
 }
 public func alef_phantom_vec_renderer() -> RustVec<RendererBox> {
     RustVec(ptr: __swift_bridge__$alef_phantom_vec_renderer())
@@ -222,15 +204,6 @@ public func unregisterEmbeddingBackend<GenericIntoRustString: IntoRustString>(_ 
 }
 public func clearEmbeddingBackends() throws -> () {
     try { let val = __swift_bridge__$clear_embedding_backends(); if val != nil { throw RustString(ptr: val!) } else { return } }()
-}
-public func registerDocumentExtractor(_ swift_box: SwiftDocumentExtractorBox) throws -> () {
-    try { let val = __swift_bridge__$register_document_extractor(Unmanaged.passRetained(swift_box).toOpaque()); if val != nil { throw RustString(ptr: val!) } else { return } }()
-}
-public func unregisterDocumentExtractor<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) throws -> () {
-    try { let val = __swift_bridge__$unregister_document_extractor({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { throw RustString(ptr: val!) } else { return } }()
-}
-public func clearDocumentExtractors() throws -> () {
-    try { let val = __swift_bridge__$clear_document_extractors(); if val != nil { throw RustString(ptr: val!) } else { return } }()
 }
 public func registerRenderer(_ swift_box: SwiftRendererBox) throws -> () {
     try { let val = __swift_bridge__$register_renderer(Unmanaged.passRetained(swift_box).toOpaque()); if val != nil { throw RustString(ptr: val!) } else { return } }()
@@ -423,51 +396,6 @@ func __swift_bridge__SwiftEmbeddingBackendBox_alef_dimensions (_ this: UnsafeMut
 @_cdecl("__swift_bridge__$SwiftEmbeddingBackendBox$alef_embed")
 func __swift_bridge__SwiftEmbeddingBackendBox_alef_embed (_ this: UnsafeMutableRawPointer, _ texts: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
     { let rustString = Unmanaged<SwiftEmbeddingBackendBox>.fromOpaque(this).takeUnretainedValue().alef_embed(texts: RustVec(ptr: texts)).intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_name")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_name (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_name().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_version")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_version (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_version().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_initialize")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_initialize (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_initialize().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_shutdown")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_shutdown (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_shutdown().intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_extract_bytes")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_extract_bytes (_ this: UnsafeMutableRawPointer, _ content: UnsafeMutableRawPointer, _ mime_type: UnsafeMutableRawPointer, _ config: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_extract_bytes(content: RustVec(ptr: content), mime_type: RustString(ptr: mime_type), config: RustString(ptr: config)).intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_extract_file")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_extract_file (_ this: UnsafeMutableRawPointer, _ path: UnsafeMutableRawPointer, _ mime_type: UnsafeMutableRawPointer, _ config: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let rustString = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_extract_file(path: RustString(ptr: path), mime_type: RustString(ptr: mime_type), config: RustString(ptr: config)).intoRustString(); rustString.isOwned = false; return rustString.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_supported_mime_types")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_supported_mime_types (_ this: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-    { let val = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_supported_mime_types(); val.isOwned = false; return val.ptr }()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_priority")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_priority (_ this: UnsafeMutableRawPointer) -> Int32 {
-    Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_priority()
-}
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$alef_can_handle")
-func __swift_bridge__SwiftDocumentExtractorBox_alef_can_handle (_ this: UnsafeMutableRawPointer, _ path: UnsafeMutableRawPointer, _ mime_type: UnsafeMutableRawPointer) -> Bool {
-    Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(this).takeUnretainedValue().alef_can_handle(path: RustString(ptr: path), mime_type: RustString(ptr: mime_type))
 }
 
 @_cdecl("__swift_bridge__$SwiftRendererBox$alef_name")
@@ -3217,8 +3145,8 @@ public class ExtractionOutput: ExtractionOutputRefMut {
     }
 }
 extension ExtractionOutput {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ results: RustVec<ExtractionResult>, _ errors: RustVec<ExtractionErrorItem>, _ summary: ExtractionSummary, _ crawl: GenericIntoRustString) {
-        self.init(ptr: __swift_bridge__$ExtractionOutput$new({ let val = results; val.isOwned = false; return val.ptr }(), { let val = errors; val.isOwned = false; return val.ptr }(), {summary.isOwned = false; return summary.ptr;}(), { let rustString = crawl.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ results: RustVec<ExtractionResult>, _ errors: RustVec<ExtractionErrorItem>, _ summary: ExtractionSummary, _ crawl_final_urls: RustVec<GenericIntoRustString>, _ crawl_redirect_count: UInt, _ crawl_unique_normalized_urls: RustVec<GenericIntoRustString>) {
+        self.init(ptr: __swift_bridge__$ExtractionOutput$new({ let val = results; val.isOwned = false; return val.ptr }(), { let val = errors; val.isOwned = false; return val.ptr }(), {summary.isOwned = false; return summary.ptr;}(), { let val = crawl_final_urls; val.isOwned = false; return val.ptr }(), crawl_redirect_count, { let val = crawl_unique_normalized_urls; val.isOwned = false; return val.ptr }()))
     }
 }
 public class ExtractionOutputRefMut: ExtractionOutputRef {
@@ -3246,8 +3174,16 @@ extension ExtractionOutputRef {
         ExtractionSummary(ptr: __swift_bridge__$ExtractionOutput$summary(ptr))
     }
 
-    public func crawl() -> RustString {
-        RustString(ptr: __swift_bridge__$ExtractionOutput$crawl(ptr))
+    public func crawlFinalUrls() -> RustVec<RustString> {
+        RustVec(ptr: __swift_bridge__$ExtractionOutput$crawl_final_urls(ptr))
+    }
+
+    public func crawlRedirectCount() -> UInt {
+        __swift_bridge__$ExtractionOutput$crawl_redirect_count(ptr)
+    }
+
+    public func crawlUniqueNormalizedUrls() -> RustVec<RustString> {
+        RustVec(ptr: __swift_bridge__$ExtractionOutput$crawl_unique_normalized_urls(ptr))
     }
 }
 extension ExtractionOutput: Vectorizable {
@@ -23681,81 +23617,6 @@ extension EmbeddingBackendBox: Vectorizable {
 }
 
 
-public class DocumentExtractorBox: DocumentExtractorBoxRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$DocumentExtractorBox$_free(ptr)
-        }
-    }
-}
-public class DocumentExtractorBoxRefMut: DocumentExtractorBoxRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class DocumentExtractorBoxRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension DocumentExtractorBox: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_DocumentExtractorBox$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_DocumentExtractorBox$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: DocumentExtractorBox) {
-        __swift_bridge__$Vec_DocumentExtractorBox$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_DocumentExtractorBox$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (DocumentExtractorBox(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<DocumentExtractorBoxRef> {
-        let pointer = __swift_bridge__$Vec_DocumentExtractorBox$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return DocumentExtractorBoxRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<DocumentExtractorBoxRefMut> {
-        let pointer = __swift_bridge__$Vec_DocumentExtractorBox$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return DocumentExtractorBoxRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<DocumentExtractorBoxRef> {
-        UnsafePointer<DocumentExtractorBoxRef>(OpaquePointer(__swift_bridge__$Vec_DocumentExtractorBox$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_DocumentExtractorBox$len(vecPtr)
-    }
-}
-
-
 public class RendererBox: RendererBoxRefMut {
     public var isOwned: Bool = true
 
@@ -23927,12 +23788,6 @@ func __swift_bridge__SwiftValidatorBox__free (ptr: UnsafeMutableRawPointer) {
 @_cdecl("__swift_bridge__$SwiftEmbeddingBackendBox$_free")
 func __swift_bridge__SwiftEmbeddingBackendBox__free (ptr: UnsafeMutableRawPointer) {
     let _ = Unmanaged<SwiftEmbeddingBackendBox>.fromOpaque(ptr).takeRetainedValue()
-}
-
-
-@_cdecl("__swift_bridge__$SwiftDocumentExtractorBox$_free")
-func __swift_bridge__SwiftDocumentExtractorBox__free (ptr: UnsafeMutableRawPointer) {
-    let _ = Unmanaged<SwiftDocumentExtractorBox>.fromOpaque(ptr).takeRetainedValue()
 }
 
 

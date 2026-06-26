@@ -2909,18 +2909,6 @@ void* __swift_bridge__$Vec_EmbeddingBackendBox$get_mut(void* vec_ptr, uintptr_t 
 uintptr_t __swift_bridge__$Vec_EmbeddingBackendBox$len(void* vec_ptr);
 void* __swift_bridge__$Vec_EmbeddingBackendBox$as_ptr(void* vec_ptr);
 
-typedef struct DocumentExtractorBox DocumentExtractorBox;
-void __swift_bridge__$DocumentExtractorBox$_free(void* self);
-
-void* __swift_bridge__$Vec_DocumentExtractorBox$new(void);
-void __swift_bridge__$Vec_DocumentExtractorBox$drop(void* vec_ptr);
-void __swift_bridge__$Vec_DocumentExtractorBox$push(void* vec_ptr, void* item_ptr);
-void* __swift_bridge__$Vec_DocumentExtractorBox$pop(void* vec_ptr);
-void* __swift_bridge__$Vec_DocumentExtractorBox$get(void* vec_ptr, uintptr_t index);
-void* __swift_bridge__$Vec_DocumentExtractorBox$get_mut(void* vec_ptr, uintptr_t index);
-uintptr_t __swift_bridge__$Vec_DocumentExtractorBox$len(void* vec_ptr);
-void* __swift_bridge__$Vec_DocumentExtractorBox$as_ptr(void* vec_ptr);
-
 typedef struct RendererBox RendererBox;
 void __swift_bridge__$RendererBox$_free(void* self);
 
@@ -3053,11 +3041,13 @@ uintptr_t __swift_bridge__$ExtractionSummary$errors(void* self);
 uintptr_t __swift_bridge__$ExtractionSummary$remote_urls(void* self);
 uintptr_t __swift_bridge__$ExtractionSummary$pages_crawled(void* self);
 uintptr_t __swift_bridge__$ExtractionSummary$documents_downloaded(void* self);
-void* __swift_bridge__$ExtractionOutput$new(void* results, void* errors, void* summary, void* crawl);
+void* __swift_bridge__$ExtractionOutput$new(void* results, void* errors, void* summary, void* crawl_final_urls, uintptr_t crawl_redirect_count, void* crawl_unique_normalized_urls);
 void* __swift_bridge__$ExtractionOutput$results(void* self);
 void* __swift_bridge__$ExtractionOutput$errors(void* self);
 void* __swift_bridge__$ExtractionOutput$summary(void* self);
-void* __swift_bridge__$ExtractionOutput$crawl(void* self);
+void* __swift_bridge__$ExtractionOutput$crawl_final_urls(void* self);
+uintptr_t __swift_bridge__$ExtractionOutput$crawl_redirect_count(void* self);
+void* __swift_bridge__$ExtractionOutput$crawl_unique_normalized_urls(void* self);
 void* __swift_bridge__$UrlExtractionConfig$new(void* mode, void* document_url_pattern, struct __private__OptionU32 max_document_urls_per_result, struct __private__OptionU32 max_total_urls, bool allow_local_file_inputs, bool allow_file_uris);
 void* __swift_bridge__$UrlExtractionConfig$mode(void* self);
 void* __swift_bridge__$UrlExtractionConfig$document_url_pattern(void* self);
@@ -4061,7 +4051,6 @@ struct __private__ResultPtrAndPtr __swift_bridge__$get_extensions_for_mime(void*
 void* __swift_bridge__$list_supported_formats(void);
 void* __swift_bridge__$detect_qr_codes(void* image_bytes, void* format_hint);
 struct __private__ResultPtrAndPtr __swift_bridge__$list_embedding_backends(void);
-struct __private__ResultPtrAndPtr __swift_bridge__$list_document_extractors(void);
 struct __private__ResultPtrAndPtr __swift_bridge__$list_ocr_backends(void);
 void* __swift_bridge__$register_builtin(void);
 struct __private__ResultPtrAndPtr __swift_bridge__$list_post_processors(void);
@@ -4092,8 +4081,6 @@ struct __private__ResultPtrAndPtr __swift_bridge__$classify_document(void* pages
 void* __swift_bridge__$compare(void* a, void* b, void* opts);
 struct __private__ResultPtrAndPtr __swift_bridge__$render_pdf_page_to_png(void* pdf_bytes, uintptr_t page_index, struct __private__OptionI32 dpi, void* password);
 struct __swift_bridge__$ResultUIntAndString __swift_bridge__$pdf_page_count(void* pdf_bytes, void* password);
-struct __private__ResultPtrAndPtr __swift_bridge__$extract_sync(void* input, void* config);
-struct __private__ResultPtrAndPtr __swift_bridge__$extract_batch_sync(void* inputs, void* config);
 void* __swift_bridge__$alef_phantom_vec_ocr_backend(void);
 void* __swift_bridge__$ocr_backend_call_process_image(void* this, void* image_bytes, void* config);
 bool __swift_bridge__$ocr_backend_call_supports_language(void* this, void* lang);
@@ -4106,9 +4093,6 @@ void* __swift_bridge__$validator_call_validate(void* this, void* result, void* c
 void* __swift_bridge__$alef_phantom_vec_embedding_backend(void);
 uintptr_t __swift_bridge__$embedding_backend_call_dimensions(void* this);
 void* __swift_bridge__$embedding_backend_call_embed(void* this, void* texts);
-void* __swift_bridge__$alef_phantom_vec_document_extractor(void);
-void* __swift_bridge__$document_extractor_call_extract_bytes(void* this, void* content, void* mime_type, void* config);
-void* __swift_bridge__$document_extractor_call_supported_mime_types(void* this);
 void* __swift_bridge__$alef_phantom_vec_renderer(void);
 void* __swift_bridge__$renderer_call_render(void* this, void* doc);
 void* __swift_bridge__$alef_phantom_vec_reranker_backend(void);
@@ -4125,9 +4109,6 @@ void* __swift_bridge__$clear_validators(void);
 void* __swift_bridge__$register_embedding_backend(void* swift_box);
 void* __swift_bridge__$unregister_embedding_backend(void* name);
 void* __swift_bridge__$clear_embedding_backends(void);
-void* __swift_bridge__$register_document_extractor(void* swift_box);
-void* __swift_bridge__$unregister_document_extractor(void* name);
-void* __swift_bridge__$clear_document_extractors(void);
 void* __swift_bridge__$register_renderer(void* swift_box);
 void* __swift_bridge__$unregister_renderer(void* name);
 void* __swift_bridge__$clear_renderers(void);

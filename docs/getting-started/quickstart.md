@@ -1,14 +1,15 @@
 # Quick Start
 
-This guide walks you through Xberg's core API — extracting text, handling errors,
-running OCR, and working with metadata. Install your binding first if you haven't:
+This guide walks you through Xberg's core API: `extract`, `extract_batch`,
+`ExtractInput`, and the `ExtractionOutput` envelope. Install your binding first if you haven't:
 [Installation](installation.md).
 
 TypeScript users: `@xberg-io/xberg` for Node.js, `@xberg-io/xberg-wasm` for browsers and edge runtimes — see [Language Support](../index.md#language-support).
 
 ## Your First Extraction
 
-Pass a file path to get its text content. Xberg detects the format automatically:
+Pass an `ExtractInput` with `kind = "uri"` to extract a local path, `file://` URI,
+or HTTP(S) URL. `extract` returns an `ExtractionOutput` with a `results` list:
 
 === "C"
 
@@ -208,9 +209,10 @@ You can also force OCR on any document:
 
     --8<-- "snippets/cli/ocr_basic.md"
 
-## Process Multiple Files
+## Process Multiple Inputs
 
-Pass a list of paths to extract them in parallel:
+Pass a list of `ExtractInput` values to `extract_batch`. Mix `kind = "uri"` and
+`kind = "bytes"` inputs when needed:
 
 === "C"
 
@@ -278,8 +280,9 @@ Pass a list of paths to extract them in parallel:
 
 ## Read Document Metadata
 
-Every extraction result includes format-specific metadata — page count for PDFs,
-sheet names for Excel, dimensions for images:
+Every `ExtractionOutput` contains result metadata in `results`. Each
+`ExtractionResult` includes format-specific metadata: page count for PDFs, sheet
+names for Excel, dimensions for images:
 
 === "C"
 
@@ -370,16 +373,26 @@ sheet names for Excel, dimensions for images:
 
     ```json title="JSON"
     {
-      "content": "Extracted text...",
-      "mime_type": "application/pdf",
-      "metadata": {
-        "title": "Document Title",
-        "authors": ["John Doe"],
-        "created_by": "LaTeX with hyperref package",
-        "format_type": "pdf",
-        "page_count": 10
-      },
-      "tables": []
+      "results": [
+        {
+          "content": "Extracted text...",
+          "mime_type": "application/pdf",
+          "metadata": {
+            "title": "Document Title",
+            "authors": ["John Doe"],
+            "created_by": "LaTeX with hyperref package",
+            "format_type": "pdf",
+            "page_count": 10
+          },
+          "tables": []
+        }
+      ],
+      "errors": [],
+      "summary": {
+        "inputs": 1,
+        "results": 1,
+        "errors": 0
+      }
     }
     ```
 
@@ -489,17 +502,27 @@ from PDFs, spreadsheets, and HTML:
 
     ```json title="JSON"
     {
-      "content": "...",
-      "tables": [
+      "results": [
         {
-          "cells": [
-            ["Name", "Age", "City"],
-            ["Alice", "30", "New York"],
-            ["Bob", "25", "Los Angeles"]
-          ],
-          "markdown": "| Name | Age | City |\n|------|-----|--------|\n| Alice | 30 | New York |\n| Bob | 25 | Los Angeles |"
+          "content": "...",
+          "tables": [
+            {
+              "cells": [
+                ["Name", "Age", "City"],
+                ["Alice", "30", "New York"],
+                ["Bob", "25", "Los Angeles"]
+              ],
+              "markdown": "| Name | Age | City |\\n|------|-----|--------|\\n| Alice | 30 | New York |\\n| Bob | 25 | Los Angeles |"
+            }
+          ]
         }
-      ]
+      ],
+      "errors": [],
+      "summary": {
+        "inputs": 1,
+        "results": 1,
+        "errors": 0
+      }
     }
     ```
 
@@ -579,7 +602,7 @@ non-blocking I/O:
 You've covered the core API. Go deeper:
 
 - **[Configuration Guide](../guides/configuration.md)** — OCR backends, chunking, language detection, config files
-- **[Extract from Bytes](../reference/api-python.md#extract)** — Process in-memory data without writing to disk
+- **[Extract from Bytes](../reference/api-python.md#extract)** — Use `ExtractInput(kind="bytes")`
 - **[OCR Setup](../guides/ocr.md)** — Tesseract, PaddleOCR, EasyOCR backends
 - **[Types Reference](../reference/types.md)** — Full metadata fields for every format
 - **[Docker Deployment](../guides/docker.md)** — Run Xberg in containers

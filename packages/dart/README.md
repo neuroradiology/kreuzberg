@@ -118,7 +118,18 @@ flutter pub add xberg
 
 Extract text, metadata, and structure from any supported document format:
 
-<!-- snippet not found: api/extract.md -->
+```dart title="Dart"
+import 'package:xberg/xberg.dart';
+
+final output = await Xberg.extract(
+  const ExtractInput(
+    kind: ExtractInputKind.uri,
+    uri: 'document.pdf',
+  ),
+);
+
+print(output.results.first.content);
+```
 
 ### Common Use Cases
 
@@ -161,13 +172,44 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-<!-- snippet not found: api/extract_batch.md -->
+```dart title="Dart"
+import 'dart:convert';
+import 'package:xberg/xberg.dart';
+
+final output = await Xberg.extractBatch([
+  const ExtractInput(
+    kind: ExtractInputKind.uri,
+    uri: 'document.pdf',
+  ),
+  ExtractInput(
+    kind: ExtractInputKind.bytes,
+    bytes: utf8.encode('Hello from memory'),
+    mimeType: 'text/plain',
+    filename: 'note.txt',
+  ),
+]);
+
+for (final result in output.results) {
+  print(result.content);
+}
+```
 
 #### Async Processing
 
 For non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```dart title="Dart"
+import 'package:xberg/xberg.dart';
+
+final output = await Xberg.extract(
+  const ExtractInput(
+    kind: ExtractInputKind.uri,
+    uri: 'document.pdf',
+  ),
+);
+
+print(output.results.first.content);
+```
 
 ### Next Steps
 
@@ -317,7 +359,18 @@ Future<void> main() async {
 
 This binding provides full async/await support for non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```dart title="Dart"
+import 'package:xberg/xberg.dart';
+
+final output = await Xberg.extract(
+  const ExtractInput(
+    kind: ExtractInputKind.uri,
+    uri: 'document.pdf',
+  ),
+);
+
+print(output.results.first.content);
+```
 
 ## Plugin System
 
@@ -335,7 +388,27 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: api/extract_batch.md -->
+```dart title="Dart"
+import 'dart:convert';
+import 'package:xberg/xberg.dart';
+
+final output = await Xberg.extractBatch([
+  const ExtractInput(
+    kind: ExtractInputKind.uri,
+    uri: 'document.pdf',
+  ),
+  ExtractInput(
+    kind: ExtractInputKind.bytes,
+    bytes: utf8.encode('Hello from memory'),
+    mimeType: 'text/plain',
+    filename: 'note.txt',
+  ),
+]);
+
+for (final result in output.results) {
+  print(result.content);
+}
+```
 
 ## Configuration
 

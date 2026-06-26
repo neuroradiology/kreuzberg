@@ -12,8 +12,7 @@ use crawlberg::{CrawlConfig, CrawlEngine, CrawlPageResult, DownloadedDocument, S
 #[cfg(feature = "url-ingestion")]
 use crate::core::config::UrlExtractionMode;
 use crate::core::config::{
-    CrawlExtractionSummary, ExtractInput, ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionOutput,
-    ExtractionSummary,
+    ExtractInput, ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary,
 };
 #[cfg(feature = "url-ingestion")]
 use crate::types::{ExtractedUri, Metadata};
@@ -57,7 +56,12 @@ pub async fn extract_batch(inputs: Vec<ExtractInput>, config: &ExtractionConfig)
                 output.summary.documents_downloaded += item_output.summary.documents_downloaded;
                 output.results.append(&mut item_output.results);
                 output.errors.append(&mut item_output.errors);
-                merge_crawl_summary(&mut output, item_output.crawl.take());
+                merge_crawl_summary(
+                    &mut output,
+                    item_output.crawl_final_urls,
+                    item_output.crawl_redirect_count,
+                    item_output.crawl_unique_normalized_urls,
+                );
             }
             Err(error) => output.errors.push(error_item(index, source, &error)),
         }
@@ -254,14 +258,7 @@ async fn output_from_scrape(scrape: ScrapeResult, config: &ExtractionConfig, ind
         output.summary.pages_crawled = 1;
     }
 
-    merge_crawl_summary(
-        &mut output,
-        Some(CrawlExtractionSummary {
-            final_urls: vec![scrape.final_url],
-            redirect_count: 0,
-            unique_normalized_urls: Vec::new(),
-        }),
-    );
+    merge_crawl_summary(&mut output, vec![scrape.final_url], 0, Vec::new());
     output.refresh_counts();
     Ok(output)
 }
@@ -274,7 +271,7 @@ async fn output_from_crawl(
 ) -> Result<ExtractionOutput> {
     let final_url = crawl.final_url.clone();
     let redirect_count = crawl.redirect_count;
-    let unique_normalized_urls = crawl.unique_normalized_urls();
+    let unique_normalized_urls = crawl.normalized_urls.clone();
     let crawl_error = crawl.error.clone();
     let mut output = ExtractionOutput {
         summary: ExtractionSummary {
@@ -310,29 +307,30 @@ async fn output_from_crawl(
         });
     }
 
-    merge_crawl_summary(
-        &mut output,
-        Some(CrawlExtractionSummary {
-            final_urls: vec![final_url],
-            redirect_count,
-            unique_normalized_urls,
-        }),
-    );
+    merge_crawl_summary(&mut output, vec![final_url], redirect_count, unique_normalized_urls);
     output.refresh_counts();
     Ok(output)
 }
 
-fn merge_crawl_summary(output: &mut ExtractionOutput, incoming: Option<CrawlExtractionSummary>) {
-    let Some(incoming) = incoming else {
+fn merge_crawl_summary(
+    output: &mut ExtractionOutput,
+    final_urls: Vec<String>,
+    redirect_count: usize,
+    unique_normalized_urls: Vec<String>,
+) {
+    if final_urls.is_empty() && redirect_count == 0 && unique_normalized_urls.is_empty() {
         return;
-    };
+    }
 
-    let summary = output.crawl.get_or_insert_with(CrawlExtractionSummary::default);
-    summary.redirect_count += incoming.redirect_count;
-    summary.final_urls.extend(incoming.final_urls);
-    for url in incoming.unique_normalized_urls {
-        if !summary.unique_normalized_urls.contains(&url) {
-            summary.unique_normalized_urls.push(url);
+    output.crawl_redirect_count += redirect_count;
+    for url in final_urls {
+        if !output.crawl_final_urls.contains(&url) {
+            output.crawl_final_urls.push(url);
+        }
+    }
+    for url in unique_normalized_urls {
+        if !output.crawl_unique_normalized_urls.contains(&url) {
+            output.crawl_unique_normalized_urls.push(url);
         }
     }
 }

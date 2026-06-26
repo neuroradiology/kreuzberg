@@ -436,7 +436,9 @@ Unified extraction output envelope.
 | `results` | `Vec<ExtractionResult>` | `vec!\[\]` | Extraction results in discovery order. |
 | `errors` | `Vec<ExtractionErrorItem>` | `vec!\[\]` | Non-fatal per-input errors. |
 | `summary` | `ExtractionSummary` | — | Aggregate counts for the operation. |
-| `crawl` | `HashMap<String, serde_json::Value>` | `HashMap::new()` | Optional implementation-specific crawl metadata. |
+| `crawl_final_urls` | `Vec<String>` | `vec!\[\]` | Final URLs reached after redirects during URL ingestion. |
+| `crawl_redirect_count` | `usize` | — | Total redirects followed while fetching or crawling URLs. |
+| `crawl_unique_normalized_urls` | `Vec<String>` | `vec!\[\]` | Unique normalized URLs discovered by crawls. |
 
 ---
 
@@ -2307,38 +2309,6 @@ requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
-
-*Opaque type — fields are not directly accessible.*
-
----
-
-#### DocumentExtractor
-
-Trait for document extractor plugins.
-
-Implement this trait to add support for new document formats or to override
-built-in extraction behavior with custom logic.
-
-### Return Type
-
-Extractors return `InternalDocument`, a flat intermediate representation.
-The pipeline converts this into the public `ExtractionResult` via the
-derivation step.
-
-### Priority System
-
-When multiple extractors support the same MIME type, the registry selects
-the extractor with the highest priority value. Use this to:
-
-- Override built-in extractors (priority > 50)
-- Provide fallback extractors (priority < 50)
-- Implement specialized extractors for specific use cases
-
-Default priority is 50.
-
-### Thread Safety
-
-Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
 *Opaque type — fields are not directly accessible.*
 

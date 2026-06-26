@@ -59,10 +59,6 @@ list_supported_formats <- function() .Call("wrap__list_supported_formats", PACKA
 #' @return List of character string.
 #' @export
 list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PACKAGE = "xberg")
-#' List names of all registered document extractors
-#' @return List of character string.
-#' @export
-list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "xberg")
 #' List all registered OCR backends
 #'
 #' Returns the names of all OCR backends currently registered in the global registry.
@@ -351,45 +347,6 @@ unregister_embedding_backend <- function(name) .Call("wrap__unregister_embedding
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
 clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", PACKAGE = "xberg")
-#' register_document_extractor
-#'
-#' Register an R-side plugin implementation. Pass a named list whose entries
-#' implement the trait's required methods (e.g. `list(name = function() "my", ...)`).
-#'
-#' The backend must implement the following methods (named entries in `r_backend`):
-#'   \item{ `extract_bytes(content: raw, mime_type: character, config: ExtractionConfig (native object)) -> InternalDocument` }
-#'   \item{ `extract_file(path: character, mime_type: character, config: ExtractionConfig (native object)) -> InternalDocument` }
-#'   \item{ `supported_mime_types() -> list of character` }
-#'   \item{ `priority() -> numeric` }
-#'   \item{ `can_handle(path: character, mime_type: character) -> numeric` }
-#'
-#' Each method receiving a known struct argument is handed the native binding object
-#' (an external pointer with `$field` accessors), not a JSON string. Other arguments
-#' (enums, opaque handles) arrive as JSON strings. A method may return either the native
-#' binding object (an external pointer, for representable struct return types) or a
-#' JSON-encoded string (e.g. via `jsonlite::toJSON`); other return shapes use a JSON string.
-#'
-#' @param r_backend Named list of R closures implementing the trait surface.
-#'
-#' @return Invisible NULL on success; raises an R error on failure.
-#' @export
-register_document_extractor <- function(r_backend) .Call("wrap__register_document_extractor", r_backend, PACKAGE = "xberg")
-#' unregister_document_extractor
-#'
-#' Unregister a previously registered plugin by name.
-#'
-#' @param name Plugin name string as returned by the backend's `name()` method.
-#'
-#' @return Invisible NULL on success; raises an R error on failure.
-#' @export
-unregister_document_extractor <- function(name) .Call("wrap__unregister_document_extractor", name, PACKAGE = "xberg")
-#' clear_document_extractors
-#'
-#' Remove every registered plugin of this type. Typically used in test teardown.
-#'
-#' @return Invisible NULL on success; raises an R error on failure.
-#' @export
-clear_document_extractors <- function() .Call("wrap__clear_document_extractors", PACKAGE = "xberg")
 #' register_renderer
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries

@@ -123,7 +123,14 @@ Then add the product to the relevant target:
 
 Extract text, metadata, and structure from any supported document format:
 
-<!-- snippet not found: api/extract.md -->
+```swift title="Swift"
+import Xberg
+
+let input = #"{"kind":"uri","uri":"document.pdf"}"#
+let output = try await extract(input, "{}")
+
+print("Results: \(output.summary().results())")
+```
 
 ### Common Use Cases
 
@@ -159,13 +166,32 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-<!-- snippet not found: api/extract_batch.md -->
+```swift title="Swift"
+import Xberg
+
+let inputs = [
+    try extractInputFromJson(#"{"kind":"uri","uri":"document.pdf"}"#),
+    try extractInputFromJson(
+        #"{"kind":"bytes","bytes":[72,101,108,108,111],"mime_type":"text/plain","filename":"note.txt"}"#
+    ),
+]
+
+let output = try await extractBatch(inputs, "{}")
+print("Results: \(output.summary().results())")
+```
 
 #### Async Processing
 
 For non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```swift title="Swift"
+import Xberg
+
+let input = #"{"kind":"uri","uri":"document.pdf"}"#
+let output = try await extract(input, "{}")
+
+print("Results: \(output.summary().results())")
+```
 
 ### Next Steps
 
@@ -308,7 +334,14 @@ print(result.content().toString())
 
 This binding provides full async/await support for non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```swift title="Swift"
+import Xberg
+
+let input = #"{"kind":"uri","uri":"document.pdf"}"#
+let output = try await extract(input, "{}")
+
+print("Results: \(output.summary().results())")
+```
 
 ## Plugin System
 
@@ -326,7 +359,19 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: api/extract_batch.md -->
+```swift title="Swift"
+import Xberg
+
+let inputs = [
+    try extractInputFromJson(#"{"kind":"uri","uri":"document.pdf"}"#),
+    try extractInputFromJson(
+        #"{"kind":"bytes","bytes":[72,101,108,108,111],"mime_type":"text/plain","filename":"note.txt"}"#
+    ),
+]
+
+let output = try await extractBatch(inputs, "{}")
+print("Results: \(output.summary().results())")
+```
 
 ## Configuration
 

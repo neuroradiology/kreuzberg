@@ -77,7 +77,7 @@ Configure in Claude Desktop or Cursor:
 
 Xberg exposes 13 tools via MCP. All extraction tools accept an optional `config` object to override defaults:
 
-**Extraction:** `extract`, `extract`, `extract_batch`, `detect_mime_type`, `extract_structured`
+**Extraction:** `extract`, `extract_batch`, `detect_mime_type`, `extract_structured`
 **Embeddings:** `embed_text`
 **Chunking:** `chunk_text`
 **Cache:** `cache_stats`, `cache_clear`, `cache_manifest`, `cache_warm`

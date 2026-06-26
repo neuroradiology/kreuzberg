@@ -229,7 +229,9 @@ Unified extraction output envelope.
 | `results` | `list\[ExtractionResult\]` | `\[\]` | Extraction results in discovery order. |
 | `errors` | `list\[ExtractionErrorItem\]` | `\[\]` | Non-fatal per-input errors. |
 | `summary` | `ExtractionSummary` | — | Aggregate counts for the operation. |
-| `crawl` | `dict\[str, dict\[str, Any\]\]` | `{}` | Optional implementation-specific crawl metadata. |
+| `crawl_final_urls` | `list\[str\]` | `\[\]` | Final URLs reached after redirects during URL ingestion. |
+| `crawl_redirect_count` | `int` | — | Total redirects followed while fetching or crawling URLs. |
+| `crawl_unique_normalized_urls` | `list\[str\]` | `\[\]` | Unique normalized URLs discovered by crawls. |
 
 ---
 

@@ -171,13 +171,39 @@ result.tables?.forEach((table) => {
 
 #### Processing Multiple Files
 
-<!-- snippet not found: getting-started/extract_batch.md -->
+```typescript title="TypeScript"
+import { ExtractInputKind, extractBatch } from "@xberg-io/xberg";
+
+const output = await extractBatch([
+  { kind: ExtractInputKind.Uri, uri: "document.pdf" },
+  {
+    kind: ExtractInputKind.Bytes,
+    bytes: Buffer.from("Hello from memory"),
+    mimeType: "text/plain",
+    filename: "note.txt",
+  },
+]);
+
+for (const result of output.results) {
+  console.log(result.content.slice(0, 200));
+}
+```
 
 #### Async Processing
 
 For non-blocking document processing:
 
-<!-- snippet not found: getting-started/extract.md -->
+```typescript title="TypeScript"
+import { ExtractInputKind, extract } from "@xberg-io/xberg";
+
+const output = await extract({
+  kind: ExtractInputKind.Uri,
+  uri: "document.pdf",
+});
+
+console.log(output.results[0].content);
+console.log(`Results: ${output.summary.results}`);
+```
 
 #### Configuration Discovery
 
@@ -406,7 +432,17 @@ console.log(result.content);
 
 This binding provides full async/await support for non-blocking document processing:
 
-<!-- snippet not found: getting-started/extract.md -->
+```typescript title="TypeScript"
+import { ExtractInputKind, extract } from "@xberg-io/xberg";
+
+const output = await extract({
+  kind: ExtractInputKind.Uri,
+  uri: "document.pdf",
+});
+
+console.log(output.results[0].content);
+console.log(`Results: ${output.summary.results}`);
+```
 
 ## Plugin System
 
@@ -424,7 +460,23 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: getting-started/extract_batch.md -->
+```typescript title="TypeScript"
+import { ExtractInputKind, extractBatch } from "@xberg-io/xberg";
+
+const output = await extractBatch([
+  { kind: ExtractInputKind.Uri, uri: "document.pdf" },
+  {
+    kind: ExtractInputKind.Bytes,
+    bytes: Buffer.from("Hello from memory"),
+    mimeType: "text/plain",
+    filename: "note.txt",
+  },
+]);
+
+for (const result of output.results) {
+  console.log(result.content.slice(0, 200));
+}
+```
 
 ## Configuration
 

@@ -2,9 +2,9 @@
 //!
 //! This module provides the main MCP server struct and startup functions.
 
+use super::format::build_config;
 use crate::ExtractionConfig;
 use crate::service::{ExtractionRequest, ExtractionServiceBuilder};
-use super::format::build_config;
 use rmcp::{
     ServerHandler, ServiceExt,
     handler::server::{

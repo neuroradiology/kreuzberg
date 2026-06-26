@@ -169,7 +169,25 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-<!-- snippet not found: core/extract_batch.exs -->
+```exs
+```elixir title="Elixir"
+inputs = [
+  %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"},
+  %Xberg.ExtractInput{
+    kind: :bytes,
+    bytes: "Hello from memory",
+    mime_type: "text/plain",
+    filename: "note.txt"
+  }
+]
+
+{:ok, output} = Xberg.extract_batch_async(inputs: inputs)
+
+Enum.each(output.results, fn result ->
+  IO.puts(result.content)
+end)
+```
+```
 
 #### Async Processing
 
@@ -415,7 +433,25 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: core/extract_batch.exs -->
+```exs
+```elixir title="Elixir"
+inputs = [
+  %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"},
+  %Xberg.ExtractInput{
+    kind: :bytes,
+    bytes: "Hello from memory",
+    mime_type: "text/plain",
+    filename: "note.txt"
+  }
+]
+
+{:ok, output} = Xberg.extract_batch_async(inputs: inputs)
+
+Enum.each(output.results, fn result ->
+  IO.puts(result.content)
+end)
+```
+```
 
 ## Configuration
 

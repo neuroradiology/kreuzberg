@@ -19,20 +19,15 @@ pub struct ExtractionOutput {
     /// Aggregate extraction counts.
     #[schemars(description = "Aggregate extraction counts")]
     pub summary: ExtractionSummaryOutput,
-    /// Optional crawl metadata for URL-derived work.
-    #[schemars(description = "Optional crawl metadata for URL-derived work")]
-    pub crawl: Option<CrawlExtractionSummaryOutput>,
-}
-
-/// Structured crawl summary for URL-derived work.
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct CrawlExtractionSummaryOutput {
-    /// Final URLs reached after redirects.
-    pub final_urls: Vec<String>,
+    /// Final URLs reached after redirects during URL ingestion.
+    #[schemars(description = "Final URLs reached after redirects during URL ingestion")]
+    pub crawl_final_urls: Vec<String>,
     /// Total redirects followed while fetching or crawling URLs.
-    pub redirect_count: usize,
+    #[schemars(description = "Total redirects followed while fetching or crawling URLs")]
+    pub crawl_redirect_count: usize,
     /// Unique normalized URLs discovered by crawls.
-    pub unique_normalized_urls: Vec<String>,
+    #[schemars(description = "Unique normalized URLs discovered by crawls")]
+    pub crawl_unique_normalized_urls: Vec<String>,
 }
 
 /// Structured summary for unified extraction.

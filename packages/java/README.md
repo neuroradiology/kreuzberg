@@ -195,13 +195,51 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-<!-- snippet not found: api/extract_batch.md -->
+```java title="Java"
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.Xberg;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+var inputs = List.of(
+    ExtractInput.builder()
+        .withKind(ExtractInputKind.Uri)
+        .withUri("document.pdf")
+        .build(),
+    ExtractInput.builder()
+        .withKind(ExtractInputKind.Bytes)
+        .withBytes("Hello from memory".getBytes(StandardCharsets.UTF_8))
+        .withMimeType("text/plain")
+        .withFilename("note.txt")
+        .build()
+);
+
+var output = Xberg.extractBatch(inputs, ExtractionConfig.builder().build());
+for (var result : output.results()) {
+    System.out.println(result.content());
+}
+```
 
 #### Async Processing
 
 For non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```java title="Java"
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.Xberg;
+
+var input = ExtractInput.builder()
+    .withKind(ExtractInputKind.Uri)
+    .withUri("document.pdf")
+    .build();
+
+var output = Xberg.extract(input, ExtractionConfig.builder().build());
+System.out.println(output.results().get(0).content());
+```
 
 ### Next Steps
 
@@ -351,7 +389,20 @@ public class Main {
 
 This binding provides full async/await support for non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```java title="Java"
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.Xberg;
+
+var input = ExtractInput.builder()
+    .withKind(ExtractInputKind.Uri)
+    .withUri("document.pdf")
+    .build();
+
+var output = Xberg.extract(input, ExtractionConfig.builder().build());
+System.out.println(output.results().get(0).content());
+```
 
 ## Plugin System
 
@@ -369,7 +420,32 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: api/extract_batch.md -->
+```java title="Java"
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.Xberg;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+var inputs = List.of(
+    ExtractInput.builder()
+        .withKind(ExtractInputKind.Uri)
+        .withUri("document.pdf")
+        .build(),
+    ExtractInput.builder()
+        .withKind(ExtractInputKind.Bytes)
+        .withBytes("Hello from memory".getBytes(StandardCharsets.UTF_8))
+        .withMimeType("text/plain")
+        .withFilename("note.txt")
+        .build()
+);
+
+var output = Xberg.extractBatch(inputs, ExtractionConfig.builder().build());
+for (var result : output.results()) {
+    System.out.println(result.content());
+}
+```
 
 ## Configuration
 

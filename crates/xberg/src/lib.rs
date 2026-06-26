@@ -6,11 +6,11 @@
 //! # Quick Start
 //!
 //! ```rust,no_run
-//! use xberg::{extract_sync, ExtractInput, ExtractionConfig};
+//! use xberg::{extract, ExtractInput, ExtractionConfig};
 //!
-//! # fn main() -> xberg::Result<()> {
+//! # async fn run() -> xberg::Result<()> {
 //! let config = ExtractionConfig::default();
-//! let output = extract_sync(ExtractInput::uri("document.pdf"), &config)?;
+//! let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
 //! println!("Extracted: {}", output.results[0].content);
 //! # Ok(())
 //! # }
@@ -202,13 +202,12 @@ pub use core::extractor::{extract_batch_sync, extract_sync};
 // ── Extraction config types ───────────────────────────────────────────────────
 pub use core::config::{
     AccelerationConfig, CallMode, CaptioningConfig, ChunkSizing, ChunkerType, ChunkingConfig, ContentFilterConfig,
-    CrawlExtractionSummary, EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType, ExtractInput,
-    ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary,
-    FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, MergeMode, NerBackendKind,
-    NerConfig, OcrConfig, OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig, RedactionConfig,
-    RedactionPattern, RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig,
-    SummarizationConfig, TableChunkingMode, TokenReductionOptions, TranslationConfig, UrlExtractionConfig,
-    UrlExtractionMode,
+    EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType, ExtractInput, ExtractInputKind,
+    ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary, FileExtractionConfig,
+    ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, MergeMode, NerBackendKind, NerConfig, OcrConfig,
+    OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig, RedactionConfig, RedactionPattern,
+    RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig, SummarizationConfig,
+    TableChunkingMode, TokenReductionOptions, TranslationConfig, UrlExtractionConfig, UrlExtractionMode,
 };
 #[cfg(feature = "transcription-types")]
 pub use core::config::{TranscriptionConfig, WhisperModel};

@@ -158,7 +158,6 @@ sources = [
   "crates/xberg/src/structured/bindings.rs",
   # Unified extraction functions (re-exported from lib.rs)
   "crates/xberg/src/core/extractor/unified.rs",
-  "crates/xberg/src/core/extractor/sync.rs",
   # PDF rendering (render_pdf_page_to_png — re-exported from lib.rs)
   "crates/xberg/src/pdf/render.rs",
   # PdfMetadata — referenced in types/metadata.rs as Pdf(PdfMetadata) variant
@@ -172,8 +171,6 @@ sources = [
   # OCR/PaddleOCR types (re-exported from lib.rs)
   "crates/xberg/src/ocr/types.rs",
   "crates/xberg/src/paddle_ocr/mod.rs",
-  # Plugin registry operations (list_document_extractors etc.)
-  "crates/xberg/src/plugins/extractor/mod.rs",
   # OCR backend registry operations (register/unregister/list/clear)
   "crates/xberg/src/plugins/ocr.rs",
   # Renderer trait and registry operations
@@ -974,6 +971,12 @@ types = [
   # extraction surface is ExtractInput plus extract/extract_batch.
   "BatchBytesItem",
   "BatchFileItem",
+
+  # Document extractor plugins remain Rust-only because the trait shape uses
+  # file/bytes-specific methods that are no longer part of the public binding
+  # API surface.
+  "DocumentExtractor",
+  "SyncExtractor",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge
@@ -1056,6 +1059,8 @@ functions = [
 
   # Legacy extraction entry points kept only as internal implementation helpers.
   # The v1 public extraction surface is ExtractInput plus extract/extract_batch.
+  "extract_sync",
+  "extract_batch_sync",
   "extract_bytes",
   "extract_bytes_sync",
   "extract_file",
@@ -1064,6 +1069,12 @@ functions = [
   "batch_extract_bytes_sync",
   "batch_extract_files",
   "batch_extract_files_sync",
+
+  # Document extractor plugin registry is Rust-only for v1 bindings.
+  "list_document_extractors",
+  "register_document_extractor",
+  "unregister_document_extractor",
+  "clear_document_extractors",
 ]
 
 [crates.lint.python]
@@ -1818,17 +1829,6 @@ result_is_array = true
 function = "embedTextsAsync"
 result_is_simple = true
 options_type = "EmbeddingConfig"
-
-[crates.e2e.calls.list_document_extractors]
-result_is_simple = true
-function = "list_document_extractors"
-module = "xberg"
-async = false
-args = []
-
-[crates.e2e.calls.list_document_extractors.overrides.go]
-result_is_simple = true
-returns_result = true
 
 [crates.e2e.calls.list_ocr_backends]
 result_is_simple = true
@@ -3142,221 +3142,6 @@ options_type = "RerankerConfig"
 [crates.e2e.calls.rerank_async.overrides.swift]
 options_type = "RerankerConfig"
 
-[crates.e2e.calls.register_document_extractor]
-# Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
-result_is_simple = true
-function = ""
-module = ""
-async = false
-returns_result = false
-returns_void = true
-args = []
-
-[crates.e2e.calls.register_document_extractor.overrides.python]
-function = "register_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.rust]
-function = "register_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.node]
-function = "registerDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.go]
-function = "RegisterDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.ruby]
-function = "register_document_extractor"
-module = "Xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.php]
-function = "registerDocumentExtractor"
-module = "Xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.java]
-function = "registerDocumentExtractor"
-module = "io.xberg.Xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.csharp]
-function = "RegisterDocumentExtractor"
-module = "Xberg"
-
-
-[crates.e2e.calls.register_document_extractor.overrides.swift]
-function = "registerDocumentExtractor"
-module = "Xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.dart]
-function = "registerDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.wasm]
-function = "registerDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.r]
-function = "register_document_extractor"
-module = "xberg"
-arg_name_map = { extractor = "r_backend" }
-
-[crates.e2e.calls.register_document_extractor.overrides.elixir]
-function = "register_document_extractor"
-module = "Xberg"
-
-[crates.e2e.calls.register_document_extractor.overrides.zig]
-function = "register_document_extractor"
-module = "xberg"
-returns_result = false
-
-[crates.e2e.calls.register_document_extractor.overrides.kotlin_android]
-function = "register"
-class = "DocumentExtractorBridge"
-
-[crates.e2e.calls.unregister_document_extractor]
-# Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
-result_is_simple = true
-function = ""
-module = ""
-async = false
-returns_result = false
-returns_void = true
-args = [{ name = "name", field = "input.name", type = "string" }]
-
-[crates.e2e.calls.unregister_document_extractor.overrides.python]
-function = "unregister_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.rust]
-function = "unregister_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.node]
-function = "unregisterDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.go]
-function = "UnregisterDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.ruby]
-function = "unregister_document_extractor"
-module = "Xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.php]
-function = "unregisterDocumentExtractor"
-module = "Xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.java]
-function = "unregisterDocumentExtractor"
-module = "io.xberg.Xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.csharp]
-function = "UnregisterDocumentExtractor"
-module = "Xberg"
-
-
-[crates.e2e.calls.unregister_document_extractor.overrides.swift]
-function = "unregisterDocumentExtractor"
-module = "Xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.dart]
-function = "unregisterDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.wasm]
-function = "unregisterDocumentExtractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.r]
-function = "unregister_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.elixir]
-function = "unregister_document_extractor"
-module = "Xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.zig]
-function = "unregister_document_extractor"
-module = "xberg"
-
-[crates.e2e.calls.unregister_document_extractor.overrides.kotlin_android]
-function = "unregister"
-class = "DocumentExtractorBridge"
-
-[crates.e2e.calls.clear_document_extractors]
-# Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
-result_is_simple = true
-function = ""
-module = ""
-async = false
-returns_result = false
-returns_void = true
-args = []
-
-[crates.e2e.calls.clear_document_extractors.overrides.python]
-function = "clear_document_extractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.rust]
-function = "clear_document_extractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.node]
-function = "clearDocumentExtractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.go]
-function = "ClearDocumentExtractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.ruby]
-function = "clear_document_extractors"
-module = "Xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.php]
-function = "clearDocumentExtractors"
-module = "Xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.java]
-function = "clearDocumentExtractors"
-module = "io.xberg.Xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.csharp]
-function = "ClearDocumentExtractors"
-module = "Xberg"
-
-
-[crates.e2e.calls.clear_document_extractors.overrides.swift]
-function = "clearDocumentExtractors"
-module = "Xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.dart]
-function = "clearDocumentExtractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.wasm]
-function = "clearDocumentExtractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.r]
-function = "clear_document_extractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.elixir]
-function = "clear_document_extractors"
-module = "Xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.zig]
-function = "clear_document_extractors"
-module = "xberg"
-
-[crates.e2e.calls.clear_document_extractors.overrides.kotlin_android]
-function = "clearAll"
-class = "DocumentExtractorBridge"
-
 [crates.e2e.calls.register_renderer]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
 result_is_simple = true
@@ -4168,18 +3953,6 @@ registry_getter = "xberg::plugins::registry::get_embedding_backend_registry"
 register_fn = "register_embedding_backend"
 unregister_fn = "unregister_embedding_backend"
 clear_fn = "clear_embedding_backends"
-
-[[crates.trait_bridges]]
-trait_name = "DocumentExtractor"
-super_trait = "xberg::plugins::Plugin"
-registry_getter = "xberg::plugins::registry::get_document_extractor_registry"
-register_fn = "register_document_extractor"
-unregister_fn = "unregister_document_extractor"
-clear_fn = "clear_document_extractors"
-# `as_sync_extractor` returns `Option<&dyn SyncExtractor>` — a trait-object reference that
-# cannot traverse the C FFI boundary. Skip it in the FFI vtable and let the default impl
-# (returns None) take over.
-ffi_skip_methods = ["as_sync_extractor"]
 
 [[crates.trait_bridges]]
 trait_name = "Renderer"

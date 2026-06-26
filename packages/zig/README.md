@@ -122,7 +122,20 @@ exe.root_module.addImport("xberg", xberg_dep.module("xberg"));
 
 Extract text, metadata, and structure from any supported document format:
 
-<!-- snippet not found: api/extract.md -->
+```zig title="Zig"
+const std = @import("std");
+const xberg = @import("xberg");
+
+pub fn main() !void {
+    const output_json = try xberg.extract(
+        "{\"kind\":\"uri\",\"uri\":\"document.pdf\"}",
+        "{}",
+    );
+    defer std.heap.c_allocator.free(output_json);
+
+    try std.io.getStdOut().writer().print("{s}\n", .{output_json});
+}
+```
 
 ### Common Use Cases
 
@@ -167,13 +180,43 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 #### Processing Multiple Files
 
-<!-- snippet not found: api/extract_batch.md -->
+```zig title="Zig"
+const std = @import("std");
+const xberg = @import("xberg");
+
+pub fn main() !void {
+    const inputs_json =
+        "["
+        ++ "{\"kind\":\"uri\",\"uri\":\"document.pdf\"},"
+        ++ "{\"kind\":\"bytes\",\"bytes\":[72,101,108,108,111],"
+        ++ "\"mime_type\":\"text/plain\",\"filename\":\"note.txt\"}"
+        ++ "]";
+
+    const output_json = try xberg.extract_batch(inputs_json, "{}");
+    defer std.heap.c_allocator.free(output_json);
+
+    try std.io.getStdOut().writer().print("{s}\n", .{output_json});
+}
+```
 
 #### Async Processing
 
 For non-blocking document processing:
 
-<!-- snippet not found: api/extract.md -->
+```zig title="Zig"
+const std = @import("std");
+const xberg = @import("xberg");
+
+pub fn main() !void {
+    const output_json = try xberg.extract(
+        "{\"kind\":\"uri\",\"uri\":\"document.pdf\"}",
+        "{}",
+    );
+    defer std.heap.c_allocator.free(output_json);
+
+    try std.io.getStdOut().writer().print("{s}\n", .{output_json});
+}
+```
 
 ### Next Steps
 
@@ -336,7 +379,24 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 
 Process multiple documents efficiently:
 
-<!-- snippet not found: api/extract_batch.md -->
+```zig title="Zig"
+const std = @import("std");
+const xberg = @import("xberg");
+
+pub fn main() !void {
+    const inputs_json =
+        "["
+        ++ "{\"kind\":\"uri\",\"uri\":\"document.pdf\"},"
+        ++ "{\"kind\":\"bytes\",\"bytes\":[72,101,108,108,111],"
+        ++ "\"mime_type\":\"text/plain\",\"filename\":\"note.txt\"}"
+        ++ "]";
+
+    const output_json = try xberg.extract_batch(inputs_json, "{}");
+    defer std.heap.c_allocator.free(output_json);
+
+    try std.io.getStdOut().writer().print("{s}\n", .{output_json});
+}
+```
 
 ## Configuration
 

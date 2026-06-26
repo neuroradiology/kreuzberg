@@ -8,21 +8,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
-
-/// Synchronous wrapper for `extract`.
-Future<ExtractionOutput> extractSync({
-  required ExtractInput input,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateExtractSync(input: input, config: config);
-
-/// Synchronous wrapper for `extract_batch`.
-Future<ExtractionOutput> extractBatchSync({
-  required List<ExtractInput> inputs,
-  required ExtractionConfig config,
-}) =>
-    RustLib.instance.api.crateExtractBatchSync(inputs: inputs, config: config);
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a single bytes or URI input.
 Future<ExtractionOutput> extract({
@@ -111,10 +98,6 @@ Future<List<QrCode>> detectQrCodes({
 /// bindings.
 Future<List<String>> listEmbeddingBackends() =>
     RustLib.instance.api.crateListEmbeddingBackends();
-
-/// List names of all registered document extractors.
-Future<List<String>> listDocumentExtractors() =>
-    RustLib.instance.api.crateListDocumentExtractors();
 
 /// List all registered OCR backends.
 ///
@@ -1712,61 +1695,6 @@ Future<void> unregisterEmbeddingBackend({required String name}) =>
 Future<void> clearEmbeddingBackends() =>
     RustLib.instance.api.crateClearEmbeddingBackends();
 
-/// Construct a `DocumentExtractorDartImpl` from Dart callback closures.
-/// FRB synthesises a Dart-callable function type for each closure parameter,
-/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
-/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
-/// struct (FRB v2 silently drops factories that return opaque structs whose fields
-/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
-/// whose backing object carries the supplied callbacks privately.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required FutureOr<InternalDocumentBridge> Function(
-    Uint8List,
-    String,
-    ExtractionConfig,
-  )
-  extractBytes,
-  required FutureOr<InternalDocumentBridge> Function(
-    String,
-    String,
-    ExtractionConfig,
-  )
-  extractFile,
-  required FutureOr<List<String>> Function() supportedMimeTypes,
-  required FutureOr<PlatformInt64> Function() priority,
-  required FutureOr<bool> Function(String, String) canHandle,
-}) => RustLib.instance.api.crateCreateDocumentExtractorDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  extractBytes: extractBytes,
-  extractFile: extractFile,
-  supportedMimeTypes: supportedMimeTypes,
-  priority: priority,
-  canHandle: canHandle,
-);
-
-/// Register a Dart implementation as a `DocumentExtractor` plugin.
-///
-/// Forwards the `Arc<dyn DocumentExtractor>` wrapped by `DocumentExtractorDartImpl` to
-/// `xberg::plugins::registry::get_document_extractor_registry()`. Errors from the host registry are stringified
-/// for FRB transport.
-Future<void> registerDocumentExtractor({
-  required DocumentExtractorDartImpl impl,
-}) => RustLib.instance.api.crateRegisterDocumentExtractor(impl: impl);
-
-/// Unregister a previously-registered `DocumentExtractor` plugin by name.
-/// Removes the plugin from `xberg::plugins::registry::get_document_extractor_registry()` and stringifies any host error.
-Future<void> unregisterDocumentExtractor({required String name}) =>
-    RustLib.instance.api.crateUnregisterDocumentExtractor(name: name);
-
-/// Clear all registered `DocumentExtractor` plugins.
-/// Removes every plugin from `xberg::plugins::registry::get_document_extractor_registry()` and stringifies any host error.
-Future<void> clearDocumentExtractors() =>
-    RustLib.instance.api.crateClearDocumentExtractors();
-
 /// Construct a `RendererDartImpl` from Dart callback closures.
 /// FRB synthesises a Dart-callable function type for each closure parameter,
 /// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
@@ -1838,9 +1766,6 @@ Future<void> unregisterRerankerBackend({required String name}) =>
 Future<void> clearRerankerBackends() =>
     RustLib.instance.api.crateClearRerankerBackends();
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>
-abstract class ArcDocumentExtractor implements RustOpaqueInterface {}
-
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>
 abstract class ArcEmbeddingBackend implements RustOpaqueInterface {}
 
@@ -1858,13 +1783,6 @@ abstract class ArcRerankerBackend implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>
 abstract class ArcValidator implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>>
-abstract class DocumentExtractorDartImpl implements RustOpaqueInterface {
-  ArcDocumentExtractor get field0;
-
-  set field0(ArcDocumentExtractor field0);
-}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>
 abstract class EmbeddingBackendDartImpl implements RustOpaqueInterface {
@@ -6250,19 +6168,32 @@ class ExtractionOutput {
   /// Aggregate counts for the operation.
   final ExtractionSummary summary;
 
-  /// Optional implementation-specific crawl metadata.
-  final Map<String, String> crawl;
+  /// Final URLs reached after redirects during URL ingestion.
+  final List<String> crawlFinalUrls;
+
+  /// Total redirects followed while fetching or crawling URLs.
+  final PlatformInt64 crawlRedirectCount;
+
+  /// Unique normalized URLs discovered by crawls.
+  final List<String> crawlUniqueNormalizedUrls;
 
   const ExtractionOutput({
     required this.results,
     required this.errors,
     required this.summary,
-    required this.crawl,
+    required this.crawlFinalUrls,
+    required this.crawlRedirectCount,
+    required this.crawlUniqueNormalizedUrls,
   });
 
   @override
   int get hashCode =>
-      results.hashCode ^ errors.hashCode ^ summary.hashCode ^ crawl.hashCode;
+      results.hashCode ^
+      errors.hashCode ^
+      summary.hashCode ^
+      crawlFinalUrls.hashCode ^
+      crawlRedirectCount.hashCode ^
+      crawlUniqueNormalizedUrls.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -6272,7 +6203,9 @@ class ExtractionOutput {
           results == other.results &&
           errors == other.errors &&
           summary == other.summary &&
-          crawl == other.crawl;
+          crawlFinalUrls == other.crawlFinalUrls &&
+          crawlRedirectCount == other.crawlRedirectCount &&
+          crawlUniqueNormalizedUrls == other.crawlUniqueNormalizedUrls;
 }
 
 /// General extraction result used by the core extraction API.
