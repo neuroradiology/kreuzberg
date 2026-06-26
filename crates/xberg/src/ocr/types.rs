@@ -203,7 +203,7 @@ impl From<&crate::types::TesseractConfig> for TesseractConfig {
 /// OCR extraction result returned by the internal OCR processor.
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExtractionResult {
+pub struct ExtractedDocument {
     /// Extracted text content (plain text, Markdown, or hOCR depending on `output_format`).
     pub content: String,
     /// MIME type of the source image.
@@ -341,7 +341,7 @@ mod tests {
             page_number: 0,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Test content".to_string(),
             mime_type: "text/plain".to_string(),
             metadata: metadata.clone(),

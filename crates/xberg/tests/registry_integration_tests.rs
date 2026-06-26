@@ -12,7 +12,7 @@ use std::sync::Arc;
 use xberg::core::config::ExtractionConfig;
 use xberg::plugins::registry::{DocumentExtractorRegistry, ValidatorRegistry};
 use xberg::plugins::{DocumentExtractor, Plugin, Validator};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::{Result, XbergError};
 
@@ -41,7 +41,7 @@ impl Plugin for MockValidator {
 
 #[async_trait]
 impl Validator for MockValidator {
-    async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         if self.should_fail {
             Err(XbergError::validation("Mock validation failed"))
         } else {
@@ -81,7 +81,7 @@ impl Plugin for FailingInitValidator {
 
 #[async_trait]
 impl Validator for FailingInitValidator {
-    async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         Ok(())
     }
 }
@@ -331,7 +331,7 @@ fn test_get_all_validators_respects_priority() {
 
     #[async_trait]
     impl Validator for PriorityValidator {
-        async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn priority(&self) -> i32 {

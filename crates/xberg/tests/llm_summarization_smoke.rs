@@ -17,7 +17,7 @@ use std::borrow::Cow;
 use xberg::core::config::{ExtractionConfig, LlmConfig, SummarizationConfig};
 use xberg::plugins::PostProcessor;
 use xberg::plugins::processor::builtin::summarization::SummarizationProcessor;
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::types::summary::SummaryStrategy;
 
 const FIXTURE_TEXT: &str = "Machine learning is a branch of artificial intelligence. \
@@ -65,7 +65,7 @@ async fn abstractive_summary_runs_against_real_provider() {
         ..Default::default()
     };
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: FIXTURE_TEXT.to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         detected_languages: Some(vec!["en".to_string()]),

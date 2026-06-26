@@ -25,7 +25,6 @@
 //! - [`prompt`] — build system/user prompts from a resolved preset.
 //! - [`cache`] — the [`VisionCallCache`] trait and an in-process Moka implementation.
 
-pub mod bindings;
 pub mod cache;
 pub mod chunker;
 pub mod citations;
@@ -42,9 +41,6 @@ use sha2::{Digest as _, Sha256};
 use tokio::sync::Semaphore;
 
 use crate::core::config::{ExtractionConfig, LlmConfig, PageConfig};
-// The sync structured-extraction path shares the process-wide runtime in
-// `core::runtime` rather than building one per call.
-use crate::core::runtime::global_runtime;
 pub use crate::heuristics::StructuredThresholds;
 use crate::heuristics::{
     ConfidenceSignals, ConfidenceWeights, ExtractionConfidence, MultidocThresholds, StructuredCallMode,
@@ -302,25 +298,6 @@ pub async fn extract_structured(
     orchestrate(bytes, mime, spec, options).await
 }
 
-/// Synchronous wrapper for [`extract_structured`].
-///
-/// Blocks the calling thread using the global Tokio runtime. Suitable for FFI
-/// and binding-facing call paths where async is unavailable.
-///
-/// # Errors
-///
-/// Returns [`StructuredError`] for the same reasons as [`extract_structured`].
-pub fn extract_structured_sync(
-    bytes: &[u8],
-    mime: &str,
-    spec: PresetSpec,
-    options: StructuredOptions,
-) -> Result<StructuredOutput, StructuredError> {
-    global_runtime()
-        .map_err(|e| StructuredError::Extraction(format!("runtime init failed: {e}")))?
-        .block_on(extract_structured(bytes, mime, spec, options))
-}
-
 /// Split a multi-document PDF by detected boundaries and extract structured
 /// JSON from each segment independently.
 ///
@@ -337,22 +314,6 @@ pub async fn split_and_extract(
     options: StructuredOptions,
 ) -> Result<Vec<StructuredOutput>, StructuredError> {
     split_and_orchestrate(bytes, mime, spec, options).await
-}
-
-/// Synchronous wrapper for [`split_and_extract`].
-///
-/// # Errors
-///
-/// Returns [`StructuredError`] for the same reasons as [`split_and_extract`].
-pub fn split_and_extract_sync(
-    bytes: &[u8],
-    mime: &str,
-    spec: PresetSpec,
-    options: StructuredOptions,
-) -> Result<Vec<StructuredOutput>, StructuredError> {
-    global_runtime()
-        .map_err(|e| StructuredError::Extraction(format!("runtime init failed: {e}")))?
-        .block_on(split_and_extract(bytes, mime, spec, options))
 }
 
 // ── Core orchestration ────────────────────────────────────────────────────────

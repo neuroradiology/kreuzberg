@@ -12,7 +12,7 @@ use xberg::core::config::{ExtractionConfig, SummarizationConfig};
 use xberg::plugins::PostProcessor;
 use xberg::plugins::processor::builtin::summarization::SummarizationProcessor;
 use xberg::text::summarization::textrank;
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::types::summary::SummaryStrategy;
 
 const ML_PARAGRAPH: &str = "Machine learning is a branch of artificial intelligence. \
@@ -142,7 +142,7 @@ async fn extractive_processor_populates_extractive_summary() {
         ..Default::default()
     };
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: ML_PARAGRAPH.to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         detected_languages: Some(vec!["en".to_string()]),
@@ -170,7 +170,7 @@ async fn extractive_processor_uses_english_when_no_language_detected() {
         ..Default::default()
     };
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: ML_PARAGRAPH.to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         // detected_languages intentionally left as None.
@@ -186,7 +186,7 @@ async fn processor_is_idempotent_when_summarization_disabled() {
     let processor = SummarizationProcessor;
     let config = ExtractionConfig::default();
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: ML_PARAGRAPH.to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()

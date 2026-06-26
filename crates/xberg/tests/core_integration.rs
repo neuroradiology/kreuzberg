@@ -3,14 +3,18 @@
 //! These tests verify the end-to-end behavior of the extraction pipeline,
 //! config loading, MIME detection, and batch processing.
 
+mod helpers;
+use helpers::{
+    BytesBatchInput, FileBatchInput, extract_bytes_batch_results, extract_bytes_batch_results_blocking,
+    extract_bytes_result, extract_bytes_result_blocking, extract_file_batch_results,
+    extract_file_batch_results_blocking, extract_file_result, extract_file_result_blocking,
+};
+
 use std::fs::{self, File};
 use std::io::Write;
 use tempfile::tempdir;
 use xberg::core::mime::validate_mime_type;
-use xberg::{
-    ExtractionConfig, batch_extract_bytes, batch_extract_bytes_sync, batch_extract_files, batch_extract_files_sync,
-    detect_mime_type, extract_bytes, extract_bytes_sync, extract_file, extract_file_sync,
-};
+use xberg::{ExtractionConfig, detect_mime_type};
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])
@@ -33,7 +37,7 @@ async fn test_extract_file_basic() {
     file.write_all(b"Hello, Xberg!").expect("Operation failed");
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&file_path, None, &config).await;
+    let result = extract_file_result(&file_path, None, &config).await;
 
     assert!(result.is_ok(), "Basic file extraction should succeed");
     let result = result.expect("Operation failed");
@@ -54,7 +58,7 @@ async fn test_extract_file_with_mime_override() {
     file.write_all(b"Binary content").expect("Operation failed");
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&file_path, Some("text/plain"), &config).await;
+    let result = extract_file_result(&file_path, Some("text/plain"), &config).await;
 
     assert!(result.is_ok(), "MIME override should work");
     let result = result.expect("Operation failed");
@@ -83,7 +87,7 @@ async fn test_extract_multiple_file_types() {
         let file_path = dir.path().join(filename);
         fs::write(&file_path, content).expect("Operation failed");
 
-        let result = extract_file(&file_path, None, &config)
+        let result = extract_file_result(&file_path, None, &config)
             .await
             .expect("Async operation failed");
 
@@ -102,7 +106,7 @@ async fn test_extract_multiple_file_types() {
     }
 }
 
-/// Test extract_bytes with various MIME types.
+/// Test extract_bytes_result with various MIME types.
 #[tokio::test]
 async fn test_extract_bytes_various_mime_types() {
     let config = ExtractionConfig::default();
@@ -115,7 +119,7 @@ async fn test_extract_bytes_various_mime_types() {
     ];
 
     for (content, mime_type) in test_cases {
-        let result = extract_bytes(content, mime_type, &config).await;
+        let result = extract_bytes_result(content, mime_type, &config).await;
         assert!(result.is_ok(), "Extract bytes failed for MIME type: {}", mime_type);
 
         let result = result.expect("Operation failed");
@@ -146,11 +150,11 @@ async fn test_batch_extract_file_concurrency() {
         paths.push(file_path);
     }
 
-    let results = batch_extract_files(
+    let results = extract_file_batch_results(
         paths
             .clone()
             .into_iter()
-            .map(|path| xberg::BatchFileItem { path, config: None })
+            .map(|path| FileBatchInput { path, config: None })
             .collect::<Vec<_>>(),
         &config,
     )
@@ -176,14 +180,14 @@ async fn test_batch_extract_file_concurrency() {
 #[tokio::test]
 async fn test_batch_extract_empty() {
     let config = ExtractionConfig::default();
-    let paths: Vec<xberg::BatchFileItem> = vec![];
+    let paths: Vec<FileBatchInput> = vec![];
 
-    let results = batch_extract_files(paths, &config).await;
+    let results = extract_file_batch_results(paths, &config).await;
     assert!(results.is_ok());
     assert_eq!(results.expect("Operation failed").len(), 0);
 }
 
-/// Test batch_extract_bytes with concurrent processing.
+/// Test extract_bytes_batch_results with concurrent processing.
 #[tokio::test]
 async fn test_batch_extract_bytes_concurrency() {
     let config = ExtractionConfig::default();
@@ -196,16 +200,16 @@ async fn test_batch_extract_bytes_concurrency() {
         (b"content 5".as_slice(), "text/plain"),
     ];
 
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents
+    let owned_contents: Vec<BytesBatchInput> = contents
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesBatchInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
 
-    let results = batch_extract_bytes(owned_contents, &config).await;
+    let results = extract_bytes_batch_results(owned_contents, &config).await;
     assert!(results.is_ok());
 
     let results = results.expect("Operation failed");
@@ -235,23 +239,23 @@ fn test_sync_wrappers() {
 
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config);
+    let result = extract_file_result_blocking(&file_path, None, &config);
     assert!(result.is_ok(), "Sync file extraction should succeed");
     let extraction = result.expect("Operation failed");
     assert_text_content(&extraction.content, "sync content");
     assert!(extraction.chunks.is_none(), "Chunks should be None");
 
-    let result = extract_bytes_sync(b"test bytes", "text/plain", &config);
+    let result = extract_bytes_result_blocking(b"test bytes", "text/plain", &config);
     assert!(result.is_ok(), "Sync bytes extraction should succeed");
     let extraction = result.expect("Operation failed");
     assert_text_content(&extraction.content, "test bytes");
     assert!(extraction.chunks.is_none(), "Chunks should be None");
 
-    let paths = vec![xberg::BatchFileItem {
+    let paths = vec![FileBatchInput {
         path: file_path,
         config: None,
     }];
-    let results = batch_extract_files_sync(paths, &config);
+    let results = extract_file_batch_results_blocking(paths, &config);
     assert!(results.is_ok(), "Batch sync file should succeed");
     let results = results.expect("Operation failed");
     assert_eq!(results.len(), 1);
@@ -259,15 +263,15 @@ fn test_sync_wrappers() {
     assert!(results[0].chunks.is_none(), "Chunks should be None");
 
     let contents = vec![(b"test".as_slice(), "text/plain")];
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents
+    let owned_contents: Vec<BytesBatchInput> = contents
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesBatchInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
-    let results = batch_extract_bytes_sync(owned_contents, &config);
+    let results = extract_bytes_batch_results_blocking(owned_contents, &config);
     assert!(results.is_ok(), "Batch bytes sync should succeed");
     let results = results.expect("Operation failed");
     assert_eq!(results.len(), 1);
@@ -425,7 +429,7 @@ enable_quality_processing = true
 #[tokio::test]
 async fn test_nonexistent_file_error() {
     let config = ExtractionConfig::default();
-    let result = extract_file("/nonexistent/file.txt", None, &config).await;
+    let result = extract_file_result("/nonexistent/file.txt", None, &config).await;
 
     assert!(result.is_err());
     // File validation returns Io error for missing files (NotFound)
@@ -438,7 +442,7 @@ async fn test_unsupported_mime_type_error() {
     let config = ExtractionConfig::default();
     // video/mp4 is now a declared format (routes to transcription extractor when
     // that feature is enabled). Use a genuinely unsupported type instead.
-    let result = extract_bytes(b"test", "application/x-xberg-test-unsupported", &config).await;
+    let result = extract_bytes_result(b"test", "application/x-xberg-test-unsupported", &config).await;
 
     assert!(result.is_err());
     assert!(matches!(result.unwrap_err(), xberg::XbergError::UnsupportedFormat(_)));
@@ -456,7 +460,7 @@ async fn test_pipeline_execution() {
         ..Default::default()
     };
 
-    let result = extract_file(&file_path, None, &config).await;
+    let result = extract_file_result(&file_path, None, &config).await;
     assert!(result.is_ok(), "Pipeline execution should succeed");
 
     let result = result.expect("Operation failed");
@@ -483,7 +487,7 @@ async fn test_extraction_with_ocr_config() {
         ..Default::default()
     };
 
-    let result = extract_file(&file_path, None, &config).await;
+    let result = extract_file_result(&file_path, None, &config).await;
     assert!(result.is_ok());
 }
 
@@ -506,7 +510,7 @@ async fn test_extraction_with_chunking_config() {
         ..Default::default()
     };
 
-    let result = extract_file(&file_path, None, &config).await;
+    let result = extract_file_result(&file_path, None, &config).await;
     assert!(result.is_ok(), "Extraction with chunking should succeed");
 
     let result = result.expect("Operation failed");

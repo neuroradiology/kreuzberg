@@ -11,7 +11,7 @@ use xberg::plugins::registry::{
     DocumentExtractorRegistry, OcrBackendRegistry, PostProcessorRegistry, ValidatorRegistry,
 };
 use xberg::plugins::{DocumentExtractor, Plugin, PostProcessor, ProcessingStage, Validator};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::{Result, XbergError};
 
@@ -109,7 +109,7 @@ impl Plugin for MetadataModifyingProcessor {
 
 #[async_trait]
 impl PostProcessor for MetadataModifyingProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         result.content.push_str(&format!(" [{}]", self.name));
         Ok(())
     }
@@ -144,7 +144,7 @@ impl Plugin for FailingProcessor {
 
 #[async_trait]
 impl PostProcessor for FailingProcessor {
-    async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         Err(XbergError::Plugin {
             message: "Processing failed".to_string(),
             plugin_name: self.name.clone(),
@@ -178,7 +178,7 @@ impl Plugin for StrictValidator {
 
 #[async_trait]
 impl Validator for StrictValidator {
-    async fn validate(&self, result: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, result: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         if result.content.len() < self.min_length {
             Err(XbergError::validation(format!(
                 "Content too short: {} < {}",
@@ -471,7 +471,7 @@ async fn test_processor_execution_order_within_stage() {
     let processors = registry.get_for_stage(ProcessingStage::Early);
     assert_eq!(processors.len(), 3);
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: "start".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()
@@ -501,7 +501,7 @@ async fn test_processor_error_propagation() {
     let processors = registry.get_for_stage(ProcessingStage::Early);
     assert_eq!(processors.len(), 1);
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: "test".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()
@@ -554,7 +554,7 @@ fn test_processor_registration_failure() {
 
     #[async_trait]
     impl PostProcessor for FailingInitProcessor {
-        async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn processing_stage(&self) -> ProcessingStage {
@@ -641,7 +641,7 @@ async fn test_validator_content_validation() {
 
     let config = ExtractionConfig::default();
 
-    let short_result = ExtractionResult {
+    let short_result = ExtractedDocument {
         content: "short".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()
@@ -650,7 +650,7 @@ async fn test_validator_content_validation() {
     let validation = validators[0].validate(&short_result, &config).await;
     assert!(matches!(validation, Err(XbergError::Validation { .. })));
 
-    let long_result = ExtractionResult {
+    let long_result = ExtractedDocument {
         content: "this is long enough content".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()
@@ -687,7 +687,7 @@ fn test_validator_priority_ordering() {
 
     #[async_trait]
     impl Validator for MediumPriorityValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn priority(&self) -> i32 {
@@ -713,7 +713,7 @@ fn test_validator_priority_ordering() {
 
     #[async_trait]
     impl Validator for LowPriorityValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn priority(&self) -> i32 {
@@ -739,7 +739,7 @@ fn test_validator_priority_ordering() {
 
     #[async_trait]
     impl Validator for HighPriorityValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn priority(&self) -> i32 {
@@ -786,7 +786,7 @@ fn test_validator_registration_failure() {
 
     #[async_trait]
     impl Validator for FailingInitValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
         fn priority(&self) -> i32 {

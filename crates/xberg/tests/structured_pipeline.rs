@@ -11,13 +11,13 @@ use serde_json::json;
 use wiremock::matchers::method;
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
+use xberg::LlmConfig;
 use xberg::presets::Preset;
 use xberg::presets::types::{CallMode, MergeMode, PresetCategory};
 use xberg::structured::{
     MokaVisionCache, PresetSpec, StructuredError, StructuredOptions, StructuredThresholds, VisionCallCache,
-    VisionConfig,
+    VisionConfig, extract_structured, split_and_extract,
 };
-use xberg::{LlmConfig, extract_structured, split_and_extract};
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

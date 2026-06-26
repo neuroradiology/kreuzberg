@@ -51,7 +51,7 @@
 //!     ..Default::default()
 //! };
 //!
-//! let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
+//! let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
 //! let result = output.results.into_iter().next().expect("one input yields one result");
 //! for chunk in result.chunks.unwrap() {
 //!     if let Some(embedding) = chunk.embedding {

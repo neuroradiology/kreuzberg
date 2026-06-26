@@ -1,29 +1,17 @@
-//! Main extraction entry points.
+//! Internal extraction implementation.
 //!
-//! This module provides the primary API for extracting content from bytes and URIs.
-//! It orchestrates the entire extraction pipeline: cache checking, MIME detection,
-//! extractor selection, extraction, post-processing, and cache storage.
-//!
-//! # Functions
-//!
-//! - [`extract`] - Extract content from one bytes or URI input
-//! - [`extract_batch`] - Extract content from multiple bytes or URI inputs
+//! Public extraction orchestration lives in [`crate::core::extract`]. This module
+//! contains the private file, bytes, batch, and sync implementation details used by
+//! that public API and by internal extractors.
 
 mod bytes;
 mod file;
 mod helpers;
 mod legacy;
 mod sync;
-mod unified;
 
 #[cfg(feature = "tokio-runtime")]
 mod batch;
-
-// Re-export public API
-pub use unified::{extract, extract_batch};
-
-#[cfg(feature = "tokio-runtime")]
-pub use sync::{extract_batch_sync, extract_sync};
 
 #[allow(unused_imports)]
 pub(crate) use bytes::extract_bytes;

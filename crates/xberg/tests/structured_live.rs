@@ -16,11 +16,11 @@
 
 use serde_json::json;
 
+use xberg::LlmConfig;
 use xberg::heuristics::StructuredCallMode;
 use xberg::presets::Preset;
 use xberg::presets::types::{CallMode, MergeMode, PresetCategory};
-use xberg::structured::{PresetSpec, StructuredOptions, VisionConfig};
-use xberg::{LlmConfig, extract_structured, extract_structured_json, split_and_extract};
+use xberg::structured::{PresetSpec, StructuredOptions, VisionConfig, extract_structured, split_and_extract};
 
 // ── Fixture paths (relative to the crate dir `crates/xberg/`) ─────────────
 
@@ -355,53 +355,4 @@ async fn test_split_and_extract_repair_gemini() {
     init();
     let api_key = require_env!("GEMINI_API_KEY");
     run_split_and_extract_repair("gemini/gemini-2.5-flash", api_key).await;
-}
-
-// ── (e) extract_structured_json bridge (OpenAI, plain #[test]) ───────────────
-
-#[test]
-fn test_extract_structured_json_bridge_openai() {
-    init();
-    let api_key = require_env!("OPENAI_API_KEY");
-
-    let bytes = std::fs::read(FAKE_MEMO_PDF).unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
-
-    let preset_spec_json = json!({"named": "generic_document"}).to_string();
-    let options_json = json!({
-        "llm": {
-            "model": "openai/gpt-4o-mini",
-            "api_key": api_key
-        },
-        "force_call_mode": "text_only",
-        "vision": {
-            "max_output_tokens": 512
-        }
-    })
-    .to_string();
-
-    let result_str = extract_structured_json(&bytes, "application/pdf", &preset_spec_json, &options_json)
-        .expect("extract_structured_json must succeed");
-
-    let parsed: serde_json::Value = serde_json::from_str(&result_str).expect("result must be valid JSON");
-
-    assert_eq!(
-        parsed["preset_id"].as_str(),
-        Some("generic_document"),
-        "preset_id must be generic_document"
-    );
-    assert_eq!(
-        parsed["preset_version"].as_str(),
-        Some("v1"),
-        "preset_version must be v1"
-    );
-
-    let title = parsed["structured_output_flat"]["title"].as_str();
-    assert!(
-        title.is_some() && !title.unwrap().is_empty(),
-        "structured_output_flat.title must be a non-empty string, got: {:?}",
-        parsed["structured_output_flat"]["title"]
-    );
-
-    let llm_usage = parsed["llm_usage"].as_array().expect("llm_usage must be an array");
-    assert!(!llm_usage.is_empty(), "llm_usage must be non-empty");
 }

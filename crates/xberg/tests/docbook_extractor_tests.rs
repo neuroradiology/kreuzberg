@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use xberg::core::config::ExtractionConfig;
 use xberg::extraction::derive::derive_extraction_result;
 use xberg::plugins::{DocumentExtractor, Plugin};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 
 /// Helper to get absolute path to test documents
 fn test_file_path(filename: &str) -> PathBuf {
@@ -22,7 +22,7 @@ fn test_file_path(filename: &str) -> PathBuf {
 }
 
 /// DocBook 4.x extractor test helper
-async fn extract_docbook4_file(filename: &str) -> xberg::Result<ExtractionResult> {
+async fn extract_docbook4_file(filename: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
     let path = test_file_path(filename);
     let config = ExtractionConfig::default();
@@ -33,7 +33,7 @@ async fn extract_docbook4_file(filename: &str) -> xberg::Result<ExtractionResult
 }
 
 /// DocBook 5.x extractor test helper
-async fn extract_docbook5_file(filename: &str) -> xberg::Result<ExtractionResult> {
+async fn extract_docbook5_file(filename: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
     let path = test_file_path(filename);
     let config = ExtractionConfig::default();
@@ -44,7 +44,7 @@ async fn extract_docbook5_file(filename: &str) -> xberg::Result<ExtractionResult
 }
 
 /// Helper to extract bytes directly
-async fn extract_docbook_bytes(content: &[u8], mime_type: &str) -> xberg::Result<ExtractionResult> {
+async fn extract_docbook_bytes(content: &[u8], mime_type: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
     let config = ExtractionConfig::default();
     let doc = extractor.extract_bytes(content, mime_type, &config).await?;

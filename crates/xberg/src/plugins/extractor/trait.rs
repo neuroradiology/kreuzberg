@@ -3,8 +3,9 @@
 //! This module defines the trait for implementing custom document extractors.
 
 use crate::Result;
-use crate::core::config::ExtractionConfig;
+use crate::core::config::{ExtractInput, ExtractInputKind, ExtractionConfig};
 use crate::plugins::Plugin;
+use crate::types::ExtractedDocument;
 use crate::types::internal::InternalDocument;
 use async_trait::async_trait;
 use std::path::Path;
@@ -14,14 +15,13 @@ use crate::XbergError;
 
 /// Trait for document extractor plugins.
 ///
-/// Implement this trait to add support for new document formats or to override
-/// built-in extraction behavior with custom logic.
+/// Implement this trait to add support for new document formats or override
+/// built-in extraction behavior. Foreign-language bindings expose the
+/// [`DocumentExtractor::extract`] method, which accepts [`ExtractInput`] and
+/// returns an [`ExtractedDocument`].
 ///
-/// # Return Type
-///
-/// Extractors return `InternalDocument`, a flat intermediate representation.
-/// The pipeline converts this into the public `ExtractionResult` via the
-/// derivation step.
+/// Native Rust extractors can override the skipped internal byte/file methods
+/// below to participate in the full pipeline representation.
 ///
 /// # Priority System
 ///
@@ -41,43 +41,72 @@ use crate::XbergError;
 ///
 /// ```rust
 /// use xberg::plugins::{Plugin, DocumentExtractor};
-/// use xberg::{Result, ExtractionConfig};
-/// use xberg::types::internal::InternalDocument;
+/// use xberg::{ExtractInput, ExtractionConfig, ExtractedDocument, Result};
 /// use async_trait::async_trait;
-/// use std::path::Path;
 ///
-/// /// Custom PDF extractor with premium features
-/// struct PremiumPdfExtractor;
+/// struct CustomTextExtractor;
 ///
-/// impl Plugin for PremiumPdfExtractor {
-///     fn name(&self) -> &str { "premium-pdf" }
-///     fn version(&self) -> String { "2.0.0".to_string() }
+/// impl Plugin for CustomTextExtractor {
+///     fn name(&self) -> &str { "custom-text" }
+///     fn version(&self) -> String { "1.0.0".to_string() }
 ///     fn initialize(&self) -> Result<()> { Ok(()) }
 ///     fn shutdown(&self) -> Result<()> { Ok(()) }
 /// }
 ///
 /// #[async_trait]
-/// impl DocumentExtractor for PremiumPdfExtractor {
-///     async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
-///         -> Result<InternalDocument> {
-///         // Premium extraction logic with better accuracy
-///         let mut doc = InternalDocument::new("pdf");
-///         // ... populate doc.elements, doc.metadata, etc.
-///         Ok(doc)
+/// impl DocumentExtractor for CustomTextExtractor {
+///     async fn extract(&self, input: ExtractInput, _config: &ExtractionConfig)
+///         -> Result<ExtractedDocument> {
+///         let bytes = input.bytes.unwrap_or_default();
+///         Ok(ExtractedDocument {
+///             content: String::from_utf8_lossy(&bytes).to_string(),
+///             mime_type: "text/plain".into(),
+///             ..Default::default()
+///         })
 ///     }
 ///
 ///     fn supported_mime_types(&self) -> &[&str] {
-///         &["application/pdf"]
-///     }
-///
-///     fn priority(&self) -> i32 {
-///         100  // Higher than default (50) - will be preferred
+///         &["text/plain"]
 ///     }
 /// }
 /// ```
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 pub trait DocumentExtractor: Plugin {
+    /// Binding-safe extraction entry point for foreign-language plugin bridges.
+    ///
+    /// This is the only document-extractor method generated into language
+    /// bindings. It accepts the same unified input shape as the public
+    /// extraction API and returns one extracted document result.
+    async fn extract(&self, input: ExtractInput, config: &ExtractionConfig) -> Result<ExtractedDocument> {
+        let doc = match input.kind {
+            ExtractInputKind::Bytes => {
+                let bytes = input.bytes.ok_or_else(|| {
+                    crate::XbergError::validation(
+                        "document extractor input kind 'bytes' requires the 'bytes' field".to_string(),
+                    )
+                })?;
+                let mime_type = input.mime_type.as_deref().unwrap_or("application/octet-stream");
+                self.extract_bytes(&bytes, mime_type, config).await?
+            }
+            ExtractInputKind::Uri => {
+                let uri = input.uri.ok_or_else(|| {
+                    crate::XbergError::validation(
+                        "document extractor input kind 'uri' requires the 'uri' field".to_string(),
+                    )
+                })?;
+                let mime_type = input.mime_type.as_deref().unwrap_or("application/octet-stream");
+                self.extract_file(Path::new(&uri), mime_type, config).await?
+            }
+        };
+
+        Ok(crate::extraction::derive::derive_extraction_result(
+            doc,
+            config.include_document_structure,
+            config.output_format.clone(),
+        ))
+    }
+
     /// Extract content from a byte array.
     ///
     /// This is the core extraction method that processes in-memory document data.
@@ -91,7 +120,7 @@ pub trait DocumentExtractor: Plugin {
     /// # Returns
     ///
     /// An `InternalDocument` containing the extracted elements, metadata, and tables.
-    /// The pipeline will convert this into the public `ExtractionResult`.
+    /// The pipeline will convert this into the public `ExtractedDocument`.
     ///
     /// # Errors
     ///
@@ -99,12 +128,21 @@ pub trait DocumentExtractor: Plugin {
     /// - `XbergError::Validation` - Invalid document structure
     /// - `XbergError::Io` - I/O errors (these always bubble up)
     /// - `XbergError::MissingDependency` - Required dependency not available
+    #[cfg_attr(alef, alef(skip))]
     async fn extract_bytes(
         &self,
         content: &[u8],
         mime_type: &str,
         config: &ExtractionConfig,
-    ) -> Result<InternalDocument>;
+    ) -> Result<InternalDocument> {
+        let result = self
+            .extract(
+                ExtractInput::from_bytes(content.to_vec(), mime_type.to_string(), None),
+                config,
+            )
+            .await?;
+        Ok(result.into())
+    }
 
     /// Extract content from a file.
     ///
@@ -124,6 +162,7 @@ pub trait DocumentExtractor: Plugin {
     /// # Errors
     ///
     /// Same as `extract_bytes`, plus file I/O errors.
+    #[cfg_attr(alef, alef(skip))]
     async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         #[cfg(feature = "tokio-runtime")]
         {
