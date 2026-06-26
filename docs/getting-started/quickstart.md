@@ -4,7 +4,7 @@ This guide walks you through Xberg's core API — extracting text, handling erro
 running OCR, and working with metadata. Install your binding first if you haven't:
 [Installation](installation.md).
 
-TypeScript users: `@xberg/node` for Node.js, `@xberg/wasm` for browsers and edge runtimes — see [Language Support](../index.md#language-support).
+TypeScript users: `@xberg-io/xberg` for Node.js, `@xberg-io/xberg-wasm` for browsers and edge runtimes — see [Language Support](../index.md#language-support).
 
 ## Your First Extraction
 

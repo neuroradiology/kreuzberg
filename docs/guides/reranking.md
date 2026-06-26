@@ -34,7 +34,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "TypeScript"
 
     ```typescript
-    import { rerankSync, RerankerConfig } from "@xberg/node";
+    import { rerankSync, RerankerConfig } from "@xberg-io/xberg";
 
     const config: RerankerConfig = {
       model: { type: "preset", name: "fast" },

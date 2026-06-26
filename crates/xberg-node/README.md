@@ -11,11 +11,11 @@
   <a href="https://pypi.org/project/xberg/">
     <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/node">
-    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/wasm">
-    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg-wasm">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg-wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
   <a href="https://central.sonatype.com/artifact/io.xberg/xberg">
     <img src="https://img.shields.io/maven-central/v/io.xberg/xberg?label=Java&color=007ec6" alt="Java">
@@ -95,7 +95,7 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 ### Package Installation
 
 ```bash
-pnpm add @xberg/node
+pnpm add @xberg-io/xberg
 ```
 
 ### System Requirements
@@ -117,7 +117,7 @@ Pre-built binaries available for:
 Extract text, metadata, and structure from any supported document format:
 
 ```typescript title="TypeScript"
-import { extractSync } from "@xberg/node";
+import { extractSync } from "@xberg-io/xberg";
 
 const config = {
   useCache: true,
@@ -139,7 +139,7 @@ Most use cases benefit from configuration to control extraction behavior:
 **With OCR (for scanned documents):**
 
 ```typescript title="TypeScript"
-import { extract } from "@xberg/node";
+import { extract } from "@xberg-io/xberg";
 
 const config = {
   ocr: {
@@ -182,7 +182,7 @@ For non-blocking document processing:
 #### Configuration Discovery
 
 ```typescript title="config_discovery.ts"
-import { ExtractionConfig, extract } from "@xberg/node";
+import { ExtractionConfig, extract } from "@xberg-io/xberg";
 
 const config = ExtractionConfig.discover();
 if (config) {
@@ -204,7 +204,7 @@ import {
   extractInWorker,
   extractBatchInWorker,
   closeWorkerPool,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 // Create a pool with 4 worker threads
 const pool = createWorkerPool(4);
@@ -386,7 +386,7 @@ Xberg supports multiple OCR backends for extracting text from scanned documents 
 ### OCR Configuration Example
 
 ```typescript title="TypeScript"
-import { extract } from "@xberg/node";
+import { extract } from "@xberg-io/xberg";
 
 const config = {
   ocr: {

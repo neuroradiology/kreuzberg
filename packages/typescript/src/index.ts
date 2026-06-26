@@ -51,10 +51,6 @@ export {
   WhisperModel,
   analyzeDocument,
   analyzeWithUserChunks,
-  batchExtractBytes,
-  batchExtractBytesSync,
-  batchExtractFiles,
-  batchExtractFilesSync,
   boundariesFromExtractionResult,
   calculateChunkPlan,
   calculatePlanFromOverrides,
@@ -84,10 +80,6 @@ export {
   extract,
   extractBatch,
   extractBatchSync,
-  extractBytes,
-  extractBytesSync,
-  extractFile,
-  extractFileSync,
   extractKeywords,
   extractRegionWithVlm,
   extractStructuredJson,
@@ -141,7 +133,7 @@ export {
   unregisterRerankerBackend,
   unregisterValidator,
   verifyExcerpt,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 export type {
   AccelerationConfig,
@@ -150,8 +142,6 @@ export type {
   ArchiveMetadata,
   AudioMetadata,
   BBox,
-  BatchBytesItem,
-  BatchFileItem,
   BibtexMetadata,
   BoundingBox,
   CacheStats,
@@ -360,4 +350,4 @@ export type {
   XmlMetadata,
   YakeParams,
   YearRange,
-} from "@xberg/node";
+} from "@xberg-io/xberg";

@@ -63,7 +63,7 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
 === "TypeScript"
 
     ```typescript title="basic.ts"
-    import { extractFileSync } from "@xberg/node";
+    import { extractFileSync } from "@xberg-io/xberg";
 
     const result = extractFileSync("app.ts");
 
@@ -142,7 +142,7 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 === "TypeScript"
 
     ```typescript title="config.ts"
-    import { ExtractionConfig } from "@xberg/node";
+    import { ExtractionConfig } from "@xberg-io/xberg";
 
     const config: ExtractionConfig = {
       treeSitter: {

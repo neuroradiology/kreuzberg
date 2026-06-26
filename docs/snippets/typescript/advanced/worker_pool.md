@@ -8,7 +8,7 @@ import {
   extractInWorker,
   extractBatchInWorker,
   closeWorkerPool,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 // Create a pool with 4 worker threads
 const pool = createWorkerPool(4);

@@ -23,7 +23,7 @@ Two extraction functions are the public entry points:
 === "TypeScript"
 
     ```typescript title="extract-one.ts"
-    import { ExtractInput, extract } from "@xberg/node";
+    import { ExtractInput, extract } from "@xberg-io/xberg";
 
     const result = await extract(ExtractInput.file("document.pdf"));
     console.log(result.content);
@@ -58,7 +58,7 @@ When the file is already loaded in memory, pass bytes through `ExtractInput` wit
 
     ```typescript title="extract-bytes.ts"
     import { readFile } from "node:fs/promises";
-    import { ExtractInput, extract } from "@xberg/node";
+    import { ExtractInput, extract } from "@xberg-io/xberg";
 
     const data = await readFile("document.pdf");
     const result = await extract(ExtractInput.bytes(data, "application/pdf"));
@@ -94,7 +94,7 @@ When the file is already loaded in memory, pass bytes through `ExtractInput` wit
 === "TypeScript"
 
     ```typescript title="extract-batch.ts"
-    import { ExtractInput, extractBatch } from "@xberg/node";
+    import { ExtractInput, extractBatch } from "@xberg-io/xberg";
 
     const results = await extractBatch([
       ExtractInput.file("report.pdf"),
@@ -148,7 +148,7 @@ When a batch contains a mix of document types that need different settings, atta
 === "TypeScript"
 
     ```typescript title="mixed_batch.ts"
-    import { ExtractInput, extractBatch } from "@xberg/node";
+    import { ExtractInput, extractBatch } from "@xberg-io/xberg";
 
     const results = await extractBatch(
       [
@@ -228,7 +228,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
 === "TypeScript"
 
     ```typescript title="disable_repeating_text.ts"
-    import { extract } from "@xberg/node";
+    import { extract } from "@xberg-io/xberg";
 
     // Disable cross-page deduplication so brand names aren't stripped
     const result = await extract("brochure.pdf", {

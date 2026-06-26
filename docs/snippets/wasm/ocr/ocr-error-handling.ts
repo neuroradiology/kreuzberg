@@ -1,4 +1,4 @@
-import { enableOcr, extract, initWasm } from "@xberg/wasm";
+import { enableOcr, extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractWithErrorHandling() {
   try {

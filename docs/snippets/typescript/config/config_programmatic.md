@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractSync, type ExtractionConfig } from "@xberg/node";
+import { extractSync, type ExtractionConfig } from "@xberg-io/xberg";
 
 const config: ExtractionConfig = {
   useCache: true,

@@ -263,7 +263,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.node]
-package_name = "@xberg/node"
+package_name = "@xberg-io/xberg"
 exclude_types = [
   # Opaque Arc<Mutex<T>> types — codegen doesn't generate .lock() calls for methods
   "StreamReader",
@@ -361,7 +361,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.wasm]
-package_name = "@xberg/wasm"
+package_name = "@xberg-io/xberg-wasm"
 exclude_types = [
   # ORT/runtime-only types not available in the wasm-target feature set
   "OcrFallbackDecision",
@@ -1793,7 +1793,7 @@ nested_types = { embedding_model = "EmbeddingModelType" }
 # only generated for non-async functions; the suspend wrapper is the public API).
 [crates.e2e.calls.embed_texts.overrides.node]
 function = "embedTextsAsync"
-module = "@xberg/node"
+module = "@xberg-io/xberg"
 async = true
 result_is_simple = true
 result_is_array = true
@@ -3077,7 +3077,7 @@ nested_types = { reranker_model = "RerankerModelType" }
 # only generated for non-async functions; the suspend wrapper is the public API).
 [crates.e2e.calls.rerank.overrides.node]
 function = "rerankAsync"
-module = "@xberg/node"
+module = "@xberg-io/xberg"
 async = true
 result_is_simple = true
 result_is_array = true
@@ -3781,7 +3781,7 @@ name = "xberg"
 path = "../../packages/python"
 
 [crates.e2e.packages.node]
-name = "@xberg/node"
+name = "@xberg-io/xberg"
 path = "../../crates/xberg-node"
 
 [crates.e2e.packages.go]
@@ -3837,8 +3837,13 @@ hash = "xberg-1.0.0-rc.1-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 # cannot satisfy at import time. The `pkg/nodejs/` variant inlines those
 # imports as `require()` calls handled by wasm-bindgen's Node loader.
 [crates.e2e.packages.wasm]
-name = "@xberg/wasm"
+name = "@xberg-io/xberg-wasm"
 path = "../../crates/xberg-wasm/pkg/nodejs"
+
+# URL e2e fixtures use Alef's loopback mock-server. Xberg URL extraction delegates to
+# crawlberg, whose default SSRF policy rejects private networks unless this is set.
+[crates.e2e.env]
+CRAWLBERG_ALLOW_PRIVATE_NETWORK = "true"
 
 [crates.e2e.format]
 python = "ruff check --fix {dir} && ruff format {dir}"
@@ -3934,8 +3939,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 template = "language_package.md"
 output_path = "crates/xberg-node/README.md"
 name = "TypeScript (Node.js)"
-package_name = "@xberg/node"
-badge_url = "https://img.shields.io/npm/v/@xberg/node?label=TypeScript&color=007ec6"
+package_name = "@xberg-io/xberg"
+badge_url = "https://img.shields.io/npm/v/@xberg-io/xberg?label=TypeScript&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions."
 package_manager = ["pnpm"]
@@ -4032,8 +4037,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.exs", async_extract
 template = "language_package.md"
 output_path = "crates/xberg-wasm/README.md"
 name = "WebAssembly"
-package_name = "@xberg/wasm"
-badge_url = "https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6"
+package_name = "@xberg-io/xberg-wasm"
+badge_url = "https://img.shields.io/npm/v/@xberg-io/xberg-wasm?label=WASM&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support."
 package_manager = ["pnpm"]

@@ -448,24 +448,10 @@ URL ingestion and crawl configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mode` | `UrlExtractionMode` | `UrlExtractionMode::Auto` | URL extraction mode. |
-| `max_depth` | `Option<u32>` | `Default::default()` | Maximum crawl depth from a seed URL. |
-| `max_pages` | `Option<u32>` | `Default::default()` | Maximum pages to crawl. |
-| `max_concurrent` | `Option<u32>` | `Default::default()` | Maximum concurrent requests. |
-| `stay_on_domain` | `bool` | `true` | Stay on the seed domain. |
-| `allow_subdomains` | `bool` | `true` | Allow subdomains when staying on domain. |
-| `include_paths` | `Vec<String>` | `vec!\[\]` | Regex path include filters. |
-| `exclude_paths` | `Vec<String>` | `vec!\[\]` | Regex path exclude filters. |
-| `respect_robots_txt` | `bool` | `true` | Respect robots.txt. |
-| `user_agent` | `Option<String>` | `None` | Custom user agent. |
-| `request_timeout_secs` | `Option<u64>` | `Default::default()` | Per-request timeout in seconds. |
-| `download_documents` | `bool` | `true` | Download non-HTML documents discovered during crawl. |
-| `document_max_size_bytes` | `Option<u64>` | `Default::default()` | Maximum size for downloaded documents. |
-| `allowed_file_types` | `Vec<String>` | `vec!\[\]` | MIME allowlist for downloaded documents. |
-| `follow_document_urls` | `bool` | `false` | Follow URLs discovered inside extracted documents. |
-| `document_url_depth` | `Option<u32>` | `Default::default()` | Maximum recursive document URL depth. |
 | `document_url_pattern` | `Option<String>` | `None` | Optional regex filter for document-discovered URLs. |
 | `max_document_urls_per_result` | `Option<u32>` | `Default::default()` | Maximum URLs to follow per extraction result. |
 | `max_total_urls` | `Option<u32>` | `Default::default()` | Maximum URLs followed across the whole extraction call. |
+| `allow_local_file_inputs` | `bool` | `true` | Allow bare local filesystem path inputs. |
 | `allow_file_uris` | `bool` | `true` | Allow local `file://` URI inputs. |
 
 ---
@@ -2209,35 +2195,6 @@ Non-fatal per-input extraction error captured by `ExtractionOutput`.
 | `error_type` | `String` | — | Stable snake_case error kind. |
 | `source` | `String` | — | Best-effort source identifier. |
 | `message` | `String` | — | Error message. |
-
----
-
-#### BatchBytesItem
-
-Batch item for byte array extraction.
-
-Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
-to represent a single item in a batch extraction job.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `Vec<u8>` | — | The content bytes to extract from |
-| `mime_type` | `String` | — | MIME type of the content (e.g., "application/pdf", "text/html") |
-| `config` | `Option<FileExtractionConfig>` | `None` | Per-item configuration overrides (None uses batch-level defaults) |
-
----
-
-#### BatchFileItem
-
-Batch item for file extraction.
-
-Used with `batch_extract_files` and `batch_extract_files_sync`
-to represent a single file in a batch extraction job.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `PathBuf` | — | Path to the file to extract from |
-| `config` | `Option<FileExtractionConfig>` | `None` | Per-file configuration overrides (None uses batch-level defaults) |
 
 ---
 

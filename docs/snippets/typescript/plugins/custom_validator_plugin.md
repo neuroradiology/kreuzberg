@@ -5,7 +5,7 @@ import {
   type ValidatorProtocol,
   type ExtractionResult,
   ValidationError,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 /**
  * Stateful validator with call counting

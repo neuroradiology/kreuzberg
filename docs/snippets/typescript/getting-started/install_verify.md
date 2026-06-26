@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { getVersion, extractSync } from "@xberg/node";
+import { getVersion, extractSync } from "@xberg-io/xberg";
 
 const version = getVersion();
 console.log(`Xberg version: ${version}`);

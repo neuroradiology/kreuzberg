@@ -1,5 +1,5 @@
-import type { ExtractionConfig } from "@xberg/wasm";
-import { extract, initWasm } from "@xberg/wasm";
+import type { ExtractionConfig } from "@xberg-io/xberg-wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractImageMetadata() {
   await initWasm();

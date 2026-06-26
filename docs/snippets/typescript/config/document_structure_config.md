@@ -1,5 +1,5 @@
 ```typescript title="Document Structure Config (TypeScript)"
-import { extractSync, ExtractionConfig } from "@xberg/node";
+import { extractSync, ExtractionConfig } from "@xberg-io/xberg";
 
 const config: ExtractionConfig = {
   includeDocumentStructure: true,

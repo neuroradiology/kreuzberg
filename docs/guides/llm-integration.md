@@ -204,7 +204,7 @@ Use provider-hosted embedding models when you need to match your vector database
 === "TypeScript"
 
     ```typescript title="TypeScript"
-    import { embedSync } from '@xberg/node';
+    import { embedSync } from '@xberg-io/xberg';
 
     const embeddings = embedSync(['Hello world'], {
       model: {

@@ -531,8 +531,8 @@ Polyglot bindings share the Rust core and expose the same generated types where 
 
 **TypeScript: Two flavors**
 
-- **Native** (`@xberg/node`) — Full speed, complete feature parity (servers, plugins, config file discovery)
-- **WASM** (`@xberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent inference (`paddle-ocr`, layout detection, embeddings, reranker, auto-rotate, transcription), liter-llm/VLM features, server modes (`api`/`mcp`), CLI binary, and browser filesystem paths. Pure-Rust extraction formats, Tesseract WASM OCR, chunking, keywords, language detection, stopwords, tree-sitter, redaction, summarization, SVG, and QR-code detection are supported.
+- **Native** (`@xberg-io/xberg`) — Full speed, complete feature parity (servers, plugins, config file discovery)
+- **WASM** (`@xberg-io/xberg-wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent inference (`paddle-ocr`, layout detection, embeddings, reranker, auto-rotate, transcription), liter-llm/VLM features, server modes (`api`/`mcp`), CLI binary, and browser filesystem paths. Pure-Rust extraction formats, Tesseract WASM OCR, chunking, keywords, language detection, stopwords, tree-sitter, redaction, summarization, SVG, and QR-code detection are supported.
 
 Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
 
@@ -561,8 +561,8 @@ Rust builds are modular through Cargo features. The default feature set is `toki
 === "TypeScript"
 
     ```bash
-    npm install @xberg/node            # Native (Node.js/Bun)
-    npm install @xberg/wasm            # WASM (browser/edge)
+    npm install @xberg-io/xberg            # Native (Node.js/Bun)
+    npm install @xberg-io/xberg-wasm            # WASM (browser/edge)
     ```
 
 === "Rust"

@@ -81,7 +81,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  npm install @xberg/node
+  npm install @xberg-io/xberg
   ```
 
   [API Reference](../reference/api-typescript.md){ .install-api-link }
@@ -92,7 +92,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  npm install @xberg/wasm
+  npm install @xberg-io/xberg-wasm
   ```
 
   [API Reference](../reference/api-wasm.md){ .install-api-link }
@@ -260,7 +260,7 @@ Only relevant if building from source or enabling OCR:
 
 PDF extraction uses pdf_oxide and has no external PDF runtime dependency.
 
-The Wasm package (`@xberg/wasm`) has **zero** system dependencies.
+The Wasm package (`@xberg-io/xberg-wasm`) has **zero** system dependencies.
 
 ### HEIF / HEIC / AVIF support { #heif--heic--avif-support }
 
@@ -311,8 +311,8 @@ Two npm packages target different runtimes:
 
 | Package           | Best for                           | Performance    |
 | ----------------- | ---------------------------------- | -------------- |
-| `@xberg/node` | Node.js, Bun — server-side apps    | Native (100%)  |
-| `@xberg/wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
+| `@xberg-io/xberg` | Node.js, Bun — server-side apps    | Native (100%)  |
+| `@xberg-io/xberg-wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
 
 Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
@@ -328,7 +328,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
     ```html
     <script type="module">
-      import { initWasm, extractFromFile } from "@xberg/wasm";
+      import { initWasm, extractFromFile } from "@xberg-io/xberg-wasm";
 
       await initWasm();
 
@@ -345,7 +345,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 ??? Note "Wasm — Deno"
 
     ```typescript
-    import { initWasm, extractFile } from "npm:@xberg/wasm";
+    import { initWasm, extractFile } from "npm:@xberg-io/xberg-wasm";
 
     await initWasm();
     const result = await extractFile("./document.pdf");
@@ -355,7 +355,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 ??? Note "Wasm — Cloudflare Workers"
 
     ```typescript
-    import { initWasm, extractBytes } from "@xberg/wasm";
+    import { initWasm, extractBytes } from "@xberg-io/xberg-wasm";
 
     export default {
       async fetch(request: Request): Promise<Response> {

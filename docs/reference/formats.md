@@ -402,7 +402,7 @@ Example with manual override:
 === "TypeScript"
 
     ```typescript title="format_detection.ts"
-    import { extract } from '@xberg/node';
+    import { extract } from '@xberg-io/xberg';
 
     // Automatic format detection from file extension
     const result = await extract('document.pdf');
@@ -716,7 +716,7 @@ Xberg's plugin system allows adding custom format extractors:
 === "TypeScript"
 
     ```typescript title="custom_extractor.ts"
-    import { registerDocumentExtractor, type DocumentExtractorProtocol } from '@xberg/node';
+    import { registerDocumentExtractor, type DocumentExtractorProtocol } from '@xberg-io/xberg';
 
     // Custom document extractor for new or proprietary file formats
     class CustomExtractor implements DocumentExtractorProtocol {

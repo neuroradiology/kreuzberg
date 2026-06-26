@@ -11,11 +11,11 @@
   <a href="https://pypi.org/project/xberg/">
     <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/node">
-    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/wasm">
-    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg-wasm">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg-wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
   <a href="https://central.sonatype.com/artifact/io.xberg/xberg">
     <img src="https://img.shields.io/maven-central/v/io.xberg/xberg?label=Java&color=007ec6" alt="Java">
@@ -140,7 +140,7 @@ See [Python README](https://github.com/xberg-io/xberg/tree/main/packages/python)
 <summary><strong>Node.js</strong></summary>
 
 ```sh
-npm install @xberg/node
+npm install @xberg-io/xberg
 ```
 
 See [Node.js README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-node) for full documentation.
@@ -220,7 +220,7 @@ Add `{:xberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](htt
 <summary><strong>WebAssembly</strong></summary>
 
 ```sh
-npm install @xberg/wasm
+npm install @xberg-io/xberg-wasm
 ```
 
 See [WebAssembly README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-wasm) for full documentation.
@@ -398,7 +398,7 @@ Add the package to `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@xberg/opencode-xberg"]
+  "plugin": ["@xberg-io/opencode-xberg"]
 }
 ```
 

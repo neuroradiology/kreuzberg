@@ -9,64 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
-
-/// Extract content from a byte array.
-///
-/// This is the main entry point for in-memory extraction. It performs the following steps:
-///
-/// 1. Validate MIME type
-/// 2. Handle legacy format conversion if needed
-/// 3. Select appropriate extractor from registry
-/// 4. Extract content
-/// 5. Run post-processing pipeline
-///
-/// **Returns:**
-///
-/// An `ExtractionResult` containing the extracted content and metadata.
-///
-/// **Errors:**
-///
-/// Returns `XbergError.Validation` if MIME type is invalid.
-/// Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
-Future<ExtractionResult> extractBytes({
-  required List<int> content,
-  required String mimeType,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateExtractBytes(
-  content: content,
-  mimeType: mimeType,
-  config: config,
-);
-
-/// Extract content from a file.
-///
-/// This is the main entry point for file-based extraction. It performs the following steps:
-///
-/// 1. Check cache for existing result (if caching enabled)
-/// 2. Detect or validate MIME type
-/// 3. Select appropriate extractor from registry
-/// 4. Extract content
-/// 5. Run post-processing pipeline
-/// 6. Store result in cache (if caching enabled)
-///
-/// **Returns:**
-///
-/// An `ExtractionResult` containing the extracted content and metadata.
-///
-/// **Errors:**
-///
-/// Returns `XbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-/// Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
-Future<ExtractionResult> extractFile({
-  required String path,
-  String? mimeType,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateExtractFile(
-  path: path,
-  mimeType: mimeType,
-  config: config,
-);
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Synchronous wrapper for `extract`.
 Future<ExtractionOutput> extractSync({
@@ -81,69 +24,6 @@ Future<ExtractionOutput> extractBatchSync({
 }) =>
     RustLib.instance.api.crateExtractBatchSync(inputs: inputs, config: config);
 
-/// Synchronous wrapper for `extract_file`.
-///
-/// This is a convenience function that blocks the current thread until extraction completes.
-/// For async code, use `extract_file` directly.
-///
-/// Uses the global Tokio runtime for 100x+ performance improvement over creating
-/// a new runtime per call. Always uses the global runtime to avoid nested runtime issues.
-///
-/// This function is only available with the `tokio-runtime` feature. For WASM targets,
-/// use a truly synchronous extraction approach instead.
-Future<ExtractionResult> extractFileSync({
-  required String path,
-  String? mimeType,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateExtractFileSync(
-  path: path,
-  mimeType: mimeType,
-  config: config,
-);
-
-/// Synchronous wrapper for `extract_bytes`.
-///
-/// Uses the global Tokio runtime for 100x+ performance improvement over creating
-/// a new runtime per call.
-///
-/// With the `tokio-runtime` feature, this blocks the current thread using the global
-/// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
-Future<ExtractionResult> extractBytesSync({
-  required List<int> content,
-  required String mimeType,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateExtractBytesSync(
-  content: content,
-  mimeType: mimeType,
-  config: config,
-);
-
-/// Synchronous wrapper for `batch_extract_files`.
-///
-/// Uses the global Tokio runtime for optimal performance.
-/// Only available with `tokio-runtime` (WASM has no filesystem).
-Future<List<ExtractionResult>> batchExtractFilesSync({
-  required List<BatchFileItem> items,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateBatchExtractFilesSync(
-  items: items,
-  config: config,
-);
-
-/// Synchronous wrapper for `batch_extract_bytes`.
-///
-/// Uses the global Tokio runtime for optimal performance.
-/// With the `tokio-runtime` feature, this blocks the current thread using the global
-/// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
-/// that iterates through items and calls `extract_bytes_sync()`.
-Future<List<ExtractionResult>> batchExtractBytesSync({
-  required List<BatchBytesItem> items,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateBatchExtractBytesSync(
-  items: items,
-  config: config,
-);
-
 /// Extract content from a single bytes or URI input.
 Future<ExtractionOutput> extract({
   required ExtractInput input,
@@ -155,68 +35,6 @@ Future<ExtractionOutput> extractBatch({
   required List<ExtractInput> inputs,
   required ExtractionConfig config,
 }) => RustLib.instance.api.crateExtractBatch(inputs: inputs, config: config);
-
-/// Extract content from multiple files concurrently.
-///
-/// This function processes multiple files in parallel, automatically managing
-/// concurrency to prevent resource exhaustion. The concurrency limit can be
-/// configured via `ExtractionConfig.max_concurrent_extractions` or defaults
-/// to `(num_cpus * 1.5).ceil()`.
-///
-/// Each file can optionally specify a `FileExtractionConfig` that overrides specific
-/// fields from the batch-level `config`. Pass `null` for a file to use the batch defaults.
-/// Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
-/// taken from the batch-level `config`.
-///
-///   per-file configuration overrides.
-///
-/// - `config` - Batch-level extraction configuration (provides defaults and batch settings)
-///
-/// **Returns:**
-///
-/// A vector of `ExtractionResult` in the same order as the input items.
-///
-/// **Errors:**
-///
-/// Individual file errors are captured in the result metadata. System errors
-/// (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
-///
-/// Simple usage with no per-file overrides:
-///
-///
-/// Per-file configuration overrides:
-Future<List<ExtractionResult>> batchExtractFiles({
-  required List<BatchFileItem> items,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateBatchExtractFiles(items: items, config: config);
-
-/// Extract content from multiple byte arrays concurrently.
-///
-/// This function processes multiple byte arrays in parallel, automatically managing
-/// concurrency to prevent resource exhaustion. The concurrency limit can be
-/// configured via `ExtractionConfig.max_concurrent_extractions` or defaults
-/// to `(num_cpus * 1.5).ceil()`.
-///
-/// Each item can optionally specify a `FileExtractionConfig` that overrides specific
-/// fields from the batch-level `config`. Pass `null` as the config to use
-/// the batch-level defaults for that item.
-///
-///   MIME type, and optional per-item configuration overrides.
-///
-/// - `config` - Batch-level extraction configuration
-///
-/// **Returns:**
-///
-/// A vector of `ExtractionResult` in the same order as the input items.
-///
-/// Simple usage with no per-item overrides:
-///
-///
-/// Per-item configuration overrides:
-Future<List<ExtractionResult>> batchExtractBytes({
-  required List<BatchBytesItem> items,
-  required ExtractionConfig config,
-}) => RustLib.instance.api.crateBatchExtractBytes(items: items, config: config);
 
 /// Detect MIME type from raw file bytes.
 ///
@@ -1113,12 +931,6 @@ Future<ExtractionOutput> createExtractionOutputFromJson({
 Future<UrlExtractionConfig> createUrlExtractionConfigFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateUrlExtractionConfigFromJson(json: json);
-
-Future<BatchBytesItem> createBatchBytesItemFromJson({required String json}) =>
-    RustLib.instance.api.crateCreateBatchBytesItemFromJson(json: json);
-
-Future<BatchFileItem> createBatchFileItemFromJson({required String json}) =>
-    RustLib.instance.api.crateCreateBatchFileItemFromJson(json: json);
 
 Future<ImageExtractionConfig> createImageExtractionConfigFromJson({
   required String json,
@@ -2421,64 +2233,6 @@ class BBox {
           y1 == other.y1 &&
           x2 == other.x2 &&
           y2 == other.y2;
-}
-
-/// Batch item for byte array extraction.
-///
-/// Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
-/// to represent a single item in a batch extraction job.
-class BatchBytesItem {
-  /// The content bytes to extract from
-  final Uint8List content;
-
-  /// MIME type of the content (e.g., "application/pdf", "text/html")
-  final String mimeType;
-
-  /// Per-item configuration overrides (None uses batch-level defaults)
-  final FileExtractionConfig? config;
-
-  const BatchBytesItem({
-    required this.content,
-    required this.mimeType,
-    this.config,
-  });
-
-  @override
-  int get hashCode => content.hashCode ^ mimeType.hashCode ^ config.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BatchBytesItem &&
-          runtimeType == other.runtimeType &&
-          content == other.content &&
-          mimeType == other.mimeType &&
-          config == other.config;
-}
-
-/// Batch item for file extraction.
-///
-/// Used with `batch_extract_files` and `batch_extract_files_sync`
-/// to represent a single file in a batch extraction job.
-class BatchFileItem {
-  /// Path to the file to extract from
-  final String path;
-
-  /// Per-file configuration overrides (None uses batch-level defaults)
-  final FileExtractionConfig? config;
-
-  const BatchFileItem({required this.path, this.config});
-
-  @override
-  int get hashCode => path.hashCode ^ config.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BatchFileItem &&
-          runtimeType == other.runtimeType &&
-          path == other.path &&
-          config == other.config;
 }
 
 /// BibTeX bibliography metadata.
@@ -14640,51 +14394,6 @@ class UrlExtractionConfig {
   /// URL extraction mode.
   final UrlExtractionMode mode;
 
-  /// Maximum crawl depth from a seed URL.
-  final PlatformInt64? maxDepth;
-
-  /// Maximum pages to crawl.
-  final PlatformInt64? maxPages;
-
-  /// Maximum concurrent requests.
-  final PlatformInt64? maxConcurrent;
-
-  /// Stay on the seed domain.
-  final bool stayOnDomain;
-
-  /// Allow subdomains when staying on domain.
-  final bool allowSubdomains;
-
-  /// Regex path include filters.
-  final List<String> includePaths;
-
-  /// Regex path exclude filters.
-  final List<String> excludePaths;
-
-  /// Respect robots.txt.
-  final bool respectRobotsTxt;
-
-  /// Custom user agent.
-  final String? userAgent;
-
-  /// Per-request timeout in seconds.
-  final PlatformInt64? requestTimeoutSecs;
-
-  /// Download non-HTML documents discovered during crawl.
-  final bool downloadDocuments;
-
-  /// Maximum size for downloaded documents.
-  final PlatformInt64? documentMaxSizeBytes;
-
-  /// MIME allowlist for downloaded documents.
-  final List<String> allowedFileTypes;
-
-  /// Follow URLs discovered inside extracted documents.
-  final bool followDocumentUrls;
-
-  /// Maximum recursive document URL depth.
-  final PlatformInt64? documentUrlDepth;
-
   /// Optional regex filter for document-discovered URLs.
   final String? documentUrlPattern;
 
@@ -14694,53 +14403,28 @@ class UrlExtractionConfig {
   /// Maximum URLs followed across the whole extraction call.
   final PlatformInt64? maxTotalUrls;
 
+  /// Allow bare local filesystem path inputs.
+  final bool allowLocalFileInputs;
+
   /// Allow local `file://` URI inputs.
   final bool allowFileUris;
 
   const UrlExtractionConfig({
     required this.mode,
-    this.maxDepth,
-    this.maxPages,
-    this.maxConcurrent,
-    required this.stayOnDomain,
-    required this.allowSubdomains,
-    required this.includePaths,
-    required this.excludePaths,
-    required this.respectRobotsTxt,
-    this.userAgent,
-    this.requestTimeoutSecs,
-    required this.downloadDocuments,
-    this.documentMaxSizeBytes,
-    required this.allowedFileTypes,
-    required this.followDocumentUrls,
-    this.documentUrlDepth,
     this.documentUrlPattern,
     this.maxDocumentUrlsPerResult,
     this.maxTotalUrls,
+    required this.allowLocalFileInputs,
     required this.allowFileUris,
   });
 
   @override
   int get hashCode =>
       mode.hashCode ^
-      maxDepth.hashCode ^
-      maxPages.hashCode ^
-      maxConcurrent.hashCode ^
-      stayOnDomain.hashCode ^
-      allowSubdomains.hashCode ^
-      includePaths.hashCode ^
-      excludePaths.hashCode ^
-      respectRobotsTxt.hashCode ^
-      userAgent.hashCode ^
-      requestTimeoutSecs.hashCode ^
-      downloadDocuments.hashCode ^
-      documentMaxSizeBytes.hashCode ^
-      allowedFileTypes.hashCode ^
-      followDocumentUrls.hashCode ^
-      documentUrlDepth.hashCode ^
       documentUrlPattern.hashCode ^
       maxDocumentUrlsPerResult.hashCode ^
       maxTotalUrls.hashCode ^
+      allowLocalFileInputs.hashCode ^
       allowFileUris.hashCode;
 
   @override
@@ -14749,24 +14433,10 @@ class UrlExtractionConfig {
       other is UrlExtractionConfig &&
           runtimeType == other.runtimeType &&
           mode == other.mode &&
-          maxDepth == other.maxDepth &&
-          maxPages == other.maxPages &&
-          maxConcurrent == other.maxConcurrent &&
-          stayOnDomain == other.stayOnDomain &&
-          allowSubdomains == other.allowSubdomains &&
-          includePaths == other.includePaths &&
-          excludePaths == other.excludePaths &&
-          respectRobotsTxt == other.respectRobotsTxt &&
-          userAgent == other.userAgent &&
-          requestTimeoutSecs == other.requestTimeoutSecs &&
-          downloadDocuments == other.downloadDocuments &&
-          documentMaxSizeBytes == other.documentMaxSizeBytes &&
-          allowedFileTypes == other.allowedFileTypes &&
-          followDocumentUrls == other.followDocumentUrls &&
-          documentUrlDepth == other.documentUrlDepth &&
           documentUrlPattern == other.documentUrlPattern &&
           maxDocumentUrlsPerResult == other.maxDocumentUrlsPerResult &&
           maxTotalUrls == other.maxTotalUrls &&
+          allowLocalFileInputs == other.allowLocalFileInputs &&
           allowFileUris == other.allowFileUris;
 }
 

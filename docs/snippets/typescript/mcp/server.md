@@ -6,7 +6,7 @@ import {
   extractSync,
   type ExtractionResult,
   type ExtractionConfig,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 import * as readline from "node:readline";
 
 /**

@@ -166,7 +166,7 @@ Specify multiple language codes separated by `+` (Tesseract) or as a list (EasyO
 === "Wasm"
 
     ```typescript
-    import { enableOcr, extractFromFile, initWasm } from '@xberg/wasm';
+    import { enableOcr, extractFromFile, initWasm } from '@xberg-io/xberg-wasm';
 
     await initWasm();
     await enableOcr();
@@ -244,7 +244,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "TypeScript"
 
     ```typescript title="disable_ocr.ts"
-    import { extractFileSync } from '@xberg/node';
+    import { extractFileSync } from '@xberg-io/xberg';
 
     const result = extractFileSync('scanned.png', {
       disableOcr: true,
@@ -352,7 +352,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "TypeScript"
 
     ```typescript title="candle-glm-ocr.ts"
-    import { extractFileSync } from '@xberg/node';
+    import { extractFileSync } from '@xberg-io/xberg';
 
     // Paired mode: per-region dispatch (default)
     const result = extractFileSync('document.pdf', {
@@ -463,7 +463,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "TypeScript"
 
     ```typescript title="candle-hunyuan-ocr.ts"
-    import { extractFileSync } from '@xberg/node';
+    import { extractFileSync } from '@xberg-io/xberg';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,
@@ -551,7 +551,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "TypeScript"
 
     ```typescript title="candle-deepseek-ocr.ts"
-    import { extractFileSync } from '@xberg/node';
+    import { extractFileSync } from '@xberg-io/xberg';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,
@@ -639,7 +639,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "TypeScript"
 
     ```typescript title="candle-paddleocr-vl.ts"
-    import { extractFileSync } from '@xberg/node';
+    import { extractFileSync } from '@xberg-io/xberg';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,

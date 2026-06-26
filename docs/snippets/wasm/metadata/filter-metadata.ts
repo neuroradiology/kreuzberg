@@ -1,4 +1,4 @@
-import { extract, initWasm } from "@xberg/wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 interface DocumentSummary {
   fileName: string;

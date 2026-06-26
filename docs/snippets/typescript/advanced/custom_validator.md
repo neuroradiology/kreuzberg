@@ -6,7 +6,7 @@ import {
   type ValidatorProtocol,
   type ExtractionResult,
   ValidationError,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 /**
  * Custom validator for quality checking

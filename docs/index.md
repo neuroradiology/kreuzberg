@@ -56,8 +56,8 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 | Language                | Package                                        | Docs                                         |
 | :---------------------- | :--------------------------------------------- | :------------------------------------------- |
 | **Python**              | `pip install xberg`                        | [API Reference](reference/api-python.md)     |
-| **TypeScript (Native)** | `npm install @xberg/node`                  | [API Reference](reference/api-typescript.md) |
-| **TypeScript (WASM)**   | `npm install @xberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
+| **TypeScript (Native)** | `npm install @xberg-io/xberg`                  | [API Reference](reference/api-typescript.md) |
+| **TypeScript (WASM)**   | `npm install @xberg-io/xberg-wasm`                  | [API Reference](reference/api-wasm.md)       |
 | **Rust**                | `cargo add xberg`                          | [API Reference](reference/api-rust.md)       |
 | **Go**                  | `go get github.com/xberg-io/xberg` | [API Reference](reference/api-go.md)         |
 | **Java / Kotlin JVM**   | Maven Central `io.xberg:xberg`        | [API Reference](reference/api-java.md)       |
@@ -78,9 +78,9 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 
 !!! Tip "Choosing Between TypeScript Packages"
 
-    **`@xberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
+    **`@xberg-io/xberg`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
 
-    **`@xberg/wasm`** — Use for browsers, Cloudflare Workers, Deno, Bun, and serverless environments (60-80% speed, cross-platform).
+    **`@xberg-io/xberg-wasm`** — Use for browsers, Cloudflare Workers, Deno, Bun, and serverless environments (60-80% speed, cross-platform).
 
 ---
 
@@ -98,7 +98,7 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 === "TypeScript"
 
     ```typescript
-    import { ExtractInput, extract } from "@xberg/node";
+    import { ExtractInput, extract } from "@xberg-io/xberg";
 
     const result = await extract(ExtractInput.file("document.pdf"));
     console.log(result.content);

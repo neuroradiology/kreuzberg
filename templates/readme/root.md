@@ -62,7 +62,7 @@ See [Python README](https://github.com/xberg-io/xberg/tree/main/packages/python)
 <summary><strong>Node.js</strong></summary>
 
 ```sh
-npm install @xberg/node
+npm install @xberg-io/xberg
 ```
 
 See [Node.js README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-node) for full documentation.
@@ -142,7 +142,7 @@ Add `{:xberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](htt
 <summary><strong>WebAssembly</strong></summary>
 
 ```sh
-npm install @xberg/wasm
+npm install @xberg-io/xberg-wasm
 ```
 
 See [WebAssembly README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-wasm) for full documentation.
@@ -320,7 +320,7 @@ Add the package to `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@xberg/opencode-xberg"]
+  "plugin": ["@xberg-io/opencode-xberg"]
 }
 ```
 

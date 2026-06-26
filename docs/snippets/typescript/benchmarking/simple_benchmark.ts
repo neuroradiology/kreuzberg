@@ -1,6 +1,6 @@
 ```typescript title="simple_benchmark.ts"
 /* oxlint-disable */
-import { extract, type ExtractionConfig } from "@xberg/node";
+import { extract, type ExtractionConfig } from "@xberg-io/xberg";
 
 async function benchmarkExtractions(): Promise<void> {
   const config: ExtractionConfig = { useCache: false };

@@ -1,4 +1,4 @@
-Import { extractSync } from '@xberg/node';
+Import { extractSync } from '@xberg-io/xberg';
 
 Const result = extractSync('document.pdf');
 

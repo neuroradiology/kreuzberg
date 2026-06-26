@@ -1,4 +1,4 @@
-import { extract, fileToUint8Array, initWasm } from "@xberg/wasm";
+import { extract, fileToUint8Array, initWasm } from "@xberg-io/xberg-wasm";
 
 async function convertAndExtract(file: File) {
   await initWasm();

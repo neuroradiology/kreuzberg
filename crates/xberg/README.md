@@ -4,8 +4,8 @@
 
 [![Rust](https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6)](https://crates.io/crates/xberg)
 [![Python](https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6)](https://pypi.org/project/xberg/)
-[![TypeScript](https://img.shields.io/npm/v/@xberg/node?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@xberg/node)
-[![WASM](https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@xberg/wasm)
+[![TypeScript](https://img.shields.io/npm/v/@xberg-io/xberg?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@xberg-io/xberg)
+[![WASM](https://img.shields.io/npm/v/@xberg-io/xberg-wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@xberg-io/xberg-wasm)
 [![Ruby](https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/xberg)
 [![Java](https://img.shields.io/maven-central/v/io.xberg/xberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/io.xberg/xberg)
 [![Go](https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6)](https://github.com/xberg-io/xberg/tree/main/packages/go)

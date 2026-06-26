@@ -11,11 +11,11 @@
   <a href="https://pypi.org/project/xberg/">
     <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/node">
-    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@xberg/wasm">
-    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg-io/xberg-wasm">
+    <img src="https://img.shields.io/npm/v/@xberg-io/xberg-wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
   <a href="https://central.sonatype.com/artifact/io.xberg/xberg">
     <img src="https://img.shields.io/maven-central/v/io.xberg/xberg?label=Java&color=007ec6" alt="Java">
@@ -95,7 +95,7 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 ### Package Installation
 
 ```bash
-pnpm add @xberg/wasm
+pnpm add @xberg-io/xberg-wasm
 ```
 
 ### System Requirements
@@ -109,7 +109,7 @@ pnpm add @xberg/wasm
 Extract text, metadata, and structure from any supported document format:
 
 ```ts
-import { extract, initWasm } from "@xberg/wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function main() {
   await initWasm();
@@ -137,7 +137,7 @@ Most use cases benefit from configuration to control extraction behavior:
 **With OCR (for scanned documents):**
 
 ```ts
-import { enableOcr, extract, initWasm } from "@xberg/wasm";
+import { enableOcr, extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractWithOcr() {
   await initWasm();
@@ -173,7 +173,7 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 #### Processing Multiple Files
 
 ```ts
-import { extract, initWasm } from "@xberg/wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 interface DocumentJob {
   name: string;
@@ -213,7 +213,7 @@ async function _processBatch(documents: DocumentJob[], concurrency: number = 3) 
 For non-blocking document processing:
 
 ```ts
-import { extract, getWasmCapabilities, initWasm } from "@xberg/wasm";
+import { extract, getWasmCapabilities, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   const caps = getWasmCapabilities();
@@ -356,7 +356,7 @@ Xberg supports multiple OCR backends for extracting text from scanned documents 
 ### OCR Configuration Example
 
 ```ts
-import { enableOcr, extract, initWasm } from "@xberg/wasm";
+import { enableOcr, extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractWithOcr() {
   await initWasm();
@@ -390,7 +390,7 @@ extractWithOcr().catch(console.error);
 This binding provides full async/await support for non-blocking document processing:
 
 ```ts
-import { extract, getWasmCapabilities, initWasm } from "@xberg/wasm";
+import { extract, getWasmCapabilities, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   const caps = getWasmCapabilities();
@@ -429,7 +429,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://docs.xber
 Process multiple documents efficiently:
 
 ```ts
-import { extract, initWasm } from "@xberg/wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 interface DocumentJob {
   name: string;

@@ -106,7 +106,7 @@ task wasm:build && task wasm:test
 
 ### Testing the live browser demo
 
-The demo at `docs/demo.html` loads `@xberg/wasm` from a CDN. To test local changes against it, use:
+The demo at `docs/demo.html` loads `@xberg-io/xberg-wasm` from a CDN. To test local changes against it, use:
 
 ```bash title="Terminal"
 task demo:dev

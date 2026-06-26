@@ -550,12 +550,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BBox dco_decode_b_box(dynamic raw);
 
   @protected
-  BatchBytesItem dco_decode_batch_bytes_item(dynamic raw);
-
-  @protected
-  BatchFileItem dco_decode_batch_file_item(dynamic raw);
-
-  @protected
   BibtexMetadata dco_decode_bibtex_metadata(dynamic raw);
 
   @protected
@@ -1300,12 +1294,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ArchiveEntry> dco_decode_list_archive_entry(dynamic raw);
-
-  @protected
-  List<BatchBytesItem> dco_decode_list_batch_bytes_item(dynamic raw);
-
-  @protected
-  List<BatchFileItem> dco_decode_list_batch_file_item(dynamic raw);
 
   @protected
   List<CellChange> dco_decode_list_cell_change(dynamic raw);
@@ -2659,12 +2647,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BBox sse_decode_b_box(SseDeserializer deserializer);
 
   @protected
-  BatchBytesItem sse_decode_batch_bytes_item(SseDeserializer deserializer);
-
-  @protected
-  BatchFileItem sse_decode_batch_file_item(SseDeserializer deserializer);
-
-  @protected
   BibtexMetadata sse_decode_bibtex_metadata(SseDeserializer deserializer);
 
   @protected
@@ -3581,16 +3563,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ArchiveEntry> sse_decode_list_archive_entry(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<BatchBytesItem> sse_decode_list_batch_bytes_item(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<BatchFileItem> sse_decode_list_batch_file_item(
     SseDeserializer deserializer,
   );
 
@@ -5409,15 +5381,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_b_box(BBox self, SseSerializer serializer);
 
   @protected
-  void sse_encode_batch_bytes_item(
-    BatchBytesItem self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_batch_file_item(BatchFileItem self, SseSerializer serializer);
-
-  @protected
   void sse_encode_bibtex_metadata(
     BibtexMetadata self,
     SseSerializer serializer,
@@ -6644,18 +6607,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_archive_entry(
     List<ArchiveEntry> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_batch_bytes_item(
-    List<BatchBytesItem> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_batch_file_item(
-    List<BatchFileItem> self,
     SseSerializer serializer,
   );
 

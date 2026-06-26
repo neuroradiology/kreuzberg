@@ -8,43 +8,6 @@
 #' @useDynLib xberg, .registration = TRUE
 NULL
 
-#' Extract content from a byte array
-#'
-#' This is the main entry point for in-memory extraction. It performs the following steps:
-#' 1. Validate MIME type
-#' 2. Handle legacy format conversion if needed
-#' 3. Select appropriate extractor from registry
-#' 4. Extract content
-#' 5. Run post-processing pipeline
-#' @param content The byte array to extract.
-#' @param mime_type MIME type of the content.
-#' @param config Extraction configuration.
-#' @return An `ExtractionResult` containing the extracted content and metadata.
-#'
-#' @section Errors:
-#' Returns `XbergError::Validation` if MIME type is invalid.
-#' Returns `XbergError::UnsupportedFormat` if MIME type is not supported.
-#' @export
-extract_bytes <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "xberg")
-#' Extract content from a file
-#'
-#' This is the main entry point for file-based extraction. It performs the following steps:
-#' 1. Check cache for existing result (if caching enabled)
-#' 2. Detect or validate MIME type
-#' 3. Select appropriate extractor from registry
-#' 4. Extract content
-#' 5. Run post-processing pipeline
-#' 6. Store result in cache (if caching enabled)
-#' @param path Path to the file to extract.
-#' @param mime_type Optional MIME type override. If None, will be auto-detected.
-#' @param config Extraction configuration.
-#' @return An `ExtractionResult` containing the extracted content and metadata.
-#'
-#' @section Errors:
-#' Returns `XbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-#' Returns `XbergError::UnsupportedFormat` if MIME type is not supported.
-#' @export
-extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "xberg")
 #' Extract content from a single bytes or URI input
 #' @param input ExtractInput object (list with class attribute).
 #' @param config ExtractionConfig object (list with class attribute).
@@ -837,24 +800,10 @@ ExtractionSummary$from_json <- function(json) {
 `[[.ExtractionSummary` <- `$.ExtractionSummary`
 #' URL ingestion and crawl configuration
 #' @field mode URL extraction mode.
-#' @field max_depth Maximum crawl depth from a seed URL.
-#' @field max_pages Maximum pages to crawl.
-#' @field max_concurrent Maximum concurrent requests.
-#' @field stay_on_domain Stay on the seed domain.
-#' @field allow_subdomains Allow subdomains when staying on domain.
-#' @field include_paths Regex path include filters.
-#' @field exclude_paths Regex path exclude filters.
-#' @field respect_robots_txt Respect robots.txt.
-#' @field user_agent Custom user agent.
-#' @field request_timeout_secs Per-request timeout in seconds.
-#' @field download_documents Download non-HTML documents discovered during crawl.
-#' @field document_max_size_bytes Maximum size for downloaded documents.
-#' @field allowed_file_types MIME allowlist for downloaded documents.
-#' @field follow_document_urls Follow URLs discovered inside extracted documents.
-#' @field document_url_depth Maximum recursive document URL depth.
 #' @field document_url_pattern Optional regex filter for document-discovered URLs.
 #' @field max_document_urls_per_result Maximum URLs to follow per extraction result.
 #' @field max_total_urls Maximum URLs followed across the whole extraction call.
+#' @field allow_local_file_inputs Allow bare local filesystem path inputs.
 #' @field allow_file_uris Allow local `file://` URI inputs.
 #' @export
 UrlExtractionConfig <- new.env(parent = emptyenv())
@@ -873,45 +822,6 @@ UrlExtractionConfig$from_json <- function(json) {
 }
 #' @export
 `[[.UrlExtractionConfig` <- `$.UrlExtractionConfig`
-#' Batch item for byte array extraction
-#'
-#' Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
-#' to represent a single item in a batch extraction job.
-#' @field content The content bytes to extract from
-#' @field mime_type MIME type of the content (e.g., "application/pdf", "text/html")
-#' @field config Per-item configuration overrides (None uses batch-level defaults)
-#' @export
-BatchBytesItem <- new.env(parent = emptyenv())
-#' @export
-`$.BatchBytesItem` <- function(self, name) {
-  func <- BatchBytesItem[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.BatchBytesItem` <- `$.BatchBytesItem`
-#' Batch item for file extraction
-#'
-#' Used with `batch_extract_files` and `batch_extract_files_sync`
-#' to represent a single file in a batch extraction job.
-#' @field path Path to the file to extract from
-#' @field config Per-file configuration overrides (None uses batch-level defaults)
-#' @export
-BatchFileItem <- new.env(parent = emptyenv())
-#' @export
-`$.BatchFileItem` <- function(self, name) {
-  func <- BatchFileItem[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.BatchFileItem` <- `$.BatchFileItem`
 #' Image extraction configuration
 #' @field extract_images Extract images from documents
 #' @field target_dpi Target DPI for image normalization

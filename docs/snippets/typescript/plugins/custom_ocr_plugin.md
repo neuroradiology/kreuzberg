@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { registerOcrBackend, type OcrBackendProtocol } from "@xberg/node";
+import { registerOcrBackend, type OcrBackendProtocol } from "@xberg-io/xberg";
 
 /**
  * Mock OCR backend for testing

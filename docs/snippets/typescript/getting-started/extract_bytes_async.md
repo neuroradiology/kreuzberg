@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extract } from "@xberg/node";
+import { extract } from "@xberg-io/xberg";
 import { readFile } from "fs/promises";
 
 const data = await readFile("document.pdf");

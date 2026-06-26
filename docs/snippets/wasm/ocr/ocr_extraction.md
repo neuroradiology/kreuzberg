@@ -1,5 +1,5 @@
 ```typescript title="WASM (Browser)"
-import { enableOcr, extract, initWasm } from "@xberg/wasm";
+import { enableOcr, extract, initWasm } from "@xberg-io/xberg-wasm";
 
 await initWasm();
 await enableOcr();
@@ -19,7 +19,7 @@ if (file) {
 ```
 
 ```typescript title="WASM (Node.js / Deno / Bun)"
-import { enableOcr, extract, initWasm } from "@xberg/wasm";
+import { enableOcr, extract, initWasm } from "@xberg-io/xberg-wasm";
 
 await initWasm();
 await enableOcr(); // Uses native xberg-tesseract backend

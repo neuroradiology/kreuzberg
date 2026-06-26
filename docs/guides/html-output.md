@@ -28,7 +28,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "TypeScript"
 
     ```typescript title="html_output.ts"
-    import { extractFile, HtmlTheme } from '@xberg/node';
+    import { extractFile, HtmlTheme } from '@xberg-io/xberg';
 
     const result = await extractFile('doc.pdf', {
       outputFormat: 'html',
@@ -87,7 +87,7 @@ See [HtmlOutputConfig](../reference/configuration.md#htmloutputconfig) for detai
 === "TypeScript"
 
     ```typescript title="html_config.ts"
-    import { HtmlTheme } from '@xberg/node';
+    import { HtmlTheme } from '@xberg-io/xberg';
 
     const config = {
       outputFormat: 'html',

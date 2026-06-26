@@ -1,5 +1,5 @@
-import type { ExtractionResult } from "@xberg/wasm";
-import { extract, initWasm } from "@xberg/wasm";
+import type { ExtractionResult } from "@xberg-io/xberg-wasm";
+import { extract, initWasm } from "@xberg-io/xberg-wasm";
 
 async function _cacheResultInSessionStorage(file: File): Promise<ExtractionResult> {
   await initWasm();

@@ -1,5 +1,5 @@
 ```typescript title="Element-Based Output (TypeScript)"
-import { extractSync, ExtractionConfig } from "@xberg/node";
+import { extractSync, ExtractionConfig } from "@xberg-io/xberg";
 
 // Configure element-based output
 const config: ExtractionConfig = {

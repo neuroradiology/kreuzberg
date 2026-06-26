@@ -1,4 +1,4 @@
-Import { extractSync } from '@xberg/node';
+Import { extractSync } from '@xberg-io/xberg';
 
 Const result = extractSync('document.pdf', null, { chunking: { maxChars: 500, maxOverlap: 50 }, pages: { extractPages: true } });
 

@@ -69,7 +69,7 @@ Add the package to `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@xberg/opencode-xberg"]
+  "plugin": ["@xberg-io/opencode-xberg"]
 }
 ```
 
@@ -105,7 +105,7 @@ When your AI coding assistant discovers the skill, it knows:
 === "Node.js"
 
     ```typescript
-    import { extractFile, extractFileSync } from '@xberg/node';
+    import { extractFile, extractFileSync } from '@xberg-io/xberg';
 
     const result = await extractFile('document.pdf');
     console.log(result.content);

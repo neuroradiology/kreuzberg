@@ -68,9 +68,9 @@ extraction, OCR, and text processing. Results come back through the same bridge.
 There are two TypeScript packages because server and browser environments have fundamentally
 different constraints:
 
-- **`@xberg/node`** (native) - compiled via NAPI-RS. Maximum performance on Node.js,
+- **`@xberg-io/xberg`** (native) - compiled via NAPI-RS. Maximum performance on Node.js,
   Bun, and Deno. Requires a platform-specific native binary.
-- **`@xberg/wasm`** (WebAssembly) - compiled via wasm-bindgen. Runs in browsers,
+- **`@xberg-io/xberg-wasm`** (WebAssembly) - compiled via wasm-bindgen. Runs in browsers,
   Cloudflare Workers, Vercel Edge, and any JavaScript runtime. About 60-80% of native
   speed, but zero native dependencies.
 

@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractSync } from "@xberg/node";
+import { extractSync } from "@xberg-io/xberg";
 
 const config = {
   images: {

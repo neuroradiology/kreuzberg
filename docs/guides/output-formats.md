@@ -63,7 +63,7 @@ When the `svg` feature is active and `output_format` is set to `Svg`:
 === "TypeScript"
 
     ```typescript
-    import { ExtractionConfig, ImageOutputFormat } from "@xberg/node";
+    import { ExtractionConfig, ImageOutputFormat } from "@xberg-io/xberg";
 
     const config: ExtractionConfig = {
       images: {

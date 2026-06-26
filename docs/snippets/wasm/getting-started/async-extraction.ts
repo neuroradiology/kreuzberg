@@ -1,4 +1,4 @@
-import { extract, getWasmCapabilities, initWasm } from "@xberg/wasm";
+import { extract, getWasmCapabilities, initWasm } from "@xberg-io/xberg-wasm";
 
 async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   const caps = getWasmCapabilities();

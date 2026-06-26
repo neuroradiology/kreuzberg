@@ -34,7 +34,7 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 === "TypeScript"
 
     ```typescript title="TypeScript"
-    import { extractFile } from '@xberg/node';
+    import { extractFile } from '@xberg-io/xberg';
 
     const result = await extractFile("ticket.pdf", { qrCodes: true });
     for (const image of result.images ?? []) {

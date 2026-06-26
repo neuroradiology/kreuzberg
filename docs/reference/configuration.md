@@ -241,24 +241,10 @@ URL ingestion and crawl configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mode` | `UrlExtractionMode` | `UrlExtractionMode.AUTO` | URL extraction mode. |
-| `max_depth` | `int \| None` | `None` | Maximum crawl depth from a seed URL. |
-| `max_pages` | `int \| None` | `None` | Maximum pages to crawl. |
-| `max_concurrent` | `int \| None` | `None` | Maximum concurrent requests. |
-| `stay_on_domain` | `bool` | `True` | Stay on the seed domain. |
-| `allow_subdomains` | `bool` | `True` | Allow subdomains when staying on domain. |
-| `include_paths` | `list\[str\]` | `\[\]` | Regex path include filters. |
-| `exclude_paths` | `list\[str\]` | `\[\]` | Regex path exclude filters. |
-| `respect_robots_txt` | `bool` | `True` | Respect robots.txt. |
-| `user_agent` | `str \| None` | `None` | Custom user agent. |
-| `request_timeout_secs` | `int \| None` | `None` | Per-request timeout in seconds. |
-| `download_documents` | `bool` | `True` | Download non-HTML documents discovered during crawl. |
-| `document_max_size_bytes` | `int \| None` | `None` | Maximum size for downloaded documents. |
-| `allowed_file_types` | `list\[str\]` | `\[\]` | MIME allowlist for downloaded documents. |
-| `follow_document_urls` | `bool` | `False` | Follow URLs discovered inside extracted documents. |
-| `document_url_depth` | `int \| None` | `None` | Maximum recursive document URL depth. |
 | `document_url_pattern` | `str \| None` | `None` | Optional regex filter for document-discovered URLs. |
 | `max_document_urls_per_result` | `int \| None` | `None` | Maximum URLs to follow per extraction result. |
 | `max_total_urls` | `int \| None` | `None` | Maximum URLs followed across the whole extraction call. |
+| `allow_local_file_inputs` | `bool` | `True` | Allow bare local filesystem path inputs. |
 | `allow_file_uris` | `bool` | `True` | Allow local `file://` URI inputs. |
 
 ---

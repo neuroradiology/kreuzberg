@@ -10808,6 +10808,7 @@ dependencies = [
  "unhwp",
  "unicode-normalization",
  "ureq 3.3.0",
+ "url",
  "urlencoding",
  "utoipa",
  "uuid",

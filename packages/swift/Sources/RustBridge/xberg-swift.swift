@@ -10,12 +10,6 @@ public func llmBackendDetectWithCustom<GenericIntoRustString: IntoRustString>(_ 
 public func token_counter_noop(_ client: TokenCounterRef) {
     __swift_bridge__$token_counter_noop(client.ptr)
 }
-public func extractBytes<GenericIntoRustString: IntoRustString>(_ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig) throws -> ExtractionResult {
-    try { let val = __swift_bridge__$extract_bytes({ let val = content; val.isOwned = false; return val.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func extractFile<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString, _ mime_type: Optional<GenericIntoRustString>, _ config: ExtractionConfig) throws -> ExtractionResult {
-    try { let val = __swift_bridge__$extract_file({ let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { if let rustString = optionalStringIntoRustString(mime_type) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func extract(_ input: ExtractInput, _ config: ExtractionConfig) throws -> ExtractionOutput {
     try { let val = __swift_bridge__$extract({input.isOwned = false; return input.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionOutput(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -115,12 +109,6 @@ public func getRerankerPreset<GenericIntoRustString: IntoRustString>(_ name: Gen
 public func listRerankerPresets() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$list_reranker_presets())
 }
-public func extractBytesSync<GenericIntoRustString: IntoRustString>(_ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig) throws -> ExtractionResult {
-    try { let val = __swift_bridge__$extract_bytes_sync({ let val = content; val.isOwned = false; return val.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchExtractBytesSync(_ items: RustVec<BatchBytesItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
-    try { let val = __swift_bridge__$batch_extract_bytes_sync({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func chunkForRag<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString, _ config: ChunkingConfig) throws -> ChunkingResult {
     try { let val = __swift_bridge__$chunk_for_rag({ let rustString = text.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ChunkingResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -141,18 +129,6 @@ public func extractSync(_ input: ExtractInput, _ config: ExtractionConfig) throw
 }
 public func extractBatchSync(_ inputs: RustVec<ExtractInput>, _ config: ExtractionConfig) throws -> ExtractionOutput {
     try { let val = __swift_bridge__$extract_batch_sync({ let val = inputs; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionOutput(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func extractFileSync<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString, _ mime_type: Optional<GenericIntoRustString>, _ config: ExtractionConfig) throws -> ExtractionResult {
-    try { let val = __swift_bridge__$extract_file_sync({ let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { if let rustString = optionalStringIntoRustString(mime_type) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchExtractFilesSync(_ items: RustVec<BatchFileItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
-    try { let val = __swift_bridge__$batch_extract_files_sync({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchExtractFiles(_ items: RustVec<BatchFileItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
-    try { let val = __swift_bridge__$batch_extract_files({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchExtractBytes(_ items: RustVec<BatchBytesItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
-    try { let val = __swift_bridge__$batch_extract_bytes({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
     RustVec(ptr: __swift_bridge__$alef_phantom_vec_ocr_backend())
@@ -552,12 +528,6 @@ public func extractionConfigFromJson<GenericIntoRustString: IntoRustString>(_ js
 }
 public func extractInputFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ExtractInput {
     try { let val = __swift_bridge__$extract_input_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ExtractInput(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchBytesItemFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchBytesItem {
-    try { let val = __swift_bridge__$batch_bytes_item_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchBytesItem(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func batchFileItemFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchFileItem {
-    try { let val = __swift_bridge__$batch_file_item_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchFileItem(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func llmConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> LlmConfig {
     try { let val = __swift_bridge__$llm_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return LlmConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -1245,12 +1215,6 @@ public func __alef_phantom_vec_extraction_output() -> RustVec<ExtractionOutput> 
 }
 public func __alef_phantom_vec_url_extraction_config() -> RustVec<UrlExtractionConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_url_extraction_config())
-}
-public func __alef_phantom_vec_batch_bytes_item() -> RustVec<BatchBytesItem> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_batch_bytes_item())
-}
-public func __alef_phantom_vec_batch_file_item() -> RustVec<BatchFileItem> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_batch_file_item())
 }
 public func __alef_phantom_vec_image_extraction_config() -> RustVec<ImageExtractionConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_image_extraction_config())
@@ -3350,8 +3314,8 @@ public class UrlExtractionConfig: UrlExtractionConfigRefMut {
     }
 }
 extension UrlExtractionConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ mode: UrlExtractionMode, _ max_depth: Optional<UInt32>, _ max_pages: Optional<UInt32>, _ max_concurrent: Optional<UInt32>, _ stay_on_domain: Bool, _ allow_subdomains: Bool, _ include_paths: RustVec<GenericIntoRustString>, _ exclude_paths: RustVec<GenericIntoRustString>, _ respect_robots_txt: Bool, _ user_agent: Optional<GenericIntoRustString>, _ request_timeout_secs: Optional<UInt64>, _ download_documents: Bool, _ document_max_size_bytes: Optional<UInt64>, _ allowed_file_types: RustVec<GenericIntoRustString>, _ follow_document_urls: Bool, _ document_url_depth: Optional<UInt32>, _ document_url_pattern: Optional<GenericIntoRustString>, _ max_document_urls_per_result: Optional<UInt32>, _ max_total_urls: Optional<UInt32>, _ allow_file_uris: Bool) {
-        self.init(ptr: __swift_bridge__$UrlExtractionConfig$new({mode.isOwned = false; return mode.ptr;}(), max_depth.intoFfiRepr(), max_pages.intoFfiRepr(), max_concurrent.intoFfiRepr(), stay_on_domain, allow_subdomains, { let val = include_paths; val.isOwned = false; return val.ptr }(), { let val = exclude_paths; val.isOwned = false; return val.ptr }(), respect_robots_txt, { if let rustString = optionalStringIntoRustString(user_agent) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), request_timeout_secs.intoFfiRepr(), download_documents, document_max_size_bytes.intoFfiRepr(), { let val = allowed_file_types; val.isOwned = false; return val.ptr }(), follow_document_urls, document_url_depth.intoFfiRepr(), { if let rustString = optionalStringIntoRustString(document_url_pattern) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), max_document_urls_per_result.intoFfiRepr(), max_total_urls.intoFfiRepr(), allow_file_uris))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ mode: UrlExtractionMode, _ document_url_pattern: Optional<GenericIntoRustString>, _ max_document_urls_per_result: Optional<UInt32>, _ max_total_urls: Optional<UInt32>, _ allow_local_file_inputs: Bool, _ allow_file_uris: Bool) {
+        self.init(ptr: __swift_bridge__$UrlExtractionConfig$new({mode.isOwned = false; return mode.ptr;}(), { if let rustString = optionalStringIntoRustString(document_url_pattern) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), max_document_urls_per_result.intoFfiRepr(), max_total_urls.intoFfiRepr(), allow_local_file_inputs, allow_file_uris))
     }
 }
 public class UrlExtractionConfigRefMut: UrlExtractionConfigRef {
@@ -3371,66 +3335,6 @@ extension UrlExtractionConfigRef {
         RustString(ptr: __swift_bridge__$UrlExtractionConfig$mode(ptr))
     }
 
-    public func maxDepth() -> Optional<UInt32> {
-        __swift_bridge__$UrlExtractionConfig$max_depth(ptr).intoSwiftRepr()
-    }
-
-    public func maxPages() -> Optional<UInt32> {
-        __swift_bridge__$UrlExtractionConfig$max_pages(ptr).intoSwiftRepr()
-    }
-
-    public func maxConcurrent() -> Optional<UInt32> {
-        __swift_bridge__$UrlExtractionConfig$max_concurrent(ptr).intoSwiftRepr()
-    }
-
-    public func stayOnDomain() -> Bool {
-        __swift_bridge__$UrlExtractionConfig$stay_on_domain(ptr)
-    }
-
-    public func allowSubdomains() -> Bool {
-        __swift_bridge__$UrlExtractionConfig$allow_subdomains(ptr)
-    }
-
-    public func includePaths() -> RustVec<RustString> {
-        RustVec(ptr: __swift_bridge__$UrlExtractionConfig$include_paths(ptr))
-    }
-
-    public func excludePaths() -> RustVec<RustString> {
-        RustVec(ptr: __swift_bridge__$UrlExtractionConfig$exclude_paths(ptr))
-    }
-
-    public func respectRobotsTxt() -> Bool {
-        __swift_bridge__$UrlExtractionConfig$respect_robots_txt(ptr)
-    }
-
-    public func userAgent() -> Optional<RustString> {
-        { let val = __swift_bridge__$UrlExtractionConfig$user_agent(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
-    public func requestTimeoutSecs() -> Optional<UInt64> {
-        __swift_bridge__$UrlExtractionConfig$request_timeout_secs(ptr).intoSwiftRepr()
-    }
-
-    public func downloadDocuments() -> Bool {
-        __swift_bridge__$UrlExtractionConfig$download_documents(ptr)
-    }
-
-    public func documentMaxSizeBytes() -> Optional<UInt64> {
-        __swift_bridge__$UrlExtractionConfig$document_max_size_bytes(ptr).intoSwiftRepr()
-    }
-
-    public func allowedFileTypes() -> RustVec<RustString> {
-        RustVec(ptr: __swift_bridge__$UrlExtractionConfig$allowed_file_types(ptr))
-    }
-
-    public func followDocumentUrls() -> Bool {
-        __swift_bridge__$UrlExtractionConfig$follow_document_urls(ptr)
-    }
-
-    public func documentUrlDepth() -> Optional<UInt32> {
-        __swift_bridge__$UrlExtractionConfig$document_url_depth(ptr).intoSwiftRepr()
-    }
-
     public func documentUrlPattern() -> Optional<RustString> {
         { let val = __swift_bridge__$UrlExtractionConfig$document_url_pattern(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
@@ -3441,6 +3345,10 @@ extension UrlExtractionConfigRef {
 
     public func maxTotalUrls() -> Optional<UInt32> {
         __swift_bridge__$UrlExtractionConfig$max_total_urls(ptr).intoSwiftRepr()
+    }
+
+    public func allowLocalFileInputs() -> Bool {
+        __swift_bridge__$UrlExtractionConfig$allow_local_file_inputs(ptr)
     }
 
     public func allowFileUris() -> Bool {
@@ -3493,178 +3401,6 @@ extension UrlExtractionConfig: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_UrlExtractionConfig$len(vecPtr)
-    }
-}
-
-
-public class BatchBytesItem: BatchBytesItemRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$BatchBytesItem$_free(ptr)
-        }
-    }
-}
-public class BatchBytesItemRefMut: BatchBytesItemRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class BatchBytesItemRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension BatchBytesItemRef {
-    public func content() -> RustVec<UInt8> {
-        RustVec(ptr: __swift_bridge__$BatchBytesItem$content(ptr))
-    }
-
-    public func mimeType() -> RustString {
-        RustString(ptr: __swift_bridge__$BatchBytesItem$mime_type(ptr))
-    }
-
-    public func config() -> Optional<FileExtractionConfig> {
-        { let val = __swift_bridge__$BatchBytesItem$config(ptr); if val != nil { return FileExtractionConfig(ptr: val!) } else { return nil } }()
-    }
-}
-extension BatchBytesItem: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_BatchBytesItem$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_BatchBytesItem$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: BatchBytesItem) {
-        __swift_bridge__$Vec_BatchBytesItem$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_BatchBytesItem$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (BatchBytesItem(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchBytesItemRef> {
-        let pointer = __swift_bridge__$Vec_BatchBytesItem$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return BatchBytesItemRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchBytesItemRefMut> {
-        let pointer = __swift_bridge__$Vec_BatchBytesItem$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return BatchBytesItemRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<BatchBytesItemRef> {
-        UnsafePointer<BatchBytesItemRef>(OpaquePointer(__swift_bridge__$Vec_BatchBytesItem$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_BatchBytesItem$len(vecPtr)
-    }
-}
-
-
-public class BatchFileItem: BatchFileItemRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$BatchFileItem$_free(ptr)
-        }
-    }
-}
-public class BatchFileItemRefMut: BatchFileItemRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class BatchFileItemRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension BatchFileItemRef {
-    public func path() -> RustString {
-        RustString(ptr: __swift_bridge__$BatchFileItem$path(ptr))
-    }
-
-    public func config() -> Optional<FileExtractionConfig> {
-        { let val = __swift_bridge__$BatchFileItem$config(ptr); if val != nil { return FileExtractionConfig(ptr: val!) } else { return nil } }()
-    }
-}
-extension BatchFileItem: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_BatchFileItem$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_BatchFileItem$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: BatchFileItem) {
-        __swift_bridge__$Vec_BatchFileItem$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_BatchFileItem$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (BatchFileItem(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchFileItemRef> {
-        let pointer = __swift_bridge__$Vec_BatchFileItem$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return BatchFileItemRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchFileItemRefMut> {
-        let pointer = __swift_bridge__$Vec_BatchFileItem$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return BatchFileItemRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<BatchFileItemRef> {
-        UnsafePointer<BatchFileItemRef>(OpaquePointer(__swift_bridge__$Vec_BatchFileItem$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_BatchFileItem$len(vecPtr)
     }
 }
 

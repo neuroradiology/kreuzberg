@@ -1,4 +1,4 @@
-import { extract, initWasm, registerOcrBackend, TesseractWasmBackend } from "@xberg/wasm";
+import { extract, initWasm, registerOcrBackend, TesseractWasmBackend } from "@xberg-io/xberg-wasm";
 
 async function extractWithProgressTracking() {
   await initWasm();

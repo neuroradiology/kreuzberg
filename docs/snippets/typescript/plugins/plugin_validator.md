@@ -5,7 +5,7 @@ import {
   unregisterValidator,
   ValidationError,
   type ExtractionResult,
-} from "@xberg/node";
+} from "@xberg-io/xberg";
 
 class MinLengthValidator {
   name = "min_length_validator";
