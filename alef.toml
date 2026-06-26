@@ -250,8 +250,8 @@ exclude_functions = [
   "embed_texts",
 ]
 reexported_types = [
+  "ExtractionOutput",
   "ExtractionResult",
-  "ExtractedDocument",
   "ExtractionDiff",
 ]
 
@@ -813,8 +813,8 @@ exclude_types = [
   "InternalDocument",
 ]
 exclude_fields = [
-  "ExtractedDocument.ocr_internal_document",
-  "ExtractedDocument.internal_document",
+  "ExtractionResult.ocr_internal_document",
+  "ExtractionResult.internal_document",
   "OcrExtractionResult.internal_document",
 ]
 exclude_functions = [
@@ -936,12 +936,12 @@ exclude_types = [
   "KeywordAlgorithm",
 ]
 exclude_fields = [
-  "ExtractedDocument.ocr_internal_document",
-  "ExtractedDocument.internal_document",
+  "ExtractionResult.ocr_internal_document",
+  "ExtractionResult.internal_document",
   "OcrExtractionResult.internal_document",
   "ExtractionConfig.keywords",
   "FileExtractionConfig.keywords",
-  "ExtractedDocument.extracted_keywords",
+  "ExtractionResult.extracted_keywords",
 ]
 exclude_functions = [
   "calculate_quality_score",
@@ -1599,7 +1599,7 @@ fields_array = [
 fields_enum = [
   "results[0].summary.strategy",
 ]
-# Xberg's public extraction calls return an `ExtractionResult` envelope.
+# Xberg's public extraction calls return an `ExtractionOutput` envelope.
 # The PHP and Rust e2e codegens use this both to validate assertion paths
 # and to derive the root return type — the unique TypeDef whose field names
 # are a superset of this list.
@@ -1612,7 +1612,8 @@ result_fields = [
   "crawl_unique_normalized_urls",
 ]
 
-# Xberg's `ExtractionResult` exposes every result field as a `pub <field>:`
+# Xberg's `ExtractionResult` is the per-document DTO inside
+# `ExtractionOutput.results` and exposes every result field as a `pub <field>:`
 # struct field. The Rust e2e renderer in alef uses `fields_method_calls` to
 # decide whether to append `()` after the accessor. Most paths stay as plain
 # field access (`result.content`, not `result.content()`); entries here are the
