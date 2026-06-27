@@ -312,7 +312,7 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 	return out, nil
 }
 
-func extractURI(uri string, config kz.ExtractionConfig) (*kz.ExtractionResult, error) {
+func extractURI(uri string, config kz.ExtractionConfig) (*kz.ExtractedDocument, error) {
 	input := kz.ExtractInputFromURI(uri)
 	if input == nil {
 		return nil, fmt.Errorf("failed to build extract input for %s", uri)
@@ -330,7 +330,7 @@ func extractURI(uri string, config kz.ExtractionConfig) (*kz.ExtractionResult, e
 	return firstExtractionResult(output)
 }
 
-func firstExtractionResult(output *kz.ExtractionOutput) (*kz.ExtractionResult, error) {
+func firstExtractionResult(output *kz.ExtractionResult) (*kz.ExtractedDocument, error) {
 	if output == nil || len(output.Results) == 0 {
 		return nil, fmt.Errorf("no extraction result")
 	}

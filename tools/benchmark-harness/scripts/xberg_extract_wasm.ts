@@ -40,7 +40,7 @@ function log(msg: string): void {
 	}
 }
 
-interface ExtractionOutput {
+interface BenchmarkExtractionPayload {
 	content: string;
 	metadata: Record<string, unknown>;
 	_extraction_time_ms: number;
@@ -203,7 +203,7 @@ async function withTimeout<T>(promise: Promise<T>, filePath: string, mimeType: s
 	}
 }
 
-async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<ExtractionOutput> {
+async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<BenchmarkExtractionPayload> {
 	const config = createConfig(ocrEnabled);
 	const mimeType = guessMimeType(filePath);
 	const start = performance.now();
@@ -220,7 +220,7 @@ async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<Extr
 	};
 }
 
-async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<ExtractionOutput[]> {
+async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<BenchmarkExtractionPayload[]> {
 	const config = createConfig(ocrEnabled);
 	const start = performance.now();
 	const settled = await Promise.allSettled(
@@ -241,7 +241,7 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 				error: reason,
 				_extraction_time_ms: 0,
 				_ocr_used: false,
-			} as unknown as ExtractionOutput;
+			} as unknown as BenchmarkExtractionPayload;
 		}
 		const result = settlement.value;
 		const metadata = (result.metadata as Record<string, unknown>) ?? {};
@@ -298,7 +298,7 @@ async function runServer(ocrEnabled: boolean): Promise<void> {
 			log(`OK    ${filePath} (${durationMs.toFixed(1)}ms, ${result.content.length} chars)`);
 
 			const metadata = (result.metadata as Record<string, unknown>) ?? {};
-			const payload: ExtractionOutput = {
+			const payload: BenchmarkExtractionPayload = {
 				content: result.content,
 				metadata,
 				_extraction_time_ms: durationMs,
