@@ -22,6 +22,7 @@ public final class ProgrammaticConfigExample {
             .chunking(ChunkingConfig.builder()
                 .maxChars(1000)
                 .maxOverlap(200)
+                .build())
             .useCache(true)
             .enableQualityProcessing(true)
             .build();

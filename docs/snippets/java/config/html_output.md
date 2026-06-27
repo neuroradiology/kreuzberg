@@ -18,6 +18,7 @@ public class HtmlOutput {
         ExtractionConfig config = ExtractionConfig.builder()
             .withOutputFormat(OutputFormat.Html)
             .withHtmlOutput(Optional.of(htmlOutput))
+            .build();
         var resultOutput = Xberg.extract(
             io.xberg.ExtractInput.builder()
                 .withKind(io.xberg.ExtractInputKind.Uri)

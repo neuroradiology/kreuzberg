@@ -16,6 +16,7 @@ public class ExtractWithOCR {
             .build();
         ExtractionConfig config = ExtractionConfig.builder()
             .ocr(ocrConfig)
+            .build();
         ExtractionResult output = Xberg.extract(
             ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("scanned.pdf").build(),
             config

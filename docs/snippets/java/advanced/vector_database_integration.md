@@ -52,10 +52,15 @@ public class VectorDatabaseIntegration {
         }
         storeInVectorDatabase(vectorRecords);
         return vectorRecords;
+    }
+    
     private static void storeInVectorDatabase(List<VectorRecord> records) {
         for (VectorRecord record : records) {
             if (record.embedding != null && record.embedding.length > 0) {
                 System.out.println("Storing " + record.id + ": " + record.content.length()
                     + " chars, " + record.embedding.length + " dims");
+            }
+        }
+    }
 }
 ```

@@ -1,5 +1,6 @@
 import asyncio
-from xberg import ExtractInput, (
+from xberg import (
+    ExtractInput,
     ExtractionConfig,
     KeywordConfig,
     KeywordAlgorithm,

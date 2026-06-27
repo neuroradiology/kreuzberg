@@ -25,6 +25,7 @@ int original = metadata.containsKey("original_token_count")
     : 0;
 int reduced = metadata.containsKey("token_count")
     ? ((Number) metadata.get("token_count")).intValue()
+    : 0;
 double ratio = metadata.containsKey("token_reduction_ratio")
     ? ((Number) metadata.get("token_reduction_ratio")).doubleValue()
     : 0.0;

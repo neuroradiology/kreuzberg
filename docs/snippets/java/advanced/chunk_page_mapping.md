@@ -14,6 +14,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build()))
     .withPages(Optional.of(PageConfig.builder()
         .withExtractPages(true)
+        .build()))
     .build();
 var resultOutput = Xberg.extract(
     io.xberg.ExtractInput.builder()

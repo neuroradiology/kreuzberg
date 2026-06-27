@@ -1,5 +1,6 @@
 ```python title="Python"
-from xberg import ExtractInput, (
+from xberg import (
+    ExtractInput,
     ExtractionConfig,
     OcrConfig,
     ChunkingConfig,

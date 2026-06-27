@@ -35,8 +35,10 @@ public class ElementBasedOutput {
                 System.out.println("Text: " + text);
                 if (element.metadata().pageNumber() != null) {
                     System.out.println("Page: " + element.metadata().pageNumber());
+                }
                 if (element.metadata().coordinates() != null) {
                     System.out.println("Coords: " + element.metadata().coordinates());
+                }
                 System.out.println("---");
             }
             // Filter by element type

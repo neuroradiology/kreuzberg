@@ -31,8 +31,10 @@ public class StructuredExtractionExample {
             null,
             true,
             llm
+        );
         ExtractionConfig config = ExtractionConfig.builder()
             .withStructuredExtraction(java.util.Optional.of(structured))
+            .build();
         ExtractionResult output = Xberg.extract(ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("paper.pdf").build(), config);
         ExtractedDocument result = output.results().get(0);
         System.out.println(result.structuredOutput());

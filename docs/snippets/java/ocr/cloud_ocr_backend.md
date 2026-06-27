@@ -51,8 +51,10 @@ public class CloudOcrExample {
             e.printStackTrace();
         }
     }
+    
     private static String parseTextFromResponse(String json) {
         // Parse JSON response and extract text field
         return json; // Simplified
+    }
 }
 ```

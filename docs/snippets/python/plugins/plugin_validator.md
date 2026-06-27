@@ -1,5 +1,7 @@
 ```python title="Python"
-from xberg import ExtractInput, (, ExtractionConfig
+from xberg import (
+    ExtractInput,
+    ExtractionConfig,
     ExtractedDocument,
     ValidationError,
     extract,

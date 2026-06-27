@@ -30,7 +30,12 @@ public class Main {
             }
             // Access HTML metadata
             var htmlResultOutput = Xberg.extract(
+                io.xberg.ExtractInput.builder()
+                    .withKind(io.xberg.ExtractInputKind.Uri)
                     .withUri("page.html")
+                    .build(),
+                io.xberg.ExtractionConfig.builder().build()
+            );
             ExtractedDocument htmlResult = htmlResultOutput.results().get(0);
             Metadata htmlMeta = htmlResult.getMetadata();
             htmlMeta.getTitle().ifPresent(t -> System.out.println("Title: " + t));
@@ -38,6 +43,7 @@ public class Main {
             String description = (String) htmlExtra.get("description");
             if (description != null) {
                 System.out.println("Description: " + description);
+            }
             // Access keywords as array
             htmlMeta.getKeywords().ifPresent(keywords ->
                 System.out.println("Keywords: " + keywords));
@@ -45,6 +51,7 @@ public class Main {
             String canonicalUrl = (String) htmlExtra.get("canonical_url");
             if (canonicalUrl != null) {
                 System.out.println("Canonical URL: " + canonicalUrl);
+            }
             // Access Open Graph fields from map
             @SuppressWarnings("unchecked")
             Map<String, String> openGraph = (Map<String, String>) htmlExtra.get("open_graph");
@@ -52,16 +59,19 @@ public class Main {
                 System.out.println("Open Graph Image: " + openGraph.get("image"));
                 System.out.println("Open Graph Title: " + openGraph.get("title"));
                 System.out.println("Open Graph Type: " + openGraph.get("type"));
+            }
             // Access Twitter Card fields from map
             Map<String, String> twitterCard = (Map<String, String>) htmlExtra.get("twitter_card");
             if (twitterCard != null) {
                 System.out.println("Twitter Card Type: " + twitterCard.get("card"));
                 System.out.println("Twitter Creator: " + twitterCard.get("creator"));
+            }
             // Access new fields
             htmlMeta.getLanguage().ifPresent(l -> System.out.println("Language: " + l));
             String textDirection = (String) htmlExtra.get("text_direction");
             if (textDirection != null) {
                 System.out.println("Text Direction: " + textDirection);
+            }
             // Access headers
             List<Map<String, Object>> headers = (List<Map<String, Object>>) htmlExtra.get("headers");
             if (headers != null) {
@@ -69,21 +79,26 @@ public class Main {
                     .map(h -> h.get("text"))
                     .forEach(text -> System.out.print(text + ", "));
                 System.out.println();
+            }
             // Access links
             List<Map<String, Object>> links = (List<Map<String, Object>>) htmlExtra.get("links");
             if (links != null) {
                 for (Map<String, Object> link : links) {
                     System.out.println("Link: " + link.get("href") + " (" + link.get("text") + ")");
                 }
+            }
             // Access images
             List<Map<String, Object>> images = (List<Map<String, Object>>) htmlExtra.get("images");
             if (images != null) {
                 for (Map<String, Object> image : images) {
                     System.out.println("Image: " + image.get("src"));
+                }
+            }
             // Access structured data
             List<Map<String, Object>> structuredData = (List<Map<String, Object>>) htmlExtra.get("structured_data");
             if (structuredData != null) {
                 System.out.println("Structured data items: " + structuredData.size());
+            }
         } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
         }

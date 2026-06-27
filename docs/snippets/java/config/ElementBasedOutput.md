@@ -30,11 +30,13 @@ public class ElementBasedOutput {
             System.out.println("Text: " + text);
             if (element.getMetadata().getPageNumber() != null) {
                 System.out.println("Page: " + element.getMetadata().getPageNumber());
+            }
             if (element.getMetadata().getCoordinates() != null) {
                 var coords = element.getMetadata().getCoordinates();
                 System.out.printf("Coords: (%f, %f) - (%f, %f)%n",
                     coords.getLeft(), coords.getTop(),
                     coords.getRight(), coords.getBottom());
+            }
             System.out.println("---");
         }
         // Filter by element type

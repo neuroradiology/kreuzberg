@@ -14,6 +14,7 @@ ExtractionConfig config = ExtractionConfig.builder()
     .withChunking(Optional.of(ChunkingConfig.builder()
         .withMaxChars(Optional.of(512L))
         .withMaxOverlap(Optional.of(50L))
+        .build()))
     .withEnableQualityProcessing(true)
     .build();
 var resultOutput = Xberg.extract(
@@ -30,4 +31,5 @@ if (result.tables() != null) {
 }
 if (result.qualityScore() != null) {
     System.out.println("Quality: " + result.qualityScore());
+}
 ```

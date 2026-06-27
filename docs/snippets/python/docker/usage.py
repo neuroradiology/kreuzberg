@@ -1,8 +1,11 @@
 ```python title="usage.py"
+import asyncio
 import subprocess
 import httpx
 import json
 from pathlib import Path
+
+from xberg import ExtractInput, ExtractionConfig
 
 class DockerXbergClient:
     def __init__(self, container_name: str = "xberg-api", port: int = 8000):
@@ -44,8 +47,6 @@ async def main():
 
     try:
         docker_client.start_container()
-        import asyncio
-from xberg import extract, ExtractInput, ExtractionConfig
         await asyncio.sleep(2)
 
         content = await docker_client.extract(ExtractInput.from_uri("document.pdf"), ExtractionConfig())

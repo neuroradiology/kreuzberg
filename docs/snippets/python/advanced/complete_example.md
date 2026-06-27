@@ -1,6 +1,7 @@
 ```python title="Python"
 import asyncio
-from xberg import ExtractInput, (
+from xberg import (
+    ExtractInput,
     extract,
     ExtractionConfig,
     OcrConfig,

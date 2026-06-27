@@ -14,6 +14,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .imagePreprocessing(ImagePreprocessingConfig.builder()
         .targetDpi(300)
+        .build())
     .build();
 ExtractionResult output = Xberg.extract(
     ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("scanned.pdf").build(),

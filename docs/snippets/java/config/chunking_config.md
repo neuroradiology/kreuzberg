@@ -15,12 +15,20 @@ ExtractionConfig config = ExtractionConfig.builder()
 ```java title="Java - Markdown with Heading Context"
 import io.xberg.Xberg;
 import io.xberg.ExtractInput;
-import io.xberg.HeadingContext;
-import io.xberg.HeadingLevel;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
+import io.xberg.ChunkingConfig;
+
+ExtractionConfig config = ExtractionConfig.builder()
+    .chunking(ChunkingConfig.builder()
         .chunkerType("markdown")
         .maxChars(500)
         .maxOverlap(50)
         .sizingTokenizer("Xenova/gpt-4o")
+        .build())
+    .build();
 ExtractionResult output = Xberg.extract(
     ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("document.md").build(),
     config
@@ -35,7 +43,29 @@ result.chunks().forEach(chunk -> {
         );
     }
 });
+```
+
 ```java title="Java - Prepend Heading Context"
+import io.xberg.Xberg;
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractionConfig;
+import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
+import io.xberg.ChunkingConfig;
+
+ExtractionConfig config = ExtractionConfig.builder()
+    .chunking(ChunkingConfig.builder()
         .prependHeadingContext(true)
-    // Each chunk's content is prefixed with its heading breadcrumb
-    System.out.println(chunk.content().substring(0, Math.min(100, chunk.content().length())));
+        .build())
+    .build();
+ExtractionResult output = Xberg.extract(
+    ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("document.md").build(),
+    config
+);
+ExtractedDocument result = output.results().get(0);
+// Each chunk's content is prefixed with its heading breadcrumb
+result.chunks().forEach(chunk ->
+    System.out.println(chunk.content().substring(0, Math.min(100, chunk.content().length())))
+);
+```
