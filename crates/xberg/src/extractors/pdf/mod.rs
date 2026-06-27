@@ -17,7 +17,7 @@ mod region_vlm;
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::{ExtractionMethod, Metadata};
 use async_trait::async_trait;
@@ -138,8 +138,8 @@ impl Plugin for PdfExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PdfExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for PdfExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -149,7 +149,7 @@ impl DocumentExtractor for PdfExtractor {
     }
 
     #[cfg(feature = "tokio-runtime")]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         // Set the PDF file path for pdf_oxide text extraction (thread-local).
         #[cfg(feature = "pdf")]
         crate::pdf::oxide_text::set_current_pdf_path(Some(path.to_path_buf()));
@@ -1220,7 +1220,7 @@ mod tests {
         let pdf_path =
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/google_doc_document.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF with page config: {:?}",
@@ -1249,7 +1249,7 @@ mod tests {
         let pdf_path =
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/google_doc_document.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF without page config: {:?}",
@@ -1287,7 +1287,7 @@ mod tests {
 
         let pdf_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/multi_page.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF with page markers: {:?}",
@@ -1319,7 +1319,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("native PDF extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1353,7 +1353,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("forced OCR extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1387,7 +1387,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("mixed OCR/native extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1415,7 +1415,7 @@ mod tests {
 
         let pdf_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/multi_page.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
 
             if let Err(e) = result {
                 assert!(
@@ -1555,7 +1555,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Inline-image OCR extraction failed");
 
@@ -1754,7 +1754,7 @@ mod tests {
         let pdf_path = pdf_test_document("non_searchable.pdf");
         let content = std::fs::read(&pdf_path).unwrap_or_else(|e| panic!("non_searchable.pdf must be readable: {e}"));
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction should succeed");
         let result = crate::extraction::derive::derive_extraction_result(
@@ -1804,7 +1804,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Extraction should succeed even when there are no images to OCR");
 
@@ -1847,7 +1847,7 @@ mod tests {
 
         // Should complete without panicking; OCR may succeed or warn, but must not crash.
         let _result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Extraction with ocr=None and ocr_inline_images=true must not panic");
     }
@@ -1940,7 +1940,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("force_ocr extraction with images should succeed");
 
@@ -1994,7 +1994,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("force_ocr extraction with pdf_options should succeed");
 
@@ -2257,7 +2257,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2323,7 +2323,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2372,7 +2372,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2420,7 +2420,7 @@ mod tests {
         };
 
         let internal_doc = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2459,7 +2459,7 @@ mod tests {
         };
 
         let internal_doc = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 

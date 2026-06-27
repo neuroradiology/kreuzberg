@@ -335,92 +335,92 @@ pub(crate) fn register_default_extractors() -> Result<()> {
     let registry = get_document_extractor_registry();
     let mut registry = registry.write();
 
-    registry.register(Arc::new(PlainTextExtractor::new()))?;
-    registry.register(Arc::new(MarkdownExtractor::new()))?;
-    registry.register(Arc::new(StructuredExtractor::new()))?;
-    registry.register(Arc::new(CsvExtractor::new()))?;
+    registry.register_internal(Arc::new(PlainTextExtractor::new()))?;
+    registry.register_internal(Arc::new(MarkdownExtractor::new()))?;
+    registry.register_internal(Arc::new(StructuredExtractor::new()))?;
+    registry.register_internal(Arc::new(CsvExtractor::new()))?;
 
     #[cfg(any(feature = "ocr", feature = "ocr-wasm", feature = "ocr-pipeline"))]
-    registry.register(Arc::new(ImageExtractor::new()))?;
+    registry.register_internal(Arc::new(ImageExtractor::new()))?;
 
     #[cfg(feature = "xml")]
     {
-        registry.register(Arc::new(XmlExtractor::new()))?;
-        registry.register(Arc::new(JatsExtractor::new()))?;
-        registry.register(Arc::new(DocbookExtractor::new()))?;
+        registry.register_internal(Arc::new(XmlExtractor::new()))?;
+        registry.register_internal(Arc::new(JatsExtractor::new()))?;
+        registry.register_internal(Arc::new(DocbookExtractor::new()))?;
     }
 
     #[cfg(feature = "pdf")]
-    registry.register(Arc::new(PdfExtractor::new()))?;
+    registry.register_internal(Arc::new(PdfExtractor::new()))?;
 
     #[cfg(any(feature = "excel", feature = "excel-wasm"))]
-    registry.register(Arc::new(ExcelExtractor::new()))?;
+    registry.register_internal(Arc::new(ExcelExtractor::new()))?;
 
-    registry.register(Arc::new(DjotExtractor::new()))?;
+    registry.register_internal(Arc::new(DjotExtractor::new()))?;
 
     #[cfg(feature = "office")]
     {
-        registry.register(Arc::new(BibtexExtractor::new()))?;
-        registry.register(Arc::new(CitationExtractor::new()))?;
-        registry.register(Arc::new(EpubExtractor::new()))?;
-        registry.register(Arc::new(FictionBookExtractor::new()))?;
-        registry.register(Arc::new(RtfExtractor::new()))?;
-        registry.register(Arc::new(RstExtractor::new()))?;
-        registry.register(Arc::new(LatexExtractor::new()))?;
-        registry.register(Arc::new(JupyterExtractor::new()))?;
-        registry.register(Arc::new(OrgModeExtractor::new()))?;
-        registry.register(Arc::new(OpmlExtractor::new()))?;
-        registry.register(Arc::new(TypstExtractor::new()))?;
-        registry.register(Arc::new(DocExtractor::new()))?;
-        registry.register(Arc::new(DocxExtractor::new()))?;
-        registry.register(Arc::new(PptExtractor::new()))?;
-        registry.register(Arc::new(PptxExtractor::new()))?;
-        registry.register(Arc::new(OdtExtractor::new()))?;
-        registry.register(Arc::new(DbfExtractor::new()))?;
+        registry.register_internal(Arc::new(BibtexExtractor::new()))?;
+        registry.register_internal(Arc::new(CitationExtractor::new()))?;
+        registry.register_internal(Arc::new(EpubExtractor::new()))?;
+        registry.register_internal(Arc::new(FictionBookExtractor::new()))?;
+        registry.register_internal(Arc::new(RtfExtractor::new()))?;
+        registry.register_internal(Arc::new(RstExtractor::new()))?;
+        registry.register_internal(Arc::new(LatexExtractor::new()))?;
+        registry.register_internal(Arc::new(JupyterExtractor::new()))?;
+        registry.register_internal(Arc::new(OrgModeExtractor::new()))?;
+        registry.register_internal(Arc::new(OpmlExtractor::new()))?;
+        registry.register_internal(Arc::new(TypstExtractor::new()))?;
+        registry.register_internal(Arc::new(DocExtractor::new()))?;
+        registry.register_internal(Arc::new(DocxExtractor::new()))?;
+        registry.register_internal(Arc::new(PptExtractor::new()))?;
+        registry.register_internal(Arc::new(PptxExtractor::new()))?;
+        registry.register_internal(Arc::new(OdtExtractor::new()))?;
+        registry.register_internal(Arc::new(DbfExtractor::new()))?;
     }
 
     #[cfg(feature = "hwp")]
     {
-        registry.register(Arc::new(HwpExtractor::new()))?;
+        registry.register_internal(Arc::new(HwpExtractor::new()))?;
     }
 
     #[cfg(feature = "hwpx")]
     {
-        registry.register(Arc::new(HwpxExtractor::new()))?;
+        registry.register_internal(Arc::new(HwpxExtractor::new()))?;
     }
 
     #[cfg(feature = "iwork")]
     {
-        registry.register(Arc::new(PagesExtractor::new()))?;
-        registry.register(Arc::new(NumbersExtractor::new()))?;
-        registry.register(Arc::new(KeynoteExtractor::new()))?;
+        registry.register_internal(Arc::new(PagesExtractor::new()))?;
+        registry.register_internal(Arc::new(NumbersExtractor::new()))?;
+        registry.register_internal(Arc::new(KeynoteExtractor::new()))?;
     }
 
     #[cfg(feature = "mdx")]
-    registry.register(Arc::new(MdxExtractor::new()))?;
+    registry.register_internal(Arc::new(MdxExtractor::new()))?;
 
     #[cfg(feature = "email")]
     {
-        registry.register(Arc::new(EmailExtractor::new()))?;
-        registry.register(Arc::new(PstExtractor::new()))?;
+        registry.register_internal(Arc::new(EmailExtractor::new()))?;
+        registry.register_internal(Arc::new(PstExtractor::new()))?;
     }
 
     #[cfg(feature = "html")]
-    registry.register(Arc::new(HtmlExtractor::new()))?;
+    registry.register_internal(Arc::new(HtmlExtractor::new()))?;
 
     #[cfg(feature = "tree-sitter")]
-    registry.register(Arc::new(CodeExtractor::new()))?;
+    registry.register_internal(Arc::new(CodeExtractor::new()))?;
 
     #[cfg(feature = "archives")]
     {
-        registry.register(Arc::new(ZipExtractor::new()))?;
-        registry.register(Arc::new(TarExtractor::new()))?;
-        registry.register(Arc::new(SevenZExtractor::new()))?;
-        registry.register(Arc::new(GzipExtractor::new()))?;
+        registry.register_internal(Arc::new(ZipExtractor::new()))?;
+        registry.register_internal(Arc::new(TarExtractor::new()))?;
+        registry.register_internal(Arc::new(SevenZExtractor::new()))?;
+        registry.register_internal(Arc::new(GzipExtractor::new()))?;
     }
 
     #[cfg(feature = "transcription")]
-    registry.register(Arc::new(TranscriptionExtractor))?;
+    registry.register_internal(Arc::new(TranscriptionExtractor))?;
 
     Ok(())
 }

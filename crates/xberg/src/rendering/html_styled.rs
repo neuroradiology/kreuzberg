@@ -17,7 +17,7 @@ use v_htmlescape::escape_string;
 use crate::Result;
 use crate::XbergError;
 use crate::core::config::html_output::{HtmlOutputConfig, HtmlTheme};
-use crate::plugins::{Plugin, Renderer};
+use crate::plugins::{InternalRenderer, Plugin};
 use crate::rendering::common::{NestingKind, RenderState, render_annotated_text_with_plain};
 use crate::types::document_structure::{AnnotationKind, ContentLayer};
 use crate::types::internal::{ElementKind, InternalDocument};
@@ -234,7 +234,7 @@ impl Plugin for StyledHtmlRenderer {
     }
 }
 
-impl Renderer for StyledHtmlRenderer {
+impl InternalRenderer for StyledHtmlRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         let p = &self.config.class_prefix;
 

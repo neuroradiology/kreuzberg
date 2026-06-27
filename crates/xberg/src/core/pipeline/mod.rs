@@ -111,7 +111,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
     // render the document here and inject the result after derivation.
     #[cfg(feature = "html")]
     let styled_html_prerender: Option<String> = {
-        use crate::plugins::Renderer as _;
+        use crate::plugins::InternalRenderer as _;
         if config.output_format == crate::core::config::OutputFormat::Html {
             config.html_output.as_ref().and_then(|html_cfg| {
                 match crate::rendering::StyledHtmlRenderer::new(html_cfg.clone()) {
@@ -321,7 +321,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
     // Pre-render styled HTML before `doc` is consumed (mirrors async path).
     #[cfg(feature = "html")]
     let styled_html_prerender: Option<String> = {
-        use crate::plugins::Renderer as _;
+        use crate::plugins::InternalRenderer as _;
         if config.output_format == crate::core::config::OutputFormat::Html {
             config.html_output.as_ref().and_then(|html_cfg| {
                 match crate::rendering::StyledHtmlRenderer::new(html_cfg.clone()) {

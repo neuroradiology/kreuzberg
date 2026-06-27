@@ -6,7 +6,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::{cells_to_markdown, office_metadata};
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
@@ -992,8 +992,8 @@ fn convert_docx_table_to_table(docx_table: &crate::extraction::docx::parser::Tab
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for DocxExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for DocxExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -1690,7 +1690,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -1750,7 +1750,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -1846,7 +1846,7 @@ mod tests {
         };
 
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -1936,7 +1936,7 @@ mod tests {
         };
 
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -1998,7 +1998,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2059,7 +2059,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2121,7 +2121,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2176,7 +2176,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2247,7 +2247,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2378,7 +2378,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2458,7 +2458,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2500,7 +2500,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default(); // images not enabled by default
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2669,7 +2669,7 @@ mod tests {
 
         let extractor = DocxExtractor::new();
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &docx_bytes,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2754,7 +2754,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2820,7 +2820,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2847,7 +2847,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2884,7 +2884,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2918,7 +2918,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2950,7 +2950,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -2985,7 +2985,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,
@@ -3036,7 +3036,7 @@ mod tests {
         let extractor = DocxExtractor::new();
         let config = ExtractionConfig::default();
         let internal_doc = extractor
-            .extract_bytes(
+            .extract_content(
                 &data,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 &config,

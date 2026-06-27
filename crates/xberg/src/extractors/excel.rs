@@ -4,7 +4,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::page::PageContent;
@@ -366,7 +366,7 @@ impl SyncExtractor for ExcelExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for ExcelExtractor {
+impl InternalDocumentExtractor for ExcelExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
         fields(
@@ -374,7 +374,7 @@ impl DocumentExtractor for ExcelExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -434,7 +434,7 @@ impl DocumentExtractor for ExcelExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
         let path_str = path
             .to_str()
             .ok_or_else(|| crate::XbergError::validation("Invalid file path".to_string()))?;

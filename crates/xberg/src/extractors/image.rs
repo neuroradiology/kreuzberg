@@ -3,7 +3,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::image::extract_image_metadata;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
@@ -460,8 +460,8 @@ impl Plugin for ImageExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for ImageExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for ImageExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -733,7 +733,7 @@ mod tests {
         };
 
         let extractor = ImageExtractor::new();
-        let internal_doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+        let internal_doc = extractor.extract_content(&png_1x1, "image/png", &config).await.unwrap();
 
         // Run the full derivation pipeline. pages[] is now populated via prebuilt_pages
         // (set from the HOCR content string), not from element page numbers.
@@ -840,7 +840,7 @@ mod tests {
         };
 
         let extractor = ImageExtractor::new();
-        let internal_doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+        let internal_doc = extractor.extract_content(&png_1x1, "image/png", &config).await.unwrap();
 
         let result = crate::extraction::derive::derive_extraction_result(
             internal_doc,
@@ -870,7 +870,7 @@ mod tests {
         let invalid_bytes = vec![0, 1, 2, 3, 4, 5];
         let config = ExtractionConfig::default();
 
-        let result = extractor.extract_bytes(&invalid_bytes, "image/png", &config).await;
+        let result = extractor.extract_content(&invalid_bytes, "image/png", &config).await;
         assert!(result.is_err());
     }
 
@@ -977,7 +977,7 @@ mod tests {
         };
 
         let extractor = ImageExtractor::new();
-        let doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+        let doc = extractor.extract_content(&png_1x1, "image/png", &config).await.unwrap();
 
         assert_eq!(
             doc.images.len(),
@@ -1063,7 +1063,7 @@ mod tests {
         };
 
         let extractor = ImageExtractor::new();
-        let doc = extractor.extract_bytes(&png_1x1, "image/png", &config).await.unwrap();
+        let doc = extractor.extract_content(&png_1x1, "image/png", &config).await.unwrap();
         assert_eq!(doc.images.len(), 1, "InternalDocument must have image before pipeline");
 
         let result = run_pipeline(doc, &config).await.unwrap();
