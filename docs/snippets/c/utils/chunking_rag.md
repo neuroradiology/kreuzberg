@@ -25,12 +25,21 @@ int main(void) {
         return 1;
     }
 
-    XBERGExtractionResult *result =
-        xberg_extract("research_paper.pdf", NULL, config);
+    XBERGExtractInput *input = xberg_extract_input_from_uri("research_paper.pdf");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extraction_config_free(config);
+        return 1;
+    }
+
+    XBERGExtractionResult *result = xberg_extract(input, config);
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
                 xberg_last_error_code(),
                 xberg_last_error_context());
+        xberg_extract_input_free(input);
         xberg_extraction_config_free(config);
         return 1;
     }
@@ -41,6 +50,9 @@ int main(void) {
     char *chunks_json = xberg_extraction_result_chunks(result);
     printf("chunks (JSON):\n%s\n", chunks_json ? chunks_json : "[]");
     xberg_free_string(chunks_json);
+
+    xberg_extract_input_free(input);
+
 
     xberg_extraction_result_free(result);
     xberg_extraction_config_free(config);
