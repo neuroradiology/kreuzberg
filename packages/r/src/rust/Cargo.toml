@@ -17,7 +17,12 @@ extendr-api = "0.9"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
-xberg = { version = "1.0.0-rc.1", path = "../../../../crates/xberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "markdown-footnotes", "redaction", "enrichment", "heuristics", "presets", "structured", "url-ingestion"] }
+# Aligned with the WASM binding's curated, pure-Rust feature set so the R package
+# builds on r-universe runners (no ONNX/ORT, Paddle, candle, or transcription
+# system deps). See packages/r/R-UNIVERSE.md. NOTE: the generated binding
+# (src/lib.rs) must be regenerated with wasm-target's type exclusions before this
+# compiles — it currently references ORT-only types (Embedding*/Layout*/Ner*/Reranker*).
+xberg = { version = "1.0.0-rc.1", path = "../../../../crates/xberg", default-features = false, features = ["wasm-target"] }
 
 [features]
 default = ["api", "api-types", "auto-rotate-types", "chunking-tokenizers", "diff", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "markdown-footnotes", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "svg", "transcription-types", "tree-sitter", "url-ingestion", "xml"]
