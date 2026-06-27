@@ -14,7 +14,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 $metadata = $result->metadata;
 
@@ -35,7 +35,7 @@ $files = glob('documents/*.{pdf,docx,xlsx}', GLOB_BRACE);
 $metadataCollection = [];
 
 foreach ($files as $file) {
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
     $metadataCollection[] = [
         'file' => basename($file),

@@ -22,7 +22,7 @@ extractCommand.SetHandler(async (path, format) =>
 {
     try
     {
-        var result = await XbergLib.ExtractAsync(path);
+        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), ExtractionConfig.Default())).Results[0];
 
         if (format == "json")
         {

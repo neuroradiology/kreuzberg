@@ -65,7 +65,7 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result = XbergLib.Extract("document.pdf", config);
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 
             Console.WriteLine("Validation passed");
             Console.WriteLine($"Content length: {result.Content.Length}");

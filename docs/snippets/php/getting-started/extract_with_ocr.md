@@ -14,12 +14,12 @@ $config = ExtractionConfig::default();
 $config->setForceOcr(true);
 $config->setOcr($ocrConfig);
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('scanned.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
 echo "Content:\n";
-echo $result->getContent();
+echo $result->content;
 
 if ($result->getDetectedLanguages() !== null) {
     echo "Detected Languages: " . implode(', ', $result->getDetectedLanguages()) . "\n";

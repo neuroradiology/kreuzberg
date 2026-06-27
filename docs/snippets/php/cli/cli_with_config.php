@@ -13,9 +13,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\ChunkingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ChunkingConfig;
 
 $longOpts = [
     'file:',
@@ -85,7 +85,7 @@ try {
     fwrite(STDERR, "  Format: $format\n\n");
 
     $start = microtime(true);
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
     $elapsed = microtime(true) - $start;
 
@@ -93,7 +93,7 @@ $result = $output->results[0];
 
     $output = match ($format) {
         'json' => json_encode([
-            'content' => $result->getContent(),
+            'content' => $result->content,
             'metadata' => [
                 'title' => $result->metadata?->title,
                 'author' => $result->metadata->author,
@@ -108,8 +108,8 @@ $result = $output->results[0];
                 'content' => $c->content,
             ], $result->chunks ?? []) : null,
         ], JSON_PRETTY_PRINT),
-        'markdown' => $result->getContent(),
-        default => $result->getContent(),
+        'markdown' => $result->content,
+        default => $result->content,
     };
 
     $outputFile = $options['output'] ?? $options['o'] ?? null;
@@ -121,7 +121,7 @@ $result = $output->results[0];
     }
 
     fwrite(STDERR, "\nStatistics:\n");
-    fwrite(STDERR, "  Content: " . strlen($result->getContent()) . " characters\n");
+    fwrite(STDERR, "  Content: " . strlen($result->content) . " characters\n");
     fwrite(STDERR, "  Tables: " . count($result->tables) . "\n");
     fwrite(STDERR, "  Images: " . count($result->images ?? []) . "\n");
     fwrite(STDERR, "  Chunks: " . count($result->chunks ?? []) . "\n");

@@ -9,7 +9,8 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-output = Xberg.extract('research_paper.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'research_paper.pdf')
+output = Xberg.extract(input, config)
 result = output.results.first
 
 keywords = result.extracted_keywords

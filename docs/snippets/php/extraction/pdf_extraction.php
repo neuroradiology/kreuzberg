@@ -12,15 +12,15 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\PdfConfig;
+use Xberg\ExtractionConfig;
+use Xberg\PdfConfig;
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "PDF Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
-echo "Content length: " . strlen($result->getContent()) . " characters\n";
+echo "Content length: " . strlen($result->content) . " characters\n";
 echo "Tables found: " . count($result->tables) . "\n";
 echo "Pages: " . ($result->metadata?->pdf?->page_count ?? 'unknown') . "\n\n";
 
@@ -33,7 +33,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Extracted Tables:\n";
@@ -77,15 +77,15 @@ $formattedConfig = new ExtractionConfig(
     outputFormat: 'markdown'
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('formatted.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('formatted.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
-file_put_contents('output.md', $result->getContent());
+file_put_contents('output.md', $result->content);
 echo "Saved formatted output to: output.md\n";
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
-$content = $result->getContent();
+$content = $result->content;
 
 $sections = [];
 $lines = explode("\n", $content);

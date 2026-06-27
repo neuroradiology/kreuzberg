@@ -43,19 +43,19 @@ try {
     fwrite(STDERR, "Extracting: $inputFile\n");
     $start = microtime(true);
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
     $elapsed = microtime(true) - $start;
     fwrite(STDERR, "Extraction completed in " . number_format($elapsed, 3) . "s\n");
-    fwrite(STDERR, "Content length: " . strlen($result->getContent()) . " characters\n");
+    fwrite(STDERR, "Content length: " . strlen($result->content) . " characters\n");
     fwrite(STDERR, "Tables found: " . count($result->tables) . "\n");
 
     if ($outputFile) {
-        file_put_contents($outputFile, $result->getContent());
+        file_put_contents($outputFile, $result->content);
         fwrite(STDERR, "Saved to: $outputFile\n");
     } else {
-        echo $result->getContent();
+        echo $result->content;
     }
 
     exit(0);

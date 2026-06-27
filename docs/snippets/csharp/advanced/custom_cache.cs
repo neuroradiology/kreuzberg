@@ -17,7 +17,7 @@ class CustomCacheBackend
             return cachedResult;
         }
 
-        var result = await XbergLib.ExtractAsync(filePath, config);
+        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config)).Results[0];
 
         _cache[cacheKey] = result;
         Console.WriteLine("Result cached");

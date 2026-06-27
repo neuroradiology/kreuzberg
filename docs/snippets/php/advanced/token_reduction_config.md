@@ -13,10 +13,10 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-echo "Reduced content: " . substr($result->getContent(), 0, 100) . "...\n";
+echo "Reduced content: " . substr($result->content, 0, 100) . "...\n";
 ?>
 ```

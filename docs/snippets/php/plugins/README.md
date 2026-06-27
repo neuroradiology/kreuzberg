@@ -72,7 +72,7 @@ use Xberg\Types\ExtractedDocument;
 function postProcessResult(ExtractedDocument $result): ExtractedDocument
 {
     // Custom post-processing logic
-    $processedContent = strtoupper($result->getContent());
+    $processedContent = strtoupper($result->content);
 
     // Return a new result with modified content
     return new ExtractedDocument(
@@ -85,7 +85,7 @@ function postProcessResult(ExtractedDocument $result): ExtractedDocument
     );
 }
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 $processed = postProcessResult($result);
 ```
@@ -99,8 +99,8 @@ PHP bindings support all built-in OCR backends:
 
 declare(strict_types=1);
 
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 use Xberg\Xberg;
 
 $config = new ExtractionConfig(
@@ -110,7 +110,7 @@ $config = new ExtractionConfig(
     ),
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 ```
 
@@ -128,7 +128,7 @@ use Xberg\Types\ExtractedDocument;
 
 function validateResult(ExtractedDocument $result): void
 {
-    if (strlen($result->getContent()) < 100) {
+    if (strlen($result->content) < 100) {
         throw new ValidationException('Content too short (minimum 100 characters)');
     }
 
@@ -137,7 +137,7 @@ function validateResult(ExtractedDocument $result): void
     }
 }
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 validateResult($result);
 ```
@@ -151,7 +151,7 @@ For application-specific functionality, extend the main class:
 
 declare(strict_types=1);
 
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use Xberg\Xberg as BaseXberg;
 use Xberg\Types\ExtractedDocument;
 
@@ -165,7 +165,7 @@ final class CustomXberg extends BaseXberg
 	        $result = $output->results[0];
 
         // Custom validation
-        if (strlen($result->getContent()) < 100) {
+        if (strlen($result->content) < 100) {
             throw new \RuntimeException('Content too short');
         }
 
@@ -181,7 +181,7 @@ final class CustomXberg extends BaseXberg
 	        $result = $output->results[0];
 
         // Custom transformation
-        $transformedContent = $transformer($result->getContent());
+        $transformedContent = $transformer($result->content);
 
         return new ExtractedDocument(
             content: $transformedContent,

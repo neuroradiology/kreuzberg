@@ -13,11 +13,11 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
 // Output HTML with kb-* CSS classes
-echo $result->getContent();
+echo $result->content;
 ?>
 ```

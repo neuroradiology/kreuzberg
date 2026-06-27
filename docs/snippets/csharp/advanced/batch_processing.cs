@@ -24,14 +24,14 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var output = await XbergLib.ExtractAsync(filePath, config);
+                var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config);
                 batchResults.Add(output);
                 var document = output.Results[0];
                 Console.WriteLine($"Processed {filePath}: {document.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                XbergLib.ExtractAsync(path, config)
+                XbergConverter.ExtractAsync(ExtractInput.FromUri(path), config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);

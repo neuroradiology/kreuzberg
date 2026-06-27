@@ -29,7 +29,7 @@ if (file_exists($unknownFile)) {
     echo "Unknown file detected as: $detectedType\n";
 
     $result = extract($unknownFile, $detectedType);
-    echo "Successfully extracted " . strlen($result->getContent()) . " characters\n";
+    echo "Successfully extracted " . strlen($result->content) . " characters\n";
 }
 
 $allowedTypes = [
@@ -44,7 +44,7 @@ if (file_exists($fileToCheck)) {
 
     if (in_array($type, $allowedTypes, true)) {
         echo "File type $type is allowed, processing...\n";
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($fileToCheck), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($fileToCheck), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
     } else {
         echo "File type $type is not allowed\n";

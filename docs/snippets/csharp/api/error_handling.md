@@ -3,7 +3,7 @@ using Xberg;
 
 try
 {
-    var result = XbergLib.Extract("nonexistent.pdf", null, null);
+    var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("nonexistent.pdf"), null)).Results[0];
     Console.WriteLine(result.Content);
 }
 catch (XbergException ex)

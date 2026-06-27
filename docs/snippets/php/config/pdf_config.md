@@ -7,7 +7,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
 use Xberg\ExtractionConfig;
-use Xberg\Config\PdfConfig;
+use Xberg\PdfConfig;
 
 /**
  * PDF configuration with hierarchy detection
@@ -26,9 +26,9 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 $result = $resultOutput->results[0];
 
-echo "Content length: " . strlen($result->getContent()) . " characters\n";
+echo "Content length: " . strlen($result->content) . " characters\n";
 echo "Metadata: " . implode(', ', array_keys((array) ($result->metadata?->pdf ?? []))) . "\n";
 ```

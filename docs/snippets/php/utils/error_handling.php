@@ -13,7 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use Xberg\Exceptions\XbergException;
 use Xberg\Exceptions\ParsingException;
 use Xberg\Exceptions\OcrException;
@@ -21,9 +21,9 @@ use Xberg\Exceptions\ValidationException;
 
 
 try {
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
-    echo "Extracted " . strlen($result->getContent()) . " characters\n";
+    echo "Extracted " . strlen($result->content) . " characters\n";
 } catch (ParsingException $e) {
     echo "Failed to parse document: " . $e->getMessage() . "\n";
     echo "Error code: " . $e->getCode() . "\n";
@@ -46,7 +46,7 @@ try {
     }
 
     $result = $xberg->extract($pdfBytes, 'application/pdf', $config);
-    echo "Extracted from bytes: " . substr($result->getContent(), 0, 100) . "...\n";
+    echo "Extracted from bytes: " . substr($result->content, 0, 100) . "...\n";
 } catch (ValidationException $e) {
     echo "Invalid configuration or input: " . $e->getMessage() . "\n";
     echo "Details: " . $e->getFile() . " at line " . $e->getLine() . "\n";
@@ -64,7 +64,7 @@ $failedExtractions = [];
 
 foreach ($files as $file) {
     try {
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
         $successfulExtractions[$file] = $result;
         echo "Success: $file\n";
@@ -90,7 +90,7 @@ function extractWithRetry(
 
     while ($attempt < $maxRetries) {
         try {
-            return \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+            return \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
         } catch (OcrException $e) {
             $attempt++;
             if ($attempt >= $maxRetries) {
@@ -110,6 +110,6 @@ function extractWithRetry(
 
 $result = extractWithRetry($xberg, 'difficult_scan.pdf');
 if ($result !== null) {
-    echo "Successfully extracted with retry: " . strlen($result->getContent()) . " chars\n";
+    echo "Successfully extracted with retry: " . strlen($result->content) . " chars\n";
 }
 ```

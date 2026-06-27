@@ -67,7 +67,7 @@ class CustomCacheWrapper
             return cached;
         }
 
-        var result = XbergLib.Extract(filePath, config);
+        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config)).Results[0];
         Set(cacheKey, result);
         Console.WriteLine("Extracted and cached");
 

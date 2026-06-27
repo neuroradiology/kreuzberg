@@ -126,7 +126,8 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = XbergClient.Extract("document.pdf", config);
+var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
+var result = output.Results[0];
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");
@@ -156,7 +157,8 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.Extract("document.pdf", config);
+var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
+var result = output.Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -193,14 +195,14 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var output = await XbergLib.ExtractAsync(filePath, config);
+                var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config);
                 batchResults.Add(output);
                 var document = output.Results[0];
                 Console.WriteLine($"Processed {filePath}: {document.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                XbergLib.ExtractAsync(path, config)
+                XbergConverter.ExtractAsync(ExtractInput.FromUri(path), config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);
@@ -229,23 +231,25 @@ class Program
     {
         try
         {
-            var result = await XbergLib.ExtractAsync("document.pdf");
+            var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default());
+            var result = output.Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
 
             var tasks = new[]
             {
-                XbergLib.ExtractAsync("file1.pdf"),
-                XbergLib.ExtractAsync("file2.pdf"),
-                XbergLib.ExtractAsync("file3.pdf")
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file1.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file2.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file3.pdf"), ExtractionConfig.Default())
             };
 
             var results = await Task.WhenAll(tasks);
 
             foreach (var r in results)
             {
-                Console.WriteLine($"Extracted {r.Content.Length} characters");
+                var document = r.Results[0];
+                Console.WriteLine($"Extracted {document.Content.Length} characters");
             }
         }
         catch (XbergException ex)
@@ -380,7 +384,8 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.Extract("document.pdf", config);
+var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
+var result = output.Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -397,23 +402,25 @@ class Program
     {
         try
         {
-            var result = await XbergLib.ExtractAsync("document.pdf");
+            var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default());
+            var result = output.Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
 
             var tasks = new[]
             {
-                XbergLib.ExtractAsync("file1.pdf"),
-                XbergLib.ExtractAsync("file2.pdf"),
-                XbergLib.ExtractAsync("file3.pdf")
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file1.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file2.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file3.pdf"), ExtractionConfig.Default())
             };
 
             var results = await Task.WhenAll(tasks);
 
             foreach (var r in results)
             {
-                Console.WriteLine($"Extracted {r.Content.Length} characters");
+                var document = r.Results[0];
+                Console.WriteLine($"Extracted {document.Content.Length} characters");
             }
         }
         catch (XbergException ex)
@@ -467,14 +474,14 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var output = await XbergLib.ExtractAsync(filePath, config);
+                var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config);
                 batchResults.Add(output);
                 var document = output.Results[0];
                 Console.WriteLine($"Processed {filePath}: {document.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                XbergLib.ExtractAsync(path, config)
+                XbergConverter.ExtractAsync(ExtractInput.FromUri(path), config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);

@@ -23,7 +23,7 @@ $config = ExtractionConfig::default();
 $config->chunking = $chunkConfig;
 $config->embeddings = $embeddingConfig;
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri("document.pdf"), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("document.pdf"), $config);
 
 $result = $resultOutput->results[0];
 

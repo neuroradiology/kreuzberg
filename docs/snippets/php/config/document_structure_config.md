@@ -5,7 +5,7 @@ use Xberg\Xberg;
 
 $config = new ExtractionConfig(includeDocumentStructure: true);
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 

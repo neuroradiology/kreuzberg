@@ -13,7 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use function Xberg\detect_mime_type_from_path;
 
 $formats = [
@@ -41,10 +41,10 @@ foreach ($formats as $type => $file) {
     $mimeType = detect_mime_type_from_path($file);
     echo "  MIME type: $mimeType\n";
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
-    echo "  Content length: " . strlen($result->getContent()) . " chars\n";
+    echo "  Content length: " . strlen($result->content) . " chars\n";
     echo "  Tables: " . count($result->tables) . "\n";
     echo "  Images: " . count($result->images ?? []) . "\n";
     echo "  Pages: " . ($result->metadata?->pdf?->page_count ?? 'N/A') . "\n";
@@ -62,12 +62,12 @@ foreach ($mixedFiles as $file) {
         $byFormat[$extension] = [];
     }
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
     $byFormat[$extension][] = [
         'file' => basename($file),
         'mime' => $mimeType,
-        'size' => strlen($result->getContent()),
+        'size' => strlen($result->content),
         'tables' => count($result->tables),
     ];
 }
@@ -88,7 +88,7 @@ $formatConfigs = [
     'pdf' => new ExtractionConfig(
         extractTables: true,
         extractImages: true,
-        pdf: new \Xberg\Config\PdfConfig(
+        pdf: new \Xberg\PdfConfig(
             extractImages: true,
             imageQuality: 85
         )
@@ -101,7 +101,7 @@ $formatConfigs = [
         extractTables: true  
     ),
     'png' => new ExtractionConfig(
-        ocr: new \Xberg\Config\OcrConfig(
+        ocr: new \Xberg\OcrConfig(
             backend: 'tesseract',
             language: 'eng'
         )
@@ -116,7 +116,7 @@ foreach ($mixedFiles as $file) {
     }
 
     $config = $formatConfigs[$ext];
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
     echo "Processed " . basename($file) . " with $ext config\n";
@@ -130,7 +130,7 @@ function convertToMarkdown(string $inputFile): string
         extractTables: true
     );
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
     $markdown = "# " . ($result->metadata?->title ?? basename($inputFile)) . "\n\n";
@@ -139,7 +139,7 @@ $result = $output->results[0];
         $markdown .= "_Authors: " . implode(', ', $result->metadata?->authors) . "_\n\n";
     }
 
-    $markdown .= $result->getContent() . "\n\n";
+    $markdown .= $result->content . "\n\n";
 
     foreach ($result->tables as $index => $table) {
         $markdown .= "## Table " . ($index + 1) . "\n\n";
@@ -166,12 +166,12 @@ foreach (['document.pdf', 'document.docx'] as $file) {
 
 function extractFromArchive(string $archiveFile): array
 {
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($archiveFile), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($archiveFile), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
     return [
         'archive' => basename($archiveFile),
-        'listing' => $result->getContent(),
+        'listing' => $result->content,
         'mime' => $result->mimeType,
     ];
 }
@@ -205,12 +205,12 @@ class UniversalExtractor
     private function handlePDF(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(extractTables: true, extractImages: true);
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
         return [
             'type' => 'PDF',
-            'content' => $result->getContent(),
+            'content' => $result->content,
             'tables' => count($result->tables),
             'images' => count($result->images ?? []),
             'pages' => $result->metadata?->pdf?->page_count,
@@ -219,12 +219,12 @@ $result = $output->results[0];
 
     private function handleDOCX(string $file, string $mimeType): array
     {
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
         $result = $output->results[0];
 
         return [
             'type' => 'Word Document',
-            'content' => $result->getContent(),
+            'content' => $result->content,
             'tables' => count($result->tables),
             'authors' => $result->metadata?->authors,
         ];
@@ -233,12 +233,12 @@ $result = $output->results[0];
     private function handleXLSX(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(extractTables: true);
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
         return [
             'type' => 'Excel Spreadsheet',
-            'content' => $result->getContent(),
+            'content' => $result->content,
             'sheets' => count($result->tables),  
         ];
     }
@@ -246,27 +246,27 @@ $result = $output->results[0];
     private function handleImage(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(
-            ocr: new \Xberg\Config\OcrConfig(backend: 'tesseract', language: 'eng')
+            ocr: new \Xberg\OcrConfig(backend: 'tesseract', language: 'eng')
         );
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
         return [
             'type' => 'Image (OCR)',
-            'content' => $result->getContent(),
-            'ocr_length' => strlen($result->getContent()),
+            'content' => $result->content,
+            'ocr_length' => strlen($result->content),
         ];
     }
 
     private function handleGeneric(string $file, string $mimeType): array
     {
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
         $result = $output->results[0];
 
         return [
             'type' => 'Generic',
             'mime' => $mimeType,
-            'content' => $result->getContent(),
+            'content' => $result->content,
         ];
     }
 }
@@ -277,7 +277,7 @@ echo "\nUniversal Extraction:\n";
 echo str_repeat('=', 60) . "\n";
 
 foreach ($mixedFiles as $file) {
-    $data = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default())->results[0];
+    $data = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default())->results[0];
     echo basename($file) . " ({$data['type']}):\n";
     print_r(array_filter($data, fn($k) => $k !== 'content', ARRAY_FILTER_USE_KEY));
     echo "\n";

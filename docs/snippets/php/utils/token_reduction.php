@@ -13,8 +13,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\TokenReductionConfig;
+use Xberg\ExtractionConfig;
+use Xberg\TokenReductionConfig;
 
 $config = new ExtractionConfig(
     tokenReduction: new TokenReductionConfig(
@@ -23,16 +23,16 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Token Reduction Results:\n";
 echo str_repeat('=', 60) . "\n";
-echo "Content length: " . strlen($result->getContent()) . " characters\n\n";
+echo "Content length: " . strlen($result->content) . " characters\n\n";
 
 if (isset($result->metadata['original_token_count'])) {
     $originalTokens = $result->metadata['original_token_count'];
-    $reducedTokens = $result->metadata['token_count'] ?? strlen($result->getContent());
+    $reducedTokens = $result->metadata['token_count'] ?? strlen($result->content);
     $reductionRatio = $result->metadata['token_reduction_ratio'] ?? 0;
 
     echo "Token Reduction Statistics:\n";
@@ -62,23 +62,23 @@ foreach ($modes as $mode => $description) {
         )
     );
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('sample.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('sample.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
-    $contentLength = strlen($result->getContent());
+    $contentLength = strlen($result->content);
     $tokenCount = $result->metadata['token_count'] ?? $contentLength;
 
     $comparisonResults[$mode] = [
         'length' => $contentLength,
         'tokens' => $tokenCount,
-        'content' => substr($result->getContent(), 0, 100),
+        'content' => substr($result->content, 0, 100),
     ];
 
     echo "$mode mode:\n";
     echo "  Description: $description\n";
     echo "  Content length: " . number_format($contentLength) . " characters\n";
     echo "  Estimated tokens: " . number_format($tokenCount) . "\n";
-    echo "  Preview: " . substr($result->getContent(), 0, 80) . "...\n\n";
+    echo "  Preview: " . substr($result->content, 0, 80) . "...\n\n";
 }
 
 if (count($comparisonResults) > 1) {
@@ -104,7 +104,7 @@ $advancedConfig = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('verbose_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('verbose_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Advanced Token Reduction:\n";
@@ -116,7 +116,7 @@ echo "  - Preserve numbers: Yes\n";
 echo "  - Remove stop words: Yes\n\n";
 
 echo "Result:\n";
-echo "  Content length: " . strlen($result->getContent()) . " characters\n";
+echo "  Content length: " . strlen($result->content) . " characters\n";
 
 if (isset($result->metadata['token_reduction_ratio'])) {
     echo "  Reduction ratio: " . number_format($result->metadata['token_reduction_ratio'] * 100, 1) . "%\n";

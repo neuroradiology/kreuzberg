@@ -5,8 +5,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 
 // Force OCR on all pages, even those with native text
 // Useful when native text extraction is unreliable or corrupted
@@ -19,14 +19,14 @@ $config = new ExtractionConfig(
     forceOcr: true
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Force OCR Results:\n";
 echo "All pages processed with OCR\n";
-echo "Characters extracted: " . strlen($result->getContent()) . "\n";
+echo "Characters extracted: " . strlen($result->content) . "\n";
 echo "Content preview:\n";
-echo substr($result->getContent(), 0, 500) . "...\n";
+echo substr($result->content, 0, 500) . "...\n";
 
 // Without force OCR - uses native text when available
 $nativeConfig = new ExtractionConfig(
@@ -38,7 +38,7 @@ $nativeConfig = new ExtractionConfig(
 );
 
 $xbergNative = new Xberg($nativeConfig);
-$resultNative = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
+$resultNative = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 echo "\nNative Text Extraction (no force):\n";
 echo "Characters extracted: " . strlen($resultNative->content) . "\n";

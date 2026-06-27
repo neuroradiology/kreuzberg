@@ -10,9 +10,9 @@ use Xberg\ExtractionConfig;
 use Xberg\Xberg;
 
 $inputs = [
-    ExtractInput::uri('document1.pdf'),
-    ExtractInput::uri('document2.docx'),
-    ExtractInput::bytes(file_get_contents('note.txt') ?: '', 'text/plain', 'note.txt'),
+    ExtractInput::fromUri('document1.pdf'),
+    ExtractInput::fromUri('document2.docx'),
+    ExtractInput::fromBytes(file_get_contents('note.txt') ?: '', 'text/plain', 'note.txt'),
 ];
 
 $config = new ExtractionConfig(

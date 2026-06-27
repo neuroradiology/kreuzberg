@@ -15,7 +15,7 @@ $langConfig = new LanguageDetectionConfig(
 $config = ExtractionConfig::default();
 $config->language_detection = $langConfig;
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri("multilingual_document.pdf"), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("multilingual_document.pdf"), $config);
 
 $result = $resultOutput->results[0];
 

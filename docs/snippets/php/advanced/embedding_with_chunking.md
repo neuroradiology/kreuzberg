@@ -19,13 +19,13 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-if ($result->getChunks()) {
-    foreach ($result->getChunks() as $chunk) {
-        echo "Chunk content: " . substr($chunk->getContent(), 0, 100) . "...\n";
+if ($result->chunks) {
+    foreach ($result->chunks as $chunk) {
+        echo "Chunk content: " . substr($chunk->content, 0, 100) . "...\n";
 
         $embedding = $chunk->getEmbedding();
         if ($embedding) {

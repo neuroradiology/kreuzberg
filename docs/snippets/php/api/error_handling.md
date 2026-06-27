@@ -8,9 +8,9 @@ use Xberg\XbergException;
 
 $config = ExtractionConfig::default();
 try {
-    $resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+    $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
     $result = $resultOutput->results[0];
-    echo $result->getContent();
+    echo $result->content;
 } catch (XbergException $e) {
     // The extension throws XbergException with the error message
     // Error context is available in the exception message

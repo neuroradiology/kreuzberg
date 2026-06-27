@@ -173,23 +173,23 @@ Benchmark extraction performance across different configurations.
 ```php title="Basic Extraction"
 use Xberg\Xberg;
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
-echo $result->getContent();
+echo $result->content;
 ```
 
 ### With Configuration
 
 ```php title="With Configuration"
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng'),
     extractTables: true
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 ```
 
@@ -197,9 +197,9 @@ $result = $output->results[0];
 
 ```php title="Procedural API"
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
-echo $result->getContent();
+echo $result->content;
 ```
 
 ### Batch Processing
@@ -211,7 +211,7 @@ use Xberg\Xberg;
 
 $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
 $inputs = array_map(
-    static fn (string $file): ExtractInput => ExtractInput::uri($file),
+    static fn (string $file): ExtractInput => ExtractInput::fromUri($file),
     $files
 );
 

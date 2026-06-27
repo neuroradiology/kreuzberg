@@ -4,7 +4,7 @@
 use Xberg\Xberg;
 use Xberg\ExtractionConfig;
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri("document.pdf"), \Xberg\ExtractionConfig::default());
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("document.pdf"), \Xberg\ExtractionConfig::default());
 
 $result = $resultOutput->results[0];
 

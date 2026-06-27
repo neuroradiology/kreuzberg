@@ -17,13 +17,13 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-if ($result->getChunks()) {
-    foreach ($result->getChunks() as $chunk) {
-        $metadata = $chunk->getMetadata();
+if ($result->chunks) {
+    foreach ($result->chunks as $chunk) {
+        $metadata = $chunk->metadata;
         if ($metadata) {
             $firstPage = $metadata->getFirstPage();
             $lastPage = $metadata->getLastPage();
@@ -34,7 +34,7 @@ if ($result->getChunks()) {
                 } else {
                     $pageRange = "Pages " . $firstPage . "-" . $lastPage;
                 }
-                echo "Chunk: " . substr($chunk->getContent(), 0, 50) . "... (" . $pageRange . ")\n";
+                echo "Chunk: " . substr($chunk->content, 0, 50) . "... (" . $pageRange . ")\n";
             }
         }
     }

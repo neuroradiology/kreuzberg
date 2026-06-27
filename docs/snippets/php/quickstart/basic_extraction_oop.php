@@ -15,12 +15,12 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Xberg\Xberg;
 
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Extracted Content:\n";
 echo "==================\n";
-echo $result->getContent() . "\n\n";
+echo $result->content . "\n\n";
 
 echo "Metadata:\n";
 echo "=========\n";

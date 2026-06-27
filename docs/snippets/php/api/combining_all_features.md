@@ -60,17 +60,17 @@ $imageConfig = new ImageExtractionConfig(
 );
 $config->setImages($imageConfig);
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('report.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('report.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-echo "Content (" . strlen($result->getContent()) . " chars):\n";
-echo substr($result->getContent(), 0, 200) . "\n\n";
+echo "Content (" . strlen($result->content) . " chars):\n";
+echo substr($result->content, 0, 200) . "\n\n";
 
-if ($result->getChunks() !== null) {
-    echo "Chunks: " . count($result->getChunks()) . "\n";
+if ($result->chunks !== null) {
+    echo "Chunks: " . count($result->chunks) . "\n";
 }
-echo "Tables: " . count($result->getTables()) . "\n";
+echo "Tables: " . count($result->tables) . "\n";
 
 if ($result->getDetectedLanguages() !== null) {
     echo "Languages: " . implode(', ', $result->getDetectedLanguages()) . "\n";

@@ -45,7 +45,7 @@ $structured = StructuredExtractionConfig::from_json(json_encode([
 $config = new ExtractionConfig();
 $config->structured_extraction = $structured;
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('paper.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('paper.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 if ($result->structured_output !== null) {

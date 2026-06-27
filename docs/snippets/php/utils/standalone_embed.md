@@ -1,8 +1,8 @@
 ```php
 <?php
 use Xberg\Xberg;
-use Xberg\Config\EmbeddingConfig;
-use Xberg\Config\EmbeddingModelType;
+use Xberg\EmbeddingConfig;
+use Xberg\EmbeddingModelType;
 
 
 // Embed with default config (balanced preset)

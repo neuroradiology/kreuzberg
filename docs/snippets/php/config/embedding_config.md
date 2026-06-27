@@ -20,10 +20,10 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-echo "Chunks with embeddings: " . count($result->getChunks()) . "\n";
+echo "Chunks with embeddings: " . count($result->chunks) . "\n";
 ?>
 ```

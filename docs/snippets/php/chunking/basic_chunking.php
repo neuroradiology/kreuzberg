@@ -13,8 +13,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\ChunkingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -23,13 +23,13 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('long_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('long_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Document Chunking Results:\n";
 echo str_repeat('=', 60) . "\n";
 echo "Total chunks: " . count($result->chunks ?? []) . "\n";
-echo "Total content length: " . strlen($result->getContent()) . "\n\n";
+echo "Total content length: " . strlen($result->content) . "\n\n";
 
 foreach ($result->chunks ?? [] as $chunk) {
     echo "Chunk {$chunk->metadata->chunkIndex}:\n";
@@ -53,7 +53,7 @@ foreach ($sizes as $name => $size) {
         )
     );
 
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
     echo "$name chunks:\n";
@@ -75,7 +75,7 @@ $sentenceConfig = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('article.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('article.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Sentence-respecting chunks:\n";
@@ -97,7 +97,7 @@ $paragraphConfig = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('essay.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('essay.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Paragraph-respecting chunks:\n";
@@ -117,14 +117,14 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('knowledge_base.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('knowledge_base.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 $chunksForDb = [];
 foreach ($result->chunks ?? [] as $chunk) {
     $chunksForDb[] = [
         'id' => uniqid('chunk_', true),
-        'document_id' => 'doc_' . md5($result->getContent()),
+        'document_id' => 'doc_' . md5($result->content),
         'chunk_index' => $chunk->metadata->chunkIndex,
         'content' => $chunk->content,
         'length' => strlen($chunk->content),

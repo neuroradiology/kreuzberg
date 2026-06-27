@@ -6,9 +6,9 @@ use Xberg\Xberg;
 use Xberg\ExtractionConfig;
 
 $config = ExtractionConfig::default();
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 $result = $resultOutput->results[0];
 
 echo "Content:\n";
-echo $result->getContent();
+echo $result->content;
 ```

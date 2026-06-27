@@ -13,7 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use Xberg\Types\ExtractionResult;
 
 class DiskCache
@@ -114,7 +114,7 @@ $start = microtime(true);
 $result = $cache->get($file, $config);
 
 if ($result === null) {
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config);
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config);
 $result = $output->results[0];
     $cache->set($file, $config, $result);
     echo "  Status: Extracted and cached\n";
@@ -133,7 +133,7 @@ $start = microtime(true);
 $result = $cache->get($file, $config);
 
 if ($result === null) {
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config);
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config);
 $result = $output->results[0];
     $cache->set($file, $config, $result);
     echo "  Status: Extracted and cached\n";
@@ -201,7 +201,7 @@ foreach ($files as $file) {
     if (!file_exists($file)) continue;
 
     $start = microtime(true);
-    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri($file), $config ?? \Xberg\ExtractionConfig::default());
+    $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
     $elapsed = microtime(true) - $start;
 

@@ -31,24 +31,24 @@ function extractAndVectorize(
         )
     );
 
-    $resultOutput = Xberg::extract(\Xberg\ExtractInput::uri($documentPath), $config);
+    $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri($documentPath), $config);
 
     $result = $resultOutput->results[0];
 
     $records = [];
-    if ($result->getChunks()) {
-        foreach ($result->getChunks() as $index => $chunk) {
+    if ($result->chunks) {
+        foreach ($result->chunks as $index => $chunk) {
             $embedding = $chunk->getEmbedding();
             if ($embedding) {
                 $metadata = [
                     'document_id' => $documentId,
                     'chunk_index' => (string)$index,
-                    'content_length' => (string)strlen($chunk->getContent()),
+                    'content_length' => (string)strlen($chunk->content),
                 ];
 
                 $records[] = new VectorRecord(
                     id: "{$documentId}_chunk_{$index}",
-                    content: $chunk->getContent(),
+                    content: $chunk->content,
                     embedding: $embedding,
                     metadata: $metadata
                 );

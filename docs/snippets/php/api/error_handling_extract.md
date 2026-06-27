@@ -8,9 +8,9 @@ use Xberg\XbergException;
 
 function extract_text(string $bytes, string $mime_type): string {
     $config = ExtractionConfig::default();
-    $resultOutput = Xberg::extract(\Xberg\ExtractInput::bytes($bytes, $mime_type), $config);
+    $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromBytes($bytes, $mime_type), $config);
     $result = $resultOutput->results[0];
-    return $result->getContent();
+    return $result->content;
 }
 
 $bytes = file_get_contents('document.pdf') ?: '';

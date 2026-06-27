@@ -14,9 +14,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\PdfConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\PdfConfig;
 
 $config = new ExtractionConfig(
     extractImages: true,
@@ -24,7 +24,7 @@ $config = new ExtractionConfig(
     preserveFormatting: false
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Extracted with images: " . count($result->images ?? []) . "\n";
@@ -45,7 +45,7 @@ $advancedConfig = new ExtractionConfig(
     outputFormat: 'markdown'
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('complex_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('complex_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Advanced extraction complete\n";
@@ -54,10 +54,10 @@ echo "Formatting preserved: " . ($advancedConfig->preserveFormatting ? 'Yes' : '
 
 $defaultConfig = new ExtractionConfig(extractTables: false);
 
-$result1 = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('doc1.pdf'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
+$result1 = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('doc1.pdf'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 $overrideConfig = new ExtractionConfig(extractTables: true);
-$result2 = \Xberg\Xberg::extract(\Xberg\ExtractInput::uri('doc2.pdf'), $overrideConfig)->results[0];
+$result2 = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('doc2.pdf'), $overrideConfig)->results[0];
 
 echo "\nDoc1 tables: " . count($result1->tables) . "\n";
 echo "Doc2 tables: " . count($result2->tables) . "\n";

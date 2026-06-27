@@ -16,10 +16,10 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-echo "Processed content: " . substr($result->getContent(), 0, 100) . "...\n";
+echo "Processed content: " . substr($result->content, 0, 100) . "...\n";
 ?>
 ```

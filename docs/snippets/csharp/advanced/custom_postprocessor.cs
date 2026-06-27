@@ -58,7 +58,7 @@ class Program
 
         try
         {
-            var result = XbergLib.Extract("document.pdf");
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
 
             if (result.Metadata.Additional != null)
             {

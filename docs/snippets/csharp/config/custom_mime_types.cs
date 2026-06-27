@@ -6,8 +6,8 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = XbergLib.Extract(
-    new BytesWithMime(fileBytes, "application/pdf"),
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+    new BytesWithMime(fileBytes), "application/pdf")).Results[0],
     config
 );
 

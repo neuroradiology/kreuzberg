@@ -37,11 +37,11 @@ $config = new ExtractionConfig(
     )
 );
 
-$resultOutput = Xberg::extract(\Xberg\ExtractInput::uri('document.pdf'), $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
 $result = $resultOutput->results[0];
 
-echo "Content length: " . strlen($result->getContent()) . " characters\n";
+echo "Content length: " . strlen($result->content) . " characters\n";
 if ($result->getDetectedLanguages()) {
     echo "Languages: " . implode(', ', $result->getDetectedLanguages()) . "\n";
 }
