@@ -47,30 +47,25 @@ use crate::types::internal::InternalDocument;
 pub trait Renderer: Plugin {
     /// Binding-safe rendering entry point for foreign-language plugin bridges.
     ///
-    /// This is the only renderer method generated into language bindings.
-    /// Native Rust renderers may override the skipped internal render method
-    /// below when they need lower-level document structure.
+    /// Accepts one public extraction result and returns the rendered output.
     fn render_result(&self, result: &ExtractionResult) -> Result<String> {
         Ok(result.content.clone())
     }
+}
 
-    /// Render an [`InternalDocument`] to the output format.
-    ///
-    /// # Arguments
-    ///
-    /// * `doc` - The internal document to render
-    ///
-    /// # Returns
-    ///
-    /// The rendered output as a string.
-    ///
-    /// # Errors
-    ///
-    /// Returns an error if rendering fails.
-    #[cfg_attr(alef, alef(skip))]
-    fn render(&self, doc: &InternalDocument) -> Result<String> {
-        let result = ExtractionResult::from(doc.clone());
-        self.render_result(&result)
+/// Crate-private rendering capability used by native Rust renderers.
+pub(crate) trait InternalRenderer: Plugin {
+    /// Render the pipeline representation to the output format.
+    fn render(&self, doc: &InternalDocument) -> Result<String>;
+}
+
+impl<T> Renderer for T
+where
+    T: InternalRenderer + ?Sized,
+{
+    fn render_result(&self, result: &ExtractionResult) -> Result<String> {
+        let doc = InternalDocument::from(result.clone());
+        InternalRenderer::render(self, &doc)
     }
 }
 
@@ -151,7 +146,7 @@ mod tests {
         }
     }
 
-    impl Renderer for MockRenderer {
+    impl InternalRenderer for MockRenderer {
         fn render(&self, doc: &crate::types::internal::InternalDocument) -> crate::Result<String> {
             Ok(format!("mock-{}-{}", self.format, doc.elements.len()))
         }

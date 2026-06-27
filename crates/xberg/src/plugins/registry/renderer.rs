@@ -1,10 +1,45 @@
 //! Renderer registry.
 
-use crate::plugins::{Plugin, Renderer};
+use crate::plugins::{InternalRenderer, Plugin, Renderer};
+use crate::types::ExtractionResult;
 use crate::types::internal::InternalDocument;
 use crate::{Result, XbergError};
 use ahash::AHashMap;
 use std::sync::Arc;
+
+#[derive(Clone)]
+struct RegisteredRenderer {
+    renderer: Arc<dyn Renderer>,
+    internal: Option<Arc<dyn InternalRenderer>>,
+}
+
+impl RegisteredRenderer {
+    fn public(renderer: Arc<dyn Renderer>) -> Self {
+        Self {
+            renderer,
+            internal: None,
+        }
+    }
+
+    fn internal<T>(renderer: Arc<T>) -> Self
+    where
+        T: InternalRenderer + 'static,
+    {
+        Self {
+            renderer: renderer.clone(),
+            internal: Some(renderer),
+        }
+    }
+
+    fn render(&self, doc: &InternalDocument) -> Result<String> {
+        if let Some(internal) = &self.internal {
+            return internal.render(doc);
+        }
+
+        let result = ExtractionResult::from(doc.clone());
+        self.renderer.render_result(&result)
+    }
+}
 
 /// Built-in Markdown renderer.
 struct MarkdownRenderer;
@@ -15,7 +50,7 @@ impl Plugin for MarkdownRenderer {
     }
 }
 
-impl Renderer for MarkdownRenderer {
+impl InternalRenderer for MarkdownRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         Ok(crate::rendering::render_markdown(doc))
     }
@@ -30,7 +65,7 @@ impl Plugin for HtmlRenderer {
     }
 }
 
-impl Renderer for HtmlRenderer {
+impl InternalRenderer for HtmlRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         Ok(crate::rendering::render_html(doc))
     }
@@ -45,7 +80,7 @@ impl Plugin for DjotRenderer {
     }
 }
 
-impl Renderer for DjotRenderer {
+impl InternalRenderer for DjotRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         Ok(crate::rendering::render_djot(doc))
     }
@@ -60,7 +95,7 @@ impl Plugin for PlainRenderer {
     }
 }
 
-impl Renderer for PlainRenderer {
+impl InternalRenderer for PlainRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         Ok(crate::rendering::render_plain(doc))
     }
@@ -86,7 +121,7 @@ impl Renderer for PlainRenderer {
 /// ```
 #[cfg_attr(alef, alef(skip))]
 pub struct RendererRegistry {
-    renderers: AHashMap<String, Arc<dyn Renderer>>,
+    renderers: AHashMap<String, RegisteredRenderer>,
 }
 
 impl RendererRegistry {
@@ -119,11 +154,18 @@ impl RendererRegistry {
     fn register_builtins(&mut self) {
         // Built-in renderers do not go through validate_plugin_name
         // since they are known-good names.
+        self.renderers.insert(
+            "markdown".to_string(),
+            RegisteredRenderer::internal(Arc::new(MarkdownRenderer)),
+        );
         self.renderers
-            .insert("markdown".to_string(), Arc::new(MarkdownRenderer));
-        self.renderers.insert("html".to_string(), Arc::new(HtmlRenderer));
-        self.renderers.insert("djot".to_string(), Arc::new(DjotRenderer));
-        self.renderers.insert("plain".to_string(), Arc::new(PlainRenderer));
+            .insert("html".to_string(), RegisteredRenderer::internal(Arc::new(HtmlRenderer)));
+        self.renderers
+            .insert("djot".to_string(), RegisteredRenderer::internal(Arc::new(DjotRenderer)));
+        self.renderers.insert(
+            "plain".to_string(),
+            RegisteredRenderer::internal(Arc::new(PlainRenderer)),
+        );
     }
 
     /// Register a renderer.
@@ -152,24 +194,8 @@ impl RendererRegistry {
 
         super::validate_plugin_name(&name)?;
 
-        self.renderers.insert(name, renderer);
+        self.renderers.insert(name, RegisteredRenderer::public(renderer));
         Ok(())
-    }
-
-    /// Get a renderer by name.
-    ///
-    /// # Arguments
-    ///
-    /// * `name` - Renderer name (e.g., "markdown", "html")
-    ///
-    /// # Returns
-    ///
-    /// The renderer if found, or an error if not registered.
-    pub(crate) fn get(&self, name: &str) -> Result<Arc<dyn Renderer>> {
-        self.renderers.get(name).cloned().ok_or_else(|| XbergError::Plugin {
-            message: format!("Renderer '{}' not registered", name),
-            plugin_name: name.to_string(),
-        })
     }
 
     /// Render a document using the named renderer.
@@ -185,8 +211,13 @@ impl RendererRegistry {
     ///
     /// The rendered output string, or an error if the renderer is not found or rendering fails.
     pub(crate) fn render(&self, name: &str, doc: &InternalDocument) -> Result<String> {
-        let renderer = self.get(name)?;
-        renderer.render(doc)
+        self.renderers
+            .get(name)
+            .ok_or_else(|| XbergError::Plugin {
+                message: format!("Renderer '{}' not registered", name),
+                plugin_name: name.to_string(),
+            })?
+            .render(doc)
     }
 
     /// List all registered renderer names.
@@ -197,7 +228,7 @@ impl RendererRegistry {
     /// Remove a renderer from the registry, calling its `shutdown()` method.
     pub fn remove(&mut self, name: &str) -> Result<()> {
         if let Some(renderer) = self.renderers.remove(name) {
-            renderer.shutdown()?;
+            renderer.renderer.shutdown()?;
         }
         Ok(())
     }
@@ -248,7 +279,7 @@ mod tests {
         }
     }
 
-    impl Renderer for MockRenderer {
+    impl InternalRenderer for MockRenderer {
         fn render(&self, doc: &InternalDocument) -> Result<String> {
             Ok(format!("mock-rendered-{}-elements", doc.elements.len()))
         }

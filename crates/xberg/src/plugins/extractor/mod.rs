@@ -8,8 +8,8 @@ mod r#trait;
 #[cfg(feature = "otel")]
 pub(crate) mod instrumented;
 
-// Re-export trait for backward compatibility
 pub use r#trait::DocumentExtractor;
+pub(crate) use r#trait::InternalDocumentExtractor;
 
 use std::sync::Arc;
 
@@ -106,8 +106,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for MockExtractor {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for MockExtractor {
+        async fn extract_content(
             &self,
             content: &[u8],
             mime_type: &str,
@@ -136,7 +136,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_document_extractor_extract_bytes() {
+    async fn test_internal_document_extractor_extract_content() {
         let extractor = MockExtractor {
             mime_types: vec!["text/plain"],
             priority: 50,
@@ -144,7 +144,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let doc = extractor
-            .extract_bytes(b"test content", "text/plain", &config)
+            .extract_content(b"test content", "text/plain", &config)
             .await
             .unwrap();
         let result =
@@ -198,7 +198,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_document_extractor_extract_file_default_impl() {
+    async fn test_internal_document_extractor_extract_path_default_impl() {
         use std::io::Write;
         use tempfile::NamedTempFile;
 
@@ -212,7 +212,7 @@ mod tests {
         let path = temp_file.path();
 
         let config = ExtractionConfig::default();
-        let doc = extractor.extract_file(path, "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_path(path, "text/plain", &config).await.unwrap();
         let result =
             crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
@@ -228,7 +228,7 @@ mod tests {
         };
 
         let config = ExtractionConfig::default();
-        let doc = extractor.extract_bytes(b"", "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_content(b"", "text/plain", &config).await.unwrap();
         let result =
             crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
@@ -246,7 +246,7 @@ mod tests {
         let invalid_utf8 = vec![0xFF, 0xFE, 0xFD];
         let config = ExtractionConfig::default();
         let doc = extractor
-            .extract_bytes(&invalid_utf8, "text/plain", &config)
+            .extract_content(&invalid_utf8, "text/plain", &config)
             .await
             .unwrap();
         let result =
@@ -288,8 +288,8 @@ mod tests {
         }
 
         #[async_trait]
-        impl DocumentExtractor for DefaultPriorityExtractor {
-            async fn extract_bytes(
+        impl InternalDocumentExtractor for DefaultPriorityExtractor {
+            async fn extract_content(
                 &self,
                 _content: &[u8],
                 _mime_type: &str,
@@ -368,7 +368,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(b"{\"key\":\"value\"}", "application/json", &config)
+            .extract_content(b"{\"key\":\"value\"}", "application/json", &config)
             .await
             .unwrap();
 
@@ -405,8 +405,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for LifecycleMock {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for LifecycleMock {
+        async fn extract_content(
             &self,
             _content: &[u8],
             _mime_type: &str,
