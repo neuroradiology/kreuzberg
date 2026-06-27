@@ -8,7 +8,7 @@
 #![cfg(any(feature = "pdf", feature = "office", feature = "ocr"))]
 
 mod helpers;
-use helpers::extract_file_result;
+use helpers::extract_uri_document;
 
 use helpers::{assert_mime_type, get_test_file_path, test_documents_available};
 
@@ -32,7 +32,7 @@ async fn test_pdf_password_protected_async() {
         return;
     }
 
-    let result = extract_file_result(&path, None, &ExtractionConfig::default()).await;
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default()).await;
 
     match result {
         Err(err) => {
@@ -61,7 +61,7 @@ async fn test_legacy_doc_extraction_async() {
         return;
     }
 
-    let result = extract_file_result(&path, None, &ExtractionConfig::default()).await;
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default()).await;
 
     match result {
         Ok(extracted) => {
@@ -105,7 +105,7 @@ async fn test_ocr_simple_english_image_async() {
         ..Default::default()
     };
 
-    let result = extract_file_result(&path, None, &config).await;
+    let result = extract_uri_document(&path, None, &config).await;
 
     match result {
         Ok(res) => {
@@ -147,7 +147,7 @@ async fn test_ocr_image_without_text_async() {
         ..Default::default()
     };
 
-    let result = extract_file_result(&path, None, &config).await;
+    let result = extract_uri_document(&path, None, &config).await;
 
     match result {
         Ok(res) => {

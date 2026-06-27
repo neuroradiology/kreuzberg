@@ -16,7 +16,7 @@
 #![allow(clippy::field_reassign_with_default)]
 
 mod helpers;
-use helpers::{extract_bytes_batch_results, extract_bytes_result, extract_file_result, extract_file_result_blocking};
+use helpers::{extract_bytes_document, extract_bytes_documents, extract_uri_document, extract_uri_document_blocking};
 
 use serde_json::json;
 
@@ -412,8 +412,8 @@ async fn test_mcp_real_pdf_extraction() {
         let config: xberg::core::config::ExtractionConfig =
             serde_json::from_value(config_obj.clone()).expect("Failed to parse config");
 
-        // Use async extract_bytes_result to process content
-        let result = extract_bytes_result(test_content, "text/plain", &config)
+        // Use async extract_bytes_document to process content
+        let result = extract_bytes_document(test_content, "text/plain", &config)
             .await
             .expect("Extraction should succeed");
 
@@ -571,7 +571,7 @@ fn test_mcp_config_round_trip_serialization() {
     );
 }
 
-/// Test MCP tool invocation with extract_bytes_result semantics
+/// Test MCP tool invocation with extract_bytes_document semantics
 #[tokio::test]
 async fn test_mcp_tool_extract_bytes_semantics() {
     let test_bytes = b"Test content for MCP extraction";
@@ -584,8 +584,8 @@ async fn test_mcp_tool_extract_bytes_semantics() {
     let config: xberg::core::config::ExtractionConfig =
         serde_json::from_value(config_json).expect("Failed to parse config");
 
-    // Simulate MCP tool: extract_bytes_result
-    let result = extract_bytes_result(test_bytes, mime_type, &config)
+    // Simulate MCP tool: extract_bytes_document
+    let result = extract_bytes_document(test_bytes, mime_type, &config)
         .await
         .expect("Extraction should succeed");
 
@@ -608,10 +608,10 @@ fn test_mcp_tool_extract_file_semantics() {
     let config: xberg::core::config::ExtractionConfig =
         serde_json::from_value(config_json).expect("Failed to parse config");
 
-    // Simulate MCP tool: extract_file_result (sync)
+    // Simulate MCP tool: extract_uri_document (sync)
     if test_file.exists() {
         let file_path = test_file.to_str().expect("test_file path should be valid UTF-8");
-        let result = extract_file_result_blocking(file_path, None, &config).expect("Extraction should succeed");
+        let result = extract_uri_document_blocking(file_path, None, &config).expect("Extraction should succeed");
 
         assert!(!result.content.is_empty());
     }
@@ -631,7 +631,7 @@ async fn test_mcp_batch_extraction_semantics() {
     let config: xberg::core::config::ExtractionConfig =
         serde_json::from_value(config_json).expect("Failed to parse config");
 
-    // Simulate MCP batch tool: extract_bytes_batch_results
+    // Simulate MCP batch tool: extract_bytes_documents
     let test_data = vec![
         (test_bytes_1.to_vec(), mime_type.to_string()),
         (test_bytes_2.to_vec(), mime_type.to_string()),
@@ -639,7 +639,7 @@ async fn test_mcp_batch_extraction_semantics() {
 
     // Extract each item
     for (bytes, mime) in test_data {
-        let result = extract_bytes_result(&bytes, &mime, &config)
+        let result = extract_bytes_document(&bytes, &mime, &config)
             .await
             .expect("Batch extraction should succeed");
         assert!(!result.content.is_empty());
@@ -701,7 +701,7 @@ fn test_mcp_empty_batch_handling() {
 #[test]
 fn test_mcp_nested_config_extraction() {
     let nested_request = json!({
-        "tool": "extract_file_result",
+        "tool": "extract_uri_document",
         "parameters": {
             "path": "/document.pdf",
             "config": {

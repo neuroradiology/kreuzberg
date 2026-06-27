@@ -16,7 +16,7 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
-use helpers::{extract_bytes_result_blocking, extract_file_result_blocking};
+use helpers::{extract_bytes_document_blocking, extract_uri_document_blocking};
 
 use helpers::*;
 use xberg::XbergError;
@@ -40,7 +40,7 @@ fn test_ocr_invalid_language_code() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Err(XbergError::Ocr { message, .. }) => {
@@ -85,7 +85,7 @@ fn test_ocr_invalid_psm_mode() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Err(XbergError::Ocr { message, .. }) | Err(XbergError::Validation { message, .. }) => {
@@ -123,7 +123,7 @@ fn test_ocr_invalid_backend_name() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -158,7 +158,7 @@ fn test_ocr_corrupted_image_data() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result_blocking(&corrupted_data, "image/jpeg", &config);
+    let result = extract_bytes_document_blocking(&corrupted_data, "image/jpeg", &config);
 
     match result {
         Err(XbergError::ImageProcessing { message, .. })
@@ -188,7 +188,7 @@ fn test_ocr_empty_image() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result_blocking(&empty_data, "image/png", &config);
+    let result = extract_bytes_document_blocking(&empty_data, "image/png", &config);
 
     assert!(result.is_err(), "Empty image data should produce an error");
 
@@ -218,7 +218,7 @@ fn test_ocr_non_image_data() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result_blocking(text_data, "image/png", &config);
+    let result = extract_bytes_document_blocking(text_data, "image/png", &config);
 
     match result {
         Err(XbergError::Parsing { message, .. }) | Err(XbergError::ImageProcessing { message, .. }) => {
@@ -257,7 +257,7 @@ fn test_ocr_extreme_table_threshold() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -294,7 +294,7 @@ fn test_ocr_negative_psm() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(_) => {
@@ -327,7 +327,7 @@ fn test_ocr_empty_whitelist() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -364,7 +364,7 @@ fn test_ocr_conflicting_whitelist_blacklist() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -396,7 +396,7 @@ fn test_ocr_empty_language() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(_) => {
@@ -428,7 +428,7 @@ fn test_ocr_malformed_multi_language() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(_) => {
@@ -463,7 +463,7 @@ fn test_ocr_cache_disabled_then_enabled() {
         ..Default::default()
     };
 
-    let result1 = extract_file_result_blocking(&file_path, None, &config_no_cache);
+    let result1 = extract_uri_document_blocking(&file_path, None, &config_no_cache);
     if matches!(result1, Err(XbergError::MissingDependency(_))) {
         return;
     }
@@ -484,7 +484,7 @@ fn test_ocr_cache_disabled_then_enabled() {
         ..Default::default()
     };
 
-    let result2 = extract_file_result_blocking(&file_path, None, &config_with_cache);
+    let result2 = extract_uri_document_blocking(&file_path, None, &config_with_cache);
     if matches!(result2, Err(XbergError::MissingDependency(_))) {
         return;
     }
@@ -516,7 +516,7 @@ fn test_ocr_concurrent_same_file() {
     });
 
     if matches!(
-        extract_file_result_blocking(&*file_path, None, &config),
+        extract_uri_document_blocking(&*file_path, None, &config),
         Err(XbergError::MissingDependency(_))
     ) {
         return;
@@ -528,7 +528,7 @@ fn test_ocr_concurrent_same_file() {
         let config_clone = Arc::clone(&config);
 
         let handle = thread::spawn(move || {
-            let result = extract_file_result_blocking(&*file_path_clone, None, &config_clone);
+            let result = extract_uri_document_blocking(&*file_path_clone, None, &config_clone);
             let success = result.is_ok();
             match result {
                 Ok(extraction_result) => {
@@ -589,7 +589,7 @@ fn test_ocr_concurrent_different_files() {
     });
 
     if matches!(
-        extract_file_result_blocking(&files[0], None, &config),
+        extract_uri_document_blocking(&files[0], None, &config),
         Err(XbergError::MissingDependency(_))
     ) {
         return;
@@ -601,7 +601,7 @@ fn test_ocr_concurrent_different_files() {
         let config_clone = Arc::clone(&config);
 
         let handle = thread::spawn(move || {
-            let result = extract_file_result_blocking(&file_path_clone, None, &config_clone);
+            let result = extract_uri_document_blocking(&file_path_clone, None, &config_clone);
             match result {
                 Ok(extraction_result) => {
                     tracing::debug!("File {} extraction succeeded", i);
@@ -660,7 +660,7 @@ fn test_ocr_with_preprocessing_extreme_dpi() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -706,7 +706,7 @@ fn test_ocr_with_invalid_binarization_method() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(_) => {
@@ -744,7 +744,7 @@ fn test_preprocessing_default_does_not_crash() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(
         result.is_ok(),
         "preprocessing with default config must not crash the process: {:?}",
@@ -781,7 +781,7 @@ fn test_auto_rotate_true_does_not_abort() {
     // Whether osd.traineddata is present or absent, the shim catches any C++ exception
     // from TessBaseAPIDetectOrientationScript and converts it to a graceful Err, which
     // execution.rs then handles with a warn+continue, so OCR always completes.
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(
         result.is_ok(),
         "auto_rotate: true must complete extraction, not abort: {:?}",

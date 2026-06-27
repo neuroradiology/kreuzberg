@@ -7,7 +7,7 @@
 //! caller never requested.
 
 mod helpers;
-use helpers::extract_bytes_result;
+use helpers::extract_bytes_document;
 
 #[cfg(feature = "chunking")]
 mod preset_no_embedding {
@@ -29,7 +29,7 @@ mod preset_no_embedding {
         let text = b"Hello world. This is a short document used to verify that preset-based \
                      chunking does not unexpectedly generate embeddings.";
 
-        let result = extract_bytes_result(text, "text/plain", &config)
+        let result = extract_bytes_document(text, "text/plain", &config)
             .await
             .expect("extraction should succeed");
 
@@ -61,7 +61,7 @@ mod preset_no_embedding {
 
         let text = b"Short text that will be chunked without any embedding configuration.";
 
-        let result = extract_bytes_result(text, "text/plain", &config)
+        let result = extract_bytes_document(text, "text/plain", &config)
             .await
             .expect("extraction should succeed");
 

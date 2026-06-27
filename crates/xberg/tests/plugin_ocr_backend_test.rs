@@ -6,7 +6,7 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
-use helpers::{extract_bytes_result_blocking, extract_file_result_blocking};
+use helpers::{extract_bytes_document_blocking, extract_uri_document_blocking};
 
 use async_trait::async_trait;
 use serial_test::serial;
@@ -380,7 +380,7 @@ fn test_ocr_backend_used_for_image_extraction() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -441,7 +441,7 @@ fn test_ocr_backend_receives_correct_parameters() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok());
 
@@ -494,7 +494,7 @@ fn test_ocr_backend_returns_correct_format() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok());
 
@@ -545,7 +545,7 @@ fn test_ocr_backend_error_handling() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_err(), "Expected OCR to fail");
 
@@ -596,7 +596,7 @@ fn test_ocr_backend_validation_error() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_err(), "Expected validation to fail");
 
@@ -661,7 +661,7 @@ fn test_switching_between_ocr_backends() {
         ..Default::default()
     };
 
-    let result1 = extract_file_result_blocking(test_image, None, &config1);
+    let result1 = extract_uri_document_blocking(test_image, None, &config1);
     assert!(result1.is_ok());
     assert!(
         result1
@@ -684,7 +684,7 @@ fn test_switching_between_ocr_backends() {
         ..Default::default()
     };
 
-    let result2 = extract_file_result_blocking(test_image, None, &config2);
+    let result2 = extract_uri_document_blocking(test_image, None, &config2);
     assert!(result2.is_ok());
     assert!(
         result2
@@ -921,7 +921,7 @@ fn test_ocr_backend_document_processing_fallback() {
     };
 
     // Use async environment if required or standard sync method
-    let result = extract_file_result_blocking(test_document, None, &config);
+    let result = extract_uri_document_blocking(test_document, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -987,7 +987,7 @@ fn test_ocr_backend_document_processing_override() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(test_document, None, &config);
+    let result = extract_uri_document_blocking(test_document, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -1050,7 +1050,7 @@ fn test_ocr_backend_document_processing_missing_path_fallback() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result_blocking(&bytes, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/pdf", &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 

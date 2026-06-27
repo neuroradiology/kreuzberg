@@ -13,14 +13,14 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use std::path::Path;
 use xberg::core::config::{ContentFilterConfig, ExtractionConfig, OutputFormat};
 
 /// Helper: extract a file synchronously and return the content string.
 fn extract_md(path: &Path, config: ExtractionConfig) -> String {
-    extract_file_result_blocking(path, None, &config)
+    extract_uri_document_blocking(path, None, &config)
         .expect("extraction must succeed")
         .content
 }

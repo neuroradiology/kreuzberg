@@ -14,7 +14,7 @@
 #![cfg(all(feature = "captioning", not(target_os = "windows")))]
 
 mod helpers;
-use helpers::extract_file_result;
+use helpers::extract_uri_document;
 
 use xberg::core::config::{CaptioningConfig, ExtractionConfig, ImageExtractionConfig, LlmConfig};
 
@@ -69,7 +69,7 @@ async fn run_captioning_against_pdf(model: &str, api_key: String) {
     // explicitly registers so it can verify behaviour in isolation).
     xberg::plugins::processor::builtin::register_builtin().expect("register_builtin failed");
 
-    let result = extract_file_result(IMAGES_PDF, None, &config)
+    let result = extract_uri_document(IMAGES_PDF, None, &config)
         .await
         .expect("extraction failed");
     let Some(images) = result.images.as_ref() else {

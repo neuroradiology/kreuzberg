@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
 
 mod helpers;
-use helpers::{extract_file_result, extract_file_result_blocking};
+use helpers::{extract_uri_document, extract_uri_document_blocking};
 
 fn test_documents_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -32,7 +32,7 @@ fn extract_markdown(relative_path: &str) -> xberg::types::ExtractedDocument {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file_result(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 #[test]
@@ -144,7 +144,7 @@ fn test_ghostscript_inline_images_completes_in_reasonable_time() {
 
     let start = std::time::Instant::now();
     let result = rt
-        .block_on(extract_file_result(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed for Ghostscript inline-image PDF");
     let elapsed = start.elapsed();
 
@@ -182,7 +182,7 @@ fn extract_no_images(relative_path: &str, fmt: OutputFormat) -> xberg::types::Ex
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file_result(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Helper: extract with a specific output format and images disabled via
@@ -199,7 +199,7 @@ fn extract_no_images_via_pdf_options(relative_path: &str, fmt: OutputFormat) -> 
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file_result(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Regression #796: images must be absent when extract_images=false, output_format=Markdown.
@@ -261,7 +261,7 @@ fn test_regression_796_markdown_images_present_when_enabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file_result(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
     let images = result
         .images
         .as_ref()
@@ -388,7 +388,7 @@ fn extract_with_pages_and_images(relative_path: &str) -> xberg::types::Extracted
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file_result(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Pages that contain images must have non-empty `image_indices` pointing into
@@ -457,7 +457,7 @@ fn test_page_image_indices_empty_when_images_disabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file_result(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     if let Some(pages) = result.pages.as_ref() {
         for page in pages {
@@ -491,7 +491,7 @@ fn extract_with_pages_images_and_chunks(relative_path: &str) -> xberg::types::Ex
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file_result(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Chunks that span pages containing images must have non-empty `image_indices`.
@@ -584,7 +584,7 @@ fn test_max_images_per_page_cap_respected_in_output() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file_result(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     let images = result
@@ -624,7 +624,7 @@ fn test_no_images_returned_when_extraction_disabled_on_dense_pdf() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file_result(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     // No images should be returned when extraction is disabled.
@@ -656,7 +656,7 @@ fn test_image_positions_consistent_with_image_data() {
     };
 
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file_result(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     let images = match result.images.as_ref() {
         Some(imgs) if !imgs.is_empty() => imgs,
@@ -706,7 +706,7 @@ fn test_no_decompression_when_images_disabled() {
     let config = ExtractionConfig::default();
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file_result(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     // The text-only path must not return any image data.
@@ -799,7 +799,7 @@ fn test_no_decompression_trace_when_images_disabled() {
             .enable_all()
             .build()
             .unwrap()
-            .block_on(extract_file_result(&path, None, &config))
+            .block_on(extract_uri_document(&path, None, &config))
             .expect("extraction must succeed")
     });
 
@@ -871,7 +871,7 @@ fn test_ocr_inline_images_enters_decompression_path() {
     };
 
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file_result(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     // Images must be decompressed even though extract_images=false, because
     // ocr_inline_images=true enters the extraction branch regardless.
@@ -934,7 +934,7 @@ fn test_include_page_rasters_produces_rasters_on_force_ocr_pdf() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
 
     let images = result
         .images
@@ -1026,7 +1026,7 @@ fn test_include_page_rasters_false_does_not_capture_rasters() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
 
     let raster_count = result
         .images
@@ -1078,7 +1078,7 @@ fn test_include_page_rasters_on_force_ocr_pages_path() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&path, None, &config).expect("force_ocr_pages extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr_pages extraction must succeed");
 
     let images = result
         .images
@@ -1155,7 +1155,7 @@ fn test_include_page_rasters_no_warning_on_out_of_range_pages() {
     };
 
     let result =
-        extract_file_result_blocking(&path, None, &config).expect("out-of-range force_ocr_pages must not error");
+        extract_uri_document_blocking(&path, None, &config).expect("out-of-range force_ocr_pages must not error");
 
     let raster_warning = result
         .processing_warnings
@@ -1254,7 +1254,7 @@ fn test_include_page_rasters_emits_warning_on_document_level_ocr_bypass() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file_result(&pdf_path, None, &config))
+        .block_on(extract_uri_document(&pdf_path, None, &config))
         .expect("document-level OCR mock must succeed");
 
     xberg::plugins::unregister_ocr_backend("doc-level-mock-raster-warn").unwrap();
@@ -1305,7 +1305,7 @@ fn test_regression_1077_raw_pdf_images_re_encoded_as_png() {
     // Before the fix this errored with
     // "image dimension probe failed: The image format could not be determined".
     let result = rt
-        .block_on(extract_file_result(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction of mp_axmp_rec_en.pdf must succeed without probe errors");
 
     let images = result
@@ -1366,7 +1366,7 @@ fn test_chunk_image_indices_empty_when_images_disabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file_result(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     if let Some(chunks) = result.chunks.as_ref() {
         for chunk in chunks {

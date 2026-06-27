@@ -14,7 +14,7 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::ExtractionConfig;
@@ -26,7 +26,7 @@ fn test_jpg_image_metadata() {
     }
 
     let file_path = get_test_file_path("images/example.jpg");
-    let result = extract_file_result_blocking(&file_path, None, &ExtractionConfig::default())
+    let result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
         .expect("Should extract JPG image successfully");
 
     assert_mime_type(&result, "image/jpeg");
@@ -42,7 +42,7 @@ fn test_png_image_metadata() {
     }
 
     let file_path = get_test_file_path("images/test_hello_world.png");
-    let result = extract_file_result_blocking(&file_path, None, &ExtractionConfig::default())
+    let result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
         .expect("Should extract PNG image successfully");
 
     assert_mime_type(&result, "image/png");
@@ -58,7 +58,7 @@ fn test_bmp_image_format() {
     }
 
     let file_path = get_test_file_path("images/bmp_24.bmp");
-    let result = extract_file_result_blocking(&file_path, None, &ExtractionConfig::default())
+    let result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
         .expect("Should extract BMP image successfully");
 
     assert_mime_type(&result, "image/bmp");
@@ -77,7 +77,7 @@ fn test_ocr_simple_text() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract text from image with OCR");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract text from image with OCR");
 
     assert_mime_type(&result, "image/png");
 
@@ -99,7 +99,7 @@ fn test_ocr_document_image() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract text from document image");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract text from document image");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -121,7 +121,7 @@ fn test_ocr_layout_parser() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract text from layout parser image");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract text from layout parser image");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -143,7 +143,7 @@ fn test_ocr_invoice_image() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract text from invoice image");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract text from invoice image");
 
     assert_mime_type(&result, "image/png");
 
@@ -165,7 +165,7 @@ fn test_table_image_simple() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract table image successfully");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract table image successfully");
 
     assert_mime_type(&result, "image/png");
 
@@ -182,7 +182,7 @@ fn test_table_image_complex() {
     let file_path = get_test_file_path("images/complex_document.png");
     let config = test_config_with_ocr();
 
-    let result = extract_file_result_blocking(&file_path, None, &config)
+    let result = extract_uri_document_blocking(&file_path, None, &config)
         .expect("Should extract complex document image successfully");
 
     assert_mime_type(&result, "image/png");
@@ -200,7 +200,7 @@ fn test_ocr_multilang_english_korean() {
     let file_path = get_test_file_path("images/english_and_korean.png");
     let config = test_config_with_ocr();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract mixed language image");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract mixed language image");
 
     assert_mime_type(&result, "image/png");
 
@@ -217,7 +217,7 @@ fn test_ocr_chinese_simplified() {
     let file_path = get_test_file_path("images/chi_sim_image.jpeg");
     let config = test_config_with_ocr();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should process Chinese image");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should process Chinese image");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -235,7 +235,7 @@ fn test_ocr_japanese_vertical() {
     let config = test_config_with_ocr();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should process Japanese vertical text image");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should process Japanese vertical text image");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -252,7 +252,7 @@ fn test_image_no_text() {
     let file_path = get_test_file_path("images/flower_no_text.jpg");
     let config = test_config_with_ocr();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should process image without text");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should process image without text");
 
     assert_mime_type(&result, "image/jpeg");
 

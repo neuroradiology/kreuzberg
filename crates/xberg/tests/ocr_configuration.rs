@@ -14,7 +14,7 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OcrConfig};
@@ -37,7 +37,7 @@ fn test_ocr_language_english() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract with English OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with English OCR");
 
     assert_mime_type(&result, "image/png");
 
@@ -62,7 +62,7 @@ fn test_ocr_language_german() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -100,7 +100,7 @@ fn test_ocr_language_multiple() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {
@@ -142,7 +142,7 @@ fn test_ocr_psm_auto() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract with PSM 3 (auto)");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with PSM 3 (auto)");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -172,7 +172,7 @@ fn test_ocr_psm_single_block() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with PSM 6 (single block)");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with PSM 6 (single block)");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -202,7 +202,7 @@ fn test_ocr_psm_single_line() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with PSM 7 (single line)");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with PSM 7 (single line)");
 
     assert_mime_type(&result, "image/png");
 
@@ -229,7 +229,7 @@ fn test_force_ocr_on_text_pdf() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with force_ocr enabled");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with force_ocr enabled");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -259,7 +259,7 @@ fn test_force_ocr_disabled() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract without forcing OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract without forcing OCR");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -296,7 +296,7 @@ fn test_table_detection_enabled() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with table detection enabled");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with table detection enabled");
 
     assert_mime_type(&result, "image/png");
 
@@ -326,7 +326,7 @@ fn test_table_detection_disabled() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with table detection disabled");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with table detection disabled");
 
     assert_mime_type(&result, "image/png");
 
@@ -355,7 +355,7 @@ fn test_language_model_ngram_configuration() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config)
+    let result = extract_uri_document_blocking(&file_path, None, &config)
         .expect("Should extract with ngram language model enabled");
 
     assert_mime_type(&result, "image/jpeg");
@@ -385,7 +385,7 @@ fn test_dictionary_correction_enabled() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config)
+    let result = extract_uri_document_blocking(&file_path, None, &config)
         .expect("Should extract with dictionary correction enabled");
 
     assert_mime_type(&result, "image/jpeg");
@@ -416,7 +416,7 @@ fn test_character_whitelist() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with character whitelist");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with character whitelist");
 
     assert_mime_type(&result, "image/png");
 
@@ -446,9 +446,9 @@ fn test_ocr_cache_enabled() {
         ..Default::default()
     };
 
-    let result1 = extract_file_result_blocking(&file_path, None, &config).expect("First extraction should succeed");
+    let result1 = extract_uri_document_blocking(&file_path, None, &config).expect("First extraction should succeed");
     let result2 =
-        extract_file_result_blocking(&file_path, None, &config).expect("Second extraction should succeed (cached)");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Second extraction should succeed (cached)");
 
     assert_mime_type(&result1, "image/jpeg");
     assert_mime_type(&result2, "image/jpeg");
@@ -487,7 +487,7 @@ fn test_ocr_cache_disabled() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract without caching");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract without caching");
 
     assert_mime_type(&result, "image/jpeg");
 
@@ -523,7 +523,7 @@ fn test_complex_configuration_combination() {
     };
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract with complex configuration");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract with complex configuration");
 
     assert_mime_type(&result, "image/jpeg");
     assert_non_empty_content(&result);

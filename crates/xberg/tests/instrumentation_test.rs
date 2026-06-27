@@ -9,7 +9,7 @@
 // Disabled by the file-level cfg(any()) above.
 
 mod helpers;
-use helpers::extract_bytes_result;
+use helpers::extract_bytes_document;
 
 /*
 #![cfg(feature = "otel")]
@@ -141,12 +141,12 @@ async fn test_span_hierarchy() {
     let test_content = b"Hello, World!";
     let config = ExtractionConfig::default();
 
-    let _ = extract_bytes_result(test_content, "text/plain", &config).await;
+    let _ = extract_bytes_document(test_content, "text/plain", &config).await;
 
     let span_names = spans.lock().expect("Operation failed");
     assert!(
-        span_names.contains(&"extract_bytes_result".to_string()),
-        "Expected 'extract_bytes_result' span"
+        span_names.contains(&"extract_bytes_document".to_string()),
+        "Expected 'extract_bytes_document' span"
     );
 }
 

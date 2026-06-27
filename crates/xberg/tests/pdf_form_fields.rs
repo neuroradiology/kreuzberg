@@ -1,7 +1,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_bytes_result_blocking;
+use helpers::extract_bytes_document_blocking;
 
 use xberg::ExtractionConfig;
 
@@ -209,7 +209,7 @@ fn make_flattened_form_pdf() -> Vec<u8> {
 fn test_interactive_form_field_values_extracted() {
     let pdf = make_interactive_form_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("interactive form PDF must extract without error");
 
     let content = &result.content;
@@ -228,7 +228,7 @@ fn test_interactive_form_field_values_extracted() {
 fn test_content_stream_labels_preserved_alongside_field_values() {
     let pdf = make_interactive_form_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("interactive form PDF must extract without error");
 
     let content = &result.content;
@@ -250,7 +250,7 @@ fn test_content_stream_labels_preserved_alongside_field_values() {
 fn test_flattened_form_value_not_duplicated() {
     let pdf = make_flattened_form_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("flattened form PDF must extract without error");
 
     let content = &result.content;

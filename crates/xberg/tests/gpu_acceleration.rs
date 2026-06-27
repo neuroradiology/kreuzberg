@@ -19,7 +19,7 @@
 //! GPU-enabled ONNX Runtime (via `ORT_DYLIB_PATH`) is loaded at runtime.
 
 mod helpers;
-use helpers::extract_bytes_result;
+use helpers::extract_bytes_document;
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -419,7 +419,7 @@ mod e2e_cuda {
             ..Default::default()
         };
 
-        let result = extract_bytes_result(&image_bytes, "image/png", &config).await;
+        let result = extract_bytes_document(&image_bytes, "image/png", &config).await;
         assert!(result.is_ok(), "E2E CUDA extraction failed: {:?}", result.err());
         assert_cuda_requested(&captured);
 

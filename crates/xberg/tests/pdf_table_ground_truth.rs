@@ -16,7 +16,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
@@ -51,7 +51,7 @@ fn extract_markdown(relative_path: &str) -> Option<xberg::types::ExtractedDocume
         ..Default::default()
     };
 
-    extract_file_result_blocking(&path, None, &config).ok()
+    extract_uri_document_blocking(&path, None, &config).ok()
 }
 
 fn print_table_summary(result: &xberg::types::ExtractedDocument) {
@@ -247,7 +247,7 @@ fn test_ocr_path_table_document() {
         ..Default::default()
     };
 
-    let result = extract_file_result_blocking(&path, None, &config).expect("extraction should succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("extraction should succeed");
 
     println!("=== table_document.pdf (forced OCR path) ===");
     print_table_summary(&result);

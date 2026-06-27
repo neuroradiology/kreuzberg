@@ -7,7 +7,7 @@
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
 mod helpers;
-use helpers::extract_bytes_result_blocking;
+use helpers::extract_bytes_document_blocking;
 
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
@@ -54,7 +54,7 @@ fn config_webp(quality: u8) -> ExtractionConfig {
 fn svg_inline_in_html_rasterised_to_webp() {
     let config = config_webp(80);
     let result =
-        extract_bytes_result_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let images = result
         .images
@@ -92,7 +92,7 @@ fn svg_inline_in_html_rasterised_to_webp() {
 fn svg_to_webp_emits_no_image_encoder_warnings() {
     let config = config_webp(80);
     let result =
-        extract_bytes_result_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let encoder_warnings: Vec<_> = result
         .processing_warnings

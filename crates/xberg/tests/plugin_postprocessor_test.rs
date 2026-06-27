@@ -4,7 +4,7 @@
 //! error handling, and cleanup with real file extraction.
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use async_trait::async_trait;
 use serial_test::serial;
@@ -233,7 +233,7 @@ fn test_postprocessor_called_during_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -274,7 +274,7 @@ fn test_postprocessor_modifies_content() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -313,7 +313,7 @@ fn test_postprocessor_adds_metadata() {
     );
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -381,7 +381,7 @@ fn test_unregister_postprocessor() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -461,7 +461,7 @@ fn test_postprocessor_error_handling() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     // NOTE: Plugin errors now bubble up and fail the extraction (design change)
     assert!(
@@ -550,7 +550,7 @@ fn test_multiple_postprocessors_execution_order() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -586,7 +586,7 @@ fn test_postprocessor_preserves_mime_type() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 

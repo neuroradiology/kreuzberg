@@ -3,7 +3,7 @@
 #![cfg(feature = "office")]
 
 mod helpers;
-use helpers::extract_file_result;
+use helpers::extract_uri_document;
 
 use xberg::ExtractionConfig;
 
@@ -21,7 +21,7 @@ async fn test_docx_full_metadata_extraction() {
         return;
     }
 
-    let result = extract_file_result(&test_file, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&test_file, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX successfully");
 
@@ -104,7 +104,7 @@ async fn test_docx_minimal_metadata_extraction() {
         return;
     }
 
-    let result = extract_file_result(&test_file, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&test_file, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX successfully");
 
@@ -199,7 +199,7 @@ async fn test_docx_keywords_extraction() {
     }
 
     // Extract the DOCX file
-    let result = extract_file_result(
+    let result = extract_uri_document(
         temp_file.path(),
         Some("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
         &ExtractionConfig::default(),

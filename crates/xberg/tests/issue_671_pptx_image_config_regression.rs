@@ -10,7 +10,7 @@
 //! Slide::to_markdown regardless of the flag value.
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use std::path::Path;
 use xberg::core::config::{ExtractionConfig, ImageExtractionConfig, OutputFormat};
@@ -19,7 +19,7 @@ fn extract_md(path: &Path, config: ExtractionConfig) -> String {
     if !path.exists() {
         return String::new();
     }
-    extract_file_result_blocking(path, None, &config)
+    extract_uri_document_blocking(path, None, &config)
         .expect("extraction must succeed")
         .content
 }

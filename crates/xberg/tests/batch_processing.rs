@@ -1,12 +1,13 @@
 //! Batch processing integration tests.
 //!
-//! Tests for `extract_file_batch_results` and `extract_bytes_batch_results` functions.
+//! Tests for `extract_uri_documents` and `extract_bytes_documents` functions.
 //! Validates concurrent processing, error handling, and performance.
 
 mod helpers;
+#[cfg(feature = "pdf")]
+use helpers::extract_uri_documents_blocking;
 use helpers::{
-    BytesBatchInput, FileBatchInput, extract_bytes_batch_results, extract_bytes_batch_results_blocking,
-    extract_file_batch_results, extract_file_batch_results_blocking,
+    BytesInput, UriBatchInput, extract_bytes_documents, extract_bytes_documents_blocking, extract_uri_documents,
 };
 
 use xberg::core::config::ExtractionConfig;
@@ -43,16 +44,16 @@ async fn test_batch_extract_file_multiple_formats() {
 
     let config = ExtractionConfig::default();
 
-    let paths: Vec<FileBatchInput> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("pdfs/fake_memo.pdf"),
         get_test_file_path("documents/fake.docx"),
         get_test_file_path("text/fake_text.txt"),
     ]
     .into_iter()
-    .map(|path| FileBatchInput { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = extract_file_batch_results(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok(), "Batch extraction should succeed");
     let results = results.expect("Operation failed");
@@ -91,15 +92,15 @@ fn test_batch_extract_file_sync_variant() {
 
     let config = ExtractionConfig::default();
 
-    let paths: Vec<FileBatchInput> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("pdfs/fake_memo.pdf"),
         get_test_file_path("text/fake_text.txt"),
     ]
     .into_iter()
-    .map(|path| FileBatchInput { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = extract_file_batch_results_blocking(paths, &config);
+    let results = extract_uri_documents_blocking(paths, &config);
 
     assert!(results.is_ok(), "Sync batch extraction should succeed");
     let results = results.expect("Operation failed");
@@ -136,16 +137,16 @@ async fn test_batch_extract_bytes_multiple() {
         (json_bytes.as_slice(), "application/json"),
     ];
 
-    let owned_contents: Vec<BytesBatchInput> = contents
+    let owned_contents: Vec<BytesInput> = contents
         .into_iter()
-        .map(|(bytes, mime)| BytesBatchInput {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
 
-    let results = extract_bytes_batch_results(owned_contents, &config).await;
+    let results = extract_bytes_documents(owned_contents, &config).await;
 
     assert!(results.is_ok(), "Batch bytes extraction should succeed");
     let results = results.expect("Operation failed");
@@ -168,8 +169,8 @@ async fn test_batch_extract_bytes_multiple() {
 async fn test_batch_extract_empty_list() {
     let config = ExtractionConfig::default();
 
-    let paths: Vec<FileBatchInput> = vec![];
-    let results = extract_file_batch_results(paths, &config).await;
+    let paths: Vec<UriBatchInput> = vec![];
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok(), "Empty batch should succeed");
     assert_eq!(
@@ -193,16 +194,16 @@ async fn test_batch_extract_one_file_fails() {
 
     let config = ExtractionConfig::default();
 
-    let paths: Vec<FileBatchInput> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("text/fake_text.txt"),
         get_test_documents_dir().join("nonexistent_file.txt"),
         get_test_file_path("text/contract.txt"),
     ]
     .into_iter()
-    .map(|path| FileBatchInput { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = extract_file_batch_results(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok(), "Batch should succeed even with one failure");
     let results = results.expect("Operation failed");
@@ -225,16 +226,16 @@ async fn test_batch_extract_all_fail() {
     let config = ExtractionConfig::default();
 
     let test_dir = get_test_documents_dir();
-    let paths: Vec<FileBatchInput> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         test_dir.join("nonexistent1.txt"),
         test_dir.join("nonexistent2.pdf"),
         test_dir.join("nonexistent3.docx"),
     ]
     .into_iter()
-    .map(|path| FileBatchInput { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = extract_file_batch_results(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok(), "Batch should succeed (errors in metadata)");
     let results = results.expect("Operation failed");
@@ -265,15 +266,15 @@ async fn test_batch_extract_concurrent() {
     let config = ExtractionConfig::default();
 
     let base_path = get_test_file_path("text/fake_text.txt");
-    let paths: Vec<FileBatchInput> = (0..20)
-        .map(|_| FileBatchInput {
+    let paths: Vec<UriBatchInput> = (0..20)
+        .map(|_| UriBatchInput {
             path: base_path.clone(),
             config: None,
         })
         .collect();
 
     let start = std::time::Instant::now();
-    let results = extract_file_batch_results(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok(), "Concurrent batch should succeed");
@@ -310,14 +311,14 @@ async fn test_batch_extract_large_batch() {
     let config = ExtractionConfig::default();
 
     let base_path = get_test_file_path("text/fake_text.txt");
-    let paths: Vec<FileBatchInput> = (0..50)
-        .map(|_| FileBatchInput {
+    let paths: Vec<UriBatchInput> = (0..50)
+        .map(|_| UriBatchInput {
             path: base_path.clone(),
             config: None,
         })
         .collect();
 
-    let results = extract_file_batch_results(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok(), "Large batch should succeed");
     let results = results.expect("Operation failed");
@@ -342,16 +343,16 @@ fn test_batch_extract_bytes_sync_variant() {
         (b"# content 3".as_slice(), "text/markdown"),
     ];
 
-    let owned_contents: Vec<BytesBatchInput> = contents
+    let owned_contents: Vec<BytesInput> = contents
         .into_iter()
-        .map(|(bytes, mime)| BytesBatchInput {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
 
-    let results = extract_bytes_batch_results_blocking(owned_contents, &config);
+    let results = extract_bytes_documents_blocking(owned_contents, &config);
 
     assert!(results.is_ok(), "Sync batch bytes extraction should succeed");
     let results = results.expect("Operation failed");

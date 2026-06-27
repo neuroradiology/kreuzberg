@@ -27,7 +27,7 @@ use xberg::ocr::processor::OcrProcessor;
 use xberg::ocr::types::TesseractConfig;
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 /// Stress test: Rayon parallel batch processing with many images.
 ///
@@ -220,7 +220,7 @@ fn test_tesseract_api_thread_safety() {
         let config = config.clone();
 
         handles.push(std::thread::spawn(move || {
-            let result = extract_file_result_blocking(&file_path, None, &config);
+            let result = extract_uri_document_blocking(&file_path, None, &config);
             assert!(
                 result.is_ok(),
                 "Thread {} OCR should succeed: {:?}",

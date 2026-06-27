@@ -8,7 +8,7 @@
 //!   cargo test -p xberg --test markdown_lint_quality -- --nocapture
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use xberg::core::config::OutputFormat;
 use xberg::extraction::derive::derive_extraction_result;
@@ -224,7 +224,7 @@ fn test_file_extraction_markdown_passes_rumdl() {
             continue;
         }
 
-        let result = extract_file_result_blocking(&path, None, &config).expect("extraction should succeed");
+        let result = extract_uri_document_blocking(&path, None, &config).expect("extraction should succeed");
         let md = result.formatted_content.as_deref().unwrap_or(&result.content);
 
         // Disable rules that are inherent to source document structure or extractor conventions:

@@ -16,7 +16,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_bytes_result_blocking;
+use helpers::extract_bytes_document_blocking;
 
 use xberg::ExtractionConfig;
 
@@ -200,7 +200,7 @@ fn make_normal_prose_pdf() -> Vec<u8> {
 fn test_3_5pt_jitter_coalesced() {
     let pdf = make_glyph_jitter_pdf(3.5);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("3.5 pt jitter PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -218,7 +218,7 @@ fn test_3_5pt_jitter_coalesced() {
 fn test_4_0pt_jitter_coalesced() {
     let pdf = make_glyph_jitter_pdf(4.0);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("4.0 pt jitter PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -236,7 +236,7 @@ fn test_4_0pt_jitter_coalesced() {
 fn test_3_0pt_jitter_unchanged() {
     let pdf = make_glyph_jitter_pdf(3.0);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("3.0 pt jitter PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -256,7 +256,7 @@ fn test_all_fixtures_loadable() {
     let config = ExtractionConfig::default();
     for (label, jitter) in [("3.5pt", 3.5f32), ("4.0pt", 4.0), ("3.0pt", 3.0)] {
         let pdf = make_glyph_jitter_pdf(jitter);
-        let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config);
+        let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config);
         assert!(
             result.is_ok(),
             "[{label}] extraction should not error: {:?}",
@@ -289,7 +289,7 @@ fn test_all_fixtures_loadable() {
 fn test_coalesced_content_is_coherent() {
     let pdf = make_glyph_jitter_pdf(3.5);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("3.5 pt jitter PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -314,7 +314,7 @@ fn test_coalesced_content_is_coherent() {
 fn test_two_line_pdf_stays_two_lines() {
     let pdf = make_two_line_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("two-line PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -339,7 +339,7 @@ fn test_two_line_pdf_stays_two_lines() {
 fn test_word_gap_produces_space() {
     let pdf = make_word_gap_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("word-gap PDF should extract without error");
 
     let content = result.content.trim().to_string();
@@ -363,7 +363,8 @@ fn test_word_gap_produces_space() {
 fn test_normal_prose_not_disturbed() {
     let pdf = make_normal_prose_pdf();
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config).expect("normal prose should extract");
+    let result =
+        extract_bytes_document_blocking(&pdf, "application/pdf", &config).expect("normal prose should extract");
     let content = result.content.trim().to_string();
     assert!(!content.is_empty(), "normal prose must produce non-empty content");
     assert!(content.contains("quick"), "must include 'quick'; got: {content:?}");
@@ -385,7 +386,7 @@ fn test_fix_applies_with_page_tracking() {
         }),
         ..Default::default()
     };
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config).expect("page tracking extract");
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config).expect("page tracking extract");
     let content = result.content.trim().to_string();
     assert!(
         count_single_char_lines(&content) < 5,
@@ -399,7 +400,7 @@ fn test_fix_applies_with_page_tracking() {
 fn test_5pt_jitter_coalesced() {
     let pdf = make_glyph_jitter_pdf(5.0);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config).expect("5pt extract");
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config).expect("5pt extract");
     let content = result.content.trim().to_string();
     assert!(
         count_single_char_lines(&content) < 5,
@@ -425,7 +426,7 @@ fn test_genuine_single_char_lines_not_collapsed() {
                   BT /F1 12 Tf 1 0 0 1 72.00 620.00 Tm (E) Tj ET\n";
     let pdf = assemble_single_page_pdf(stream);
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf, "application/pdf", &config)
         .expect("single-char-per-line PDF should extract without error");
 
     let content = result.content.trim().to_string();

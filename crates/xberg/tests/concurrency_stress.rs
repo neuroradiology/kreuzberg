@@ -26,7 +26,7 @@ use std::time::Duration;
 use tokio::time::timeout;
 
 mod helpers;
-use helpers::{BytesBatchInput, extract_bytes_batch_results, extract_bytes_result, extract_file_result_blocking};
+use helpers::{BytesInput, extract_bytes_document, extract_bytes_documents, extract_uri_document_blocking};
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])
@@ -68,7 +68,7 @@ async fn test_concurrent_extractions_mixed_formats() {
             let mime_type = mime_type.to_string();
 
             handles.push(tokio::spawn(async move {
-                extract_bytes_result(&data, &mime_type, &config).await
+                extract_bytes_document(&data, &mime_type, &config).await
             }));
         }
     }
@@ -107,15 +107,15 @@ async fn test_concurrent_batch_extractions() {
         let contents_clone = contents.clone();
 
         handles.push(tokio::spawn(async move {
-            let owned_data: Vec<BytesBatchInput> = contents_clone
+            let owned_data: Vec<BytesInput> = contents_clone
                 .iter()
-                .map(|c| BytesBatchInput {
+                .map(|c| BytesInput {
                     content: c.to_vec(),
                     mime_type: "text/plain".to_string(),
                     config: None,
                 })
                 .collect();
-            extract_bytes_batch_results(owned_data, &config).await
+            extract_bytes_documents(owned_data, &config).await
         }));
     }
 
@@ -149,7 +149,7 @@ async fn test_concurrent_extractions_with_cache() {
 
     let test_data = b"Cached content for concurrent access test";
 
-    let _ = extract_bytes_result(test_data, "text/plain", &config)
+    let _ = extract_bytes_document(test_data, "text/plain", &config)
         .await
         .expect("Async operation failed");
 
@@ -159,7 +159,7 @@ async fn test_concurrent_extractions_with_cache() {
         let data = test_data.to_vec();
 
         handles.push(tokio::spawn(async move {
-            extract_bytes_result(&data, "text/plain", &config).await
+            extract_bytes_document(&data, "text/plain", &config).await
         }));
     }
 
@@ -211,7 +211,7 @@ async fn test_concurrent_ocr_processing() {
         let config = config.clone();
 
         handles.push(tokio::task::spawn_blocking(move || {
-            extract_file_result_blocking(&file_path, None, &config)
+            extract_uri_document_blocking(&file_path, None, &config)
         }));
     }
 
@@ -274,7 +274,7 @@ fn test_concurrent_ocr_cache_stress() {
 
     let file_path = get_test_file_path("images/ocr_image.jpg");
 
-    let first_result = extract_file_result_blocking(&file_path, None, &config);
+    let first_result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(first_result.is_ok(), "Initial OCR should succeed");
 
     let cache_hit_count = Arc::new(AtomicUsize::new(0));
@@ -287,7 +287,7 @@ fn test_concurrent_ocr_cache_stress() {
 
         handles.push(std::thread::spawn(move || {
             let start = std::time::Instant::now();
-            let result = extract_file_result_blocking(&file_path, None, &config);
+            let result = extract_uri_document_blocking(&file_path, None, &config);
             let duration = start.elapsed();
 
             if duration < Duration::from_millis(500) {
@@ -454,7 +454,7 @@ async fn test_extraction_throughput_scales() {
 
     let sequential_start = std::time::Instant::now();
     for _ in 0..20 {
-        let _ = extract_bytes_result(test_data, "text/plain", &config)
+        let _ = extract_bytes_document(test_data, "text/plain", &config)
             .await
             .expect("Async operation failed");
     }
@@ -467,7 +467,7 @@ async fn test_extraction_throughput_scales() {
         let data = test_data.to_vec();
 
         handles.push(tokio::spawn(async move {
-            extract_bytes_result(&data, "text/plain", &config).await
+            extract_bytes_document(&data, "text/plain", &config).await
         }));
     }
 
@@ -522,7 +522,7 @@ async fn test_high_concurrency_stress() {
             let mime_type = mime_type.to_string();
 
             handles.push(tokio::spawn(async move {
-                extract_bytes_result(&data, &mime_type, &config).await
+                extract_bytes_document(&data, &mime_type, &config).await
             }));
         }
     }

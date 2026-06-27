@@ -10,7 +10,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
@@ -23,7 +23,7 @@ fn extract_markdown(pdf_path: &std::path::Path) -> String {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    extract_file_result_blocking(pdf_path, None, &config)
+    extract_uri_document_blocking(pdf_path, None, &config)
         .expect("extraction should succeed")
         .content
 }
@@ -37,7 +37,7 @@ fn extract_markdown_with_layout(pdf_path: &std::path::Path) -> String {
         layout: Some(LayoutDetectionConfig::default()),
         ..Default::default()
     };
-    extract_file_result_blocking(pdf_path, None, &config)
+    extract_uri_document_blocking(pdf_path, None, &config)
         .expect("layout extraction should succeed")
         .content
 }

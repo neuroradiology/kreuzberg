@@ -4,7 +4,7 @@
 //! error handling, and cleanup with real file extraction.
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use async_trait::async_trait;
 use serial_test::serial;
@@ -298,7 +298,7 @@ fn test_validator_called_during_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -337,7 +337,7 @@ fn test_validator_can_reject_invalid_input() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected validation to fail");
 
@@ -377,7 +377,7 @@ fn test_validator_can_pass_valid_input() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Validation should have passed: {:?}", result.err());
 
@@ -409,7 +409,7 @@ fn test_validator_receives_correct_parameters() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Validation failed: {:?}", result.err());
 
@@ -444,7 +444,7 @@ fn test_validator_rejects_wrong_mime_type() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected MIME type validation to fail");
 
@@ -495,7 +495,7 @@ fn test_unregister_validator() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(
         result.is_ok(),
@@ -548,7 +548,7 @@ fn test_clear_all_validators() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction should succeed after clearing validators");
 }
@@ -658,7 +658,7 @@ fn test_multiple_validators_execution() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Both validators should pass");
     assert_eq!(validator1.call_count.load(Ordering::SeqCst), 1);
@@ -699,7 +699,7 @@ fn test_validator_priority_execution_order() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected high-priority validator to fail");
 
@@ -737,7 +737,7 @@ fn test_validator_always_fails() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Validator should always fail");
 
@@ -781,7 +781,7 @@ fn test_validator_registration_order_preserved_for_same_priority() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_result_blocking(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected first validator to fail");
     assert!(

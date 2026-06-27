@@ -22,7 +22,7 @@
 
 mod helpers;
 use helpers::{
-    FileBatchInput, extract_bytes_result_blocking, extract_file_batch_results_blocking, extract_file_result_blocking,
+    UriBatchInput, extract_bytes_document_blocking, extract_uri_document_blocking, extract_uri_documents_blocking,
 };
 
 use helpers::*;
@@ -45,7 +45,7 @@ fn test_pdf_extraction_basic() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract PDF successfully");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 
@@ -69,7 +69,7 @@ fn test_pdf_extraction_medium() {
     let config = ExtractionConfig::default();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract medium PDF successfully");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract medium PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -93,7 +93,7 @@ fn test_pdf_extraction_rotated_pages() {
     let config = ExtractionConfig::default();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract rotated PDF successfully");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract rotated PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 }
@@ -112,7 +112,7 @@ fn test_pdf_extraction_code_and_formulas() {
     let config = ExtractionConfig::default();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract PDF with code and formulas");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with code and formulas");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -131,7 +131,7 @@ fn test_pdf_extraction_right_to_left() {
     let file_path = get_test_file_path("pdf/right_to_left_01.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract RTL PDF successfully");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract RTL PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 }
@@ -149,7 +149,7 @@ fn test_pdf_metadata_extraction() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_result_blocking(&file_path, None, &config).expect("Should extract PDF metadata");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF metadata");
 
     let _metadata = &result.metadata;
     assert!(!result.mime_type.is_empty(), "MIME type should be set");
@@ -157,7 +157,7 @@ fn test_pdf_metadata_extraction() {
 
 /// Test extraction of byte array from PDF.
 ///
-/// Verifies that extract_bytes_result_blocking works for PDF content, which is
+/// Verifies that extract_bytes_document_blocking works for PDF content, which is
 /// important for in-memory processing.
 #[test]
 fn test_pdf_extraction_from_bytes() {
@@ -169,7 +169,7 @@ fn test_pdf_extraction_from_bytes() {
     let pdf_bytes = std::fs::read(&file_path).expect("Should read PDF file");
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_result_blocking(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf_bytes, "application/pdf", &config)
         .expect("Should extract PDF from bytes successfully");
 
     assert_mime_type(&result, "application/pdf");
@@ -190,7 +190,7 @@ fn test_pdf_extraction_with_config() {
     let config = ExtractionConfig::default();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract PDF with custom config");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with custom config");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -211,7 +211,7 @@ fn test_pdf_extraction_edge_cases() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_result_blocking(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(result.is_ok(), "PDF extraction should succeed");
 }
 
@@ -226,12 +226,12 @@ fn test_pdf_batch_extraction() {
         return;
     }
 
-    let paths: Vec<FileBatchInput> = vec![
-        FileBatchInput {
+    let paths: Vec<UriBatchInput> = vec![
+        UriBatchInput {
             path: get_test_file_path("pdf/tiny.pdf"),
             config: None,
         },
-        FileBatchInput {
+        UriBatchInput {
             path: get_test_file_path("pdf/medium.pdf"),
             config: None,
         },
@@ -239,7 +239,7 @@ fn test_pdf_batch_extraction() {
 
     let config = ExtractionConfig::default();
 
-    let results = extract_file_batch_results_blocking(paths, &config).expect("Should extract PDFs in batch");
+    let results = extract_uri_documents_blocking(paths, &config).expect("Should extract PDFs in batch");
 
     assert_eq!(results.len(), 2, "Should extract both PDFs");
 
@@ -263,7 +263,7 @@ fn test_pdf_unicode_content() {
     let config = ExtractionConfig::default();
 
     let result =
-        extract_file_result_blocking(&file_path, None, &config).expect("Should extract PDF with Unicode content");
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with Unicode content");
 
     assert_mime_type(&result, "application/pdf");
 }

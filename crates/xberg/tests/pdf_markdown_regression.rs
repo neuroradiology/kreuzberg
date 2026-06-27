@@ -18,7 +18,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use std::collections::HashMap;
@@ -377,7 +377,7 @@ fn extract_with_format(pdf_path: &std::path::Path, format: OutputFormat) -> Opti
         output_format: format,
         ..Default::default()
     };
-    extract_file_result_blocking(pdf_path, None, &config).ok()
+    extract_uri_document_blocking(pdf_path, None, &config).ok()
 }
 
 /// Result of running the quality gate across all documents.
@@ -669,7 +669,7 @@ fn extract_ocr(pdf_path: &std::path::Path) -> Option<xberg::types::ExtractedDocu
         ..Default::default()
     };
 
-    extract_file_result_blocking(pdf_path, None, &config).ok()
+    extract_uri_document_blocking(pdf_path, None, &config).ok()
 }
 
 /// OCR ground truth entries. Same documents but tested through OCR pipeline.

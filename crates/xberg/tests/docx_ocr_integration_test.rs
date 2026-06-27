@@ -11,7 +11,7 @@
 #![cfg(feature = "office")]
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, ImageExtractionConfig, OcrConfig};
@@ -36,7 +36,7 @@ fn test_docx_ocr_content_injection() {
         ..Default::default()
     };
 
-    let result = match extract_file_result_blocking(&file_path, None, &config) {
+    let result = match extract_uri_document_blocking(&file_path, None, &config) {
         Ok(res) => res,
         Err(e) => {
             // If Tesseract is not installed or fails for environmental reasons,

@@ -1,7 +1,7 @@
 //! Integration tests for HEIF / HEIC / AVIF support via the public API.
 //!
 //! Exercises:
-//! - `extract_bytes_result` end-to-end for HEIC, HEIF, AVIF inputs (decoded to PNG
+//! - `extract_bytes_document` end-to-end for HEIC, HEIF, AVIF inputs (decoded to PNG
 //!   internally, then routed through the image extractor; OCR is disabled so
 //!   the test is independent of any Tesseract binary).
 //! - `list_supported_formats()` reports HEIC / HEIF / AVIF / HEICS / AVCS, so
@@ -13,7 +13,7 @@
 #![cfg(feature = "heic")]
 
 mod helpers;
-use helpers::extract_bytes_result;
+use helpers::extract_bytes_document;
 
 use xberg::FormatMetadata;
 use xberg::core::config::ExtractionConfig;
@@ -32,9 +32,9 @@ fn ocr_disabled_config() -> ExtractionConfig {
 
 async fn extract_image_metadata(bytes: &'static [u8], mime: &str) -> xberg::ImageMetadata {
     let config = ocr_disabled_config();
-    let result = extract_bytes_result(bytes, mime, &config)
+    let result = extract_bytes_document(bytes, mime, &config)
         .await
-        .unwrap_or_else(|e| panic!("extract_bytes_result failed for {mime}: {e}"));
+        .unwrap_or_else(|e| panic!("extract_bytes_document failed for {mime}: {e}"));
     match result.metadata.format {
         Some(FormatMetadata::Image(img)) => img,
         other => panic!("expected ImageMetadata for {mime}, got {other:?}"),

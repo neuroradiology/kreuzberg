@@ -7,7 +7,7 @@
 #![cfg(feature = "office")]
 
 mod helpers;
-use helpers::extract_file_result;
+use helpers::extract_uri_document;
 
 /// Unit-level regression: `convert_internal_elements_to_elements` walks a synthetic
 /// InternalDocument in document order (heading → paragraph → list → table).
@@ -123,7 +123,7 @@ async fn test_docx_element_based_result_format_preserves_order() {
         ..Default::default()
     };
 
-    let result = extract_file_result(&path, None, &config)
+    let result = extract_uri_document(&path, None, &config)
         .await
         .expect("DOCX extraction should succeed");
 

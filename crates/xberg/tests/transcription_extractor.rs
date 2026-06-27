@@ -1,6 +1,6 @@
 //! Integration tests for the transcription extractor end-to-end path.
 //!
-//! Each test exercises `extract_bytes_result` / `extract_bytes_result_blocking` with a real
+//! Each test exercises `extract_bytes_document` / `extract_bytes_document_blocking` with a real
 //! audio fixture and asserts that the returned `ExtractedDocument.content`
 //! contains the expected spoken words.  The Whisper Tiny model is downloaded
 //! from HuggingFace Hub on first run (~150 MB) and cached under the default
@@ -15,7 +15,7 @@
 #![cfg(feature = "transcription")]
 
 mod helpers;
-use helpers::{extract_bytes_result, extract_bytes_result_blocking};
+use helpers::{extract_bytes_document, extract_bytes_document_blocking};
 
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
@@ -42,7 +42,7 @@ fn config_with_transcription() -> ExtractionConfig {
 async fn async_extract_audio_wav_returns_transcript() {
     let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = config_with_transcription();
-    let result = extract_bytes_result(&bytes, "audio/wav", &config)
+    let result = extract_bytes_document(&bytes, "audio/wav", &config)
         .await
         .expect("extract");
     assert!(
@@ -56,7 +56,7 @@ async fn async_extract_audio_wav_returns_transcript() {
 fn sync_extract_audio_wav_returns_transcript() {
     let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = config_with_transcription();
-    let result = extract_bytes_result_blocking(&bytes, "audio/wav", &config).expect("extract");
+    let result = extract_bytes_document_blocking(&bytes, "audio/wav", &config).expect("extract");
     assert!(
         result.content.to_lowercase().contains("hello"),
         "expected 'hello' in transcript, got: {:?}",
@@ -68,7 +68,7 @@ fn sync_extract_audio_wav_returns_transcript() {
 async fn async_extract_audio_mp3_returns_transcript() {
     let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.mp3")).expect("fixture");
     let config = config_with_transcription();
-    let result = extract_bytes_result(&bytes, "audio/mpeg", &config)
+    let result = extract_bytes_document(&bytes, "audio/mpeg", &config)
         .await
         .expect("extract");
     assert!(
@@ -82,7 +82,7 @@ async fn async_extract_audio_mp3_returns_transcript() {
 async fn async_extract_no_transcription_config_returns_error() {
     let bytes = std::fs::read(helpers::get_test_file_path("audio/hello-world.wav")).expect("fixture");
     let config = ExtractionConfig::default(); // no transcription block
-    let result = extract_bytes_result(&bytes, "audio/wav", &config).await;
+    let result = extract_bytes_document(&bytes, "audio/wav", &config).await;
     assert!(result.is_err(), "expected error with no transcription config");
     let msg = result.unwrap_err().to_string();
     assert!(

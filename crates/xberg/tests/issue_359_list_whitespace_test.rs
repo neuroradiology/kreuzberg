@@ -6,7 +6,7 @@
 #![cfg(feature = "office")]
 
 mod helpers;
-use helpers::extract_file_result;
+use helpers::extract_uri_document;
 
 use xberg::ExtractionConfig;
 
@@ -24,7 +24,7 @@ async fn test_issue_359_docx_list_run_whitespace() {
         return;
     }
 
-    let result = extract_file_result(&test_file, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&test_file, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX successfully");
 

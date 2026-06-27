@@ -12,23 +12,23 @@ use xberg::{
     Metadata, Result, XbergError, extract, extract_batch,
 };
 
-/// Batch file input used by integration tests.
+/// Batch URI input used by integration tests.
 #[derive(Debug, Clone)]
-pub struct FileBatchInput {
+pub struct UriBatchInput {
     pub path: PathBuf,
     pub config: Option<FileExtractionConfig>,
 }
 
-/// Batch bytes input used by integration tests.
+/// In-memory bytes input used by integration tests.
 #[derive(Debug, Clone)]
-pub struct BytesBatchInput {
+pub struct BytesInput {
     pub content: Vec<u8>,
     pub mime_type: String,
     pub config: Option<FileExtractionConfig>,
 }
 
-/// Extract a file through the public unified API and return the single result.
-pub async fn extract_file_result(
+/// Extract a URI-backed document through the public unified API and return the single result.
+pub async fn extract_uri_document(
     path: impl AsRef<Path>,
     mime_type: Option<&str>,
     config: &ExtractionConfig,
@@ -39,7 +39,7 @@ pub async fn extract_file_result(
 }
 
 /// Extract bytes through the public unified API and return the single result.
-pub async fn extract_bytes_result(
+pub async fn extract_bytes_document(
     content: &[u8],
     mime_type: &str,
     config: &ExtractionConfig,
@@ -47,27 +47,27 @@ pub async fn extract_bytes_result(
     single_result(extract(ExtractInput::from_bytes(content.to_vec(), mime_type, None), config).await)
 }
 
-/// Blocking file extraction adapter for synchronous integration tests.
-pub fn extract_file_result_blocking(
+/// Blocking URI-backed extraction adapter for synchronous integration tests.
+pub fn extract_uri_document_blocking(
     path: impl AsRef<Path>,
     mime_type: Option<&str>,
     config: &ExtractionConfig,
 ) -> Result<ExtractedDocument> {
-    runtime()?.block_on(extract_file_result(path, mime_type, config))
+    runtime()?.block_on(extract_uri_document(path, mime_type, config))
 }
 
 /// Blocking bytes extraction adapter for synchronous integration tests.
-pub fn extract_bytes_result_blocking(
+pub fn extract_bytes_document_blocking(
     content: &[u8],
     mime_type: &str,
     config: &ExtractionConfig,
 ) -> Result<ExtractedDocument> {
-    runtime()?.block_on(extract_bytes_result(content, mime_type, config))
+    runtime()?.block_on(extract_bytes_document(content, mime_type, config))
 }
 
-/// Extract file inputs through the public unified batch API and return result-shaped items.
-pub async fn extract_file_batch_results(
-    items: Vec<FileBatchInput>,
+/// Extract URI-backed inputs through the public unified batch API and return result-shaped items.
+pub async fn extract_uri_documents(
+    items: Vec<UriBatchInput>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractedDocument>> {
     let inputs = items
@@ -83,8 +83,8 @@ pub async fn extract_file_batch_results(
 }
 
 /// Extract byte inputs through the public unified batch API and return result-shaped items.
-pub async fn extract_bytes_batch_results(
-    items: Vec<BytesBatchInput>,
+pub async fn extract_bytes_documents(
+    items: Vec<BytesInput>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractedDocument>> {
     let inputs = items
@@ -99,20 +99,20 @@ pub async fn extract_bytes_batch_results(
     batch_results(extract_batch(inputs, config).await?, input_count)
 }
 
-/// Blocking file batch extraction adapter for synchronous integration tests.
-pub fn extract_file_batch_results_blocking(
-    items: Vec<FileBatchInput>,
+/// Blocking URI-backed batch extraction adapter for synchronous integration tests.
+pub fn extract_uri_documents_blocking(
+    items: Vec<UriBatchInput>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractedDocument>> {
-    runtime()?.block_on(extract_file_batch_results(items, config))
+    runtime()?.block_on(extract_uri_documents(items, config))
 }
 
 /// Blocking bytes batch extraction adapter for synchronous integration tests.
-pub fn extract_bytes_batch_results_blocking(
-    items: Vec<BytesBatchInput>,
+pub fn extract_bytes_documents_blocking(
+    items: Vec<BytesInput>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractedDocument>> {
-    runtime()?.block_on(extract_bytes_batch_results(items, config))
+    runtime()?.block_on(extract_bytes_documents(items, config))
 }
 
 fn runtime() -> Result<tokio::runtime::Runtime> {
@@ -172,12 +172,11 @@ fn error_extraction_result(error: &ExtractionErrorItem, elapsed_ms: Option<u64>)
         ..Default::default()
     };
 
-    ExtractedDocument {
-        content: format!("Error: {}", error.message),
-        mime_type: Cow::Borrowed("text/plain"),
-        metadata,
-        ..Default::default()
-    }
+    let mut result = ExtractedDocument::default();
+    result.content = format!("Error: {}", error.message);
+    result.mime_type = Cow::Borrowed("text/plain");
+    result.metadata = metadata;
+    result
 }
 
 /// Get the test_documents directory path.

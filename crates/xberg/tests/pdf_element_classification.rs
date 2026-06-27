@@ -1,5 +1,5 @@
 mod helpers;
-use helpers::extract_bytes_result_blocking;
+use helpers::extract_bytes_document_blocking;
 
 use std::path::Path;
 use xberg::types::{ElementType, ResultFormat};
@@ -22,7 +22,7 @@ fn numbered_chapters_in_untagged_pdf_become_headings() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result_blocking(&bytes, "application/pdf", &config).expect("extraction failed");
+    let result = extract_bytes_document_blocking(&bytes, "application/pdf", &config).expect("extraction failed");
     let elements = result.elements.unwrap_or_default();
 
     let chapter_list_items: Vec<_> = elements

@@ -9,7 +9,7 @@
 //!   cargo test -p xberg --test cross_format_parity -- --nocapture
 
 mod helpers;
-use helpers::extract_file_result_blocking;
+use helpers::extract_uri_document_blocking;
 
 use helpers::{get_test_file_path, test_documents_available};
 use std::collections::HashMap;
@@ -505,7 +505,7 @@ fn extract_with_format(path: &Path, format: OutputFormat) -> Option<String> {
         ..Default::default()
     };
 
-    match extract_file_result_blocking(path, None, &config) {
+    match extract_uri_document_blocking(path, None, &config) {
         Ok(result) => Some(result.content),
         Err(err) => {
             eprintln!(

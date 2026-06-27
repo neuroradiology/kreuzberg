@@ -6,7 +6,7 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
-use helpers::extract_bytes_result;
+use helpers::extract_bytes_document;
 
 use std::path::Path;
 use xberg::core::config::{ExtractionConfig, HierarchyConfig, PageConfig, PdfConfig};
@@ -58,7 +58,7 @@ async fn test_full_hierarchy_extraction() {
     };
 
     // Extract the PDF
-    let result = extract_bytes_result(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -171,7 +171,7 @@ async fn test_hierarchy_disabled() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -228,7 +228,7 @@ async fn test_hierarchy_with_explicit_disabled() {
         ..Default::default()
     };
 
-    let result = extract_bytes_result(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -286,7 +286,7 @@ async fn test_hierarchy_different_k_clusters() {
             ..Default::default()
         };
 
-        let result = extract_bytes_result(&pdf_bytes, "application/pdf", &config)
+        let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
             .await
             .expect("PDF extraction failed");
 

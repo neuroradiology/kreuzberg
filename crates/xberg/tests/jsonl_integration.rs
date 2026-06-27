@@ -5,7 +5,7 @@
 //! and blank-line handling.
 
 mod helpers;
-use helpers::{extract_bytes_result, extract_file_result};
+use helpers::{extract_bytes_document, extract_uri_document};
 
 use xberg::core::config::ExtractionConfig;
 
@@ -17,7 +17,7 @@ async fn test_extract_jsonl_file() {
         "/../../test_documents/jsonl/simple.jsonl"
     ));
 
-    let result = extract_file_result(path, None, &config)
+    let result = extract_uri_document(path, None, &config)
         .await
         .expect("JSONL file extraction should succeed");
 
@@ -31,7 +31,7 @@ async fn test_extract_jsonl_bytes() {
     let config = ExtractionConfig::default();
     let jsonl = b"{\"name\": \"Alice\"}\n{\"name\": \"Bob\"}";
 
-    let result = extract_bytes_result(jsonl, "application/x-ndjson", &config)
+    let result = extract_bytes_document(jsonl, "application/x-ndjson", &config)
         .await
         .expect("JSONL bytes extraction should succeed");
 
@@ -44,7 +44,7 @@ async fn test_extract_jsonl_metadata() {
     let config = ExtractionConfig::default();
     let jsonl = b"{\"title\": \"Doc One\"}\n{\"title\": \"Doc Two\"}";
 
-    let result = extract_bytes_result(jsonl, "application/x-ndjson", &config)
+    let result = extract_bytes_document(jsonl, "application/x-ndjson", &config)
         .await
         .expect("JSONL metadata extraction should succeed");
 
@@ -65,7 +65,7 @@ async fn test_extract_jsonl_empty_lines() {
         "/../../test_documents/jsonl/with_blanks.jsonl"
     ));
 
-    let result = extract_file_result(path, None, &config)
+    let result = extract_uri_document(path, None, &config)
         .await
         .expect("JSONL with blanks should succeed");
 
@@ -79,7 +79,7 @@ async fn test_extract_jsonl_content_contains_all_objects() {
     let config = ExtractionConfig::default();
     let jsonl = b"{\"a\": 1}\n{\"b\": 2}\n{\"c\": 3}";
 
-    let result = extract_bytes_result(jsonl, "application/x-ndjson", &config)
+    let result = extract_bytes_document(jsonl, "application/x-ndjson", &config)
         .await
         .expect("JSONL extraction should succeed");
 
