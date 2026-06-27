@@ -19,11 +19,14 @@ const cloudBackend = {
 
 registerOcrBackend(cloudBackend);
 
-const result = extract("scanned.pdf", {
+const output = await extract({
+  kind: "uri",
+  uri: "scanned.pdf",
+}, {
   ocr: {
     backend: "cloud-ocr",
     language: "eng",
   },
 });
-console.log(result.content);
+console.log(output.results[0].content);
 ```

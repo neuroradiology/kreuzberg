@@ -20,8 +20,11 @@ class MinLengthValidator {
 
 registerValidator(new MinLengthValidator());
 
-const result = extract("document.pdf");
-console.log(`Validated content length: ${result.content.length}`);
+const output = await extract({
+  kind: "uri",
+  uri: "document.pdf",
+});
+console.log(`Validated content length: ${output.results[0].content.length}`);
 
 unregisterValidator("min_length_validator");
 ```

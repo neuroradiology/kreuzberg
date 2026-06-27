@@ -153,7 +153,7 @@ registerValidator(contentTypeValidator);
 
 // Usage with statistics
 // try {
-//   const result = await extract("document.pdf");
+//   const output = await extract({ kind: "uri", uri: "document.pdf" });
 // } catch (error) {
 //   console.error("Validation failed:", error);
 // }

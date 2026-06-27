@@ -71,8 +71,11 @@ registerValidator(validator);
 
 // Usage with error handling (must use async extraction for custom validators)
 try {
-  const result = await extract("document.pdf");
-  console.log(`Validated content length: ${result.content.length} characters`);
+  const output = await extract({
+    kind: "uri",
+    uri: "document.pdf",
+  });
+  console.log(`Validated content length: ${output.results[0].content.length} characters`);
 } catch (error) {
   if (error instanceof ValidationError) {
     console.error(`Validation failed: ${error.message}`);
