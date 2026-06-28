@@ -848,6 +848,10 @@ wiremock = "0.6"
 zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = ["deflate-flate2"] }
 
 [[test]]
+name = "captioning_smoke"
+required-features = ["captioning", "pdf"]
+
+[[test]]
 name = "structured_pipeline"
 required-features = ["structured"]
 
