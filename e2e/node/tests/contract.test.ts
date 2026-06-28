@@ -72,13 +72,13 @@ describe("contract", () => {
     expect((result.results[0].metadata.outputFormat ?? "").trim()).toBe("markdown");
 	}, 30000);
 	it("api_extract_batch_uri: Tests batch URI extraction API (extract_batch)", async () => {
-		const result = await extractBatch([{ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" }], undefined);
+		const result = await extractBatch([{ kind: "uri", uri: "pdf/fake_memo.pdf" }], undefined);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect(["May 5, 2023", "Mallori"].some((v) => result.results[0].content.includes(v))).toBe(true);
 	}, 30000);
 	it("api_extract_batch_uri_with_config: Tests batch URI extraction with per-input config (extract_batch)", async () => {
-		const result = await extractBatch([{ config: { outputFormat: "markdown" }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" }], undefined);
+		const result = await extractBatch([{ config: { outputFormat: "markdown" }, kind: "uri", uri: "pdf/fake_memo.pdf" }], undefined);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect((result.results[0].metadata.outputFormat ?? "").trim()).toBe("markdown");
@@ -90,7 +90,7 @@ describe("contract", () => {
     expect(["May 5, 2023", "Mallori"].some((v) => result.results[0].content.includes(v))).toBe(true);
 	}, 30000);
 	it("api_extract_uri: Tests URI extraction API", async () => {
-		const result = await extract({ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, undefined);
+		const result = await extract({ kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, undefined);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect(["May 5, 2023", "Mallori"].some((v) => result.results[0].content.includes(v))).toBe(true);
@@ -115,12 +115,12 @@ describe("contract", () => {
     expect(result.results[0].elements.length).toBeGreaterThanOrEqual(1);
 	}, 30000);
 	it("config_extraction_timeout: Tests that extraction_timeout_secs config field is accepted and does not affect fast extractions", async () => {
-		const result = await extract({ config: { extractionTimeoutSecs: 300 }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, { extractionTimeoutSecs: 300 } as ExtractionConfig);
+		const result = await extract({ config: { extractionTimeoutSecs: 300 }, kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, { extractionTimeoutSecs: 300 } as ExtractionConfig);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
 	}, 30000);
 	it("config_keywords: Tests keyword extraction via YAKE algorithm", async () => {
-		const result = await extract({ config: { keywords: { algorithm: "yake", maxKeywords: 10 } }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, { keywords: { algorithm: "yake", maxKeywords: 10 } } as ExtractionConfig);
+		const result = await extract({ config: { keywords: { algorithm: "yake", maxKeywords: 10 } }, kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, { keywords: { algorithm: "yake", maxKeywords: 10 } } as ExtractionConfig);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     {
@@ -135,13 +135,13 @@ describe("contract", () => {
     expect(result.results[0].extractedKeywords.length).toBeGreaterThanOrEqual(1);
 	}, 30000);
 	it("config_pages: Tests page extraction and page marker configuration", async () => {
-		const result = await extract({ config: { pages: { extractPages: true, insertPageMarkers: true } }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, { pages: { extractPages: true, insertPageMarkers: true } } as ExtractionConfig);
+		const result = await extract({ config: { pages: { extractPages: true, insertPageMarkers: true } }, kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, { pages: { extractPages: true, insertPageMarkers: true } } as ExtractionConfig);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect(["PAGE"].some((v) => result.results[0].content.includes(v))).toBe(true);
 	}, 30000);
 	it("config_quality_enabled: Tests quality scoring produces a score value in [0.0, 1.0]", async () => {
-		const result = await extract({ config: { enableQualityProcessing: true }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, { enableQualityProcessing: true } as ExtractionConfig);
+		const result = await extract({ config: { enableQualityProcessing: true }, kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, { enableQualityProcessing: true } as ExtractionConfig);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     {
@@ -173,7 +173,7 @@ describe("contract", () => {
     expect((result.results[0].metadata.outputFormat ?? "").trim()).toBe("markdown");
 	}, 30000);
 	it("output_format_markdown: Tests Markdown output format", async () => {
-		const result = await extract({ config: { outputFormat: "markdown" }, kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" } as ExtractInput, { outputFormat: "markdown" } as ExtractionConfig);
+		const result = await extract({ config: { outputFormat: "markdown" }, kind: "uri", uri: "pdf/fake_memo.pdf" } as ExtractInput, { outputFormat: "markdown" } as ExtractionConfig);
     expect(result.results[0].mimeType.trim()).toBe("application/pdf");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect((result.results[0].metadata.outputFormat ?? "").trim()).toBe("markdown");

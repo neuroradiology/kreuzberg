@@ -16,6 +16,12 @@ const createApp = (baseUrl: string) => ({
 });
 
 export async function setup() {
+  // Change to test_documents directory so relative file URIs (e.g., "text/report.txt") resolve.
+  // This mirrors Python and Go suites which chdir into test_documents before running.
+  const testDocumentsDir = process.env.XBERG_TEST_DOCUMENTS_DIR
+    || resolve(__dirname, "../../test_documents");
+  process.chdir(testDocumentsDir);
+  console.log(`[globalSetup] Changed to: ${process.cwd()}`);
   // Honor a pre-set MOCK_SERVER_URL or SUT_URL: when the test runner (e.g. `alef test-apps
   // run`) has already built and started the shared mock-server, it exports
   // MOCK_SERVER_URL into our environment. In that case, reuse it and skip

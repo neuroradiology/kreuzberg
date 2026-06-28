@@ -60,7 +60,7 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 describe("code", () => {
 
 	it("code_shebang_detection: Test language detection from shebang line via bytes input", async () => {
-		const result = await extract({ kind: "uri", mimeType: "text/x-source-code", uri: "code/script.sh" } as ExtractInput, undefined);
+		const result = await extract({ kind: "uri", mimeType: "text/x-source-code", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/code/script.sh" } as ExtractInput, undefined);
     expect(result.results[0].mimeType.trim()).toBe("text/x-source-code");
     expect(result.results[0].content.length).toBeGreaterThanOrEqual(10);
     expect(result.results[0].content).toContain("build");

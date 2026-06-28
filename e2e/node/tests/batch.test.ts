@@ -77,15 +77,15 @@ describe("batch", () => {
     expect(result.results.length).toBe(0);
 	}, 30000);
 	it("extract_batch_uri_all_missing: extract_batch with missing URI inputs", async () => {
-		await extractBatch([{ kind: "uri", uri: "/nonexistent/a.pdf" }, { kind: "uri", uri: "/nonexistent/b.txt" }], undefined);
+		await extractBatch([{ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "//nonexistent/a.pdf" }, { kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "//nonexistent/b.txt" }], undefined);
 	}, 30000);
 	it("extract_batch_uri_basic: extract_batch over URI inputs", async () => {
-		await extractBatch([{ kind: "uri", uri: "pdf/fake_memo.pdf" }, { kind: "uri", uri: "text/fake_text.txt" }], undefined);
+		await extractBatch([{ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/pdf/fake_memo.pdf" }, { kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/text/fake_text.txt" }], undefined);
 	}, 30000);
 	it("extract_batch_uri_not_found: extract_batch with missing URI input", async () => {
-		await extractBatch([{ kind: "uri", uri: "/nonexistent/a.pdf" }], undefined);
+		await extractBatch([{ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "//nonexistent/a.pdf" }], undefined);
 	}, 30000);
 	it("extract_batch_uri_partial_failure: extract_batch with mixed valid and missing URI inputs", async () => {
-		await extractBatch([{ kind: "uri", uri: "text/plain.txt" }, { kind: "uri", uri: "/nonexistent/missing.pdf" }], undefined);
+		await extractBatch([{ kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "/text/plain.txt" }, { kind: "uri", uri: (process.env.MOCK_SERVER_URL ?? "http://127.0.0.1:8000") + "//nonexistent/missing.pdf" }], undefined);
 	}, 30000);
 });
