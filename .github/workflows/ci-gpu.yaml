@@ -139,7 +139,7 @@ jobs:
           - name: hunyuan-ocr
             feature: candle-hunyuan-ocr
             test: candle_hunyuan_ocr_e2e_extraction
-            hf_repo: tencent/Hunyuan-OCR
+            hf_repo: tencent/HunyuanOCR
             env_var: XBERG_HUNYUAN_OCR_MODEL_PATH
           - name: deepseek-ocr
             feature: candle-deepseek-ocr
