@@ -29,6 +29,13 @@ pub mod seams;
 #[cfg(feature = "heuristics")]
 pub mod structured;
 
+/// Single-operation parse memo (MIME, page count, shared bytes, lazily-rendered
+/// pages). Depends on the structured rasterizer, so it carries that module's
+/// `pdf` gate in addition to `heuristics`. Not part of the binding surface —
+/// see `alef.toml` `[crates.exclude]`.
+#[cfg(all(feature = "heuristics", feature = "pdf"))]
+pub mod parsed;
+
 use seams::{CacheBackend, NoopCache, NoopProgressSink, ProgressSink};
 #[cfg(feature = "presets")]
 use seams::{CorePresetResolver, PresetResolver};

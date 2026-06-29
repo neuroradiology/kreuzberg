@@ -58,19 +58,27 @@ pub async fn pages_for_call(
             // TextOnlyWithVisionFallback is handled by the orchestrator — rasterize only if fallback escalates.
             Vec::new()
         }
-        StructuredCallMode::VisionOnly | StructuredCallMode::TextPlusVision => {
-            let mime_lc = mime.to_ascii_lowercase();
-            if mime_lc == "application/pdf" {
-                render_pdf(bytes, dpi)?
-            } else if mime_lc.starts_with("image/") {
-                render_image(bytes)?
-            } else {
-                return Err(RasterizeError::UnsupportedMime(mime.into()));
-            }
-        }
+        StructuredCallMode::VisionOnly | StructuredCallMode::TextPlusVision => render_all_pages(bytes, mime, dpi)?,
     };
 
     Ok(pages)
+}
+
+/// Render every page of `bytes`, regardless of call mode: PDF input renders one
+/// PNG per page at `dpi`; `image/*` input decodes and re-encodes to a single
+/// PNG (DPI is ignored). Anything else yields [`RasterizeError::UnsupportedMime`].
+///
+/// This is the rendering primitive behind both [`pages_for_call`] and the
+/// [`ParsedDocument`](crate::engine::parsed::ParsedDocument) render memo.
+pub(crate) fn render_all_pages(bytes: &[u8], mime: &str, dpi: u32) -> Result<Vec<PageImage>, RasterizeError> {
+    let mime_lc = mime.to_ascii_lowercase();
+    if mime_lc == "application/pdf" {
+        render_pdf(bytes, dpi)
+    } else if mime_lc.starts_with("image/") {
+        render_image(bytes)
+    } else {
+        Err(RasterizeError::UnsupportedMime(mime.into()))
+    }
 }
 
 fn render_pdf(bytes: &[u8], dpi: u32) -> Result<Vec<PageImage>, RasterizeError> {

@@ -1500,6 +1500,12 @@ types = [
   "xberg::engine::structured::citations::CitedField",
   "xberg::engine::structured::citations::CitationOutput",
   "xberg::engine::structured::prompts::BuiltPrompt",
+
+  # Rust-only single-operation parse memo (engine/parsed.rs). Same isolation as
+  # the engine/structured types above: lives under the bare `pub mod engine`,
+  # not in `sources`, not re-exported from lib.rs.
+  "ParsedDocument",
+  "xberg::engine::parsed::ParsedDocument",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge
