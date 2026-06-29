@@ -285,10 +285,20 @@ async fn run_shared_url_group(
     }
     let urls: Vec<&str> = shared_items.iter().map(|shared| shared.uri.as_str()).collect();
 
+    // Crawl results whose URL key matches no queued input position (most
+    // commonly a panicked task, which crawlberg reports as an empty-URL
+    // `("", Err(..))` pair — see crawlberg `batch.rs`). Their errors are captured
+    // here and re-attached to dropped input slots in the sweep below, rather than
+    // silently discarded.
+    let mut unmatched_errors: VecDeque<XbergError> = VecDeque::new();
+
     match base_config.url.mode {
         UrlExtractionMode::Auto | UrlExtractionMode::Document => {
             for (url, result) in engine.batch_scrape(&urls).await {
                 let Some(position) = positions_for_url.get_mut(url.as_str()).and_then(VecDeque::pop_front) else {
+                    if let Err(error) = result {
+                        unmatched_errors.push_back(map_crawl_error(error));
+                    }
                     continue;
                 };
                 let shared = &shared_items[position];
@@ -304,6 +314,9 @@ async fn run_shared_url_group(
         UrlExtractionMode::Crawl => {
             for (url, result) in engine.batch_crawl(&urls).await {
                 let Some(position) = positions_for_url.get_mut(url.as_str()).and_then(VecDeque::pop_front) else {
+                    if let Err(error) = result {
+                        unmatched_errors.push_back(map_crawl_error(error));
+                    }
                     continue;
                 };
                 let shared = &shared_items[position];
@@ -315,6 +328,36 @@ async fn run_shared_url_group(
                 };
                 items[shared.index] = Some(finalize_shared_item(shared, conversion).await);
             }
+        }
+    }
+
+    fill_dropped_shared_slots(&shared_items, items, unmatched_errors);
+}
+
+/// Guarantee every shared input yields exactly one result-or-error.
+///
+/// Any slot still `None` after the batch results were drained means a returned
+/// pair did not map back to it (e.g. a panicked task's empty-URL pair). Without
+/// this the final reduce in [`extract_batch`] skips the `None` slot, so the
+/// input would vanish from BOTH `results` and `errors` while `summary.inputs`
+/// still counts it. Re-attach a captured unmatched error when one is available
+/// (FIFO), otherwise synthesize one carrying the input's URL.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+fn fill_dropped_shared_slots(
+    shared_items: &[SharedUrlItem],
+    items: &mut [Option<BatchItemResult>],
+    mut unmatched_errors: VecDeque<XbergError>,
+) {
+    for shared in shared_items {
+        if items[shared.index].is_none() {
+            let error = unmatched_errors
+                .pop_front()
+                .unwrap_or_else(|| XbergError::Other(format!("no batch result returned for URL: {}", shared.uri)));
+            items[shared.index] = Some(BatchItemResult {
+                index: shared.index,
+                source: shared.source.clone(),
+                result: Err(error),
+            });
         }
     }
 }
