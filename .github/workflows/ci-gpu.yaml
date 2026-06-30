@@ -124,6 +124,13 @@ jobs:
     name: "Build Candle (${{ matrix.model.name }})"
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      # candle-kernels' build script shells out to nvidia-smi to detect the GPU
+      # compute capability, but these compiles run on non-GPU ubuntu-latest
+      # runners (no nvidia-smi) → ComputeCapDetectionFailed. Pin it to the L4
+      # (sm_89) target used by the runner-gpu-l4 inference jobs so the CUDA
+      # kernels build without a physical GPU present.
+      CUDA_COMPUTE_CAP: "89"
     strategy:
       fail-fast: false
       matrix:
