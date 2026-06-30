@@ -1769,7 +1769,7 @@ e2e = "cd e2e/php && php run_tests.php"
 
 [crates.test.java]
 precondition = "command -v mvn >/dev/null 2>&1"
-before = "bash scripts/e2e/build-mock-server.sh && cargo build --release -p xberg-ffi && cd packages/java && mvn -T 1 package -DskipTests"
+before = "bash scripts/e2e/build-mock-server.sh && cargo build --release -p xberg-ffi && cd packages/java && mvn -T 1 clean package -DskipTests"
 e2e = "cd e2e/java && mvn test"
 
 [crates.test.csharp]
