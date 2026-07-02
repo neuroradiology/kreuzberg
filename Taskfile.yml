@@ -410,24 +410,13 @@ tasks:
 
   swift:e2e:
     desc: "Run Swift e2e tests"
+    # Delegate to alef (like every other language) rather than hand-orchestrating the build.
+    # The old flow ran `alef e2e generate --lang swift` at test time, which recomputes alef's
+    # input-sources hash — that stats the sibling-repo crawlberg sources declared in alef.toml
+    # (`../crawlberg/...`), which exist locally but not in CI, breaking the swift job. alef.toml
+    # [crates.test.swift] already defines the build (`before`) and mock-server e2e command.
     cmds:
-      - task: _swift:e2e:build
-      - task: _swift:e2e:test
-
-  _swift:e2e:build:
-    desc: "Build Swift e2e test suite (separate from test run)"
-    internal: true
-    cmds:
-      - alef e2e generate --lang swift
-      - cargo build --locked --release -p xberg-swift
-      - bash scripts/setup-swift-bridge.sh
-
-  _swift:e2e:test:
-    desc: "Run Swift e2e tests (after build)"
-    internal: true
-    cmds:
-      - cd e2e/swift_e2e && rm -rf .build
-      - bash scripts/e2e/run-with-mock-server.sh bash -c 'cd e2e/swift_e2e && swift test'
+      - alef test --e2e --lang swift
 
   zig:e2e:
     desc: "Run Zig e2e tests"
