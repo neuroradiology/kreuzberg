@@ -441,7 +441,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             if hint.confidence >= 0.8 => {
                 para.is_list_item = true;
             }
-        LayoutHintClass::PageHeader | LayoutHintClass::PageFooter => {
+        LayoutHintClass::PageHeader | LayoutHintClass::PageFooter
             // Only mark as furniture if confidence is high. On OCR-rendered pages,
             // furniture detection is unreliable and can drop valid body content
             // (fixes #936 category B/D: total output failure, PageHeader suppression).
@@ -450,23 +450,21 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             // identified as a heading. The layout model sometimes misidentifies a
             // document title (H1) as a PageHeader; the native heading classification
             // is more reliable for short prominent text (fixes #905).
-            if para.heading_level.is_none() {
+            if para.heading_level.is_none() => {
                 para.is_page_furniture = hint.confidence >= 0.8;
             }
-        }
-        LayoutHintClass::Picture => {
+        LayoutHintClass::Picture
             // Guard: never suppress a paragraph that native classification already
             // identified as a heading. The layout model sometimes misidentifies a
             // document title (H1) as a Picture region (e.g., large centered text
             // that visually resembles a caption or diagram label). The native
             // heading classification is more reliable for short prominent text
             // (fixes #905).
-            if para.heading_level.is_none() {
+            if para.heading_level.is_none() => {
                 // Text classified as Picture by layout model is figure-internal
                 // text (diagram labels, axis text, etc.) — suppress from body output.
                 para.is_page_furniture = true;
             }
-        }
         LayoutHintClass::Text | LayoutHintClass::Caption | LayoutHintClass::Footnote
             // Layout model says this is body text, not a heading.
             // Demote font-size-classified headings when layout has high confidence.

@@ -83,7 +83,7 @@ pub(super) fn run_layout_for_pdf_pages(
     let mut all_layout_results: Vec<PageLayoutResult> = Vec::with_capacity(page_count);
     let mut all_hints: Vec<Vec<LayoutHint>> = Vec::with_capacity(page_count);
 
-    let total_chunks = (page_count + LAYOUT_BATCH_CHUNK_SIZE - 1) / LAYOUT_BATCH_CHUNK_SIZE;
+    let total_chunks = page_count.div_ceil(LAYOUT_BATCH_CHUNK_SIZE);
 
     for (chunk_idx, chunk_start) in (0..page_count).step_by(LAYOUT_BATCH_CHUNK_SIZE).enumerate() {
         let chunk_end = (chunk_start + LAYOUT_BATCH_CHUNK_SIZE).min(page_count);

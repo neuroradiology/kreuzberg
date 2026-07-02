@@ -777,10 +777,7 @@ fn build_slanet_cells_table(
 ///
 /// Mirrors the logic in `tables::compute_adaptive_column_gap` for borrowed slices.
 #[cfg(feature = "layout-detection")]
-fn compute_col_gap_for_word_refs(
-    words: &[&crate::pdf::table_reconstruct::HocrWord],
-    table_width: f32,
-) -> u32 {
+fn compute_col_gap_for_word_refs(words: &[&crate::pdf::table_reconstruct::HocrWord], table_width: f32) -> u32 {
     let mut gaps: Vec<u32> = Vec::new();
 
     if words.len() >= 4 {
@@ -802,9 +799,7 @@ fn compute_col_gap_for_word_refs(
         while row_start < sorted.len() {
             let row_yc = sorted[row_start].0;
             let mut row_end = row_start + 1;
-            while row_end < sorted.len()
-                && sorted[row_end].0.abs_diff(row_yc) <= row_tolerance
-            {
+            while row_end < sorted.len() && sorted[row_end].0.abs_diff(row_yc) <= row_tolerance {
                 row_end += 1;
             }
             for i in row_start + 1..row_end {
@@ -871,8 +866,7 @@ fn tighten_table_bbox_top(
     const TABLE_BBOX_TOP_TIGHTEN_MARGIN_PTS: u32 = 4;
     const SAME_ROW_TOLERANCE_PTS: u32 = 5;
 
-    let mut sorted: Vec<&crate::pdf::table_reconstruct::HocrWord> =
-        table_words.iter().copied().collect();
+    let mut sorted: Vec<&crate::pdf::table_reconstruct::HocrWord> = table_words.to_vec();
     sorted.sort_by_key(|w| w.top);
 
     let mut first_table_row_top: Option<u32> = None;
@@ -947,8 +941,7 @@ mod tests {
         let col3 = make_word("COLUMN3", 400, 86, 70, 10); // left=400 right=470 gap=113
         let col4 = make_word("COLUMN4", 580, 86, 70, 10); // left=580 gap=110
 
-        let all_words: Vec<&HocrWord> =
-            vec![&header_precinct, &header_registrar, &col1, &col2, &col3, &col4];
+        let all_words: Vec<&HocrWord> = vec![&header_precinct, &header_registrar, &col1, &col2, &col3, &col4];
 
         // col_gap = 30 (any gap > 30 counts); min_column_gaps = 2 (4-col table)
         // hint top in PDF coords = page_height - 16 = 596.0
@@ -1036,6 +1029,9 @@ mod tests {
         let words: Vec<&HocrWord> = vec![&w1, &w2, &w3, &w4];
         let col_gap = compute_col_gap_for_word_refs(&words, 400.0);
         // Large gaps are ≥40; here 200 > 40. median_gap=200, threshold=100 → clamped to 60.
-        assert_eq!(col_gap, 60, "expected col_gap=60 (large-gap median/2 clamped), got {col_gap}");
+        assert_eq!(
+            col_gap, 60,
+            "expected col_gap=60 (large-gap median/2 clamped), got {col_gap}"
+        );
     }
 }

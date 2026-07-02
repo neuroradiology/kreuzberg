@@ -110,7 +110,7 @@ pub(crate) fn rotate_png_page_if_needed(
     height: u32,
     rotation_degrees: u32,
 ) -> Result<(Vec<u8>, u32, u32)> {
-    if rotation_degrees % 360 == 0 {
+    if rotation_degrees.is_multiple_of(360) {
         return Ok((png_data, width, height));
     }
     let img = image::load_from_memory(&png_data).map_err(|e| XbergError::Parsing {
