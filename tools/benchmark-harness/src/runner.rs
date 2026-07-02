@@ -494,8 +494,9 @@ impl BenchmarkRunner {
                 .iter()
                 .map(|r| r.error_kind)
                 .max_by_key(|ek| match ek {
-                    ErrorKind::Timeout => 3,
-                    ErrorKind::HarnessError => 2,
+                    ErrorKind::Timeout => 4,
+                    ErrorKind::HarnessError => 3,
+                    ErrorKind::ConfigSetupError => 2,
                     ErrorKind::FrameworkError => 1,
                     ErrorKind::EmptyContent => 1,
                     ErrorKind::None => 0,

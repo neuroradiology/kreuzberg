@@ -37,11 +37,45 @@ fn extract_json_from_stdout(raw: &str) -> &str {
 }
 
 /// Map a harness `Error` to the appropriate `ErrorKind`.
+///
+/// Detects config/setup errors (missing dependencies, environment issues) vs
+/// actual harness infrastructure failures.
 fn error_to_error_kind(e: &Error) -> ErrorKind {
     match e {
         Error::Timeout(_) => ErrorKind::Timeout,
         Error::FrameworkError(_) => ErrorKind::FrameworkError,
         Error::EmptyContent(_) => ErrorKind::EmptyContent,
+        Error::Benchmark(msg) | Error::Config(msg) => {
+            // Detect config/setup errors from message patterns
+            let msg_lower = msg.to_lowercase();
+
+            // Common patterns for missing dependencies/models
+            if msg_lower.contains("torch.") && msg_lower.contains("not found") {
+                // docling: torch.PP-OCRv6 not found
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("partition_") && msg_lower.contains("not available") {
+                // unstructured: partition_X not available
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("tessdata") || msg_lower.contains("tesseract") && msg_lower.contains("not found") {
+                // OCR: tessdata missing or tesseract not found
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("module") && (msg_lower.contains("not found") || msg_lower.contains("not installed")) {
+                // Python: Module X not found / not installed
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("import error") || msg_lower.contains("importerror") {
+                // Python import failures are often dependency issues
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("no such file") && (msg_lower.contains(".so") || msg_lower.contains(".dylib") || msg_lower.contains(".dll")) {
+                // Native library not found
+                ErrorKind::ConfigSetupError
+            } else if msg_lower.contains("failed to find") && (msg_lower.contains("model") || msg_lower.contains("library")) {
+                // Generic model/library not found
+                ErrorKind::ConfigSetupError
+            } else {
+                // Unknown error type, default to HarnessError
+                ErrorKind::HarnessError
+            }
+        }
         _ => ErrorKind::HarnessError,
     }
 }
@@ -1402,6 +1436,24 @@ mod tests {
         assert_eq!(
             error_to_error_kind(&Error::Benchmark("test".into())),
             ErrorKind::HarnessError
+        );
+
+        // Config/setup errors
+        assert_eq!(
+            error_to_error_kind(&Error::Benchmark("torch.PP-OCRv6 not found".into())),
+            ErrorKind::ConfigSetupError
+        );
+        assert_eq!(
+            error_to_error_kind(&Error::Benchmark("partition_X not available".into())),
+            ErrorKind::ConfigSetupError
+        );
+        assert_eq!(
+            error_to_error_kind(&Error::Benchmark("tessdata not found".into())),
+            ErrorKind::ConfigSetupError
+        );
+        assert_eq!(
+            error_to_error_kind(&Error::Config("Module not installed".into())),
+            ErrorKind::ConfigSetupError
         );
     }
 

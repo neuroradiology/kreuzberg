@@ -744,6 +744,14 @@ jobs:
       - name: Install system dependencies (libheif + native libs for harness binary)
         uses: ./.github/actions/install-system-deps
 
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Build xberg-cli (release, all features) for disk measurement
+        run: cargo build --locked --release -p xberg-cli --features all
+
       - name: Download all benchmark artifacts
         uses: actions/download-artifact@v8
         with:
