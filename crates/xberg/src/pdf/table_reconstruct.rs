@@ -702,6 +702,57 @@ pub(crate) fn is_well_formed_table(grid: &[Vec<String>]) -> bool {
     true
 }
 
+/// Minimum fraction of non-empty table cells that must contain curly braces
+/// (`{` or `}`) for the region to be classified as a code listing rather than
+/// a table. At 0.20, one brace-containing cell per five non-empty cells is
+/// enough to trigger the guard.
+///
+/// A separate hard-reject fires when any non-empty cell is *exactly* `{` or `}`:
+/// isolated braces appear only in code block delimiters, never in real table data.
+const CODE_BRACE_CELL_FRACTION: f64 = 0.20;
+
+/// Returns `true` if the reconstructed table grid looks like a code listing
+/// rather than genuine tabular data.
+///
+/// The layout model and text-edge heuristic occasionally misclassify code blocks
+/// (especially C-family language listings with curly-brace syntax) as table
+/// regions, because monospace character spacing creates apparent column positions.
+///
+/// Two signals are checked:
+/// 1. **Hard reject**: any non-empty cell whose entire trimmed text is `{` or
+///    `}` (an isolated brace cannot appear in real table content).
+/// 2. **Fraction check**: if ≥ [`CODE_BRACE_CELL_FRACTION`] of non-empty cells
+///    contain `{` or `}`, the region is likely code with inline block syntax.
+///
+/// Python, Ruby, and other brace-free languages are not caught by this check;
+/// those rarely produce false-positive tables at the heuristic tier.
+pub(crate) fn looks_like_code_listing(table_cells: &[Vec<String>]) -> bool {
+    let non_empty: Vec<&str> = table_cells
+        .iter()
+        .flat_map(|row| row.iter())
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .collect();
+
+    if non_empty.is_empty() {
+        return false;
+    }
+
+    // Hard reject: isolated `{` or `}` cells are exclusively from code.
+    // Real tables never have cells that are just a bare curly brace.
+    if non_empty.iter().any(|&cell| cell == "{" || cell == "}") {
+        return true;
+    }
+
+    // Fraction check: cells containing curly braces signal block syntax.
+    // Handles code where braces appear mid-line (e.g. `if (x) { return y; }`).
+    let brace_count = non_empty
+        .iter()
+        .filter(|&&cell| cell.contains('{') || cell.contains('}'))
+        .count();
+    (brace_count as f64) / (non_empty.len() as f64) >= CODE_BRACE_CELL_FRACTION
+}
+
 fn merge_header_only_column(table: &mut [Vec<String>], col: usize, header_text: String) {
     if table.is_empty() || table[0].is_empty() {
         return;

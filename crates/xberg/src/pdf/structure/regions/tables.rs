@@ -2,7 +2,9 @@
 
 use crate::pdf::structure::text_repair::repair_broken_word_spacing;
 use crate::pdf::structure::types::{LayoutHint, LayoutHintClass};
-use crate::pdf::table_reconstruct::{is_well_formed_table, post_process_table, reconstruct_table, table_to_markdown};
+use crate::pdf::table_reconstruct::{
+    is_well_formed_table, looks_like_code_listing, post_process_table, reconstruct_table, table_to_markdown,
+};
 use crate::types::Table;
 
 use super::table_recognition::word_hint_iow;
@@ -211,6 +213,24 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
             }
         }
 
+        // Reject tables that look like code listings.
+        // The layout model sometimes misclassifies monospace code blocks (JS,
+        // Rust, Go, Java, C, …) as Table regions because the character-level
+        // spacing in a fixed-width font creates apparent column positions that
+        // fool the heuristic grid detector. Curly braces — especially isolated
+        // `{` or `}` cells (from opening/closing lines) — are the most reliable
+        // signal: they appear in virtually all C-family code but never in real
+        // table data.
+        if looks_like_code_listing(&table_cells) {
+            tracing::trace!(
+                page = page_index,
+                rows = table_cells.len(),
+                cols = table_cells.first().map_or(0, |r| r.len()),
+                "table region looks like a code listing — skipping false-positive Table hint"
+            );
+            continue;
+        }
+
         // Table quality validation: reject tables that are actually multi-column
         // prose, repeated page elements, or low-vocabulary repetitive content.
         if !is_well_formed_table(&table_cells) {
@@ -344,7 +364,7 @@ pub(crate) fn compute_adaptive_column_gap(words: &[crate::pdf::table_reconstruct
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::pdf::table_reconstruct::HocrWord;
+    use crate::pdf::table_reconstruct::{HocrWord, looks_like_code_listing};
 
     fn make_word(text: &str, left: u32, top: u32, width: u32, height: u32) -> HocrWord {
         HocrWord {
@@ -474,5 +494,103 @@ mod tests {
         for table in &tables {
             assert_eq!(table.page_number, 3); // page_index=2 → page_number=3
         }
+    }
+
+    // --- Tests for looks_like_code_listing ---
+
+    #[test]
+    fn test_code_listing_with_isolated_closing_brace_is_rejected() {
+        // Simulates a JS code block reconstructed into a table grid:
+        //
+        //   function | add(a, b) | {
+        //   return   | a + b;    |
+        //   }        |           |
+        //
+        // The isolated `}` cell (from the closing line of the code block)
+        // is the hard-reject signal: no real table has a bare `}` cell.
+        let table_cells = vec![
+            vec!["function".to_string(), "add(a, b)".to_string(), "{".to_string()],
+            vec!["return".to_string(), "a + b;".to_string(), "".to_string()],
+            vec!["}".to_string(), "".to_string(), "".to_string()],
+        ];
+        assert!(
+            looks_like_code_listing(&table_cells),
+            "grid with isolated `}}` cell should be detected as code listing"
+        );
+    }
+
+    #[test]
+    fn test_code_listing_with_opening_brace_only_is_rejected() {
+        // Opening brace `{` alone in a cell is equally specific to code.
+        let table_cells = vec![
+            vec!["if".to_string(), "(x > 0)".to_string(), "{".to_string()],
+            vec!["".to_string(), "return".to_string(), "x".to_string()],
+            vec!["".to_string(), "}".to_string(), "".to_string()],
+        ];
+        assert!(
+            looks_like_code_listing(&table_cells),
+            "grid with isolated `{{` or `}}` cell should be detected as code listing"
+        );
+    }
+
+    #[test]
+    fn test_code_listing_with_inline_braces_fraction_is_rejected() {
+        // Code where braces appear mid-cell (not isolated):
+        //   if (x) { | return x; }
+        //   else {   | return y; }
+        // Two out of four non-empty cells contain `{` or `}` → 50% ≥ 20% threshold.
+        let table_cells = vec![
+            vec!["if (x) {".to_string(), "return x; }".to_string()],
+            vec!["else {".to_string(), "return y; }".to_string()],
+        ];
+        assert!(
+            looks_like_code_listing(&table_cells),
+            "grid with ≥20% of cells containing braces should be detected as code listing"
+        );
+    }
+
+    #[test]
+    fn test_genuine_data_table_is_not_rejected() {
+        // A real 2-column table with header and data rows must NOT be suppressed.
+        let table_cells = vec![
+            vec!["Name".to_string(), "Score".to_string()],
+            vec!["Alice".to_string(), "95".to_string()],
+            vec!["Bob".to_string(), "87".to_string()],
+            vec!["Carol".to_string(), "91".to_string()],
+        ];
+        assert!(
+            !looks_like_code_listing(&table_cells),
+            "genuine data table must not be classified as a code listing"
+        );
+    }
+
+    #[test]
+    fn test_table_with_parenthesised_values_is_not_rejected() {
+        // Documentation tables sometimes have function-call notation in cells
+        // like `to_string()` or `from_str(s)`. These contain `(` and `)` but
+        // no curly braces, so they must not trigger the code-listing guard.
+        let table_cells = vec![
+            vec!["Function".to_string(), "Description".to_string()],
+            vec!["to_string()".to_string(), "Converts to string".to_string()],
+            vec!["from_str(s)".to_string(), "Creates from string".to_string()],
+            vec!["parse()".to_string(), "Parses the value".to_string()],
+        ];
+        assert!(
+            !looks_like_code_listing(&table_cells),
+            "table with parenthesised function names must not be classified as code"
+        );
+    }
+
+    #[test]
+    fn test_empty_table_cells_is_not_rejected() {
+        // A degenerate all-empty table should not crash or falsely fire the check.
+        let table_cells: Vec<Vec<String>> = vec![
+            vec!["".to_string(), "".to_string()],
+            vec!["".to_string(), "".to_string()],
+        ];
+        assert!(
+            !looks_like_code_listing(&table_cells),
+            "all-empty table must not be classified as code listing"
+        );
     }
 }
