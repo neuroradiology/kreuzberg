@@ -309,10 +309,24 @@ pub(crate) fn compute_adaptive_column_gap(words: &[crate::pdf::table_reconstruct
 
     if gaps.len() >= 3 {
         gaps.sort_unstable();
-        let median_gap = gaps[gaps.len() / 2];
-        // Column gap = 2x median word gap, clamped to [8, 40]
-        let threshold = (median_gap * 2).clamp(8, 40);
-        return threshold;
+
+        // Filter out intra-cell word gaps (typically <30px) to focus on inter-cell gaps.
+        // Large gaps (>40px) are more likely to be column separators.
+        // This prevents small intra-cell spacing from dominating the calculation.
+        let large_gaps: Vec<u32> = gaps.iter().copied().filter(|&g| g >= 40).collect();
+
+        if !large_gaps.is_empty() {
+            // Use median of large gaps as the column boundary threshold.
+            // `gaps` is already sorted, so the filtered subset stays sorted.
+            let median_gap = large_gaps[large_gaps.len() / 2];
+            let threshold = (median_gap / 2).clamp(20, 60);
+            return threshold;
+        } else {
+            // Fallback: use all gaps but with safer bounds
+            let median_gap = gaps[gaps.len() / 2];
+            let threshold = (median_gap * 3).clamp(20, 60);
+            return threshold;
+        }
     }
 
     // Fallback: width-based scaling with tighter defaults for narrow tables
