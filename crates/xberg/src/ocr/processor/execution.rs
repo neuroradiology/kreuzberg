@@ -443,7 +443,15 @@ fn build_content_with_inline_tables(tsv_data: &str, tables: &[OcrTable], min_con
 }
 
 /// Minimum confidence for accepting orientation detection results.
-const MIN_ORIENTATION_CONFIDENCE: f32 = 0.5;
+///
+/// Keep in sync with `doc_orientation::MIN_CONFIDENCE` (module is feature-gated,
+/// this const is not): the PP-LCNet classifier reports correct 90°/270° rotations
+/// on real documents at ~0.45, so a 0.5 cutoff rejects valid detections while
+/// 0° false positives above 0.35 are rare.
+const MIN_ORIENTATION_CONFIDENCE: f32 = 0.35;
+
+#[cfg(feature = "auto-rotate")]
+const _: () = assert!(MIN_ORIENTATION_CONFIDENCE == crate::doc_orientation::MIN_CONFIDENCE);
 
 /// Check whether a center point (x, y) lies within a bounding box.
 fn point_in_bbox(x: i32, y: i32, left: i32, top: i32, right: i32, bottom: i32) -> bool {
@@ -909,6 +917,13 @@ pub(super) fn perform_ocr(
                     log_ci_debug(ci_debug_enabled, "auto_rotate", || {
                         format!("rotated={}° new_dimensions={}x{}", orient_deg, new_width, new_height)
                     });
+                } else {
+                    tracing::debug!(
+                        degrees = orient_deg,
+                        confidence = orient_conf,
+                        threshold = MIN_ORIENTATION_CONFIDENCE,
+                        "auto_rotate: keeping original orientation"
+                    );
                 }
             }
         }
