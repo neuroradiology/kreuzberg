@@ -406,9 +406,19 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
     // Build per-fixture results
     let per_fixture_results = build_per_fixture_results(results);
 
+    // Count distinct base frameworks (e.g. "docling", "xberg-markdown-baseline"), not
+    // framework:mode combinations. `aggregated_by_framework_mode.len()` counts the latter
+    // (21) and mislabels it as the framework count; the field is documented as "unique
+    // frameworks", so derive it from the base framework of each result instead.
+    let framework_count = results
+        .iter()
+        .map(|r| extract_framework_and_mode(&r.framework).0)
+        .collect::<std::collections::HashSet<_>>()
+        .len();
+
     let metadata = ConsolidationMetadata {
         total_results: results.len(),
-        framework_count: aggregated_by_framework_mode.len(),
+        framework_count,
         file_type_count: file_types.len(),
         timestamp: chrono::Utc::now().to_rfc3339(),
     };
