@@ -585,7 +585,11 @@ pub(crate) fn is_well_formed_table(grid: &[Vec<String>]) -> bool {
     let total_cells = grid.len() * max_cols;
     if total_cells > 0 {
         let empty_cells = grid.len() * max_cols
-            - grid.iter().flat_map(|row| row.iter()).filter(|cell| !cell.trim().is_empty()).count();
+            - grid
+                .iter()
+                .flat_map(|row| row.iter())
+                .filter(|cell| !cell.trim().is_empty())
+                .count();
         if empty_cells * 100 > total_cells * MAX_EMPTY_CELL_FRACTION_PERCENT {
             return false;
         }

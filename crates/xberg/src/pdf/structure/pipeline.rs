@@ -1565,9 +1565,14 @@ fn fused_text_repairs(text: &str) -> Cow<'_, str> {
     let t4 = normalize_unicode_text(&t3b);
     let t5 = clean_duplicate_punctuation(&t4);
     match (&t1, &t2, &t3, &t3b, &t4, &t5) {
-        (Cow::Borrowed(_), Cow::Borrowed(_), Cow::Borrowed(_), Cow::Borrowed(_), Cow::Borrowed(_), Cow::Borrowed(_)) => {
-            Cow::Borrowed(text)
-        }
+        (
+            Cow::Borrowed(_),
+            Cow::Borrowed(_),
+            Cow::Borrowed(_),
+            Cow::Borrowed(_),
+            Cow::Borrowed(_),
+            Cow::Borrowed(_),
+        ) => Cow::Borrowed(text),
         _ => Cow::Owned(t5.into_owned()),
     }
 }

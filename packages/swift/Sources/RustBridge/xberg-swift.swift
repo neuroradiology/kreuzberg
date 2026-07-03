@@ -3370,11 +3370,11 @@ public class ExtractionResultRef {
   }
 }
 extension ExtractionResultRef {
-  public func results() -> RustVec<ExtractedDocument> {
+  public func results() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionResult$results(ptr))
   }
 
-  public func errors() -> RustVec<ExtractionErrorItem> {
+  public func errors() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionResult$errors(ptr))
   }
 
@@ -4667,7 +4667,7 @@ public class OcrPipelineConfigRef {
   }
 }
 extension OcrPipelineConfigRef {
-  public func stages() -> RustVec<OcrPipelineStage> {
+  public func stages() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$OcrPipelineConfig$stages(ptr))
   }
 
@@ -5571,11 +5571,11 @@ extension RedactionConfigRef {
     __swift_bridge__$RedactionConfig$preserve_offsets(ptr)
   }
 
-  public func customTerms() -> RustVec<RedactionTerm> {
+  public func customTerms() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$RedactionConfig$custom_terms(ptr))
   }
 
-  public func customPatterns() -> RustVec<RedactionPattern> {
+  public func customPatterns() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$RedactionConfig$custom_patterns(ptr))
   }
 }
@@ -8064,7 +8064,7 @@ extension PageClassificationRef {
     __swift_bridge__$PageClassification$page_number(ptr)
   }
 
-  public func labels() -> RustVec<ClassificationLabel> {
+  public func labels() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$PageClassification$labels(ptr))
   }
 }
@@ -8232,7 +8232,7 @@ extension DjotContentRef {
     RustString(ptr: __swift_bridge__$DjotContent$plain_text(ptr))
   }
 
-  public func blocks() -> RustVec<FormattedBlock> {
+  public func blocks() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DjotContent$blocks(ptr))
   }
 
@@ -8240,19 +8240,19 @@ extension DjotContentRef {
     Metadata(ptr: __swift_bridge__$DjotContent$metadata(ptr))
   }
 
-  public func tables() -> RustVec<Table> {
+  public func tables() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DjotContent$tables(ptr))
   }
 
-  public func images() -> RustVec<DjotImage> {
+  public func images() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DjotContent$images(ptr))
   }
 
-  public func links() -> RustVec<DjotLink> {
+  public func links() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DjotContent$links(ptr))
   }
 
-  public func footnotes() -> RustVec<Footnote> {
+  public func footnotes() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DjotContent$footnotes(ptr))
   }
 }
@@ -8340,7 +8340,7 @@ extension FormattedBlockRef {
     __swift_bridge__$FormattedBlock$level(ptr).intoSwiftRepr()
   }
 
-  public func inlineContent() -> RustVec<InlineElement> {
+  public func inlineContent() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$FormattedBlock$inline_content(ptr))
   }
 
@@ -8352,7 +8352,7 @@ extension FormattedBlockRef {
     { let val = __swift_bridge__$FormattedBlock$code(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
   }
 
-  public func children() -> RustVec<FormattedBlock> {
+  public func children() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$FormattedBlock$children(ptr))
   }
 }
@@ -8700,7 +8700,7 @@ extension FootnoteRef {
     RustString(ptr: __swift_bridge__$Footnote$label(ptr))
   }
 
-  public func content() -> RustVec<FormattedBlock> {
+  public func content() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$Footnote$content(ptr))
   }
 }
@@ -8785,7 +8785,7 @@ public class DocumentStructureRef {
   }
 }
 extension DocumentStructureRef {
-  public func nodes() -> RustVec<DocumentNode> {
+  public func nodes() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DocumentStructure$nodes(ptr))
   }
 
@@ -8793,7 +8793,7 @@ extension DocumentStructureRef {
     { let val = __swift_bridge__$DocumentStructure$source_format(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
   }
 
-  public func relationships() -> RustVec<DocumentRelationship> {
+  public func relationships() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DocumentStructure$relationships(ptr))
   }
 
@@ -8993,7 +8993,7 @@ extension DocumentNodeRef {
     { let val = __swift_bridge__$DocumentNode$bbox(ptr); if val != nil { return BoundingBox(ptr: val!) } else { return nil } }()
   }
 
-  public func annotations() -> RustVec<TextAnnotation> {
+  public func annotations() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DocumentNode$annotations(ptr))
   }
 
@@ -9090,7 +9090,7 @@ extension TableGridRef {
     __swift_bridge__$TableGrid$cols(ptr)
   }
 
-  public func cells() -> RustVec<GridCell> {
+  public func cells() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$TableGrid$cells(ptr))
   }
 }
@@ -9479,7 +9479,7 @@ extension ExtractedDocumentRef {
     { let val = __swift_bridge__$ExtractedDocument$extraction_method(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
   }
 
-  public func tables() -> RustVec<Table> {
+  public func tables() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractedDocument$tables(ptr))
   }
 
@@ -9487,28 +9487,28 @@ extension ExtractedDocumentRef {
     { let val = __swift_bridge__$ExtractedDocument$detected_languages(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
   }
 
-  public func chunks() -> Optional<RustVec<Chunk>> {
-    { let val = __swift_bridge__$ExtractedDocument$chunks(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func chunks() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$chunks(ptr))
   }
 
-  public func images() -> Optional<RustVec<ExtractedImage>> {
-    { let val = __swift_bridge__$ExtractedDocument$images(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func images() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$images(ptr))
   }
 
-  public func pages() -> Optional<RustVec<PageContent>> {
-    { let val = __swift_bridge__$ExtractedDocument$pages(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func pages() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$pages(ptr))
   }
 
-  public func elements() -> Optional<RustVec<Element>> {
-    { let val = __swift_bridge__$ExtractedDocument$elements(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func elements() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$elements(ptr))
   }
 
   public func djotContent() -> Optional<DjotContent> {
     { let val = __swift_bridge__$ExtractedDocument$djot_content(ptr); if val != nil { return DjotContent(ptr: val!) } else { return nil } }()
   }
 
-  public func ocrElements() -> Optional<RustVec<OcrElement>> {
-    { let val = __swift_bridge__$ExtractedDocument$ocr_elements(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func ocrElements() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$ocr_elements(ptr))
   }
 
   public func document() -> Optional<DocumentStructure> {
@@ -9519,24 +9519,24 @@ extension ExtractedDocumentRef {
     __swift_bridge__$ExtractedDocument$quality_score(ptr).intoSwiftRepr()
   }
 
-  public func processingWarnings() -> RustVec<ProcessingWarning> {
+  public func processingWarnings() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractedDocument$processing_warnings(ptr))
   }
 
-  public func annotations() -> Optional<RustVec<PdfAnnotation>> {
-    { let val = __swift_bridge__$ExtractedDocument$annotations(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func annotations() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$annotations(ptr))
   }
 
-  public func children() -> Optional<RustVec<ArchiveEntry>> {
-    { let val = __swift_bridge__$ExtractedDocument$children(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func children() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$children(ptr))
   }
 
-  public func uris() -> Optional<RustVec<ExtractedUri>> {
-    { let val = __swift_bridge__$ExtractedDocument$uris(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func uris() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$uris(ptr))
   }
 
-  public func revisions() -> Optional<RustVec<DocumentRevision>> {
-    { let val = __swift_bridge__$ExtractedDocument$revisions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func revisions() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$revisions(ptr))
   }
 
   public func structuredOutput() -> Optional<RustString> {
@@ -9547,12 +9547,12 @@ extension ExtractedDocumentRef {
     { let val = __swift_bridge__$ExtractedDocument$code_intelligence(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
   }
 
-  public func llmUsage() -> Optional<RustVec<LlmUsage>> {
-    { let val = __swift_bridge__$ExtractedDocument$llm_usage(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func llmUsage() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$llm_usage(ptr))
   }
 
-  public func entities() -> Optional<RustVec<Entity>> {
-    { let val = __swift_bridge__$ExtractedDocument$entities(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func entities() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$entities(ptr))
   }
 
   public func summary() -> Optional<DocumentSummary> {
@@ -9567,19 +9567,19 @@ extension ExtractedDocumentRef {
     { let val = __swift_bridge__$ExtractedDocument$translation(ptr); if val != nil { return Translation(ptr: val!) } else { return nil } }()
   }
 
-  public func pageClassifications() -> Optional<RustVec<PageClassification>> {
-    { let val = __swift_bridge__$ExtractedDocument$page_classifications(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func pageClassifications() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedDocument$page_classifications(ptr))
   }
 
   public func redactionReport() -> Optional<RedactionReport> {
     { let val = __swift_bridge__$ExtractedDocument$redaction_report(ptr); if val != nil { return RedactionReport(ptr: val!) } else { return nil } }()
   }
 
-  public func formulas() -> RustVec<Formula> {
+  public func formulas() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractedDocument$formulas(ptr))
   }
 
-  public func formFields() -> RustVec<PdfFormField> {
+  public func formFields() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractedDocument$form_fields(ptr))
   }
 
@@ -10036,7 +10036,7 @@ public class HeadingContextRef {
   }
 }
 extension HeadingContextRef {
-  public func headings() -> RustVec<HeadingLevel> {
+  public func headings() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$HeadingContext$headings(ptr))
   }
 }
@@ -10389,8 +10389,8 @@ extension ExtractedImageRef {
     { let val = __swift_bridge__$ExtractedImage$caption(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
   }
 
-  public func qrCodes() -> Optional<RustVec<QrCode>> {
-    { let val = __swift_bridge__$ExtractedImage$qr_codes(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func qrCodes() -> RustString {
+    RustString(ptr: __swift_bridge__$ExtractedImage$qr_codes(ptr))
   }
 
   public func dataBase64() -> Optional<RustString> {
@@ -10870,7 +10870,7 @@ public class ExcelWorkbookRef {
   }
 }
 extension ExcelWorkbookRef {
-  public func sheets() -> RustVec<ExcelSheet> {
+  public func sheets() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExcelWorkbook$sheets(ptr))
   }
 
@@ -10878,8 +10878,8 @@ extension ExcelWorkbookRef {
     RustString(ptr: __swift_bridge__$ExcelWorkbook$metadata(ptr))
   }
 
-  public func revisions() -> Optional<RustVec<DocumentRevision>> {
-    { let val = __swift_bridge__$ExcelWorkbook$revisions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func revisions() -> RustString {
+    RustString(ptr: __swift_bridge__$ExcelWorkbook$revisions(ptr))
   }
 }
 extension ExcelWorkbook: Vectorizable {
@@ -11262,7 +11262,7 @@ extension PptxExtractionResultRef {
     __swift_bridge__$PptxExtractionResult$table_count(ptr)
   }
 
-  public func images() -> RustVec<ExtractedImage> {
+  public func images() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$PptxExtractionResult$images(ptr))
   }
 
@@ -11270,8 +11270,8 @@ extension PptxExtractionResultRef {
     { let val = __swift_bridge__$PptxExtractionResult$page_structure(ptr); if val != nil { return PageStructure(ptr: val!) } else { return nil } }()
   }
 
-  public func pageContents() -> Optional<RustVec<PageContent>> {
-    { let val = __swift_bridge__$PptxExtractionResult$page_contents(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func pageContents() -> RustString {
+    RustString(ptr: __swift_bridge__$PptxExtractionResult$page_contents(ptr))
   }
 
   public func document() -> Optional<DocumentStructure> {
@@ -11282,8 +11282,8 @@ extension PptxExtractionResultRef {
     RustString(ptr: __swift_bridge__$PptxExtractionResult$office_metadata(ptr))
   }
 
-  public func revisions() -> Optional<RustVec<DocumentRevision>> {
-    { let val = __swift_bridge__$PptxExtractionResult$revisions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func revisions() -> RustString {
+    RustString(ptr: __swift_bridge__$PptxExtractionResult$revisions(ptr))
   }
 }
 extension PptxExtractionResult: Vectorizable {
@@ -11402,7 +11402,7 @@ extension EmailExtractionResultRef {
     RustString(ptr: __swift_bridge__$EmailExtractionResult$content(ptr))
   }
 
-  public func attachments() -> RustVec<EmailAttachment> {
+  public func attachments() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$EmailExtractionResult$attachments(ptr))
   }
 
@@ -11603,12 +11603,12 @@ extension OcrExtractionResultRef {
     RustString(ptr: __swift_bridge__$OcrExtractionResult$metadata(ptr))
   }
 
-  public func tables() -> RustVec<OcrTable> {
+  public func tables() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$OcrExtractionResult$tables(ptr))
   }
 
-  public func ocrElements() -> Optional<RustVec<OcrElement>> {
-    { let val = __swift_bridge__$OcrExtractionResult$ocr_elements(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func ocrElements() -> RustString {
+    RustString(ptr: __swift_bridge__$OcrExtractionResult$ocr_elements(ptr))
   }
 }
 extension OcrExtractionResult: Vectorizable {
@@ -13522,19 +13522,19 @@ extension HtmlMetadataRef {
     RustString(ptr: __swift_bridge__$HtmlMetadata$meta_tags(ptr))
   }
 
-  public func headers() -> RustVec<HeaderMetadata> {
+  public func headers() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$HtmlMetadata$headers(ptr))
   }
 
-  public func links() -> RustVec<LinkMetadata> {
+  public func links() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$HtmlMetadata$links(ptr))
   }
 
-  public func images() -> RustVec<ImageMetadataType> {
+  public func images() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$HtmlMetadata$images(ptr))
   }
 
-  public func structuredData() -> RustVec<StructuredData> {
+  public func structuredData() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$HtmlMetadata$structured_data(ptr))
   }
 }
@@ -14494,7 +14494,7 @@ extension DbfMetadataRef {
     __swift_bridge__$DbfMetadata$field_count(ptr)
   }
 
-  public func fields() -> RustVec<DbfFieldInfo> {
+  public func fields() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DbfMetadata$fields(ptr))
   }
 }
@@ -14675,7 +14675,7 @@ extension JatsMetadataRef {
     RustString(ptr: __swift_bridge__$JatsMetadata$history_dates(ptr))
   }
 
-  public func contributorRoles() -> RustVec<ContributorRole> {
+  public func contributorRoles() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$JatsMetadata$contributor_roles(ptr))
   }
 }
@@ -15530,12 +15530,12 @@ extension PageStructureRef {
     RustString(ptr: __swift_bridge__$PageStructure$unit_type(ptr))
   }
 
-  public func boundaries() -> Optional<RustVec<PageBoundary>> {
-    { let val = __swift_bridge__$PageStructure$boundaries(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func boundaries() -> RustString {
+    RustString(ptr: __swift_bridge__$PageStructure$boundaries(ptr))
   }
 
-  public func pages() -> Optional<RustVec<PageInfo>> {
-    { let val = __swift_bridge__$PageStructure$pages(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func pages() -> RustString {
+    RustString(ptr: __swift_bridge__$PageStructure$pages(ptr))
   }
 }
 extension PageStructure: Vectorizable {
@@ -15819,7 +15819,7 @@ extension PageContentRef {
     RustString(ptr: __swift_bridge__$PageContent$content(ptr))
   }
 
-  public func tables() -> RustVec<Table> {
+  public func tables() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$PageContent$tables(ptr))
   }
 
@@ -15835,8 +15835,8 @@ extension PageContentRef {
     __swift_bridge__$PageContent$is_blank(ptr).intoSwiftRepr()
   }
 
-  public func layoutRegions() -> Optional<RustVec<LayoutRegion>> {
-    { let val = __swift_bridge__$PageContent$layout_regions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func layoutRegions() -> RustString {
+    RustString(ptr: __swift_bridge__$PageContent$layout_regions(ptr))
   }
 
   public func speakerNotes() -> Optional<RustString> {
@@ -16028,7 +16028,7 @@ extension PageHierarchyRef {
     __swift_bridge__$PageHierarchy$block_count(ptr)
   }
 
-  public func blocks() -> RustVec<HierarchicalBlock> {
+  public func blocks() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$PageHierarchy$blocks(ptr))
   }
 }
@@ -16381,7 +16381,7 @@ public class RedactionReportRef {
   }
 }
 extension RedactionReportRef {
-  public func findings() -> RustVec<RedactionFinding> {
+  public func findings() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$RedactionReport$findings(ptr))
   }
 
@@ -16762,7 +16762,7 @@ extension RevisionDeltaRef {
     RustVec(ptr: __swift_bridge__$RevisionDelta$content(ptr))
   }
 
-  public func tableChanges() -> RustVec<CellChange> {
+  public func tableChanges() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$RevisionDelta$table_changes(ptr))
   }
 }
@@ -17490,19 +17490,19 @@ public class ExtractionDiffRef {
   }
 }
 extension ExtractionDiffRef {
-  public func contentDiff() -> RustVec<DiffHunk> {
+  public func contentDiff() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionDiff$content_diff(ptr))
   }
 
-  public func tablesAdded() -> RustVec<Table> {
+  public func tablesAdded() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionDiff$tables_added(ptr))
   }
 
-  public func tablesRemoved() -> RustVec<Table> {
+  public func tablesRemoved() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionDiff$tables_removed(ptr))
   }
 
-  public func tablesChanged() -> RustVec<TableDiff> {
+  public func tablesChanged() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$ExtractionDiff$tables_changed(ptr))
   }
 
@@ -17694,7 +17694,7 @@ extension TableDiffRef {
     __swift_bridge__$TableDiff$to_index(ptr)
   }
 
-  public func cellChanges() -> RustVec<CellChange> {
+  public func cellChanges() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$TableDiff$cell_changes(ptr))
   }
 }
@@ -17779,15 +17779,15 @@ public class EmbeddedChangesRef {
   }
 }
 extension EmbeddedChangesRef {
-  public func added() -> RustVec<ArchiveEntry> {
+  public func added() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$EmbeddedChanges$added(ptr))
   }
 
-  public func removed() -> RustVec<ArchiveEntry> {
+  public func removed() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$EmbeddedChanges$removed(ptr))
   }
 
-  public func changed() -> RustVec<EmbeddedDiff> {
+  public func changed() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$EmbeddedChanges$changed(ptr))
   }
 }
@@ -18144,8 +18144,8 @@ public class UserChunkConfigRef {
   }
 }
 extension UserChunkConfigRef {
-  public func pageRanges() -> Optional<RustVec<PageRange>> {
-    { let val = __swift_bridge__$UserChunkConfig$page_ranges(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
+  public func pageRanges() -> RustString {
+    RustString(ptr: __swift_bridge__$UserChunkConfig$page_ranges(ptr))
   }
 
   public func pagesPerChunk() -> Optional<UInt32> {
@@ -18634,7 +18634,7 @@ extension MultidocInputRef {
     __swift_bridge__$MultidocInput$page_count(ptr)
   }
 
-  public func pages() -> RustVec<PageSignals> {
+  public func pages() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$MultidocInput$pages(ptr))
   }
 }
@@ -20176,7 +20176,7 @@ extension DetectionResultRef {
     __swift_bridge__$DetectionResult$page_height(ptr)
   }
 
-  public func detections() -> RustVec<LayoutDetection> {
+  public func detections() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$DetectionResult$detections(ptr))
   }
 }

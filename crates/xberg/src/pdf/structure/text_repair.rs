@@ -524,7 +524,11 @@ pub(super) fn collapse_spaced_hyphens(text: &str) -> Cow<'_, str> {
         i += 1;
     }
 
-    if result == text { Cow::Borrowed(text) } else { Cow::Owned(result) }
+    if result == text {
+        Cow::Borrowed(text)
+    } else {
+        Cow::Owned(result)
+    }
 }
 
 /// Clean up duplicate punctuation artifacts from PDF text extraction.
@@ -802,10 +806,7 @@ mod tests {
             "DARPA-BAA-15-58"
         );
         // Line-break hyphenation (hyphen attached to the word) is untouched.
-        assert_eq!(
-            collapse_spaced_hyphens("multi\u{2010}\nline"),
-            "multi\u{2010}\nline"
-        );
+        assert_eq!(collapse_spaced_hyphens("multi\u{2010}\nline"), "multi\u{2010}\nline");
     }
 
     #[test]

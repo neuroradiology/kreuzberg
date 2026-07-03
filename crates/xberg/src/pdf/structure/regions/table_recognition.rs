@@ -500,7 +500,13 @@ fn append_unconsumed_aligned_rows(
         let mut grid_row = Vec::with_capacity(num_cols);
         for mut cell in row_cells {
             cell.sort_by_key(|&(x, _)| x);
-            grid_row.push(cell.iter().map(|&(_, t)| t).filter(|t| !t.is_empty()).collect::<Vec<_>>().join(" "));
+            grid_row.push(
+                cell.iter()
+                    .map(|&(_, t)| t)
+                    .filter(|t| !t.is_empty())
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            );
         }
         grid.push(grid_row);
         appended_rows += 1;
@@ -1137,12 +1143,7 @@ fn extend_table_bottom_rows(
         let row_words = row_end - row_start;
         let aligned = below[row_start..row_end].iter().filter(|w| word_aligns(w)).count();
         let aligned_fraction = aligned as f32 / row_words as f32;
-        tracing::debug!(
-            row_anchor,
-            row_words,
-            aligned,
-            "extend_table_bottom_rows: row"
-        );
+        tracing::debug!(row_anchor, row_words, aligned, "extend_table_bottom_rows: row");
         if row_words < MIN_ROW_WORDS || aligned_fraction < MIN_ALIGNED_FRACTION {
             break;
         }
@@ -1416,11 +1417,20 @@ mod tests {
         // Another structured row AFTER the prose row must NOT be included.
         words.extend(four_column_row(520));
 
-        let extended =
-            extend_table_bottom_rows(&words, hint_left, hint_right, hint_img_top, hint_img_bottom, page_height);
+        let extended = extend_table_bottom_rows(
+            &words,
+            hint_left,
+            hint_right,
+            hint_img_top,
+            hint_img_bottom,
+            page_height,
+        );
 
         // Last continuation row bottom = 440 + 12 = 452, +4 margin = 456.
-        assert_eq!(extended, 456.0, "expected extension to the last continuation row, got {extended}");
+        assert_eq!(
+            extended, 456.0,
+            "expected extension to the last continuation row, got {extended}"
+        );
     }
 
     /// A hint with no rows below it stays unextended.
@@ -1433,7 +1443,10 @@ mod tests {
         }
 
         let extended = extend_table_bottom_rows(&words, 40.0, 580.0, 100.0, 400.0, page_height);
-        assert_eq!(extended, 400.0, "no continuation rows → bottom unchanged, got {extended}");
+        assert_eq!(
+            extended, 400.0,
+            "no continuation rows → bottom unchanged, got {extended}"
+        );
     }
 
     /// The extension is capped at half the hinted table height even when
@@ -1458,7 +1471,10 @@ mod tests {
             extended <= 400.0,
             "extension must be capped at hint_bottom + half hint height (400), got {extended}"
         );
-        assert!(extended > 300.0, "cap must not prevent extension entirely, got {extended}");
+        assert!(
+            extended > 300.0,
+            "cap must not prevent extension entirely, got {extended}"
+        );
     }
 
     /// The emitted bbox bottom must reflect consumed words, not the hint.
