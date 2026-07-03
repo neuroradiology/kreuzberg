@@ -78,6 +78,12 @@ pub(super) fn run_layout_for_pdf_pages(
     let mut engine = crate::layout::take_or_create_engine(layout_config)
         .map_err(|e| XbergError::Other(format!("layout runner: engine init failed: {e}")))?;
 
+    // pdf_oxide's renderer applies /Rotate, so a 90°/270° page renders with
+    // swapped axes. Hint conversion and all downstream pt→px math must use the
+    // rotation-applied page dimensions or every coordinate on such pages is
+    // transposed (word/hint clamping at the image edge, phantom overrides).
+    let page_rotations = crate::pdf::render::get_page_rotations(content, page_count);
+
     // --- 3. Chunked render + detect ---
     let mut all_images: Vec<image::RgbImage> = Vec::with_capacity(page_count);
     let mut all_layout_results: Vec<PageLayoutResult> = Vec::with_capacity(page_count);
@@ -100,6 +106,11 @@ pub(super) fn run_layout_for_pdf_pages(
                 .get_page_media_box(page_idx)
                 .map(|(llx, lly, urx, ury)| ((urx - llx).abs(), (ury - lly).abs()))
                 .unwrap_or((612.0, 792.0));
+            let (pw, ph) = if page_rotations.get(page_idx).is_some_and(|r| r % 180 == 90) {
+                (ph, pw)
+            } else {
+                (pw, ph)
+            };
             chunk_page_meta.push((pw, ph));
 
             let rgb_opt = match crate::pdf::render::render_page_with_safeguards(&doc, page_idx, 150) {

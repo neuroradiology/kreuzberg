@@ -1399,6 +1399,18 @@ fn is_math_character(c: char) -> bool {
         | '\u{27E9}' // ⟩
         | '\u{00D7}' // ×
         | '\u{00F7}' // ÷
+        // ASCII operators with a strong math signal of their own. Deliberately
+        // excludes prose-common characters (parentheses, hyphen, slash, colon,
+        // angle brackets) so ordinary text never reaches the density threshold.
+        | '+'
+        | '='
+        | '^'
+        // Superscript/subscript forms — exponents like a² reach extraction as
+        // these codepoints.
+        | '\u{00B9}' // ¹
+        | '\u{00B2}' // ²
+        | '\u{00B3}' // ³
+        | '\u{2070}'..='\u{209F}' // Superscripts and Subscripts block
     ) || is_greek_letter(c)
 }
 
@@ -2219,6 +2231,40 @@ mod tests {
         classify_paragraphs(&mut paragraphs, &heading_map);
         // Should be heading, not formula (heading takes precedence)
         assert_eq!(paragraphs[0].heading_level, Some(1));
+    }
+
+    #[test]
+    fn test_formula_detection_ascii_operators() {
+        // Simple equations built from ASCII operators only (code_and_formula
+        // fixture: "a² + 8 = 12") must be detected without Unicode symbols.
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "a2 + 8 = 12", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert!(paragraphs[0].is_formula, "ASCII equation should be a formula");
+    }
+
+    #[test]
+    fn test_formula_detection_superscript_exponent() {
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(12.0, "a\u{00B2} + 8 = 12", false)];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert!(
+            paragraphs[0].is_formula,
+            "superscript exponent equation should be a formula"
+        );
+    }
+
+    #[test]
+    fn test_formula_detection_prose_with_equals_not_flagged() {
+        // A normal sentence that merely mentions an equals sign must not flip.
+        let heading_map = vec![(12.0, None)];
+        let mut paragraphs = vec![make_text_paragraph(
+            12.0,
+            "The default setting is size = large for all new documents created here.",
+            false,
+        )];
+        classify_paragraphs(&mut paragraphs, &heading_map);
+        assert!(!paragraphs[0].is_formula, "prose with a single = must stay prose");
     }
 
     #[test]

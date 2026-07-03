@@ -1,6 +1,6 @@
 [package]
 name = "xberg-php"
-version = "1.0.0-rc.3"
+version = "1.0.0-rc.4"
 edition = "2024"
 license = "MIT"
 description = "High-performance document intelligence library"
@@ -85,7 +85,9 @@ ext-php-rs = "0.15.15"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
-xberg = { version = "1.0.0-rc.3", path = "../xberg", features = [
+
+[target.'cfg(not(any(target_os = "windows", all(target_os = "macos", target_arch = "x86_64"))))'.dependencies]
+xberg = { version = "1.0.0-rc.4", path = "../xberg", features = [
     "full",
     "pdf",
     "ocr",
@@ -131,3 +133,9 @@ xberg = { version = "1.0.0-rc.3", path = "../xberg", features = [
     "structured",
     "url-ingestion",
 ] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+xberg = { version = "1.0.0-rc.4", path = "../xberg", features = ["windows-target"] }
+
+[target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
+xberg = { version = "1.0.0-rc.4", path = "../xberg", features = ["macos-intel-target"] }
