@@ -45,6 +45,7 @@
 )]
 #![allow(clippy::multiple_unsafe_ops_per_block)]
 #![allow(unsafe_code)]
+#![allow(clippy::redundant_field_names)]
 
 use async_trait::async_trait;
 use pyo3::exceptions::PyRuntimeError;
