@@ -1044,13 +1044,16 @@ pub(crate) fn extract_document_structure_from_segments(
             {
                 continue;
             }
-            // Prefer the exact rotation-applied page height from the layout run over
+            // Prefer the exact MediaBox page height recorded by the layout run over
             // the max-segment-extent estimate (which carries a 792pt Letter floor that
-            // offsets the word y-flip on shorter landscape/rotated pages).
+            // offsets the word y-flip on shorter landscape pages).
+            #[cfg(feature = "layout-detection")]
             let page_height = layout_results
                 .and_then(|results| results.get(page_idx))
                 .map(|pr| pr.page_height_pts)
                 .unwrap_or(page_heights[page_idx]);
+            #[cfg(not(feature = "layout-detection"))]
+            let page_height = page_heights[page_idx];
             let words = crate::pdf::table_reconstruct::segments_to_words(&all_page_segments[page_idx], page_height);
             if words.is_empty() {
                 tracing::trace!(
