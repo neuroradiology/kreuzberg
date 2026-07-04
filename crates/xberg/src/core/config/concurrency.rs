@@ -81,6 +81,11 @@ pub(crate) fn resolve_thread_budget(config: Option<&ConcurrencyConfig>) -> usize
 /// assert!(layout <= plain);
 /// assert!(layout >= 1);
 /// ```
+// Sole non-test caller is `collect_batch` (batch.rs), which is gated on `tokio-runtime`.
+// Under `--no-default-features` that caller is compiled out, so relax the `-D warnings`
+// dead-code lint for exactly that config; the fn stays compiled for tests and all
+// feature-enabled builds.
+#[cfg_attr(not(feature = "tokio-runtime"), allow(dead_code))]
 pub(crate) fn resolve_batch_concurrency(config: Option<&ConcurrencyConfig>, layout_active: bool) -> usize {
     let budget = resolve_thread_budget(config);
     if !layout_active {
