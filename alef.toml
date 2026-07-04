@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.30.17"
+alef_version = "0.32.0"
 # alef codegen emits non-shorthand struct init (`name: name`) in generated
 # binding lib.rs files; allow it repo-wide so workspace clippy passes under
 # -D warnings (emitted into every generated Rust binding as #![allow(...)]).
@@ -249,7 +249,6 @@ traineddata = "traineddata"
 # trait-bridge stub class names aren't CapWords; I001 — generated options.py
 # import block is unsorted.
 "e2e/**/*.py" = ["A001", "N801"]
-"packages/python/xberg/options.py" = ["I001"]
 # Hand-written Python formerly extend-excluded / per-file-ignored by root
 # pyproject [tool.ruff] (poly's ruff engine now lints these paths).
 "scripts/**/*.py" = [
@@ -506,9 +505,10 @@ name = "crawlberg"
 sources = [
     "../crawlberg/crates/crawlberg/src/types/config.rs",
     "../crawlberg/crates/crawlberg/src/types/discovery.rs",
+    "../crawlberg/crates/crawlberg/src/types/results.rs",
     "../crawlberg/crates/crawlberg/src/net/ssrf.rs",
 ]
-roots = ["crawlberg::CrawlConfig"]
+roots = ["crawlberg::CrawlConfig", "crawlberg::MapResult"]
 
 # Pin crawlberg to its concrete registry version rather than `workspace = true`.
 # The publish out-of-workspace build scripts strip `workspace = true` markers
@@ -3714,7 +3714,7 @@ path = "../../packages/zig"
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
 # https://github.com/xberg-io/xberg/releases/download/v{version}/xberg-zig-v{version}.tar.gz
-hash = "xberg-1.0.0-rc.5-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "xberg-1.0.0-rc.6-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements

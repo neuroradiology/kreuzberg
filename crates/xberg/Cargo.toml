@@ -48,7 +48,14 @@ tokio-runtime = ["dep:tokio"]
 
 # PDF extraction is currently backed by pdf_oxide. Keep this as the canonical
 # `pdf` feature until/unless a second PDF backend is introduced.
-pdf = ["dep:pdf_oxide", "dep:lopdf", "dep:image", "dep:flate2", "html", "image-encode"]
+pdf = [
+    "dep:pdf_oxide",
+    "dep:lopdf",
+    "dep:image",
+    "dep:flate2",
+    "html",
+    "image-encode",
+]
 excel = ["dep:calamine", "tokio-runtime"]
 excel-wasm = ["dep:calamine"]
 office = [
@@ -65,7 +72,14 @@ office = [
 hwp = ["dep:cfb", "dep:flate2"]
 hwpx = ["dep:unhwp", "dep:zip"]
 iwork = ["dep:zip", "dep:snap"]
-email = ["dep:mail-parser", "dep:cfb", "dep:outlook-pst", "dep:tempfile", "dep:chrono", "dep:chardetng"]
+email = [
+    "dep:mail-parser",
+    "dep:cfb",
+    "dep:outlook-pst",
+    "dep:tempfile",
+    "dep:chrono",
+    "dep:chardetng",
+]
 html = ["dep:html-to-markdown-rs", "dep:v_htmlescape"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
 archives = ["dep:zip", "dep:tar", "dep:sevenz-rust2", "dep:flate2"]
@@ -106,7 +120,14 @@ ocr = [
 bundle-tessdata-eng = ["xberg-tesseract/bundle-tessdata-eng"]
 # WASM OCR: Minimal Tesseract backend without html-to-markdown (which has WASI imports)
 # Includes only the core OCR processing dependencies needed for Tesseract on WASM
-ocr-wasm = ["ocr-pipeline", "dep:xberg-tesseract", "dep:image", "dep:nom-exif", "dep:hayro-jpeg2000", "dep:hayro-jbig2"]
+ocr-wasm = [
+    "ocr-pipeline",
+    "dep:xberg-tesseract",
+    "dep:image",
+    "dep:nom-exif",
+    "dep:hayro-jpeg2000",
+    "dep:hayro-jbig2",
+]
 # HEIF / HEIC / AVIF / HEICS / AVCS decoding via vendored libheif bindings.
 # Native-only — libheif is a C library with no working WASM/Android story.
 # Pulls in `nom-exif` so HEIC EXIF blocks are readable even without the full `ocr` feature.
@@ -126,7 +147,14 @@ paddle-ocr-types = []
 # Per-model sub-features live in xberg-candle-ocr; enable them via
 # `--features candle-ocr,xberg-candle-ocr/trocr` or by depending on
 # xberg-candle-ocr directly with the sub-feature.
-candle-ocr = ["dep:xberg-candle-ocr", "dep:image", "dep:hf-hub", "dep:sha2", "ocr-pipeline", "tokio-runtime"]
+candle-ocr = [
+    "dep:xberg-candle-ocr",
+    "dep:image",
+    "dep:hf-hub",
+    "dep:sha2",
+    "ocr-pipeline",
+    "tokio-runtime",
+]
 # TrOCR backend: aggregate feature enabling candle-ocr with trocr sub-feature
 candle-trocr = ["candle-ocr", "xberg-candle-ocr/trocr"]
 # PaddleOCR-VL backend: aggregate feature enabling candle-ocr with paddleocr-vl sub-feature
@@ -138,7 +166,13 @@ candle-hunyuan-ocr = ["candle-ocr", "xberg-candle-ocr/hunyuan-ocr"]
 # DeepSeek-OCR backend: aggregate feature enabling candle-ocr with deepseek-ocr sub-feature
 candle-deepseek-ocr = ["candle-ocr", "xberg-candle-ocr/deepseek-ocr"]
 # Umbrella aggregate for all candle VLM OCR backends (not in full/formats/wasm-target/android-target)
-candle-vlm-ocr = ["candle-hunyuan-ocr", "candle-deepseek-ocr", "candle-paddleocr-vl", "candle-glm-ocr", "candle-trocr"]
+candle-vlm-ocr = [
+    "candle-hunyuan-ocr",
+    "candle-deepseek-ocr",
+    "candle-paddleocr-vl",
+    "candle-glm-ocr",
+    "candle-trocr",
+]
 # Candle GPU acceleration pass-throughs. Enable alongside any candle-* backend
 # to compile the corresponding candle backend (CUDA / Metal / Accelerate /
 # MKL) — CPU decode of the larger VLM backends is impractically slow.
@@ -219,7 +253,14 @@ transcription = [
     "tokio-runtime",
 ]
 
-chunking = ["dep:auto_enums", "dep:either", "dep:icu_provider", "dep:icu_segmenter", "dep:itertools", "dep:strum"]
+chunking = [
+    "dep:auto_enums",
+    "dep:either",
+    "dep:icu_provider",
+    "dep:icu_segmenter",
+    "dep:itertools",
+    "dep:strum",
+]
 chunking-tokenizers = ["chunking", "dep:tokenizers"]
 # embedding-presets: static preset metadata (WASM-safe, no ORT)
 embedding-presets = []
@@ -271,7 +312,9 @@ diff = ["dep:similar"]
 # `crates/xberg/src/extractors/` for QR) and is wired through a built-in
 # post-processor under `crates/xberg/src/plugins/processor/builtin/`.
 ner = [] # NER result types only; safe on every target.
-ner-llm-types = ["ner"] # LlmBackend stub for targets without full ner-llm (Windows, Android x86_64, WASM).
+ner-llm-types = [
+    "ner",
+] # LlmBackend stub for targets without full ner-llm (Windows, Android x86_64, WASM).
 ner-llm = ["ner", "liter-llm"] # LLM-driven zero-shot NER (no ORT).
 ner-onnx = [
     # xberg-gliner ONNX backend with Hugging Face model download.
@@ -283,16 +326,20 @@ ner-onnx = [
     "tokio-runtime",
 ]
 
-presets = ["dep:include_dir", "dep:jsonschema", "dep:sha2"] # Preset format + registry + loader + resolver; pure-Rust.
+presets = [
+    "dep:include_dir",
+    "dep:jsonschema",
+    "dep:sha2",
+] # Preset format + registry + loader + resolver; pure-Rust.
 
 # Compatibility feature for public LLM structured extraction through
 # `ExtractionConfig::structured_extraction`.
 structured = ["liter-llm", "tokio-runtime"]
 
-redaction = ["dep:sha2"]            # Pattern-based PII engine; pure-Rust.
+redaction = ["dep:sha2"] # Pattern-based PII engine; pure-Rust.
 redaction-ml = ["redaction", "ner"] # Couple in NER for PERSON/ORG/LOC redaction.
 
-summarization = ["stopwords"]                      # TextRank extractive only; pure-Rust (uses stopword tables).
+summarization = ["stopwords"] # TextRank extractive only; pure-Rust (uses stopword tables).
 summarization-llm = ["summarization", "liter-llm"]
 
 translation = ["liter-llm"]
@@ -475,9 +522,30 @@ wasm-threads = ["dep:wasm-bindgen-rayon"]
 # --- Aggregate features ---
 
 # Document format extractors only — no infrastructure or text analysis.
-formats = ["pdf", "excel", "office", "hwp", "hwpx", "iwork", "email", "html", "xml", "archives", "mdx", "svg", "heic"]
+formats = [
+    "pdf",
+    "excel",
+    "office",
+    "hwp",
+    "hwpx",
+    "iwork",
+    "email",
+    "html",
+    "xml",
+    "archives",
+    "mdx",
+    "svg",
+    "heic",
+]
 # Text processing and analysis capabilities.
-analysis = ["language-detection", "chunking", "quality", "keywords", "markdown-footnotes", "diff"]
+analysis = [
+    "language-detection",
+    "chunking",
+    "quality",
+    "keywords",
+    "markdown-footnotes",
+    "diff",
+]
 # Network services and observability infrastructure.
 services = ["api", "mcp", "otel"]
 # Everything — all formats, analysis, services, OCR, ML, and code intelligence.
@@ -514,7 +582,15 @@ full = [
     "heic",
 ]
 # Server deployment preset — formats + analysis + services + OCR.
-server = ["formats", "analysis", "services", "url-ingestion", "ocr", "paddle-ocr", "layout-detection"]
+server = [
+    "formats",
+    "analysis",
+    "services",
+    "url-ingestion",
+    "ocr",
+    "paddle-ocr",
+    "layout-detection",
+]
 # CLI-only features (thin gate for xberg-cli).
 cli = ["services", "chunking", "url-ingestion"]
 
@@ -576,7 +652,7 @@ lofty = { version = "0.24", optional = true }
 # excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
 # to build on Windows MSVC.
 log = { workspace = true }
-lopdf = { version = "0.43.0", optional = true }
+lopdf = { version = "0.43.0", optional = true, default-features = false }
 mail-parser = { version = "0.11.4", optional = true }
 mel_spec = { version = "0.4", optional = true }
 memchr = "2.8.2"
@@ -665,7 +741,7 @@ uuid = { version = "1", features = ["v4"], optional = true }
 v_htmlescape = { version = "0.17", optional = true }
 whatlang = { version = "0.18.0", optional = true }
 xberg-gliner = { workspace = true, optional = true }
-xberg-libheif = { path = "../xberg-libheif", version = "1.0.0-rc.5", optional = true }
+xberg-libheif = { path = "../xberg-libheif", version = "1.0.0-rc.6", optional = true }
 # No `version` on this path-dep: xberg-tesseract carries `links =
 # "xberg_tesseract"`, and a versioned path-dep makes the maturin sdist
 # resolve two copies (path + registry) of a `links` crate, which cargo rejects
@@ -685,9 +761,9 @@ tokenizers = { version = "0.23", default-features = false, features = ["http", "
 # Note: candle-core unconditionally links platform-specific deps (cudarc on Linux, metal-kernels on macOS).
 # To avoid conflicts during feature unification, GPU features (candle-cuda/metal/mkl/accelerate) should
 # only be explicitly enabled with platform awareness. CI uses `--features full` which excludes GPU accel.
-xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.5", optional = true }
+xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.6", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.5", optional = true }
+xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.6", optional = true }
 
 # Desktop / server hosts (Linux + macOS, NOT Android): ureq uses ring-backed rustls plus
 # `platform-verifier`, which trusts the OS certificate store (rustls-native-certs on Linux,
@@ -717,9 +793,9 @@ ureq = { version = "3.3", default-features = false, features = [
     "json",
 ], optional = true }
 # Candle-based VLM OCR backends - pure-Rust transformer inference, not on WASM yet.
-xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.5", optional = true }
+xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.6", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.5", optional = true }
+xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.6", optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.tree-sitter-language-pack]
 workspace = true

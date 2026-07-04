@@ -46,8 +46,8 @@ defmodule XbergExtract do
   def struct_to_map(struct) when is_struct(struct) do
     struct
     |> Map.from_struct()
-    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-    |> Enum.map(fn {k, v} -> {Atom.to_string(k), struct_to_map(v)} end)
+  |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+  |> Enum.map(fn {k, v} -> {Atom.to_string(k), struct_to_map(v)} end)
     |> Map.new()
   end
   def struct_to_map(value), do: value
@@ -101,15 +101,15 @@ defmodule XbergExtract do
   def determine_ocr_used(metadata, ocr_enabled) do
     format_type = cond do
       is_map(metadata) ->
-        # Check root level first (flat metadata from Rust JSON)
-        root = Map.get(metadata, "format_type", Map.get(metadata, :format_type, nil))
-        if root do
-          root
-        else
-          # struct_to_map/1 nests format fields under "format" key — check there too
-          fmt = Map.get(metadata, "format", Map.get(metadata, :format, nil))
-          if is_map(fmt), do: Map.get(fmt, "format_type", Map.get(fmt, :format_type, "")), else: ""
-        end
+      # Check root level first (flat metadata from Rust JSON)
+      root = Map.get(metadata, "format_type", Map.get(metadata, :format_type, nil))
+      if root do
+        root
+      else
+        # struct_to_map/1 nests format fields under "format" key — check there too
+        fmt = Map.get(metadata, "format", Map.get(metadata, :format, nil))
+        if is_map(fmt), do: Map.get(fmt, "format_type", Map.get(fmt, :format_type, "")), else: ""
+      end
       true -> ""
     end
 
@@ -127,10 +127,10 @@ defmodule XbergExtract do
     if String.starts_with?(trimmed, "{") do
       case Jason.decode(trimmed) do
         {:ok, %{"path" => path} = req} ->
-          force_ocr = Map.get(req, "force_ocr", false)
-          {path, force_ocr}
+        force_ocr = Map.get(req, "force_ocr", false)
+        {path, force_ocr}
         _ ->
-          {trimmed, false}
+        {trimmed, false}
       end
     else
       {trimmed, false}
@@ -165,30 +165,30 @@ defmodule XbergExtract do
 
     case result do
       {:ok, extraction_result} ->
-        extraction_result = first_result(extraction_result, file_path)
-        debug_log("Result class: Xberg.ExtractionResult")
-        debug_log("Result has content: true")
-        debug_log("Content length: #{String.length(result_field(extraction_result, :content, ""))} characters")
-        debug_log("Result has metadata: true")
-        debug_log("Metadata type: map")
+      extraction_result = first_result(extraction_result, file_path)
+      debug_log("Result class: Xberg.ExtractionResult")
+      debug_log("Result has content: true")
+      debug_log("Content length: #{String.length(result_field(extraction_result, :content, ""))} characters")
+      debug_log("Result has metadata: true")
+      debug_log("Metadata type: map")
 
-        metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
-        content = sanitize_content(result_field(extraction_result, :content, ""))
-        payload = %{
-          "content" => content,
-          "metadata" => metadata,
-          "_extraction_time_ms" => duration_ms,
-          "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
-        }
+      metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
+      content = sanitize_content(result_field(extraction_result, :content, ""))
+      payload = %{
+      "content" => content,
+      "metadata" => metadata,
+      "_extraction_time_ms" => duration_ms,
+      "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
+      }
 
-        json_size = payload |> Jason.encode!() |> byte_size()
-        debug_log("Output JSON size: #{json_size} bytes")
-        debug_log("=== SYNC EXTRACTION END ===")
-        {:ok, payload}
+      json_size = payload |> Jason.encode!() |> byte_size()
+      debug_log("Output JSON size: #{json_size} bytes")
+      debug_log("=== SYNC EXTRACTION END ===")
+      {:ok, payload}
 
       {:error, reason} ->
-        debug_log("ERROR during sync extraction: #{inspect(reason)}")
-        {:error, reason}
+      debug_log("ERROR during sync extraction: #{inspect(reason)}")
+      {:error, reason}
     end
   end
 
@@ -210,34 +210,34 @@ defmodule XbergExtract do
     batch_start = System.monotonic_time(:microsecond)
 
     {results_with_timing, total_duration_ms} =
-      case Xberg.extract_batch(inputs: Enum.map(file_paths, &extract_input/1), config: config) do
-        {:ok, envelope} ->
-          batch_end = System.monotonic_time(:microsecond)
-          total_duration_ms = (batch_end - batch_start) / 1000.0
-          per_file_duration_ms = if length(file_paths) > 0, do: total_duration_ms / length(file_paths), else: 0.0
+    case Xberg.extract_batch(inputs: Enum.map(file_paths, &extract_input/1), config: config) do
+      {:ok, envelope} ->
+      batch_end = System.monotonic_time(:microsecond)
+      total_duration_ms = (batch_end - batch_start) / 1000.0
+      per_file_duration_ms = if length(file_paths) > 0, do: total_duration_ms / length(file_paths), else: 0.0
 
-          results =
-            envelope
-            |> envelope_results()
-            |> Enum.with_index()
-            |> Enum.map(fn {extraction_result, idx} ->
-              content = sanitize_content(result_field(extraction_result, :content, ""))
-              metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
-              debug_log("  Result[#{idx}] - content length: #{String.length(content)}, has metadata: true")
+      results =
+      envelope
+      |> envelope_results()
+      |> Enum.with_index()
+      |> Enum.map(fn {extraction_result, idx} ->
+        content = sanitize_content(result_field(extraction_result, :content, ""))
+        metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
+        debug_log("  Result[#{idx}] - content length: #{String.length(content)}, has metadata: true")
 
-              %{
-                "content" => content,
-                "metadata" => metadata,
-                "_extraction_time_ms" => per_file_duration_ms,
-                "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
-              }
-            end)
+        %{
+        "content" => content,
+        "metadata" => metadata,
+        "_extraction_time_ms" => per_file_duration_ms,
+        "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
+        }
+      end)
 
-          {results, total_duration_ms}
+      {results, total_duration_ms}
 
-        {:error, reason} ->
-          raise inspect(reason)
-      end
+      {:error, reason} ->
+      raise inspect(reason)
+    end
 
     debug_log("Total duration (milliseconds): #{total_duration_ms}")
     debug_log("=== BATCH EXTRACTION END ===")
@@ -262,11 +262,11 @@ defmodule XbergExtract do
 
       # Merge force_ocr into config if enabled
       request_config =
-        if force_ocr do
-          Map.put(config, "ocr", %{"backend" => "tesseract"})
-        else
-          config
-        end
+      if force_ocr do
+        Map.put(config, "ocr", %{"backend" => "tesseract"})
+      else
+        config
+      end
 
       # Use force_ocr or ocr_enabled flag
       effective_ocr = ocr_enabled or force_ocr
@@ -274,47 +274,47 @@ defmodule XbergExtract do
       try do
         case extract_sync(file_path, request_config, effective_ocr) do
           {:ok, payload} ->
-            try do
-              json = Jason.encode!(payload)
-              IO.puts(json)
-            rescue
-              e in [Jason.EncodeError, Protocol.UndefinedError] ->
-                error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
-                IO.puts(error_json)
-            end
+          try do
+            json = Jason.encode!(payload)
+            IO.puts(json)
+          rescue
+            e in [Jason.EncodeError, Protocol.UndefinedError] ->
+            error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+            IO.puts(error_json)
+          end
 
           {:error, reason} ->
-            error_payload = %{
-              "error" => inspect(reason),
-              "_extraction_time_ms" => 0,
-              "_ocr_used" => false
-            }
-
-            try do
-              json = Jason.encode!(error_payload)
-              IO.puts(json)
-            rescue
-              e in [Jason.EncodeError, Protocol.UndefinedError] ->
-                error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
-                IO.puts(error_json)
-            end
-        end
-      rescue
-        e ->
           error_payload = %{
-            "error" => inspect(e),
-            "_extraction_time_ms" => 0,
-            "_ocr_used" => false
+          "error" => inspect(reason),
+          "_extraction_time_ms" => 0,
+          "_ocr_used" => false
           }
 
           try do
             json = Jason.encode!(error_payload)
             IO.puts(json)
           rescue
-            encode_error in [Jason.EncodeError, Protocol.UndefinedError] ->
-              error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(encode_error)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
-              IO.puts(error_json)
+            e in [Jason.EncodeError, Protocol.UndefinedError] ->
+            error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+            IO.puts(error_json)
           end
+        end
+      rescue
+        e ->
+        error_payload = %{
+        "error" => inspect(e),
+        "_extraction_time_ms" => 0,
+        "_ocr_used" => false
+        }
+
+        try do
+          json = Jason.encode!(error_payload)
+          IO.puts(json)
+        rescue
+          encode_error in [Jason.EncodeError, Protocol.UndefinedError] ->
+          error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(encode_error)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+          IO.puts(error_json)
+        end
       end
     end)
     |> Stream.run()
@@ -332,135 +332,135 @@ defmodule XbergExtract do
 
     # Parse OCR flags
     {ocr_enabled, remaining_args} =
-      Enum.reduce(args, {false, []}, fn
-        "--ocr", {_, acc} -> {true, acc}
-        "--no-ocr", {_, acc} -> {false, acc}
-        arg, {ocr, acc} -> {ocr, acc ++ [arg]}
-      end)
+    Enum.reduce(args, {false, []}, fn
+      "--ocr", {_, acc} -> {true, acc}
+      "--no-ocr", {_, acc} -> {false, acc}
+      arg, {ocr, acc} -> {ocr, acc ++ [arg]}
+    end)
 
     config = %{"use_cache" => false}
 
     config =
-      if ocr_enabled do
-        Map.put(config, "ocr", %{"backend" => "tesseract"})
-      else
-        config
-      end
+    if ocr_enabled do
+      Map.put(config, "ocr", %{"backend" => "tesseract"})
+    else
+      config
+    end
 
     case remaining_args do
       [] ->
-        IO.puts(:stderr, "Usage: xberg_extract.exs [--ocr|--no-ocr] <mode> <file_path> [additional_files...]")
-        IO.puts(:stderr, "Modes: sync, batch, server")
-        IO.puts(:stderr, "Debug mode: set XBERG_BENCHMARK_DEBUG=true to enable debug logging to stderr")
-        System.halt(1)
+      IO.puts(:stderr, "Usage: xberg_extract.exs [--ocr|--no-ocr] <mode> <file_path> [additional_files...]")
+      IO.puts(:stderr, "Modes: sync, batch, server")
+      IO.puts(:stderr, "Debug mode: set XBERG_BENCHMARK_DEBUG=true to enable debug logging to stderr")
+      System.halt(1)
 
       [mode | file_paths] ->
-        debug_log("Mode: #{mode}")
-        debug_log("OCR enabled: #{ocr_enabled}")
-        debug_log("File paths (#{length(file_paths)}): #{inspect(file_paths)}")
+      debug_log("Mode: #{mode}")
+      debug_log("OCR enabled: #{ocr_enabled}")
+      debug_log("File paths (#{length(file_paths)}): #{inspect(file_paths)}")
 
-        case mode do
-          "server" ->
-            debug_log("Executing server mode")
-            run_server(config, ocr_enabled)
+      case mode do
+        "server" ->
+        debug_log("Executing server mode")
+        run_server(config, ocr_enabled)
 
-          "sync" ->
-            if length(file_paths) != 1 do
-              IO.puts(:stderr, "Error: sync mode requires exactly one file")
-              System.halt(1)
-            end
-
-            debug_log("Executing sync mode with file: #{hd(file_paths)}")
-
-            case extract_sync(hd(file_paths), config, ocr_enabled) do
-              {:ok, payload} ->
-                try do
-                  json = Jason.encode!(payload)
-                  debug_log("Output JSON: #{json}")
-                  IO.puts(json)
-                rescue
-                  e in [Jason.EncodeError, Protocol.UndefinedError] ->
-                    error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
-                    IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
-                    IO.puts(error_json)
-                    System.halt(1)
-                end
-
-              {:error, reason} ->
-                IO.puts(:stderr, "Error extracting with Xberg: #{inspect(reason)}")
-                System.halt(1)
-            end
-
-          "batch" ->
-            if length(file_paths) == 0 do
-              IO.puts(:stderr, "Error: batch mode requires at least one file")
-              System.halt(1)
-            end
-
-            debug_log("Executing batch mode with #{length(file_paths)} files")
-
-            case extract_batch(file_paths, config, ocr_enabled) do
-              {:ok, results} ->
-                try do
-                  # Always return a JSON array, even for a single file
-                  json = Jason.encode!(results)
-
-                  debug_log("Output JSON: #{String.slice(json, 0..200)}...")
-                  IO.puts(json)
-                rescue
-                  e in [Jason.EncodeError, Protocol.UndefinedError] ->
-                    error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
-                    IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
-                    IO.puts(error_json)
-                    System.halt(1)
-                end
-
-              {:error, reason} ->
-                IO.puts(:stderr, "Error extracting with Xberg: #{inspect(reason)}")
-                System.halt(1)
-            end
-
-          _ ->
-            IO.puts(:stderr, "Error: Unknown mode '#{mode}'. Use sync, batch, or server")
-            System.halt(1)
+        "sync" ->
+        if length(file_paths) != 1 do
+          IO.puts(:stderr, "Error: sync mode requires exactly one file")
+          System.halt(1)
         end
 
-        debug_log("Script completed successfully")
+        debug_log("Executing sync mode with file: #{hd(file_paths)}")
+
+        case extract_sync(hd(file_paths), config, ocr_enabled) do
+          {:ok, payload} ->
+          try do
+            json = Jason.encode!(payload)
+            debug_log("Output JSON: #{json}")
+            IO.puts(json)
+          rescue
+            e in [Jason.EncodeError, Protocol.UndefinedError] ->
+            error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+            IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
+            IO.puts(error_json)
+            System.halt(1)
+          end
+
+          {:error, reason} ->
+          IO.puts(:stderr, "Error extracting with Xberg: #{inspect(reason)}")
+          System.halt(1)
+        end
+
+        "batch" ->
+        if length(file_paths) == 0 do
+          IO.puts(:stderr, "Error: batch mode requires at least one file")
+          System.halt(1)
+        end
+
+        debug_log("Executing batch mode with #{length(file_paths)} files")
+
+        case extract_batch(file_paths, config, ocr_enabled) do
+          {:ok, results} ->
+          try do
+            # Always return a JSON array, even for a single file
+            json = Jason.encode!(results)
+
+            debug_log("Output JSON: #{String.slice(json, 0..200)}...")
+            IO.puts(json)
+          rescue
+            e in [Jason.EncodeError, Protocol.UndefinedError] ->
+            error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+            IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
+            IO.puts(error_json)
+            System.halt(1)
+          end
+
+          {:error, reason} ->
+          IO.puts(:stderr, "Error extracting with Xberg: #{inspect(reason)}")
+          System.halt(1)
+        end
+
+        _ ->
+        IO.puts(:stderr, "Error: Unknown mode '#{mode}'. Use sync, batch, or server")
+        System.halt(1)
+      end
+
+      debug_log("Script completed successfully")
     end
   rescue
     e ->
-      debug_log("FATAL ERROR: #{inspect(e)}")
-      debug_log("Backtrace: #{inspect(__STACKTRACE__)}")
-      IO.puts(:stderr, "Error extracting with Xberg: #{inspect(e)}")
-      System.halt(1)
+    debug_log("FATAL ERROR: #{inspect(e)}")
+    debug_log("Backtrace: #{inspect(__STACKTRACE__)}")
+    IO.puts(:stderr, "Error extracting with Xberg: #{inspect(e)}")
+    System.halt(1)
   end
 end
 
 # Start the application and run main
 case Application.ensure_all_started(:xberg) do
   {:ok, _apps} ->
-    :ok
+  :ok
 
   {:error, reason} ->
-    # Write error to stderr (guard against missing device)
-    try do
-      IO.puts(:stderr, "Failed to start :xberg application: #{inspect(reason)}")
-    rescue
-      _ -> :ok
-    catch
-      _, _ -> :ok
-    end
+  # Write error to stderr (guard against missing device)
+  try do
+    IO.puts(:stderr, "Failed to start :xberg application: #{inspect(reason)}")
+  rescue
+    _ -> :ok
+  catch
+    _, _ -> :ok
+  end
 
-    # In server mode, output an error JSON so the harness doesn't see EOF
-    if Enum.member?(System.argv(), "server") do
-      IO.puts(Jason.encode!(%{
-        "error" => "Application startup failed: #{inspect(reason)}",
-        "_extraction_time_ms" => 0,
-        "_ocr_used" => false
-      }))
-    end
+  # In server mode, output an error JSON so the harness doesn't see EOF
+  if Enum.member?(System.argv(), "server") do
+    IO.puts(Jason.encode!(%{
+    "error" => "Application startup failed: #{inspect(reason)}",
+    "_extraction_time_ms" => 0,
+    "_ocr_used" => false
+    }))
+  end
 
-    System.halt(1)
+  System.halt(1)
 end
 
 # Parse args and run

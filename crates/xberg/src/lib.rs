@@ -184,6 +184,8 @@ pub use types::*;
 pub use extraction::office_metadata::{CoreProperties, DocxAppProperties};
 
 // ── Extraction — public API ──────────────────────────────────────────────────
+#[cfg(feature = "url-ingestion")]
+pub use core::extract::map_url;
 pub use core::extract::{extract, extract_batch};
 
 // ── Extraction config types ───────────────────────────────────────────────────
@@ -196,8 +198,20 @@ pub use core::config::{
     RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig, SummarizationConfig,
     TableChunkingMode, TokenReductionOptions, TranslationConfig, UrlExtractionConfig, UrlExtractionMode,
 };
+// ── Crawlberg config types — re-exported so consumers only need xberg as a dep ─
+//
+// Gate mirrors `UrlExtractionConfig.crawl`: compiled when either the full
+// `url-ingestion` runtime or the lighter `url-config-types` is active.
+#[cfg(any(feature = "url-ingestion", feature = "url-config-types"))]
+pub use crawlberg::{
+    AssetCategory, AuthConfig, BrowserBackend, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig,
+    ProxyConfig, SsrfPolicy,
+};
+// ── URL map result types — sitemap / link-graph discovery ────────────────────
 #[cfg(feature = "transcription-types")]
 pub use core::config::{TranscriptionConfig, WhisperModel};
+#[cfg(feature = "url-ingestion")]
+pub use crawlberg::{MapResult, SitemapUrl};
 pub use extractors::security::SecurityLimits;
 
 // ── Presets — format + registry + resolver ───────────────────────────────────
