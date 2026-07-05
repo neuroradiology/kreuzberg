@@ -99,23 +99,72 @@ impl DeepseekOCREngine {
         let tokenizer = Tokenizer::from_file(&tokenizer_file)
             .map_err(|e| CandleOcrError::Tokenizer(format!("Failed to load DeepSeek-OCR tokenizer: {}", e)))?;
 
-        // Load safetensors weights
-        let model_file = path.join("model.safetensors");
-        if !model_file.exists() {
-            return Err(CandleOcrError::ModelLoadFailed(format!(
-                "DeepSeek-OCR weights not found at: {}",
-                model_file.display()
-            )));
-        }
+        // Load safetensors weights: try single file first, then sharded via index
+        let model_files = {
+            let single_file = path.join("model.safetensors");
+            if single_file.exists() {
+                vec![single_file]
+            } else {
+                // Try loading sharded weights via index file
+                let index_file = path.join("model.safetensors.index.json");
+                if !index_file.exists() {
+                    return Err(CandleOcrError::ModelLoadFailed(format!(
+                        "DeepSeek-OCR weights not found: no model.safetensors or model.safetensors.index.json at {}",
+                        path.display()
+                    )));
+                }
 
-        // SAFETY: We're using mmaped_safetensors with a valid, checked file path.
-        // The file is read-only and the lifetime is scoped to this function,
+                let index_str = std::fs::read_to_string(&index_file)
+                    .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to read safetensors index: {}", e)))?;
+
+                let index: serde_json::Value = serde_json::from_str(&index_str).map_err(|e| {
+                    CandleOcrError::ModelLoadFailed(format!("Failed to parse safetensors index: {}", e))
+                })?;
+
+                // Extract unique weight file names from the index
+                let mut files = std::collections::HashSet::new();
+                if let Some(weights) = index.get("weight_map").and_then(|m| m.as_object()) {
+                    for (_key, val) in weights {
+                        if let Some(filename) = val.as_str() {
+                            files.insert(filename.to_string());
+                        }
+                    }
+                }
+
+                if files.is_empty() {
+                    return Err(CandleOcrError::ModelLoadFailed(
+                        "DeepSeek-OCR safetensors index exists but contains no weight files".to_string(),
+                    ));
+                }
+
+                // Resolve all shard files relative to model path
+                let mut result = Vec::new();
+                for filename in files {
+                    let shard_path = path.join(&filename);
+                    if !shard_path.exists() {
+                        return Err(CandleOcrError::ModelLoadFailed(format!(
+                            "DeepSeek-OCR shard not found: {}",
+                            shard_path.display()
+                        )));
+                    }
+                    result.push(shard_path);
+                }
+                result
+            }
+        };
+
+        // SAFETY: We're using mmaped_safetensors with valid, checked file paths.
+        // The files are read-only and the lifetime is scoped to this function,
         // ensuring memory safety. The VarBuilder holds the mmap for as long
         // as the weights are in use.
         #[allow(unsafe_code)]
-        let vb = unsafe {
-            VarBuilder::from_mmaped_safetensors(&[model_file.as_path()], dtype, &device)
-                .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load DeepSeek-OCR weights: {}", e)))?
+        let vb = {
+            let file_refs: Vec<&std::path::Path> = model_files.iter().map(|p| p.as_path()).collect();
+            unsafe {
+                VarBuilder::from_mmaped_safetensors(&file_refs, dtype, &device).map_err(|e| {
+                    CandleOcrError::ModelLoadFailed(format!("Failed to load DeepSeek-OCR weights: {}", e))
+                })?
+            }
         };
 
         // Create processor and model

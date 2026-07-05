@@ -905,20 +905,79 @@ impl PaddleOCRVLModel {
                 .forward(&image_embed, image_grid_thw)
                 .map_err(|e| CandleOcrError::InferenceFailed(format!("Projector forward: {}", e)))?;
 
-            // Apply image mask to embed
-            let image_mask_f = image_mask
+            // Apply image mask to embed using position-agnostic scatter.
+            // image_embed is [num_vision_tokens, hidden_size] (dense, post-projector).
+            // inputs_embeds is [1, seq_len, hidden_size].
+            // image_mask is [1, seq_len] with 1 at positions where image tokens belong.
+
+            let (_b, seq_len, hidden_size) = inputs_embeds
+                .dims3()
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Get dims: {}", e)))?;
+
+            let num_vision_tokens = image_embed
+                .dim(0)
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Get image_embed dim: {}", e)))?;
+
+            // Extract positions where mask is 1
+            let mask_flat = image_mask
+                .flatten_all()
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Flatten mask: {}", e)))?;
+
+            let mask_vec = mask_flat
+                .to_vec1::<u32>()
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Mask to_vec1: {}", e)))?;
+
+            let mut image_positions = Vec::new();
+            for (i, &val) in mask_vec.iter().enumerate() {
+                if val != 0 {
+                    image_positions.push(i as u32);
+                }
+            }
+
+            // Guard: number of 1s in mask must equal num_vision_tokens
+            if image_positions.len() != num_vision_tokens as usize {
+                return Err(CandleOcrError::InferenceFailed(format!(
+                    "Image mask has {} positions but num_vision_tokens is {}",
+                    image_positions.len(),
+                    num_vision_tokens
+                )));
+            }
+
+            // Create index tensor for scatter
+            let index = Tensor::from_vec(image_positions, (num_vision_tokens as usize,), inputs_embeds.device())
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Create index: {}", e)))?;
+
+            // Build keep mask: 1 where mask is 0 (text positions), 0 where mask is 1 (image positions)
+            let keep = image_mask
                 .to_dtype(inputs_embeds.dtype())
-                .map_err(|e| CandleOcrError::InferenceFailed(format!("Mask dtype: {}", e)))?
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Mask to_dtype: {}", e)))?
+                .flatten_all()
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Flatten keep: {}", e)))?
+                .affine(-1.0, 1.0)
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Affine keep: {}", e)))?
                 .unsqueeze(D::Minus1)
-                .map_err(|e| CandleOcrError::InferenceFailed(format!("Mask unsqueeze: {}", e)))?;
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Unsqueeze keep: {}", e)))?;
 
-            let image_contrib = image_embed
-                .broadcast_mul(&image_mask_f)
-                .map_err(|e| CandleOcrError::InferenceFailed(format!("Mask mul: {}", e)))?;
+            // Zero out image positions in inputs_embeds
+            let flat = inputs_embeds
+                .reshape((seq_len, hidden_size))
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Reshape: {}", e)))?
+                .broadcast_mul(&keep)
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Broadcast mul: {}", e)))?;
 
-            inputs_embeds = inputs_embeds
-                .add(&image_contrib)
-                .map_err(|e| CandleOcrError::InferenceFailed(format!("Add image: {}", e)))?;
+            // Convert image_embed to correct dtype
+            let image_embed = image_embed
+                .to_dtype(inputs_embeds.dtype())
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Image embed to_dtype: {}", e)))?;
+
+            // Scatter vision embeddings into their mask positions
+            let merged = flat
+                .index_add(&index, &image_embed, 0)
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Index add: {}", e)))?;
+
+            inputs_embeds = merged
+                .reshape((1, seq_len, hidden_size))
+                .map_err(|e| CandleOcrError::InferenceFailed(format!("Reshape back: {}", e)))?;
         }
 
         let position_ids;

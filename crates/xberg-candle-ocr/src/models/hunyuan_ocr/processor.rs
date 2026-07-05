@@ -371,8 +371,11 @@ impl HunyuanVLProcessor {
 
 /// Find indices where tensor equals a target value.
 fn get_eq_indices(tensor: &Tensor, target: u32) -> Result<Tensor> {
+    // `input_ids` arrive as I64 from the tokenizer; normalise to U32 before
+    // reading into a `Vec<u32>` so the dtype matches `to_vec1::<u32>`.
     let vec = tensor
-        .to_vec1::<u32>()
+        .to_dtype(DType::U32)
+        .and_then(|t| t.to_vec1::<u32>())
         .map_err(|e| CandleOcrError::InferenceFailed(format!("To vec: {}", e)))?;
 
     let indices: Vec<u32> = vec
@@ -388,8 +391,10 @@ fn get_eq_indices(tensor: &Tensor, target: u32) -> Result<Tensor> {
 
 /// Create a binary mask where positions equal to target are 1, others are 0.
 fn get_equal_mask(tensor: &Tensor, target: u32) -> Result<Tensor> {
+    // `input_ids` arrive as I64 from the tokenizer; normalise to U32 first.
     let vec = tensor
-        .to_vec1::<u32>()
+        .to_dtype(DType::U32)
+        .and_then(|t| t.to_vec1::<u32>())
         .map_err(|e| CandleOcrError::InferenceFailed(format!("To vec: {}", e)))?;
 
     let mask: Vec<u32> = vec.iter().map(|&v| if v == target { 1 } else { 0 }).collect();
