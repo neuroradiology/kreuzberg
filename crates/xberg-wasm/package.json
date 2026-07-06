@@ -1,6 +1,6 @@
 {
   "name": "@xberg-io/xberg-wasm",
-  "version": "1.0.0-rc.10",
+  "version": "1.0.0-rc.11",
   "private": false,
   "description": "High-performance document intelligence library",
   "license": "MIT",
@@ -13,7 +13,12 @@
     "access": "public"
   },
   "type": "module",
-  "files": ["pkg", "*.wasm", "*.d.ts", "README.md"],
+  "files": [
+    "pkg",
+    "*.wasm",
+    "*.d.ts",
+    "README.md"
+  ],
   "main": "pkg/nodejs/xberg_wasm.js",
   "module": "pkg/web/xberg_wasm.js",
   "types": "pkg/nodejs/xberg_wasm.d.ts",

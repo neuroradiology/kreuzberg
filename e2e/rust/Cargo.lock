@@ -7874,7 +7874,7 @@ dependencies = [
 
 [[package]]
 name = "xberg"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "ahash 0.8.12",
  "async-trait",
@@ -7989,7 +7989,7 @@ dependencies = [
 
 [[package]]
 name = "xberg-e2e-rust"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8004,7 +8004,7 @@ dependencies = [
 
 [[package]]
 name = "xberg-gliner"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "ndarray 0.17.2",
  "ort",
@@ -8016,7 +8016,7 @@ dependencies = [
 
 [[package]]
 name = "xberg-libheif"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "cfg-if",
  "enumn",
@@ -8027,7 +8027,7 @@ dependencies = [
 
 [[package]]
 name = "xberg-paddle-ocr"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -8042,7 +8042,7 @@ dependencies = [
 
 [[package]]
 name = "xberg-tesseract"
-version = "1.0.0-rc.10"
+version = "1.0.0-rc.11"
 dependencies = [
  "cc",
  "cmake",
