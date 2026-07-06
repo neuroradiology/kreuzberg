@@ -228,7 +228,11 @@ impl HunyuanOCREngine {
             generated.push(next_token);
 
             if stop_ids.contains(&next_token) {
-                tracing::debug!(step = step, num_tokens = generated.len(), "Hunyuan-OCR: reached stop token");
+                tracing::debug!(
+                    step = step,
+                    num_tokens = generated.len(),
+                    "Hunyuan-OCR: reached stop token"
+                );
                 break;
             }
 

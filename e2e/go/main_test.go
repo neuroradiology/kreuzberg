@@ -37,27 +37,15 @@ func TestMain(m *testing.M) {
 		os.Exit(m.Run())
 	}
 
-	// Check for pre-built mock-server binary (set by CI to avoid in-test build).
-	// XBERG_E2E_MOCK_SERVER_BIN should point to the absolute path of the binary.
-	var mockBin string
-	if prebuilt := os.Getenv("XBERG_E2E_MOCK_SERVER_BIN"); prebuilt != "" {
-		if _, err := os.Stat(prebuilt); err == nil {
-			mockBin = prebuilt
-		} else {
-			panic(fmt.Sprintf("XBERG_E2E_MOCK_SERVER_BIN points to non-existent binary: %s", prebuilt))
-		}
-	} else {
-		// Fallback: build at test time for local development.
-		mockBin = filepath.Join(dir, "..", "rust", "target", "release", "mock-server")
-		mockManifest := filepath.Join(dir, "..", "rust", "Cargo.toml")
-		if _, err := os.Stat(mockBin); os.IsNotExist(err) {
-			fmt.Fprintln(os.Stderr, "Building mock-server...")
-			build := exec.Command("cargo", "build", "--release", "--manifest-path", mockManifest, "--bin", "mock-server")
-			build.Stdout = os.Stderr
-			build.Stderr = os.Stderr
-			if err := build.Run(); err != nil {
-				panic(fmt.Sprintf("mock-server build failed: %v", err))
-			}
+	mockBin := filepath.Join(dir, "..", "rust", "target", "release", "mock-server")
+	mockManifest := filepath.Join(dir, "..", "rust", "Cargo.toml")
+	if _, err := os.Stat(mockBin); os.IsNotExist(err) {
+		fmt.Fprintln(os.Stderr, "Building mock-server...")
+		build := exec.Command("cargo", "build", "--release", "--manifest-path", mockManifest, "--bin", "mock-server")
+		build.Stdout = os.Stderr
+		build.Stderr = os.Stderr
+		if err := build.Run(); err != nil {
+			panic(fmt.Sprintf("mock-server build failed: %v", err))
 		}
 	}
 

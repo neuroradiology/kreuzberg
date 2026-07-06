@@ -1007,8 +1007,7 @@ fn masked_scatter_dim0(base: &Tensor, image_embeds: &Tensor, mask: &Tensor) -> R
         }
     }
 
-    let out = Tensor::stack(&result_rows, 0)
-        .map_err(|e| CandleOcrError::InferenceFailed(format!("Stack: {}", e)))?;
+    let out = Tensor::stack(&result_rows, 0).map_err(|e| CandleOcrError::InferenceFailed(format!("Stack: {}", e)))?;
     if batched {
         out.unsqueeze(0)
             .map_err(|e| CandleOcrError::InferenceFailed(format!("Scatter unsqueeze: {}", e)))

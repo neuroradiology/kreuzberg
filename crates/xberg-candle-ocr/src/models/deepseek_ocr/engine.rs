@@ -281,8 +281,12 @@ impl DeepseekOCREngine {
 
         // No dynamic crops on this path: an empty crop tensor selects the forward's
         // global-only branch (image_crop.sum() == 0).
-        let image_crop = Tensor::zeros((0, channels, BASE_SIZE as usize, BASE_SIZE as usize), self.dtype, &self.device)
-            .map_err(|e| CandleOcrError::InferenceFailed(format!("Image crop tensor: {}", e)))?;
+        let image_crop = Tensor::zeros(
+            (0, channels, BASE_SIZE as usize, BASE_SIZE as usize),
+            self.dtype,
+            &self.device,
+        )
+        .map_err(|e| CandleOcrError::InferenceFailed(format!("Image crop tensor: {}", e)))?;
         let images_spatial_crop = Tensor::new(&[[1u32, 1u32]], &self.device)
             .map_err(|e| CandleOcrError::InferenceFailed(format!("Spatial crop tensor: {}", e)))?;
 

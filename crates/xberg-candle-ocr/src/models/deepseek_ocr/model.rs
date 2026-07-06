@@ -1305,8 +1305,7 @@ impl DeepseekOCRModel {
         // with a CLIP tower at model.vision_model and has no model.qwen2_model.
         // Select the tower by which tensors are actually present rather than by the
         // SAM version, so a v2-neck + CLIP checkpoint loads the CLIP path.
-        let has_qwen2_tower =
-            vb_m.contains_tensor("qwen2_model.model.model.layers.0.self_attn.q_proj.weight");
+        let has_qwen2_tower = vb_m.contains_tensor("qwen2_model.model.model.layers.0.self_attn.q_proj.weight");
         let (vision_model, image_newline) = if has_qwen2_tower {
             let qwen2 = Qwen2Decoder2Encoder::new(vb_m.pp("qwen2_model"))?;
             (VisionModel::Qwen2(qwen2), None)

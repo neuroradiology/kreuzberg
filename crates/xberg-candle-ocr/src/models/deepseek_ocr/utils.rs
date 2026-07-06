@@ -182,8 +182,8 @@ pub fn masked_scatter_dim0(dst: &Tensor, src: &Tensor, mask: &Tensor) -> Result<
     if output_rows.is_empty() {
         return Ok(if batched { dst.unsqueeze(0)? } else { dst });
     }
-    let out = Tensor::stack(&output_rows, 0)
-        .map_err(|e| CandleOcrError::InferenceFailed(format!("stack failed: {e}")))?;
+    let out =
+        Tensor::stack(&output_rows, 0).map_err(|e| CandleOcrError::InferenceFailed(format!("stack failed: {e}")))?;
     if batched { Ok(out.unsqueeze(0)?) } else { Ok(out) }
 }
 
