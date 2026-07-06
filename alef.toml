@@ -153,6 +153,9 @@ delocate = "delocate"
 thw = "thw"
 arange = "arange"
 mmaped = "mmaped"
+# deepseek-ocr checkpoint key names (must match the upstream weights verbatim)
+layrnorm = "layrnorm"
+seperator = "seperator"
 # binding / keyword-algorithm split tokens
 ser = "ser"
 ake = "ake"
