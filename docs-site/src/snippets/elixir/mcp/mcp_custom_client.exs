@@ -18,22 +18,22 @@ defmodule XbergMCPClient do
     """
 
     defstruct [
-      :host,
-      :port,
-      :timeout_ms,
-      :max_retries,
-      :retry_delay_ms,
-      :cache_dir
+    :host,
+    :port,
+    :timeout_ms,
+    :max_retries,
+    :retry_delay_ms,
+    :cache_dir
     ]
 
     def new(opts \\ []) do
       %Config{
-        host: Keyword.get(opts, :host, "localhost"),
-        port: Keyword.get(opts, :port, 8080),
-        timeout_ms: Keyword.get(opts, :timeout_ms, 30000),
-        max_retries: Keyword.get(opts, :max_retries, 3),
-        retry_delay_ms: Keyword.get(opts, :retry_delay_ms, 1000),
-        cache_dir: Keyword.get(opts, :cache_dir, nil)
+      host: Keyword.get(opts, :host, "localhost"),
+      port: Keyword.get(opts, :port, 8080),
+      timeout_ms: Keyword.get(opts, :timeout_ms, 30000),
+      max_retries: Keyword.get(opts, :max_retries, 3),
+      retry_delay_ms: Keyword.get(opts, :retry_delay_ms, 1000),
+      cache_dir: Keyword.get(opts, :cache_dir, nil)
       }
     end
   end
@@ -51,7 +51,7 @@ defmodule XbergMCPClient do
     * `:use_cache` - Enable result caching (default: false)
   """
   @spec extract(Config.t(), String.t(), keyword()) ::
-          {:ok, map()} | {:error, String.t()}
+  {:ok, map()} | {:error, String.t()}
   def extract(config, file_path, opts \\ []) do
     mime_type = Keyword.get(opts, :mime_type)
     extraction_config = Keyword.get(opts, :config)
@@ -63,19 +63,19 @@ defmodule XbergMCPClient do
 
       case get_from_cache(config.cache_dir, cache_key) do
         {:ok, cached_result} ->
-          Logger.debug("Cache hit for #{file_path}")
-          {:ok, cached_result}
+        Logger.debug("Cache hit for #{file_path}")
+        {:ok, cached_result}
 
         :miss ->
-          # Cache miss, fetch from server
-          case fetch_from_server(config, file_path, mime_type, extraction_config) do
-            {:ok, result} ->
-              if use_cache, do: store_in_cache(config.cache_dir, cache_key, result)
-              {:ok, result}
+        # Cache miss, fetch from server
+        case fetch_from_server(config, file_path, mime_type, extraction_config) do
+          {:ok, result} ->
+          if use_cache, do: store_in_cache(config.cache_dir, cache_key, result)
+          {:ok, result}
 
-            error ->
-              error
-          end
+          error ->
+          error
+        end
       end
     else
       fetch_from_server(config, file_path, mime_type, extraction_config)
@@ -89,31 +89,31 @@ defmodule XbergMCPClient do
   Useful for server-side processing of large files.
   """
   @spec upload_and_extract(Config.t(), String.t(), keyword()) ::
-          {:ok, map()} | {:error, String.t()}
+  {:ok, map()} | {:error, String.t()}
   def upload_and_extract(config, file_path, opts \\ []) do
     unless File.exists?(file_path) do
       {:error, "File not found: #{file_path}"}
     else
       case File.read(file_path) do
         {:ok, body} ->
-          url = "http://#{config.host}:#{config.port}/extract/file"
+        url = "http://#{config.host}:#{config.port}/extract/file"
 
-          headers = [
-            {"Content-Type", "application/octet-stream"},
-            {"X-File-Name", Path.basename(file_path)}
-          ]
+        headers = [
+        {"Content-Type", "application/octet-stream"},
+        {"X-File-Name", Path.basename(file_path)}
+        ]
 
-          case HTTPoison.post(url, body, headers, timeout: config.timeout_ms) do
-            {:ok, response} ->
-              handle_response(response)
+        case HTTPoison.post(url, body, headers, timeout: config.timeout_ms) do
+          {:ok, response} ->
+          handle_response(response)
 
-            {:error, reason} ->
-              Logger.error("Upload failed: #{inspect(reason)}")
-              {:error, "Upload failed: #{inspect(reason)}"}
-          end
+          {:error, reason} ->
+          Logger.error("Upload failed: #{inspect(reason)}")
+          {:error, "Upload failed: #{inspect(reason)}"}
+        end
 
         {:error, reason} ->
-          {:error, "Failed to read file: #{inspect(reason)}"}
+        {:error, "Failed to read file: #{inspect(reason)}"}
       end
     end
   end
@@ -127,13 +127,13 @@ defmodule XbergMCPClient do
 
     case HTTPoison.get(url, [], timeout: config.timeout_ms) do
       {:ok, response} ->
-        case handle_response(response) do
-          {:ok, data} -> {:ok, data}
-          error -> error
-        end
+      case handle_response(response) do
+        {:ok, data} -> {:ok, data}
+        error -> error
+      end
 
       {:error, reason} ->
-        {:error, "Health check failed: #{inspect(reason)}"}
+      {:error, "Health check failed: #{inspect(reason)}"}
     end
   end
 
@@ -144,17 +144,17 @@ defmodule XbergMCPClient do
   document collections.
   """
   @spec extract_batch(Config.t(), [String.t()], keyword()) ::
-          {:ok, [map()]} | {:error, String.t()}
+  {:ok, [map()]} | {:error, String.t()}
   def extract_batch(config, file_paths, opts \\ []) do
     Logger.info("Batch extracting #{length(file_paths)} documents")
 
     results =
-      file_paths
-      |> Task.async_stream(fn path ->
-        extract(config, path, opts)
-      end)
-      |> Stream.map(fn {:ok, result} -> result end)
-      |> Enum.to_list()
+    file_paths
+    |> Task.async_stream(fn path ->
+      extract(config, path, opts)
+    end)
+  |> Stream.map(fn {:ok, result} -> result end)
+    |> Enum.to_list()
 
     success_count = Enum.count(results, &match?({:ok, _}, &1))
     Logger.info("Batch extraction complete: #{success_count}/#{length(file_paths)} succeeded")
@@ -168,11 +168,11 @@ defmodule XbergMCPClient do
     url = "http://#{config.host}:#{config.port}/extract"
 
     body =
-      Jason.encode!(%{
-        file_path: file_path,
-        mime_type: mime_type,
-        config: extraction_config
-      })
+    Jason.encode!(%{
+    file_path: file_path,
+    mime_type: mime_type,
+    config: extraction_config
+    })
 
     headers = [{"Content-Type", "application/json"}]
 
@@ -192,12 +192,12 @@ defmodule XbergMCPClient do
   defp retry_request(config, request_fn, attempt) when attempt < config.max_retries do
     case request_fn.() do
       {:ok, response} ->
-        {:ok, response}
+      {:ok, response}
 
       {:error, reason} ->
-        Logger.warn("Request failed (attempt #{attempt + 1}): #{inspect(reason)}")
-        Process.sleep(config.retry_delay_ms)
-        retry_request(config, request_fn, attempt + 1)
+      Logger.warn("Request failed (attempt #{attempt + 1}): #{inspect(reason)}")
+      Process.sleep(config.retry_delay_ms)
+      retry_request(config, request_fn, attempt + 1)
     end
   end
 
@@ -208,14 +208,14 @@ defmodule XbergMCPClient do
   defp handle_response(%HTTPoison.Response{status_code: 200, body: body}) do
     case Jason.decode(body) do
       {:ok, data} ->
-        if Map.get(data, "success") do
-          {:ok, data}
-        else
-          {:error, Map.get(data, "error", "Unknown error")}
-        end
+      if Map.get(data, "success") do
+        {:ok, data}
+      else
+        {:error, Map.get(data, "error", "Unknown error")}
+      end
 
       {:error, reason} ->
-        {:error, "Failed to decode response: #{inspect(reason)}"}
+      {:error, "Failed to decode response: #{inspect(reason)}"}
     end
   end
 
@@ -234,10 +234,10 @@ defmodule XbergMCPClient do
     if File.exists?(cache_file) do
       case File.read(cache_file) do
         {:ok, content} ->
-          {:ok, Jason.decode!(content)}
+        {:ok, Jason.decode!(content)}
 
         :error ->
-          :miss
+        :miss
       end
     else
       :miss
@@ -256,11 +256,11 @@ IO.puts("=== Xberg MCP Client ===\n")
 
 # Create client configuration
 config = XbergMCPClient.Config.new(
-  host: "localhost",
-  port: 8080,
-  timeout_ms: 30000,
-  max_retries: 3,
-  cache_dir: "/tmp/xberg_cache"
+host: "localhost",
+port: 8080,
+timeout_ms: 30000,
+max_retries: 3,
+cache_dir: "/tmp/xberg_cache"
 )
 
 # Check server health
@@ -268,11 +268,11 @@ IO.puts("Checking server health...")
 
 case XbergMCPClient.health_check(config) do
   {:ok, health} ->
-    IO.puts("Server status: #{health["status"]}")
-    IO.puts("Service: #{health["service"]}\n")
+  IO.puts("Server status: #{health["status"]}")
+  IO.puts("Service: #{health["service"]}\n")
 
   {:error, reason} ->
-    IO.puts("Health check failed: #{reason}\n")
+  IO.puts("Health check failed: #{reason}\n")
 end
 
 # Extract single document
@@ -280,13 +280,13 @@ IO.puts("Extracting document...")
 
 case XbergMCPClient.extract(config, "document.pdf", use_cache: true) do
   {:ok, result} ->
-    IO.puts("Success!")
-    IO.puts("Content size: #{byte_size(result["content"])} bytes")
-    IO.puts("MIME type: #{result["mime_type"]}")
-    IO.puts("Tables found: #{length(result["tables"])}")
+  IO.puts("Success!")
+  IO.puts("Content size: #{byte_size(result["content"])} bytes")
+  IO.puts("MIME type: #{result["mime_type"]}")
+  IO.puts("Tables found: #{length(result["tables"])}")
 
   {:error, reason} ->
-    IO.puts("Extraction failed: #{reason}")
+  IO.puts("Extraction failed: #{reason}")
 end
 
 IO.puts("")
@@ -295,18 +295,18 @@ IO.puts("")
 IO.puts("Batch extracting multiple documents...")
 
 documents = [
-  "doc1.pdf",
-  "doc2.pdf",
-  "doc3.pdf"
+"doc1.pdf",
+"doc2.pdf",
+"doc3.pdf"
 ]
 
 case XbergMCPClient.extract_batch(config, documents) do
   {:ok, results} ->
-    IO.puts("Batch extraction complete!")
-    successful = Enum.count(results, &match?({:ok, _}, &1))
-    IO.puts("Successful: #{successful}/#{length(results)}")
+  IO.puts("Batch extraction complete!")
+  successful = Enum.count(results, &match?({:ok, _}, &1))
+  IO.puts("Successful: #{successful}/#{length(results)}")
 
   {:error, reason} ->
-    IO.puts("Batch extraction failed: #{reason}")
+  IO.puts("Batch extraction failed: #{reason}")
 end
 ```

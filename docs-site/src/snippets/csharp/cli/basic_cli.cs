@@ -19,26 +19,26 @@ extractCommand.AddArgument(filePath);
 extractCommand.AddOption(outputFormat);
 
 extractCommand.SetHandler(async (path, format) =>
-{
-    try
     {
-        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), ExtractionConfig.Default())).Results[0];
+        try
+        {
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), ExtractionConfig.Default())).Results[0];
 
-        if (format == "json")
-        {
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(result));
+            if (format == "json")
+            {
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(result));
+            }
+            else
+            {
+                Console.WriteLine(result.Content);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine(result.Content);
+            Console.Error.WriteLine($"Error: {ex.Message}");
+            Environment.Exit(1);
         }
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"Error: {ex.Message}");
-        Environment.Exit(1);
-    }
-}, filePath, outputFormat);
+    }, filePath, outputFormat);
 
 rootCommand.AddCommand(extractCommand);
 

@@ -6,11 +6,11 @@ alias Xberg.ExtractionConfig
 
 # Advanced language detection configuration
 config = %ExtractionConfig{
-  language_detection: %{
-    "enabled" => true,
-    "detect_all" => true,
-    "min_confidence" => 0.8
-  }
+language_detection: %{
+"enabled" => true,
+"detect_all" => true,
+"min_confidence" => 0.8
+}
 }
 
 # Extract file with language detection enabled

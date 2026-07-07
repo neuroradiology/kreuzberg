@@ -27,28 +27,28 @@ defmodule ImagePreprocessor do
     brightness_threshold = Keyword.get(opts, :brightness_threshold, 50)
 
     config = %ExtractionConfig{
-      ocr: %{
-        "enabled" => true,
-        "backend" => "tesseract",
-        "language" => "eng",
-        # Enable preprocessing for better OCR results
-        "preprocessing" => %{
-          "enabled" => true,
-          "deskew" => deskew,
-          "denoise" => denoise,
-          "binarize" => binarize,
-          "brightness_threshold" => brightness_threshold
-        }
-      },
-      chunking: %{
-        "enabled" => true,
-        "max_characters" => 1500,
-        "overlap" => 150
-      },
-      language_detection: %{
-        "enabled" => true
-      },
-      use_cache: false  # Disable caching for preprocessing runs
+    ocr: %{
+    "enabled" => true,
+    "backend" => "tesseract",
+    "language" => "eng",
+    # Enable preprocessing for better OCR results
+    "preprocessing" => %{
+    "enabled" => true,
+    "deskew" => deskew,
+    "denoise" => denoise,
+    "binarize" => binarize,
+    "brightness_threshold" => brightness_threshold
+    }
+    },
+    chunking: %{
+    "enabled" => true,
+    "max_characters" => 1500,
+    "overlap" => 150
+    },
+    language_detection: %{
+    "enabled" => true
+    },
+    use_cache: false  # Disable caching for preprocessing runs
     }
 
     Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config)
@@ -61,10 +61,10 @@ defmodule ImagePreprocessor do
   """
   def extract_with_aggressive_preprocessing(file_path) do
     extract_with_preprocessing(file_path,
-      deskew: true,
-      denoise: true,
-      binarize: true,
-      brightness_threshold: 75
+    deskew: true,
+    denoise: true,
+    binarize: true,
+    brightness_threshold: 75
     )
   end
 
@@ -79,13 +79,13 @@ defmodule ImagePreprocessor do
     # Extract without preprocessing
     IO.puts("Extracting without preprocessing...")
     config_standard = %ExtractionConfig{
-      ocr: %{
-        "enabled" => true,
-        "backend" => "tesseract",
-        "language" => "eng",
-        "preprocessing" => %{"enabled" => false}
-      },
-      use_cache: false
+    ocr: %{
+    "enabled" => true,
+    "backend" => "tesseract",
+    "language" => "eng",
+    "preprocessing" => %{"enabled" => false}
+    },
+    use_cache: false
     }
 
     {:ok, output_standard} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config_standard)
@@ -123,15 +123,15 @@ defmodule ImagePreprocessor do
 
     # Return comparison data
     %{
-      standard_content: result_standard.content,
-      preprocessed_content: result_preprocessed.content,
-      standard_size: standard_size,
-      preprocessed_size: preprocessed_size,
-      improvement: if standard_size > 0 do
-        Float.round((preprocessed_size - standard_size) / standard_size * 100, 2)
-      else
-        0
-      end
+    standard_content: result_standard.content,
+    preprocessed_content: result_preprocessed.content,
+    standard_size: standard_size,
+    preprocessed_size: preprocessed_size,
+    improvement: if standard_size > 0 do
+      Float.round((preprocessed_size - standard_size) / standard_size * 100, 2)
+    else
+      0
+    end
     }
   end
 end
@@ -144,26 +144,26 @@ file_path = "scanned_document.pdf"
 IO.puts("Example 1: Standard Extraction with Preprocessing\n")
 case ImagePreprocessor.extract_with_preprocessing(file_path) do
   {:ok, output} ->
-    result = List.first(output.results)
-    IO.puts("Extraction successful!")
-    IO.puts("Content length: #{byte_size(result.content)} bytes")
-    IO.puts("Chunks created: #{length(result.chunks || [])}")
-    IO.puts("Preview: #{String.slice(result.content, 0..100)}...\n")
+  result = List.first(output.results)
+  IO.puts("Extraction successful!")
+  IO.puts("Content length: #{byte_size(result.content)} bytes")
+  IO.puts("Chunks created: #{length(result.chunks || [])}")
+  IO.puts("Preview: #{String.slice(result.content, 0..100)}...\n")
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}\n")
+  IO.puts("Error: #{reason}\n")
 end
 
 # Example 2: Aggressive preprocessing for difficult documents
 IO.puts("Example 2: Aggressive Preprocessing for Poor Quality\n")
 case ImagePreprocessor.extract_with_aggressive_preprocessing(file_path) do
   {:ok, output} ->
-    result = List.first(output.results)
-    IO.puts("Aggressive preprocessing extraction successful!")
-    IO.puts("Content length: #{byte_size(result.content)} bytes")
+  result = List.first(output.results)
+  IO.puts("Aggressive preprocessing extraction successful!")
+  IO.puts("Content length: #{byte_size(result.content)} bytes")
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}\n")
+  IO.puts("Error: #{reason}\n")
 end
 
 # Example 3: Compare preprocessing options
@@ -173,6 +173,6 @@ try do
   IO.puts("\nImprovement with preprocessing: #{comparison.improvement}%")
 rescue
   error ->
-    IO.puts("Comparison completed with notice: #{inspect(error)}")
+  IO.puts("Comparison completed with notice: #{inspect(error)}")
 end
 ```

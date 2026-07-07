@@ -79,10 +79,7 @@ reference_output = "docs-site/src/content/docs/reference"
 # `ExtractionOverrides` in commands/overrides.rs) so the CLI-doc generator can
 # resolve and expand the flattened args instead of emitting an opaque row.
 [workspace.docs.cli]
-sources = [
-    "crates/xberg-cli/src/main.rs",
-    "crates/xberg-cli/src/commands/overrides.rs",
-]
+sources = ["crates/xberg-cli/src/main.rs", "crates/xberg-cli/src/commands/overrides.rs"]
 
 [workspace.docs.mcp]
 sources = ["crates/xberg/src/mcp/server.rs"]

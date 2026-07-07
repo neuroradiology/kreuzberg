@@ -26,30 +26,30 @@ defmodule XbergCLI do
   defp parse_args(args) do
     case args do
       [] ->
-        {:error, :no_command}
+      {:error, :no_command}
 
       ["extract", file | rest] ->
-        opts = parse_options(rest, %{})
-        {:extract, file, opts}
+      opts = parse_options(rest, %{})
+      {:extract, file, opts}
 
       ["batch", dir | rest] ->
-        opts = parse_options(rest, %{})
-        {:batch, dir, opts}
+      opts = parse_options(rest, %{})
+      {:batch, dir, opts}
 
       ["help"] ->
-        {:help}
+      {:help}
 
       ["-h"] ->
-        {:help}
+      {:help}
 
       ["--help"] ->
-        {:help}
+      {:help}
 
       [cmd] ->
-        {:error, "Unknown command: #{cmd}"}
+      {:error, "Unknown command: #{cmd}"}
 
       _ ->
-        {:error, :invalid_args}
+      {:error, :invalid_args}
     end
   end
 
@@ -120,20 +120,20 @@ defmodule XbergCLI do
 
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path, mime_type: mime_type}, config: config) do
       {:ok, output} ->
-        result = List.first(output.results)
-        elapsed = System.monotonic_time(:millisecond) - start_time
+      result = List.first(output.results)
+      elapsed = System.monotonic_time(:millisecond) - start_time
 
-        print_extraction_result(result, elapsed, verbose)
+      print_extraction_result(result, elapsed, verbose)
 
-        if output_path do
-          save_result(result, output_path)
-        end
+      if output_path do
+        save_result(result, output_path)
+      end
 
-        :ok
+      :ok
 
       {:error, reason} ->
-        IO.puts(:stderr, "Extraction failed: #{inspect(reason)}")
-        :error
+      IO.puts(:stderr, "Extraction failed: #{inspect(reason)}")
+      :error
     end
   end
 
@@ -146,51 +146,51 @@ defmodule XbergCLI do
 
     case files do
       [] ->
-        IO.puts("No documents found in #{dir}")
-        :ok
+      IO.puts("No documents found in #{dir}")
+      :ok
 
       _ ->
-        IO.puts("Found #{length(files)} documents\n")
+      IO.puts("Found #{length(files)} documents\n")
 
-        results =
-          files
-          |> Enum.with_index(1)
-          |> Enum.map(fn {file, idx} ->
-            IO.write("  [#{idx}/#{length(files)}] ")
-            start_time = System.monotonic_time(:millisecond)
+      results =
+      files
+      |> Enum.with_index(1)
+      |> Enum.map(fn {file, idx} ->
+        IO.write("  [#{idx}/#{length(files)}] ")
+        start_time = System.monotonic_time(:millisecond)
 
-            case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file}, config: config) do
-              {:ok, output} ->
-                result = List.first(output.results)
-                elapsed = System.monotonic_time(:millisecond) - start_time
-                IO.puts("#{Path.basename(file)} (#{elapsed}ms)")
-                {:ok, file, result, elapsed}
+        case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file}, config: config) do
+          {:ok, output} ->
+          result = List.first(output.results)
+          elapsed = System.monotonic_time(:millisecond) - start_time
+          IO.puts("#{Path.basename(file)} (#{elapsed}ms)")
+          {:ok, file, result, elapsed}
 
-              {:error, reason} ->
-                IO.puts("#{Path.basename(file)} - ERROR")
-                if verbose, do: IO.puts("  Error: #{inspect(reason)}")
-                {:error, file, reason}
-            end
-          end)
+          {:error, reason} ->
+          IO.puts("#{Path.basename(file)} - ERROR")
+          if verbose, do: IO.puts("  Error: #{inspect(reason)}")
+          {:error, file, reason}
+        end
+      end)
 
-        print_batch_summary(results)
-        :ok
+      print_batch_summary(results)
+      :ok
     end
   end
 
   defp build_config(opts) do
     %Xberg.ExtractionConfig{
-      ocr:
-        if(Map.get(opts, :enable_ocr),
-          do: %{"enabled" => true, "backend" => "tesseract"},
-          else: nil
-        ),
-      chunking:
-        if(Map.get(opts, :enable_chunks),
-          do: %{"enabled" => true, "max_characters" => 1000, "overlap" => 100},
-          else: nil
-        ),
-      use_cache: true
+    ocr:
+    if(Map.get(opts, :enable_ocr),
+    do: %{"enabled" => true, "backend" => "tesseract"},
+    else: nil
+    ),
+    chunking:
+    if(Map.get(opts, :enable_chunks),
+    do: %{"enabled" => true, "max_characters" => 1000, "overlap" => 100},
+    else: nil
+    ),
+    use_cache: true
     }
   end
 
@@ -234,10 +234,10 @@ defmodule XbergCLI do
     failed = Enum.count(results, &match?({:error, _, _}, &1))
 
     total_time =
-      results
-      |> Enum.filter(&match?({:ok, _, _, _}, &1))
-      |> Enum.map(fn {:ok, _, _, time} -> time end)
-      |> Enum.sum()
+    results
+    |> Enum.filter(&match?({:ok, _, _, _}, &1))
+  |> Enum.map(fn {:ok, _, _, time} -> time end)
+    |> Enum.sum()
 
     IO.puts("\nBatch Summary:")
     IO.puts("  Total: #{total}")
@@ -249,22 +249,22 @@ defmodule XbergCLI do
 
   defp save_result(result, output_path) do
     output_data = %{
-      content: result.content,
-      mime_type: result.mime_type,
-      metadata: result.metadata,
-      tables: result.tables || [],
-      images: result.images || [],
-      chunks: result.chunks || [],
-      detected_languages: result.detected_languages || [],
-      extracted_at: DateTime.utc_now()
+    content: result.content,
+    mime_type: result.mime_type,
+    metadata: result.metadata,
+    tables: result.tables || [],
+    images: result.images || [],
+    chunks: result.chunks || [],
+    detected_languages: result.detected_languages || [],
+    extracted_at: DateTime.utc_now()
     }
 
     case File.write(output_path, Jason.encode!(output_data, pretty: true)) do
       :ok ->
-        IO.puts("Results saved to: #{output_path}")
+      IO.puts("Results saved to: #{output_path}")
 
       {:error, reason} ->
-        IO.puts(:stderr, "Failed to save results: #{inspect(reason)}")
+      IO.puts(:stderr, "Failed to save results: #{inspect(reason)}")
     end
   end
 

@@ -27,20 +27,20 @@ defmodule DocumentClient do
       {:ok, result} = DocumentClient.extract("document.pdf", mime_type: "application/pdf")
   """
   @spec extract(String.t(), keyword()) ::
-          {:ok, ExtractedDocument.t()} | {:error, String.t()}
+  {:ok, ExtractedDocument.t()} | {:error, String.t()}
   def extract(path, opts \\ []) do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
 
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type}, config: config) do
       {:ok, output} ->
-        result = List.first(output.results)
-        IO.debug("Successfully extracted file: #{path}")
-        {:ok, result}
+      result = List.first(output.results)
+      IO.debug("Successfully extracted file: #{path}")
+      {:ok, result}
 
       {:error, reason} ->
-        IO.debug("Failed to extract file: #{path} - #{reason}")
-        {:error, reason}
+      IO.debug("Failed to extract file: #{path} - #{reason}")
+      {:error, reason}
     end
   end
 
@@ -56,10 +56,10 @@ defmodule DocumentClient do
 
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type}, config: config) do
       {:ok, output} ->
-        List.first(output.results)
+      List.first(output.results)
 
       {:error, reason} ->
-        raise "Extraction failed: #{reason}"
+      raise "Extraction failed: #{reason}"
     end
   end
 
@@ -69,26 +69,26 @@ defmodule DocumentClient do
   Returns a map with extracted content, metadata, and processing statistics.
   """
   @spec extract_with_stats(String.t(), keyword()) ::
-          {:ok, map()} | {:error, String.t()}
+  {:ok, map()} | {:error, String.t()}
   def extract_with_stats(path, opts \\ []) do
     start_time = System.monotonic_time(:millisecond)
 
     case extract(path, opts) do
       {:ok, result} ->
-        elapsed_ms = System.monotonic_time(:millisecond) - start_time
+      elapsed_ms = System.monotonic_time(:millisecond) - start_time
 
-        {:ok,
-         %{
-           content: result.content,
-           mime_type: result.mime_type,
-           metadata: result.metadata,
-           table_count: length(result.tables),
-           image_count: length(result.images || []),
-           processing_time_ms: elapsed_ms
-         }}
+      {:ok,
+      %{
+      content: result.content,
+      mime_type: result.mime_type,
+      metadata: result.metadata,
+      table_count: length(result.tables),
+      image_count: length(result.images || []),
+      processing_time_ms: elapsed_ms
+      }}
 
       {:error, reason} ->
-        {:error, reason}
+      {:error, reason}
     end
   end
 end
@@ -96,19 +96,19 @@ end
 # Usage examples
 case DocumentClient.extract("document.pdf") do
   {:ok, result} ->
-    IO.puts("Content length: #{byte_size(result.content)} bytes")
+  IO.puts("Content length: #{byte_size(result.content)} bytes")
 
   {:error, reason} ->
-    IO.puts("Extraction failed: #{reason}")
+  IO.puts("Extraction failed: #{reason}")
 end
 
 # Extract with statistics
 case DocumentClient.extract_with_stats("document.pdf") do
   {:ok, stats} ->
-    IO.puts("Processing time: #{stats.processing_time_ms}ms")
-    IO.puts("Tables found: #{stats.table_count}")
+  IO.puts("Processing time: #{stats.processing_time_ms}ms")
+  IO.puts("Tables found: #{stats.table_count}")
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}")
+  IO.puts("Error: #{reason}")
 end
 ```

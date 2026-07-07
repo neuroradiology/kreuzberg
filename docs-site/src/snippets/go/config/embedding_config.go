@@ -35,7 +35,7 @@ func main() {
 		BatchSize:            32,
 		Normalize:            true,
 		ShowDownloadProgress: true,
-		CacheDir:             "",  // Uses default: .xberg/embeddings/
+		CacheDir:             "", // Uses default: .xberg/embeddings/
 	}
 
 	// Popular ONNX-compatible models:
@@ -52,7 +52,7 @@ func main() {
 			ModelID:    "sentence-transformers/all-mpnet-base-v2",
 			Dimensions: 768,
 		},
-		BatchSize:            16,  // Larger model requires smaller batch size
+		BatchSize:            16, // Larger model requires smaller batch size
 		Normalize:            true,
 		ShowDownloadProgress: true,
 		CacheDir:             "/var/cache/embeddings",
@@ -61,7 +61,7 @@ func main() {
 	// Integration with ChunkingConfig
 	// Add embeddings to your chunking configuration:
 	chunkingConfig := xberg.ChunkingConfig{
-		MaxChars:  1024,
+		MaxChars:   1024,
 		MaxOverlap: 100,
 		Preset:     "balanced",
 		Embedding: &xberg.EmbeddingConfig{

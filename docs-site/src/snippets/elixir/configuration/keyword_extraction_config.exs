@@ -3,11 +3,11 @@ alias Xberg.ExtractionConfig
 
 # Configure keyword extraction
 config = %ExtractionConfig{
-  keyword_extraction: %{
-    "enabled" => true,
-    "max_keywords" => 10,
-    "min_score" => 0.5
-  }
+keyword_extraction: %{
+"enabled" => true,
+"max_keywords" => 10,
+"min_score" => 0.5
+}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

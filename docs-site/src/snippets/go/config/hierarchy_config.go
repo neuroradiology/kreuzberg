@@ -9,10 +9,10 @@ func main() {
 	// Enabled with default KClusters=6 for standard H1-H6 heading hierarchy.
 	// Extract bounding box information for spatial layout awareness.
 	hierarchyConfigBasic := xberg.HierarchyConfig{
-		Enabled:               func(b bool) *bool { return &b }(true),
-		KClusters:             func(i int) *int { return &i }(6),  // Default: creates 6 font size clusters (H1-H6 structure)
-		IncludeBbox:           func(b bool) *bool { return &b }(true),  // Include bounding box coordinates
-		OcrCoverageThreshold:  nil,  // No OCR coverage threshold
+		Enabled:              func(b bool) *bool { return &b }(true),
+		KClusters:            func(i int) *int { return &i }(6),      // Default: creates 6 font size clusters (H1-H6 structure)
+		IncludeBbox:          func(b bool) *bool { return &b }(true), // Include bounding box coordinates
+		OcrCoverageThreshold: nil,                                    // No OCR coverage threshold
 	}
 
 	pdfConfigBasic := xberg.PdfConfig{
@@ -31,15 +31,14 @@ func main() {
 	}
 	_ = result
 
-
 	// Example 2: Custom KClusters for minimal structure
 	// Use 3 clusters for simpler hierarchy with minimal structure.
 	// Useful when you only need major section divisions (Main, Subsection, Detail).
 	hierarchyConfigMinimal := xberg.HierarchyConfig{
-		Enabled:               func(b bool) *bool { return &b }(true),
-		KClusters:             func(i int) *int { return &i }(3),  // Minimal clustering: just 3 levels
-		IncludeBbox:           func(b bool) *bool { return &b }(true),
-		OcrCoverageThreshold:  nil,
+		Enabled:              func(b bool) *bool { return &b }(true),
+		KClusters:            func(i int) *int { return &i }(3), // Minimal clustering: just 3 levels
+		IncludeBbox:          func(b bool) *bool { return &b }(true),
+		OcrCoverageThreshold: nil,
 	}
 
 	pdfConfigMinimal := xberg.PdfConfig{
@@ -52,16 +51,15 @@ func main() {
 
 	_ = extractionConfigMinimal
 
-
 	// Example 3: With OCR coverage threshold
 	// Trigger OCR if less than 50% of text has font data.
 	// Useful for documents with mixed digital and scanned content.
 	ocrThreshold := 0.5
 	hierarchyConfigOcr := xberg.HierarchyConfig{
-		Enabled:               func(b bool) *bool { return &b }(true),
-		KClusters:             func(i int) *int { return &i }(6),
-		IncludeBbox:           func(b bool) *bool { return &b }(true),
-		OcrCoverageThreshold:  &ocrThreshold,  // Trigger OCR if text coverage < 50%
+		Enabled:              func(b bool) *bool { return &b }(true),
+		KClusters:            func(i int) *int { return &i }(6),
+		IncludeBbox:          func(b bool) *bool { return &b }(true),
+		OcrCoverageThreshold: &ocrThreshold, // Trigger OCR if text coverage < 50%
 	}
 
 	pdfConfigOcr := xberg.PdfConfig{

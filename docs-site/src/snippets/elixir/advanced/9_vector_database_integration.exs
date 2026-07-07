@@ -6,11 +6,11 @@ alias Xberg.ExtractionConfig
 
 # Configure extraction with chunking enabled
 config = %ExtractionConfig{
-  chunking: %{
-    "enabled" => true,
-    "max_characters" => 512,
-    "overlap" => 50
-  }
+chunking: %{
+"enabled" => true,
+"max_characters" => 512,
+"overlap" => 50
+}
 }
 
 # Extract file with chunking
@@ -19,11 +19,11 @@ result = List.first(output.results)
 # Prepare chunks for vector database ingestion
 documents = Enum.map(result.chunks || [], fn chunk ->
   %{
-    content: chunk["content"],
-    metadata: %{
-      page: chunk["page"],
-      char_count: String.length(chunk["content"])
-    }
+  content: chunk["content"],
+  metadata: %{
+  page: chunk["page"],
+  char_count: String.length(chunk["content"])
+  }
   }
 end)
 

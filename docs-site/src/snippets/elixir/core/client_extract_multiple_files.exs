@@ -31,25 +31,25 @@ defmodule BatchDocumentClient do
       )
   """
   @spec extracts([String.t()], keyword()) ::
-          {:ok, [ExtractedDocument.t()]} | {:error, String.t()}
+  {:ok, [ExtractedDocument.t()]} | {:error, String.t()}
   def extracts(paths, opts \\ []) do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
     log_errors = Keyword.get(opts, :log_errors, true)
 
-    inputs = Enum.map(paths, fn path -> %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type} end)
+  inputs = Enum.map(paths, fn path -> %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type} end)
 
     case Xberg.extract_batch(inputs: inputs, config: config) do
       {:ok, output} ->
-        results = output.results
-        IO.debug("Successfully extracted #{length(results)} files")
-        {:ok, results}
+      results = output.results
+      IO.debug("Successfully extracted #{length(results)} files")
+      {:ok, results}
 
       {:error, reason} ->
-        if log_errors do
-          IO.debug("Batch extraction error: #{reason}")
-        end
-        {:error, reason}
+      if log_errors do
+        IO.debug("Batch extraction error: #{reason}")
+      end
+      {:error, reason}
     end
   end
 
@@ -59,28 +59,28 @@ defmodule BatchDocumentClient do
   Returns aggregated metrics about all processed files.
   """
   @spec extracts_with_stats([String.t()], keyword()) ::
-          {:ok, map()} | {:error, String.t()}
+  {:ok, map()} | {:error, String.t()}
   def extracts_with_stats(paths, opts \\ []) do
     start_time = System.monotonic_time(:millisecond)
 
     case extracts(paths, opts) do
       {:ok, results} ->
-        elapsed_ms = System.monotonic_time(:millisecond) - start_time
+      elapsed_ms = System.monotonic_time(:millisecond) - start_time
 
-        stats = %{
-          total_files: length(results),
-          total_content_size: Enum.reduce(results, 0, &(byte_size(&1.content) + &2)),
-          total_tables: Enum.reduce(results, 0, &(length(&1.tables) + &2)),
-          total_images: Enum.reduce(results, 0, &(length(&1.images || []) + &2)),
-          processing_time_ms: elapsed_ms,
-          avg_time_per_file_ms: div(elapsed_ms, max(length(results), 1)),
-          results: results
-        }
+      stats = %{
+      total_files: length(results),
+      total_content_size: Enum.reduce(results, 0, &(byte_size(&1.content) + &2)),
+      total_tables: Enum.reduce(results, 0, &(length(&1.tables) + &2)),
+      total_images: Enum.reduce(results, 0, &(length(&1.images || []) + &2)),
+      processing_time_ms: elapsed_ms,
+      avg_time_per_file_ms: div(elapsed_ms, max(length(results), 1)),
+      results: results
+      }
 
-        {:ok, stats}
+      {:ok, stats}
 
       {:error, reason} ->
-        {:error, reason}
+      {:error, reason}
     end
   end
 
@@ -91,34 +91,34 @@ defmodule BatchDocumentClient do
   Useful for custom processing or formatting of results.
   """
   @spec extract_and_transform([String.t()], function(), keyword()) ::
-          {:ok, [any()]} | {:error, String.t()}
+  {:ok, [any()]} | {:error, String.t()}
   def extract_and_transform(paths, transform_fn, opts \\ []) do
     case extracts(paths, opts) do
       {:ok, results} ->
-        transformed =
-          results
-          |> Enum.map(fn result ->
-            try do
-              {:ok, transform_fn.(result)}
-            rescue
-              error ->
-                IO.debug("Transform error: #{inspect(error)}")
-                {:error, error}
-            end
-          end)
-
-        # Check if any transforms failed
-        case Enum.find(transformed, fn r -> match?({:error, _}, r) end) do
-          nil ->
-            # All succeeded
-            {:ok, Enum.map(transformed, fn {:ok, value} -> value end)}
-
-          {:error, error} ->
-            {:error, "Transform failed: #{inspect(error)}"}
+      transformed =
+      results
+      |> Enum.map(fn result ->
+        try do
+          {:ok, transform_fn.(result)}
+        rescue
+          error ->
+          IO.debug("Transform error: #{inspect(error)}")
+          {:error, error}
         end
+      end)
+
+      # Check if any transforms failed
+    case Enum.find(transformed, fn r -> match?({:error, _}, r) end) do
+        nil ->
+        # All succeeded
+      {:ok, Enum.map(transformed, fn {:ok, value} -> value end)}
+
+        {:error, error} ->
+        {:error, "Transform failed: #{inspect(error)}"}
+      end
 
       {:error, reason} ->
-        {:error, reason}
+      {:error, reason}
     end
   end
 end
@@ -128,39 +128,39 @@ end
 # Extract multiple files
 case BatchDocumentClient.extracts(["doc1.pdf", "doc2.pdf", "doc3.pdf"]) do
   {:ok, results} ->
-    Enum.each(results, fn result ->
-      IO.puts("Extracted: #{byte_size(result.content)} bytes")
-    end)
+  Enum.each(results, fn result ->
+    IO.puts("Extracted: #{byte_size(result.content)} bytes")
+  end)
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}")
+  IO.puts("Error: #{reason}")
 end
 
 # Extract with statistics
 case BatchDocumentClient.extracts_with_stats(["doc1.pdf", "doc2.pdf"]) do
   {:ok, stats} ->
-    IO.puts("Total files: #{stats.total_files}")
-    IO.puts("Total size: #{stats.total_content_size} bytes")
-    IO.puts("Processing time: #{stats.processing_time_ms}ms")
+  IO.puts("Total files: #{stats.total_files}")
+  IO.puts("Total size: #{stats.total_content_size} bytes")
+  IO.puts("Processing time: #{stats.processing_time_ms}ms")
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}")
+  IO.puts("Error: #{reason}")
 end
 
 # Extract and transform
 transform = fn result ->
   %{
-    mime: result.mime_type,
-    size: byte_size(result.content),
-    tables: length(result.tables)
+  mime: result.mime_type,
+  size: byte_size(result.content),
+  tables: length(result.tables)
   }
 end
 
 case BatchDocumentClient.extract_and_transform(["doc1.pdf", "doc2.pdf"], transform) do
   {:ok, transformed_results} ->
-    IO.inspect(transformed_results)
+  IO.inspect(transformed_results)
 
   {:error, reason} ->
-    IO.puts("Error: #{reason}")
+  IO.puts("Error: #{reason}")
 end
 ```

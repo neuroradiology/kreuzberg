@@ -7,29 +7,29 @@ alias Xberg.ExtractionConfig
 defmodule ConfigBuilder do
   def build_config(file_type, enable_ocr?) do
     base_config = %ExtractionConfig{
-      chunking: %{"max_characters" => 1000, "overlap" => 100},
-      use_cache: true
+    chunking: %{"max_characters" => 1000, "overlap" => 100},
+    use_cache: true
     }
 
     case {file_type, enable_ocr?} do
       {:pdf, true} ->
-        %{base_config | ocr: %{"enabled" => true, "backend" => "tesseract"}, force_ocr: true}
+      %{base_config | ocr: %{"enabled" => true, "backend" => "tesseract"}, force_ocr: true}
 
       {:pdf, false} ->
-        %{base_config | ocr: %{"enabled" => false}}
+      %{base_config | ocr: %{"enabled" => false}}
 
       {:image, true} ->
-        %{
-          base_config
-          | ocr: %{"enabled" => true, "backend" => "tesseract", "preprocessing" => true},
-            force_ocr: true
-        }
+      %{
+      base_config
+      | ocr: %{"enabled" => true, "backend" => "tesseract", "preprocessing" => true},
+      force_ocr: true
+      }
 
       {:image, false} ->
-        %{base_config | ocr: %{"enabled" => false}}
+      %{base_config | ocr: %{"enabled" => false}}
 
       {_, _} ->
-        base_config
+      base_config
     end
   end
 end

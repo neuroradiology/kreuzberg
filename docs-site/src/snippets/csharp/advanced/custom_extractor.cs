@@ -39,7 +39,7 @@ class CustomJsonProcessor
             ),
             JsonValueKind.Object => string.Concat(
                 element.EnumerateObject()
-                    .Select(p => ExtractText(p.Value))
+                .Select(p => ExtractText(p.Value))
             ),
             _ => ""
         };

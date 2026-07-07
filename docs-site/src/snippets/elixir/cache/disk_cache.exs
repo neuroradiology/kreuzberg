@@ -21,13 +21,13 @@ defmodule XbergDiskCache do
     """
 
     defstruct [
-      :key,
-      :result,
-      :created_at,
-      :accessed_at,
-      :ttl_seconds,
-      :size_bytes,
-      :compressed
+    :key,
+    :result,
+    :created_at,
+    :accessed_at,
+    :ttl_seconds,
+    :size_bytes,
+    :compressed
     ]
 
     @doc """
@@ -37,13 +37,13 @@ defmodule XbergDiskCache do
       size = calculate_size(result)
 
       %CacheEntry{
-        key: key,
-        result: result,
-        created_at: System.monotonic_time(:second),
-        accessed_at: System.monotonic_time(:second),
-        ttl_seconds: ttl_seconds,
-        size_bytes: size,
-        compressed: false
+      key: key,
+      result: result,
+      created_at: System.monotonic_time(:second),
+      accessed_at: System.monotonic_time(:second),
+      ttl_seconds: ttl_seconds,
+      size_bytes: size,
+      compressed: false
       }
     end
 
@@ -76,11 +76,11 @@ defmodule XbergDiskCache do
     """
 
     defstruct [
-      :cache_dir,
-      :max_size_bytes,
-      :ttl_seconds,
-      :compression_enabled,
-      :memory_cache
+    :cache_dir,
+    :max_size_bytes,
+    :ttl_seconds,
+    :compression_enabled,
+    :memory_cache
     ]
 
     @doc """
@@ -90,11 +90,11 @@ defmodule XbergDiskCache do
       File.mkdir_p!(cache_dir)
 
       %Cache{
-        cache_dir: cache_dir,
-        max_size_bytes: Keyword.get(opts, :max_size_bytes, 1_000_000_000),
-        ttl_seconds: Keyword.get(opts, :ttl_seconds, 604_800),
-        compression_enabled: Keyword.get(opts, :compression_enabled, true),
-        memory_cache: %{}
+      cache_dir: cache_dir,
+      max_size_bytes: Keyword.get(opts, :max_size_bytes, 1_000_000_000),
+      ttl_seconds: Keyword.get(opts, :ttl_seconds, 604_800),
+      compression_enabled: Keyword.get(opts, :compression_enabled, true),
+      memory_cache: %{}
       }
     end
 
@@ -105,16 +105,16 @@ defmodule XbergDiskCache do
       # Check memory cache first
       case Map.get(cache.memory_cache, key) do
         %CacheEntry{} = entry ->
-          if CacheEntry.expired?(entry) do
-            Logger.debug("Cache hit (memory) - expired: #{key}")
-            :miss
-          else
-            Logger.debug("Cache hit (memory): #{key}")
-            {:hit, CacheEntry.touch(entry).result}
-          end
+        if CacheEntry.expired?(entry) do
+          Logger.debug("Cache hit (memory) - expired: #{key}")
+          :miss
+        else
+          Logger.debug("Cache hit (memory): #{key}")
+          {:hit, CacheEntry.touch(entry).result}
+        end
 
         nil ->
-          get_from_disk(cache, key)
+        get_from_disk(cache, key)
       end
     end
 
@@ -172,19 +172,19 @@ defmodule XbergDiskCache do
       memory_entries = Enum.count(cache.memory_cache)
 
       disk_entries =
-        case File.ls(cache.cache_dir) do
-          {:ok, files} -> length(files)
-          {:error, _} -> 0
-        end
+      case File.ls(cache.cache_dir) do
+        {:ok, files} -> length(files)
+        {:error, _} -> 0
+      end
 
       %{
-        total_entries: entry_count,
-        memory_entries: memory_entries,
-        disk_entries: disk_entries,
-        total_size_bytes: total_size,
-        max_size_bytes: cache.max_size_bytes,
-        usage_percent: (total_size / cache.max_size_bytes * 100) |> Float.round(2),
-        compression_enabled: cache.compression_enabled
+      total_entries: entry_count,
+      memory_entries: memory_entries,
+      disk_entries: disk_entries,
+      total_size_bytes: total_size,
+      max_size_bytes: cache.max_size_bytes,
+      usage_percent: (total_size / cache.max_size_bytes * 100) |> Float.round(2),
+      compression_enabled: cache.compression_enabled
       }
     end
 
@@ -196,25 +196,25 @@ defmodule XbergDiskCache do
       if File.exists?(cache_file) do
         case File.read(cache_file) do
           {:ok, data} ->
-            case deserialize(data, cache.compression_enabled) do
-              {:ok, entry} ->
-                if CacheEntry.expired?(entry) do
-                  File.rm(cache_file)
-                  Logger.debug("Cache hit (disk) - expired: #{key}")
-                  :miss
-                else
-                  Logger.debug("Cache hit (disk): #{key}")
-                  {:hit, CacheEntry.touch(entry).result}
-                end
-
-              {:error, reason} ->
-                Logger.warn("Failed to deserialize cache: #{inspect(reason)}")
-                :miss
+          case deserialize(data, cache.compression_enabled) do
+            {:ok, entry} ->
+            if CacheEntry.expired?(entry) do
+              File.rm(cache_file)
+              Logger.debug("Cache hit (disk) - expired: #{key}")
+              :miss
+            else
+              Logger.debug("Cache hit (disk): #{key}")
+              {:hit, CacheEntry.touch(entry).result}
             end
 
-          {:error, reason} ->
-            Logger.warn("Failed to read cache file: #{inspect(reason)}")
+            {:error, reason} ->
+            Logger.warn("Failed to deserialize cache: #{inspect(reason)}")
             :miss
+          end
+
+          {:error, reason} ->
+          Logger.warn("Failed to read cache file: #{inspect(reason)}")
+          :miss
         end
       else
         :miss
@@ -245,11 +245,11 @@ defmodule XbergDiskCache do
     defp deserialize(data, compression_enabled) do
       try do
         uncompressed =
-          if compression_enabled do
-            :zlib.uncompress(data)
-          else
-            data
-          end
+        if compression_enabled do
+          :zlib.uncompress(data)
+        else
+          data
+        end
 
         {:ok, :erlang.binary_to_term(uncompressed)}
       rescue
@@ -278,8 +278,8 @@ defmodule XbergDiskCache do
     defp cleanup_lru(cache) do
       # Remove least recently used entries until under limit
       entries =
-        cache.memory_cache
-        |> Enum.sort_by(fn {_k, entry} -> entry.accessed_at end)
+      cache.memory_cache
+    |> Enum.sort_by(fn {_k, entry} -> entry.accessed_at end)
 
       target_size = div(cache.max_size_bytes, 2)
       current_size = calculate_total_size(cache)
@@ -307,20 +307,20 @@ defmodule XbergDiskCache do
 
     case Cache.get(cache, cache_key) do
       {:hit, result} ->
-        {:ok, result, cache}
+      {:ok, result, cache}
 
       :miss ->
-        Logger.info("Cache miss: #{file_path}")
+      Logger.info("Cache miss: #{file_path}")
 
-        case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: nil) do
-          {:ok, output} ->
-            result = List.first(output.results)
-            new_cache = Cache.put(cache, cache_key, result)
-            {:ok, result, new_cache}
+      case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: nil) do
+        {:ok, output} ->
+        result = List.first(output.results)
+        new_cache = Cache.put(cache, cache_key, result)
+        {:ok, result, new_cache}
 
-          error ->
-            {error, cache}
-        end
+        error ->
+        {error, cache}
+      end
     end
   end
 
@@ -331,13 +331,13 @@ defmodule XbergDiskCache do
     cache = Cache.new(cache_dir, opts)
 
     results =
-      file_paths
-      |> Enum.map(fn path ->
-        case extract_with_cache(path, cache_dir, opts) do
-          {:ok, result, _} -> {:ok, path, result}
-          {{:error, reason}, _} -> {:error, path, reason}
-        end
-      end)
+    file_paths
+    |> Enum.map(fn path ->
+      case extract_with_cache(path, cache_dir, opts) do
+        {:ok, result, _} -> {:ok, path, result}
+        {{:error, reason}, _} -> {:error, path, reason}
+      end
+    end)
 
     stats = Cache.stats(cache)
     {results, stats}
@@ -351,22 +351,22 @@ defmodule XbergDiskCache do
 
     case action do
       :stats ->
-        Cache.stats(cache)
+      Cache.stats(cache)
 
       :clear ->
-        Cache.clear(cache)
+      Cache.clear(cache)
 
       :list ->
-        case File.ls(cache_dir) do
-          {:ok, files} -> files
-          {:error, reason} -> {:error, reason}
-        end
+      case File.ls(cache_dir) do
+        {:ok, files} -> files
+        {:error, reason} -> {:error, reason}
+      end
 
       {:delete, key} ->
-        Cache.delete(cache, key)
+      Cache.delete(cache, key)
 
       _ ->
-        {:error, "Unknown action: #{action}"}
+      {:error, "Unknown action: #{action}"}
     end
   end
 
@@ -390,17 +390,17 @@ IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
 case XbergDiskCache.extract_with_cache("document.pdf", cache_dir) do
   {:ok, result, cache} ->
-    IO.puts("Extraction successful!")
-    IO.puts("Content size: #{byte_size(result.content)} bytes")
+  IO.puts("Extraction successful!")
+  IO.puts("Content size: #{byte_size(result.content)} bytes")
 
-    stats = XbergDiskCache.manage_cache(cache_dir, :stats)
-    IO.puts("\nCache Statistics:")
-    IO.puts("  Entries: #{stats.total_entries}")
-    IO.puts("  Size: #{stats.total_size_bytes} bytes")
-    IO.puts("  Usage: #{stats.usage_percent}%\n")
+  stats = XbergDiskCache.manage_cache(cache_dir, :stats)
+  IO.puts("\nCache Statistics:")
+  IO.puts("  Entries: #{stats.total_entries}")
+  IO.puts("  Size: #{stats.total_size_bytes} bytes")
+  IO.puts("  Usage: #{stats.usage_percent}%\n")
 
   {error, _cache} ->
-    IO.puts("Extraction failed: #{inspect(error)}\n")
+  IO.puts("Extraction failed: #{inspect(error)}\n")
 end
 
 # Example 2: Batch extraction with cache statistics

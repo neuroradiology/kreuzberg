@@ -20,7 +20,7 @@ defmodule MyApp.Plugins.StatefulTextProcessor do
   # Start an Agent to maintain state
   @impl true
   def initialize do
-    case Agent.start_link(fn -> %{count: 0, errors: 0} end, name: __MODULE__) do
+  case Agent.start_link(fn -> %{count: 0, errors: 0} end, name: __MODULE__) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _}} -> :ok
       error -> error
@@ -45,37 +45,37 @@ defmodule MyApp.Plugins.StatefulTextProcessor do
     # Add metadata about processing
     case normalize_content(result.content) do
       {:ok, normalized} ->
-        Map.merge(result, %{
-          "content" => normalized,
-          "processed_count" => get_count(),
-          "processing_timestamp" => DateTime.utc_now() |> DateTime.to_iso8601()
-        })
+      Map.merge(result, %{
+      "content" => normalized,
+      "processed_count" => get_count(),
+      "processing_timestamp" => DateTime.utc_now() |> DateTime.to_iso8601()
+      })
 
       {:error, reason} ->
-        Agent.update(__MODULE__, fn state ->
-          %{state | errors: state.errors + 1}
-        end)
+      Agent.update(__MODULE__, fn state ->
+        %{state | errors: state.errors + 1}
+      end)
 
-        {:error, "Failed to normalize content: #{reason}"}
+      {:error, "Failed to normalize content: #{reason}"}
     end
   end
 
   # Retrieve the current processing count
   defp get_count do
-    Agent.get(__MODULE__, fn state -> state.count end)
+  Agent.get(__MODULE__, fn state -> state.count end)
   end
 
   # Get error count
   defp get_errors do
-    Agent.get(__MODULE__, fn state -> state.errors end)
+  Agent.get(__MODULE__, fn state -> state.errors end)
   end
 
   # Normalize text content
   defp normalize_content(content) when is_binary(content) do
     {:ok,
-     content
-     |> String.trim()
-     |> String.replace(~r/\s+/, " ")}
+    content
+    |> String.trim()
+    |> String.replace(~r/\s+/, " ")}
   end
 
   defp normalize_content(_), do: {:error, "Content is not a string"}

@@ -7,7 +7,7 @@ hierarchy_config_basic = HierarchyConfig(
     enabled=True,
     k_clusters=6,  # Default: creates 6 font size clusters (H1-H6 structure)
     include_bbox=True,  # Include bounding box coordinates
-    ocr_coverage_threshold=None  # No OCR coverage threshold
+    ocr_coverage_threshold=None,  # No OCR coverage threshold
 )
 
 pdf_config_basic = PdfConfig(hierarchy=hierarchy_config_basic)
@@ -23,7 +23,7 @@ hierarchy_config_minimal = HierarchyConfig(
     enabled=True,
     k_clusters=3,  # Minimal clustering: just 3 levels
     include_bbox=True,
-    ocr_coverage_threshold=None
+    ocr_coverage_threshold=None,
 )
 
 pdf_config_minimal = PdfConfig(hierarchy=hierarchy_config_minimal)
@@ -39,7 +39,7 @@ hierarchy_config_ocr = HierarchyConfig(
     enabled=True,
     k_clusters=6,
     include_bbox=True,
-    ocr_coverage_threshold=0.5  # Trigger OCR if text coverage < 50%
+    ocr_coverage_threshold=0.5,  # Trigger OCR if text coverage < 50%
 )
 
 pdf_config_ocr = PdfConfig(hierarchy=hierarchy_config_ocr)

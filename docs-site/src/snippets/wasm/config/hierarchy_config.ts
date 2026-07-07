@@ -1,10 +1,4 @@
-import {
-  extract,
-  initWasm,
-  type ExtractionConfig,
-  type HierarchyConfig,
-  type PdfConfig,
-} from "@xberg-io/xberg-wasm";
+import { extract, initWasm, type ExtractionConfig, type HierarchyConfig, type PdfConfig } from "@xberg-io/xberg-wasm";
 
 // Example 1: Basic hierarchy extraction
 // Enabled with default kClusters=6 for standard H1-H6 heading hierarchy.
@@ -66,7 +60,9 @@ async function _extractWithHierarchy(): Promise<void> {
 
   try {
     // Extract from file bytes with hierarchy configuration
-    const pdfBytes = new Uint8Array([/* PDF file data */]);
+    const pdfBytes = new Uint8Array([
+      /* PDF file data */
+    ]);
     const output = await extract(
       { kind: "bytes", bytes: pdfBytes, mimeType: "application/pdf" },
       extractionConfigBasic,

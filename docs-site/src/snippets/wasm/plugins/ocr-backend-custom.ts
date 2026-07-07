@@ -1,9 +1,4 @@
-import {
-  initWasm,
-  listOcrBackends,
-  registerOcrBackend,
-  unregisterOcrBackend,
-} from "@xberg-io/xberg-wasm";
+import { initWasm, listOcrBackends, registerOcrBackend, unregisterOcrBackend } from "@xberg-io/xberg-wasm";
 
 class CustomOcrBackend {
   private name: string = "custom-ocr";

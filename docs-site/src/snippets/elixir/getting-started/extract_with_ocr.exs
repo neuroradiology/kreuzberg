@@ -3,12 +3,12 @@
 # Configure Tesseract for OCR processing
 
 ocr_config = %Xberg.Config.OCR{
-  backend: "tesseract",
-  language: "eng"
+backend: "tesseract",
+language: "eng"
 }
 
 config = %Xberg.Config.Extraction{
-  ocr: ocr_config
+ocr: ocr_config
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned.pdf"}, config: config)

@@ -26,9 +26,6 @@ async function extractWithRetry(bytes: Uint8Array, mimeType: string, maxRetries:
   throw new Error(`Extraction failed after ${maxRetries} attempts: ${lastError?.message}`);
 }
 
-extractWithRetry(
-  new Uint8Array(await fetch("doc.pdf").then((r) => r.arrayBuffer())),
-  "application/pdf",
-)
+extractWithRetry(new Uint8Array(await fetch("doc.pdf").then((r) => r.arrayBuffer())), "application/pdf")
   .then((r) => console.log("Final result:", r))
   .catch(console.error);

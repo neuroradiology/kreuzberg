@@ -28,11 +28,11 @@ class RagPipelineExample
             )).Results[0].ConfigureAwait(false);
 
             var vectorStore = await BuildVectorStoreAsync(result.Chunks)
-                .ConfigureAwait(false);
+            .ConfigureAwait(false);
 
             var query = "machine learning optimization";
             var relevantChunks = await SearchAsync(vectorStore, query)
-                .ConfigureAwait(false);
+            .ConfigureAwait(false);
 
             Console.WriteLine($"Found {relevantChunks.Count} relevant chunks");
             foreach (var chunk in relevantChunks.Take(3))
@@ -51,13 +51,13 @@ class RagPipelineExample
         IEnumerable<Chunk> chunks)
     {
         return await Task.Run(() =>
-        {
-            return chunks.Select(c => new VectorEntry
             {
-                Content = c.Content,
-                Embedding = c.Embedding?.ToArray() ?? Array.Empty<float>(),
-                Similarity = 0f
-            }).ToList();
+                return chunks.Select(c => new VectorEntry
+                    {
+                        Content = c.Content,
+                        Embedding = c.Embedding?.ToArray() ?? Array.Empty<float>(),
+                        Similarity = 0f
+                }).ToList();
         }).ConfigureAwait(false);
     }
 
@@ -66,8 +66,8 @@ class RagPipelineExample
         string query)
     {
         return await Task.Run(() =>
-        {
-            return store
+            {
+                return store
                 .OrderByDescending(e => e.Similarity)
                 .ToList();
         }).ConfigureAwait(false);

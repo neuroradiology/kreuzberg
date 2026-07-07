@@ -33,23 +33,23 @@ defmodule XbergMCPServer do
     Logger.info("Starting Xberg MCP server on #{host}:#{port}")
 
     {:ok, _pid} =
-      :cowboy.start_clear(
-        :xberg_http,
-        [{:port, port}],
-        %{
-          env: [
-            {:dispatch,
-             [
-               {:_,
-                [
-                  {"/extract", XbergMCPServer.Handler, []},
-                  {"/extract/file", XbergMCPServer.FileHandler, []},
-                  {"/health", XbergMCPServer.HealthHandler, []}
-                ]}
-             ]}
-          ]
-        }
-      )
+    :cowboy.start_clear(
+    :xberg_http,
+    [{:port, port}],
+    %{
+    env: [
+    {:dispatch,
+    [
+    {:_,
+    [
+    {"/extract", XbergMCPServer.Handler, []},
+    {"/extract/file", XbergMCPServer.FileHandler, []},
+    {"/health", XbergMCPServer.HealthHandler, []}
+    ]}
+    ]}
+    ]
+    }
+    )
 
     Logger.info("MCP server started successfully")
     {:ok, "Server running on #{host}:#{port}"}
@@ -92,16 +92,16 @@ defmodule XbergMCPServer.Handler do
   defp handle_extraction(req) do
     case :cowboy_req.read_body(req) do
       {:ok, body, req} ->
-        case Jason.decode(body) do
-          {:ok, params} ->
-            extract_from_params(params, req)
+      case Jason.decode(body) do
+        {:ok, params} ->
+        extract_from_params(params, req)
 
-          {:error, reason} ->
-            error_response(400, "Invalid JSON: #{inspect(reason)}")
-        end
+        {:error, reason} ->
+        error_response(400, "Invalid JSON: #{inspect(reason)}")
+      end
 
       {:error, reason} ->
-        error_response(400, "Failed to read body: #{inspect(reason)}")
+      error_response(400, "Failed to read body: #{inspect(reason)}")
     end
   end
 
@@ -117,34 +117,34 @@ defmodule XbergMCPServer.Handler do
 
       case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path, mime_type: mime_type}, config: config) do
         {:ok, output} ->
-          result = List.first(output.results)
-          response_data = %{
-            success: true,
-            content: result.content,
-            mime_type: result.mime_type,
-            metadata: result.metadata || %{},
-            tables: result.tables || [],
-            chunks: result.chunks || [],
-            images: result.images || [],
-            detected_languages: result.detected_languages || []
-          }
+        result = List.first(output.results)
+        response_data = %{
+        success: true,
+        content: result.content,
+        mime_type: result.mime_type,
+        metadata: result.metadata || %{},
+        tables: result.tables || [],
+        chunks: result.chunks || [],
+        images: result.images || [],
+        detected_languages: result.detected_languages || []
+        }
 
-          success_response(200, response_data, req)
+        success_response(200, response_data, req)
 
         {:error, reason} ->
-          error_response(400, "Extraction failed: #{inspect(reason)}")
+        error_response(400, "Extraction failed: #{inspect(reason)}")
       end
     end
   end
 
   defp build_config(opts) when is_map(opts) do
     %Xberg.ExtractionConfig{
-      ocr: opts["ocr"],
-      chunking: opts["chunking"],
-      quality_processing: opts["quality_processing"],
-      language_detection: opts["language_detection"],
-      images: opts["images"],
-      use_cache: Map.get(opts, "use_cache", true)
+    ocr: opts["ocr"],
+    chunking: opts["chunking"],
+    quality_processing: opts["quality_processing"],
+    language_detection: opts["language_detection"],
+    images: opts["images"],
+    use_cache: Map.get(opts, "use_cache", true)
     }
   end
 
@@ -152,21 +152,21 @@ defmodule XbergMCPServer.Handler do
 
   defp success_response(status, data, req) do
     {:ok,
-     :cowboy_req.reply(
-       status,
-       %{"content-type" => "application/json"},
-       Jason.encode!(data),
-       req
-     )}
+    :cowboy_req.reply(
+    status,
+    %{"content-type" => "application/json"},
+    Jason.encode!(data),
+    req
+    )}
   end
 
   defp error_response(status, message) do
     {:error,
-     status,
-     Jason.encode!(%{
-       success: false,
-       error: message
-     })}
+    status,
+    Jason.encode!(%{
+    success: false,
+    error: message
+    })}
   end
 
   defp reply({:ok, req}), do: {req, :ok}
@@ -189,18 +189,18 @@ defmodule XbergMCPServer.HealthHandler do
 
   def init(req, state) do
     response = Jason.encode!(%{
-      status: "healthy",
-      service: "xberg-mcp",
-      timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
+    status: "healthy",
+    service: "xberg-mcp",
+    timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
     })
 
     req =
-      :cowboy_req.reply(
-        200,
-        %{"content-type" => "application/json"},
-        response,
-        req
-      )
+    :cowboy_req.reply(
+    200,
+    %{"content-type" => "application/json"},
+    response,
+    req
+    )
 
     {:ok, req, state}
   end
@@ -227,56 +227,56 @@ defmodule XbergMCPServer.FileHandler do
 
     case :cowboy_req.read_body(req) do
       {:ok, body, req} ->
-        File.write!(temp_path, body)
+      File.write!(temp_path, body)
 
-        case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: temp_path}, config: nil) do
-          {:ok, output} ->
-            result = List.first(output.results)
-            response = Jason.encode!(%{
-              success: true,
-              content_size: byte_size(result.content),
-              mime_type: result.mime_type,
-              metadata: result.metadata
-            })
+      case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: temp_path}, config: nil) do
+        {:ok, output} ->
+        result = List.first(output.results)
+        response = Jason.encode!(%{
+        success: true,
+        content_size: byte_size(result.content),
+        mime_type: result.mime_type,
+        metadata: result.metadata
+        })
 
-            req =
-              :cowboy_req.reply(
-                200,
-                %{"content-type" => "application/json"},
-                response,
-                req
-              )
+        req =
+        :cowboy_req.reply(
+        200,
+        %{"content-type" => "application/json"},
+        response,
+        req
+        )
 
-            File.rm(temp_path)
-            {:ok, req, state}
+        File.rm(temp_path)
+        {:ok, req, state}
 
-          {:error, reason} ->
-            response = Jason.encode!(%{success: false, error: inspect(reason)})
-
-            req =
-              :cowboy_req.reply(
-                400,
-                %{"content-type" => "application/json"},
-                response,
-                req
-              )
-
-            File.rm(temp_path)
-            {:ok, req, state}
-        end
-
-      {:error, reason} ->
+        {:error, reason} ->
         response = Jason.encode!(%{success: false, error: inspect(reason)})
 
         req =
-          :cowboy_req.reply(
-            400,
-            %{"content-type" => "application/json"},
-            response,
-            req
-          )
+        :cowboy_req.reply(
+        400,
+        %{"content-type" => "application/json"},
+        response,
+        req
+        )
 
+        File.rm(temp_path)
         {:ok, req, state}
+      end
+
+      {:error, reason} ->
+      response = Jason.encode!(%{success: false, error: inspect(reason)})
+
+      req =
+      :cowboy_req.reply(
+      400,
+      %{"content-type" => "application/json"},
+      response,
+      req
+      )
+
+      {:ok, req, state}
     end
   end
 end
@@ -286,17 +286,17 @@ IO.puts("=== Xberg MCP Server ===\n")
 
 case XbergMCPServer.start_server(port: 8080) do
   {:ok, message} ->
-    IO.puts(message)
-    IO.puts("\nServer is running and ready to accept requests:")
-    IO.puts("  - POST /extract - Extract from file path")
-    IO.puts("  - POST /extract/file - Upload and extract")
-    IO.puts("  - GET /health - Health check")
+  IO.puts(message)
+  IO.puts("\nServer is running and ready to accept requests:")
+  IO.puts("  - POST /extract - Extract from file path")
+  IO.puts("  - POST /extract/file - Upload and extract")
+  IO.puts("  - GET /health - Health check")
 
-    # Keep the server running
-    IO.puts("\nServer started. Press Ctrl+C to stop.")
-    Process.sleep(:infinity)
+  # Keep the server running
+  IO.puts("\nServer started. Press Ctrl+C to stop.")
+  Process.sleep(:infinity)
 
   {:error, reason} ->
-    IO.puts("Failed to start server: #{inspect(reason)}")
+  IO.puts("Failed to start server: #{inspect(reason)}")
 end
 ```

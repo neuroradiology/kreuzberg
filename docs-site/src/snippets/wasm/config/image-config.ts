@@ -21,9 +21,7 @@ async function extractImagesWithConfig() {
     console.log(`Extracted ${result.images.length} images`);
 
     result.images.forEach((image) => {
-      console.log(
-        `Image: ${image.width}x${image.height}, Format: ${image.format}, DPI: ${image.description}`,
-      );
+      console.log(`Image: ${image.width}x${image.height}, Format: ${image.format}, DPI: ${image.description}`);
     });
   }
 }

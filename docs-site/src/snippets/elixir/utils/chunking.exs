@@ -7,17 +7,17 @@ defmodule ChunkingUtils do
   def chunk_size_stats(chunks) when is_list(chunks) do
     case chunks do
       [] ->
-        %{min: 0, max: 0, avg: 0}
+      %{min: 0, max: 0, avg: 0}
 
       chunks ->
-        sizes = Enum.map(chunks, &chunk_text_length/1)
+      sizes = Enum.map(chunks, &chunk_text_length/1)
 
-        %{
-          min: Enum.min(sizes),
-          max: Enum.max(sizes),
-          avg: div(Enum.sum(sizes), length(sizes)),
-          count: length(chunks)
-        }
+      %{
+      min: Enum.min(sizes),
+      max: Enum.max(sizes),
+      avg: div(Enum.sum(sizes), length(sizes)),
+      count: length(chunks)
+      }
     end
   end
 
@@ -36,18 +36,18 @@ defmodule ChunkingUtils do
     |> Enum.reduce([], fn chunk, acc ->
       case acc do
         [] ->
-          [chunk]
+        [chunk]
 
         [last | rest] ->
-          last_size = chunk_text_length(last)
+        last_size = chunk_text_length(last)
 
-          if last_size < threshold do
-            merged_text = "#{last["content"]} #{chunk["content"]}"
-            merged_chunk = Map.put(chunk, "content", merged_text)
-            [merged_chunk | rest]
-          else
-            [chunk, last | rest]
-          end
+        if last_size < threshold do
+          merged_text = "#{last["content"]} #{chunk["content"]}"
+          merged_chunk = Map.put(chunk, "content", merged_text)
+          [merged_chunk | rest]
+        else
+          [chunk, last | rest]
+        end
       end
     end)
     |> Enum.reverse()
@@ -73,7 +73,7 @@ end
 
 # Example usage
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 1000}
+chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "doc.pdf"}, config: config)

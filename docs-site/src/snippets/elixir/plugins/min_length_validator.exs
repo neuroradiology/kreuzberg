@@ -31,7 +31,7 @@ result = List.first(output.results)
 
 case result do
   result ->
-    IO.puts("Extraction successful")
-    IO.puts("Content length: #{String.length(result.content)}")
+  IO.puts("Extraction successful")
+  IO.puts("Content length: #{String.length(result.content)}")
 end
 ```

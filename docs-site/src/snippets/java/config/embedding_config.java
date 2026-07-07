@@ -8,12 +8,12 @@ public class EmbeddingConfigExample {
         // Example 1: Preset model (recommended)
         // Fast, balanced, or quality preset configurations optimized for common use cases.
         EmbeddingConfig embeddingConfig = EmbeddingConfig.builder()
-            .model(EmbeddingModelType.preset("balanced"))
-            .batchSize(32)
-            .normalize(true)
-            .showDownloadProgress(true)
-            .cacheDir("~/.cache/xberg/embeddings")
-            .build();
+        .model(EmbeddingModelType.preset("balanced"))
+        .batchSize(32)
+        .normalize(true)
+        .showDownloadProgress(true)
+        .cacheDir("~/.cache/xberg/embeddings")
+        .build();
 
         // Available presets:
         // - "fast" (384 dims): Quick prototyping, development, resource-constrained
@@ -25,12 +25,12 @@ public class EmbeddingConfigExample {
         // Example 2: Custom ONNX model (requires embeddings feature)
         // Direct access to specific ONNX embedding models from HuggingFace with custom dimensions.
         embeddingConfig = EmbeddingConfig.builder()
-            .model(EmbeddingModelType.custom("BAAI/bge-small-en-v1.5", 384))
-            .batchSize(32)
-            .normalize(true)
-            .showDownloadProgress(true)
-            .cacheDir(null)  // Uses default: .xberg/embeddings/
-            .build();
+        .model(EmbeddingModelType.custom("BAAI/bge-small-en-v1.5", 384))
+        .batchSize(32)
+        .normalize(true)
+        .showDownloadProgress(true)
+        .cacheDir(null)  // Uses default: .xberg/embeddings/
+        .build();
 
         // Popular ONNX-compatible models:
         // - "BAAI/bge-small-en-v1.5" (384 dims): Fast, efficient
@@ -42,30 +42,30 @@ public class EmbeddingConfigExample {
         // Example 3: Alternative Custom ONNX Model
         // For advanced users wanting different ONNX embedding models.
         embeddingConfig = EmbeddingConfig.builder()
-            .model(EmbeddingModelType.custom("sentence-transformers/all-mpnet-base-v2", 768))
-            .batchSize(16)  // Larger model requires smaller batch size
-            .normalize(true)
-            .showDownloadProgress(true)
-            .cacheDir("/var/cache/embeddings")
-            .build();
+        .model(EmbeddingModelType.custom("sentence-transformers/all-mpnet-base-v2", 768))
+        .batchSize(16)  // Larger model requires smaller batch size
+        .normalize(true)
+        .showDownloadProgress(true)
+        .cacheDir("/var/cache/embeddings")
+        .build();
 
 
         // Integration with ChunkingConfig
         // Add embeddings to your chunking configuration:
         ChunkingConfig chunkingConfig = ChunkingConfig.builder()
-            .maxChars(1024)
-            .maxOverlap(100)
-            .preset("balanced")
-            .embedding(EmbeddingConfig.builder()
-                .model(EmbeddingModelType.preset("balanced"))
-                .batchSize(32)
-                .normalize(true)
-                .build())
-            .build();
+        .maxChars(1024)
+        .maxOverlap(100)
+        .preset("balanced")
+        .embedding(EmbeddingConfig.builder()
+            .model(EmbeddingModelType.preset("balanced"))
+            .batchSize(32)
+            .normalize(true)
+            .build())
+        .build();
 
         ExtractionConfig extractionConfig = ExtractionConfig.builder()
-            .chunking(chunkingConfig)
-            .build();
+        .chunking(chunkingConfig)
+        .build();
     }
 }
 

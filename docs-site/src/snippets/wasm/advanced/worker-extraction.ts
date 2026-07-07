@@ -8,8 +8,7 @@ class ExtractionWorker {
   }> = [];
 
   constructor(workerCount?: number) {
-    const count =
-      workerCount ?? (typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? 2) : 2);
+    const count = workerCount ?? (typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? 2) : 2);
     for (let i = 0; i < count; i++) {
       const worker = new Worker("extraction-worker.js");
       worker.onmessage = (e) => this.handleWorkerMessage(worker, e.data);

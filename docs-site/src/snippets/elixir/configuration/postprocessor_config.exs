@@ -4,17 +4,17 @@ alias Xberg.ExtractionConfig
 # Configure post-processing pipeline
 # Applies transformations to extracted content after initial processing
 config = %ExtractionConfig{
-  postprocessing: %{
-    "remove_whitespace" => true,
-    "normalize_unicode" => true,
-    "fix_encoding" => true
-  },
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract"
-  },
-  use_cache: true,
-  force_ocr: false
+postprocessing: %{
+"remove_whitespace" => true,
+"normalize_unicode" => true,
+"fix_encoding" => true
+},
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract"
+},
+use_cache: true,
+force_ocr: false
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

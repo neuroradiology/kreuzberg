@@ -1,9 +1,4 @@
-import {
-  type ExtractionConfig,
-  extract,
-  type RakeParams,
-  type YakeParams,
-} from "@xberg-io/xberg";
+import { type ExtractionConfig, extract, type RakeParams, type YakeParams } from "@xberg-io/xberg";
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering

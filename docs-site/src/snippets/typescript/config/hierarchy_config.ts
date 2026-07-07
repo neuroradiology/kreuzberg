@@ -1,9 +1,4 @@
-import {
-  type ExtractionConfig,
-  extract,
-  type HierarchyConfig,
-  type PdfConfig,
-} from "@xberg-io/xberg";
+import { type ExtractionConfig, extract, type HierarchyConfig, type PdfConfig } from "@xberg-io/xberg";
 
 // Example 1: Basic hierarchy extraction
 // Enabled with default kClusters=6 for standard H1-H6 heading hierarchy.

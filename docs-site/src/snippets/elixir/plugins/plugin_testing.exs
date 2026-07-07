@@ -66,21 +66,21 @@ defmodule MyApp.Plugins.Test do
     IO.puts("Test 1: JSON Content Processing")
 
     result = %{
-      "content" => ~s({"message": "Hello, world!"}),
-      "mime_type" => "application/json",
-      "metadata" => %{}
+    "content" => ~s({"message": "Hello, world!"}),
+    "mime_type" => "application/json",
+    "metadata" => %{}
     }
 
     case MyApp.Plugins.CustomJsonExtractor.process(result, %{}) do
       {:ok, processed} ->
-        if processed["is_json"] == true do
-          IO.puts("  PASS: JSON content marked correctly\n")
-        else
-          IO.puts("  FAIL: JSON flag not set\n")
-        end
+      if processed["is_json"] == true do
+        IO.puts("  PASS: JSON content marked correctly\n")
+      else
+        IO.puts("  FAIL: JSON flag not set\n")
+      end
 
       {:error, reason} ->
-        IO.puts("  FAIL: #{reason}\n")
+      IO.puts("  FAIL: #{reason}\n")
     end
   end
 
@@ -88,21 +88,21 @@ defmodule MyApp.Plugins.Test do
     IO.puts("Test 2: Non-JSON Content Processing")
 
     result = %{
-      "content" => "Plain text content",
-      "mime_type" => "text/plain",
-      "metadata" => %{}
+    "content" => "Plain text content",
+    "mime_type" => "text/plain",
+    "metadata" => %{}
     }
 
     case MyApp.Plugins.CustomJsonExtractor.process(result, %{}) do
       {:ok, processed} ->
-        if not Map.has_key?(processed, "is_json") or !processed["is_json"] do
-          IO.puts("  PASS: Non-JSON content not marked\n")
-        else
-          IO.puts("  FAIL: Non-JSON content incorrectly marked as JSON\n")
-        end
+      if not Map.has_key?(processed, "is_json") or !processed["is_json"] do
+        IO.puts("  PASS: Non-JSON content not marked\n")
+      else
+        IO.puts("  FAIL: Non-JSON content incorrectly marked as JSON\n")
+      end
 
       {:error, reason} ->
-        IO.puts("  FAIL: #{reason}\n")
+      IO.puts("  FAIL: #{reason}\n")
     end
   end
 
@@ -110,17 +110,17 @@ defmodule MyApp.Plugins.Test do
     IO.puts("Test 3: Empty Content")
 
     result = %{
-      "content" => "",
-      "mime_type" => "application/json",
-      "metadata" => %{}
+    "content" => "",
+    "mime_type" => "application/json",
+    "metadata" => %{}
     }
 
     case MyApp.Plugins.CustomJsonExtractor.process(result, %{}) do
       {:ok, _processed} ->
-        IO.puts("  PASS: Empty content handled gracefully\n")
+      IO.puts("  PASS: Empty content handled gracefully\n")
 
       {:error, reason} ->
-        IO.puts("  FAIL: #{reason}\n")
+      IO.puts("  FAIL: #{reason}\n")
     end
   end
 
@@ -128,16 +128,16 @@ defmodule MyApp.Plugins.Test do
     IO.puts("Test 4: Missing MIME Type")
 
     result = %{
-      "content" => "Some content",
-      "metadata" => %{}
+    "content" => "Some content",
+    "metadata" => %{}
     }
 
     case MyApp.Plugins.CustomJsonExtractor.process(result, %{}) do
       {:ok, _processed} ->
-        IO.puts("  PASS: Missing MIME type handled gracefully\n")
+      IO.puts("  PASS: Missing MIME type handled gracefully\n")
 
       {:error, reason} ->
-        IO.puts("  FAIL: #{reason}\n")
+      IO.puts("  FAIL: #{reason}\n")
     end
   end
 end

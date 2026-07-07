@@ -3,26 +3,26 @@ defmodule LanguageDetectionUtils do
   @default_confidence 0.8
 
   @language_indicators %{
-    "en" => %{
-      patterns: ~w[the and to of a in is that],
-      common_words: ~w[english language detection],
-      min_match: 2
-    },
-    "es" => %{
-      patterns: ~w[de la el y en que],
-      common_words: ~w[español detección idioma],
-      min_match: 2
-    },
-    "fr" => %{
-      patterns: ~w[le la de et une est],
-      common_words: ~w[français détection langue],
-      min_match: 2
-    },
-    "de" => %{
-      patterns: ~w[der die und das in ein],
-      common_words: ~w[deutsch erkennung sprache],
-      min_match: 2
-    }
+  "en" => %{
+  patterns: ~w[the and to of a in is that],
+  common_words: ~w[english language detection],
+  min_match: 2
+  },
+  "es" => %{
+  patterns: ~w[de la el y en que],
+  common_words: ~w[español detección idioma],
+  min_match: 2
+  },
+  "fr" => %{
+  patterns: ~w[le la de et une est],
+  common_words: ~w[français détection langue],
+  min_match: 2
+  },
+  "de" => %{
+  patterns: ~w[der die und das in ein],
+  common_words: ~w[deutsch erkennung sprache],
+  min_match: 2
+  }
   }
 
   @doc """
@@ -34,20 +34,20 @@ defmodule LanguageDetectionUtils do
     words = String.split(normalized, ~r/\W+/)
 
     scores =
-      @language_indicators
-      |> Enum.map(fn {lang, indicators} ->
-        matched = count_pattern_matches(words, indicators.patterns)
-        confidence = min(matched / indicators.min_match, 1.0)
-        {lang, confidence}
-      end)
-      |> Enum.sort_by(&elem(&1, 1), :desc)
+    @language_indicators
+    |> Enum.map(fn {lang, indicators} ->
+      matched = count_pattern_matches(words, indicators.patterns)
+      confidence = min(matched / indicators.min_match, 1.0)
+      {lang, confidence}
+    end)
+    |> Enum.sort_by(&elem(&1, 1), :desc)
 
     case scores do
       [{lang, confidence} | _] when confidence > 0.3 ->
-        {lang, min(confidence * 100, 100)}
+      {lang, min(confidence * 100, 100)}
 
       _ ->
-        {"unknown", 0.0}
+      {"unknown", 0.0}
     end
   end
 
@@ -64,9 +64,9 @@ defmodule LanguageDetectionUtils do
       metadata = Map.get(chunk, "metadata", %{})
 
       updated_metadata =
-        metadata
-        |> Map.put("detected_language", lang)
-        |> Map.put("language_confidence", confidence)
+      metadata
+      |> Map.put("detected_language", lang)
+      |> Map.put("language_confidence", confidence)
 
       Map.put(chunk, "metadata", updated_metadata)
     end)
@@ -108,24 +108,24 @@ defmodule LanguageDetectionUtils do
     |> group_chunks_by_language()
     |> Enum.map(fn {lang, group} ->
       avg_confidence =
-        group
-        |> Enum.map(fn chunk ->
-          chunk
-          |> Map.get("metadata", %{})
-          |> Map.get("language_confidence", 0.0)
-        end)
-        |> then(fn confidences ->
-          if Enum.empty?(confidences) do
-            0.0
-          else
-            Enum.sum(confidences) / length(confidences)
-          end
-        end)
+      group
+      |> Enum.map(fn chunk ->
+        chunk
+        |> Map.get("metadata", %{})
+        |> Map.get("language_confidence", 0.0)
+      end)
+      |> then(fn confidences ->
+        if Enum.empty?(confidences) do
+          0.0
+        else
+          Enum.sum(confidences) / length(confidences)
+        end
+      end)
 
       %{
-        language: lang,
-        chunk_count: length(group),
-        avg_confidence: Float.round(avg_confidence, 2)
+      language: lang,
+      chunk_count: length(group),
+      avg_confidence: Float.round(avg_confidence, 2)
       }
     end)
     |> Enum.sort_by(&Map.get(&1, :chunk_count), :desc)
@@ -137,14 +137,14 @@ defmodule LanguageDetectionUtils do
   def is_single_language?(chunks, threshold \\ 0.8) do
     case language_summary(chunks) do
       [top | rest] ->
-        dominant_ratio = top.chunk_count / Enum.reduce(rest, top.chunk_count, fn x, acc ->
-          acc + x.chunk_count
-        end)
+      dominant_ratio = top.chunk_count / Enum.reduce(rest, top.chunk_count, fn x, acc ->
+        acc + x.chunk_count
+      end)
 
-        dominant_ratio >= threshold
+      dominant_ratio >= threshold
 
       _ ->
-        false
+      false
     end
   end
 
@@ -156,7 +156,7 @@ end
 
 # Example usage
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 1000}
+chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multilingual_doc.pdf"}, config: config)
@@ -168,8 +168,8 @@ IO.puts("=== Language Detection ===")
 
 case LanguageDetectionUtils.detect_language(result.content || "") do
   {lang, confidence} ->
-    IO.puts("Detected Language: #{lang}")
-    IO.puts("Confidence: #{Float.round(confidence, 2)}%")
+  IO.puts("Detected Language: #{lang}")
+  IO.puts("Confidence: #{Float.round(confidence, 2)}%")
 end
 
 IO.puts("\n=== Language Summary ===")

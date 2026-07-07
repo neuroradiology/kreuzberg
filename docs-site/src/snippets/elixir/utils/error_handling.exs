@@ -8,20 +8,20 @@ defmodule ErrorHandlingUtils do
   end
 
   defp extract_with_retry(_file_path, _config, max_retries, attempt, _error)
-       when attempt > max_retries do
+  when attempt > max_retries do
     {:error, "Max retries (#{max_retries}) exceeded"}
   end
 
   defp extract_with_retry(file_path, config, max_retries, attempt, _prev_error) do
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config) do
       {:ok, output} ->
-        result = List.first(output.results)
-        {:ok, result}
+      result = List.first(output.results)
+      {:ok, result}
 
       {:error, reason} ->
-        IO.puts("Attempt #{attempt} failed: #{inspect(reason)}")
-        Process.sleep(100 * attempt)  # Exponential backoff
-        extract_with_retry(file_path, config, max_retries, attempt + 1, reason)
+      IO.puts("Attempt #{attempt} failed: #{inspect(reason)}")
+      Process.sleep(100 * attempt)  # Exponential backoff
+      extract_with_retry(file_path, config, max_retries, attempt + 1, reason)
     end
   end
 
@@ -36,18 +36,18 @@ defmodule ErrorHandlingUtils do
     |> Enum.reduce(%{successes: [], failures: []}, fn {file, result}, acc ->
       case result do
         {:ok, output} ->
-          data = List.first(output.results)
-          Map.update!(acc, :successes, &[{file, data} | &1])
+        data = List.first(output.results)
+        Map.update!(acc, :successes, &[{file, data} | &1])
 
         {:error, reason} ->
-          Map.update!(acc, :failures, &[{file, reason} | &1])
+        Map.update!(acc, :failures, &[{file, reason} | &1])
       end
     end)
     |> then(fn acc ->
       %{
-        acc
-        | successes: Enum.reverse(acc.successes),
-          failures: Enum.reverse(acc.failures)
+      acc
+      | successes: Enum.reverse(acc.successes),
+      failures: Enum.reverse(acc.failures)
       }
     end)
   end
@@ -58,16 +58,16 @@ defmodule ErrorHandlingUtils do
   def validate_result(result, required_fields \\ ["text", "metadata"]) do
     case result do
       {:ok, data} ->
-        missing = Enum.filter(required_fields, &(!Map.has_key?(data, &1)))
+      missing = Enum.filter(required_fields, &(!Map.has_key?(data, &1)))
 
-        if Enum.empty?(missing) do
-          {:ok, data}
-        else
-          {:error, "Missing required fields: #{inspect(missing)}"}
-        end
+      if Enum.empty?(missing) do
+        {:ok, data}
+      else
+        {:error, "Missing required fields: #{inspect(missing)}"}
+      end
 
       {:error, reason} ->
-        {:error, format_error(reason)}
+      {:error, format_error(reason)}
     end
   end
 
@@ -94,10 +94,10 @@ defmodule ErrorHandlingUtils do
   """
   def log_metrics(file_path, result, duration_ms) do
     status =
-      case result do
-        {:ok, _} -> "success"
-        {:error, _} -> "failure"
-      end
+    case result do
+      {:ok, _} -> "success"
+      {:error, _} -> "failure"
+    end
 
     IO.puts("""
     [#{DateTime.utc_now()}] Extraction Metrics
@@ -108,29 +108,29 @@ defmodule ErrorHandlingUtils do
 
     case result do
       {:ok, data} ->
-        IO.puts("- Chunks: #{length(data.chunks || [])}")
-        IO.puts("- Text length: #{String.length(data.content || "")}")
+      IO.puts("- Chunks: #{length(data.chunks || [])}")
+      IO.puts("- Text length: #{String.length(data.content || "")}")
 
       {:error, reason} ->
-        IO.puts("- Error: #{format_error(reason)}")
+      IO.puts("- Error: #{format_error(reason)}")
     end
   end
 end
 
 # Example usage with error handling
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 1000}
+chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
 IO.puts("=== Extract with Retry ===")
 
 case ErrorHandlingUtils.extract_with_retry("document.pdf", config, 3) do
   {:ok, result} ->
-    IO.puts("Extraction succeeded")
-    IO.inspect(result)
+  IO.puts("Extraction succeeded")
+  IO.inspect(result)
 
   {:error, reason} ->
-    IO.puts("Extraction failed: #{reason}")
+  IO.puts("Extraction failed: #{reason}")
 end
 
 IO.puts("\n=== Extract Multiple Files ===")
@@ -139,9 +139,9 @@ files = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
 case ErrorHandlingUtils.extract_multiple(files, config) do
   results ->
-    IO.puts("Successes: #{length(results.successes)}")
-    IO.puts("Failures: #{length(results.failures)}")
-    IO.inspect(results)
+  IO.puts("Successes: #{length(results.successes)}")
+  IO.puts("Failures: #{length(results.failures)}")
+  IO.inspect(results)
 end
 
 IO.puts("\n=== Validate Result ===")
@@ -151,8 +151,8 @@ IO.puts("\n=== Validate Result ===")
 result = List.first(output.results)
 case ErrorHandlingUtils.validate_result({:ok, result}, ["text", "chunks"]) do
   {:ok, data} ->
-    IO.puts("Validation passed")
+  IO.puts("Validation passed")
 
   {:error, reason} ->
-    IO.puts("Validation failed: #{reason}")
+  IO.puts("Validation failed: #{reason}")
 end

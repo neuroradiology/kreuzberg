@@ -8,7 +8,7 @@ var config = new ExtractionConfig
 
 var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
     new BytesWithMime(fileBytes), "application/pdf")).Results[0],
-    config
+config
 );
 
 var mimeType = result.MimeType;

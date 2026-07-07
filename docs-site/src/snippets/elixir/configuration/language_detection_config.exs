@@ -4,15 +4,15 @@ alias Xberg.ExtractionConfig
 # Configure language detection for multilingual documents
 # Automatically detect all languages present in the content
 config = %ExtractionConfig{
-  language_detection: %{
-    "enabled" => true,
-    "detect_all" => true
-  },
-  chunking: %{
-    "max_characters" => 1000,
-    "overlap" => 100
-  },
-  use_cache: true
+language_detection: %{
+"enabled" => true,
+"detect_all" => true
+},
+chunking: %{
+"max_characters" => 1000,
+"overlap" => 100
+},
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multilingual.pdf"}, config: config)

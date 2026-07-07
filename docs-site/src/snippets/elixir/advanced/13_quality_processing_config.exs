@@ -2,16 +2,16 @@
 alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
-  quality_processing: %{
-    "enabled" => true,
-    "min_quality_score" => 0.75,
-    "remove_noise" => true,
-    "enhance_clarity" => true
-  },
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract"
-  }
+quality_processing: %{
+"enabled" => true,
+"min_quality_score" => 0.75,
+"remove_noise" => true,
+"enhance_clarity" => true
+},
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract"
+}
 }
 
 # Extract file with quality processing and OCR

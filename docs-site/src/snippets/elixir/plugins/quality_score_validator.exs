@@ -54,19 +54,19 @@ Plugin.register_validator(MyApp.Plugins.QualityScoreValidator)
 # Note: In real usage, result will be an ExtractedDocument struct, not a map.
 # This example shows the data structure for illustration purposes.
 result = %{
-  "content" => "Extracted document content",
-  "metadata" => %{
-    "quality_score" => 0.85,
-    "pages" => 1
-  }
+"content" => "Extracted document content",
+"metadata" => %{
+"quality_score" => 0.85,
+"pages" => 1
+}
 }
 
 case MyApp.Plugins.QualityScoreValidator.validate(result) do
   :ok ->
-    IO.puts("Quality validation passed: #{result["metadata"]["quality_score"]}")
+  IO.puts("Quality validation passed: #{result["metadata"]["quality_score"]}")
 
   {:error, reason} ->
-    IO.puts("Quality validation failed: #{reason}")
+  IO.puts("Quality validation failed: #{reason}")
 end
 
 # List all registered validators

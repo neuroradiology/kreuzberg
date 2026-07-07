@@ -29,11 +29,11 @@ defmodule MyApp.Plugins.UnregisterExample do
     def process(result, _config) do
       # Extract emails from content
       emails =
-        result
-        |> Map.get("content", "")
-        |> String.scan(~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
-        |> Enum.map(&List.first/1)
-        |> Enum.uniq()
+      result
+      |> Map.get("content", "")
+      |> String.scan(~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+      |> Enum.map(&List.first/1)
+      |> Enum.uniq()
 
       Map.put(result, "extracted_emails", emails)
     end
@@ -62,11 +62,11 @@ defmodule MyApp.Plugins.UnregisterExample do
     def process(result, _config) do
       # Extract phone numbers from content
       phones =
-        result
-        |> Map.get("content", "")
-        |> String.scan(~r/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/)
-        |> Enum.map(&List.first/1)
-        |> Enum.uniq()
+      result
+      |> Map.get("content", "")
+      |> String.scan(~r/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/)
+      |> Enum.map(&List.first/1)
+      |> Enum.uniq()
 
       Map.put(result, "extracted_phones", phones)
     end
@@ -95,11 +95,11 @@ defmodule MyApp.Plugins.UnregisterExample do
     def process(result, _config) do
       # Extract URLs from content
       urls =
-        result
-        |> Map.get("content", "")
-        |> String.scan(~r/https?:\/\/\S+/)
-        |> Enum.map(&List.first/1)
-        |> Enum.uniq()
+      result
+      |> Map.get("content", "")
+      |> String.scan(~r/https?:\/\/\S+/)
+      |> Enum.map(&List.first/1)
+      |> Enum.uniq()
 
       Map.put(result, "extracted_urls", urls)
     end
@@ -138,13 +138,13 @@ defmodule MyApp.Plugins.UnregisterExample do
 
       cond do
         byte_size(content) < min_length ->
-          {:error, "Content too short (minimum #{min_length} bytes)"}
+        {:error, "Content too short (minimum #{min_length} bytes)"}
 
         byte_size(content) > max_length ->
-          {:error, "Content too long (maximum #{max_length} bytes)"}
+        {:error, "Content too long (maximum #{max_length} bytes)"}
 
         true ->
-          :ok
+        :ok
       end
     end
 
@@ -246,15 +246,15 @@ defmodule MyApp.Plugins.UnregisterExample do
     @impl true
     def supported_languages do
       [
-        "eng",
-        "fra",
-        "deu",
-        "spa",
-        "ita",
-        "jpn",
-        "chi",
-        "chi_tra",
-        "kor"
+      "eng",
+      "fra",
+      "deu",
+      "spa",
+      "ita",
+      "jpn",
+      "chi",
+      "chi_tra",
+      "kor"
       ]
     end
 

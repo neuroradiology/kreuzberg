@@ -17,20 +17,20 @@ defmodule ImageExtractor do
   """
   def extract_images(file_path) do
     config = %ExtractionConfig{
-      # Enable image extraction
-      images: %{
-        "extract" => true
-      },
-      use_cache: true
+    # Enable image extraction
+    images: %{
+    "extract" => true
+    },
+    use_cache: true
     }
 
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config) do
       {:ok, output} ->
-        result = List.first(output.results)
-        {:ok, result.images || []}
+      result = List.first(output.results)
+      {:ok, result.images || []}
 
       {:error, reason} ->
-        {:error, reason}
+      {:error, reason}
     end
   end
 
@@ -49,11 +49,11 @@ defmodule ImageExtractor do
       # Decode base64 image data
       case Base.decode64(image["data"]) do
         {:ok, binary_data} ->
-          File.write!(filename, binary_data)
-          {:ok, filename}
+        File.write!(filename, binary_data)
+        {:ok, filename}
 
         :error ->
-          {:error, "Failed to decode image #{idx}"}
+        {:error, "Failed to decode image #{idx}"}
       end
     end)
   end
@@ -72,10 +72,10 @@ defmodule ImageExtractor do
     end)
 
     %{
-      total_images: count,
-      total_bytes: total_size,
-      formats: formats,
-      avg_size: if(count > 0, do: div(total_size, count), else: 0)
+    total_images: count,
+    total_bytes: total_size,
+    formats: formats,
+    avg_size: if(count > 0, do: div(total_size, count), else: 0)
     }
   end
 end
@@ -86,49 +86,49 @@ file_path = "document_with_images.pdf"
 IO.puts("Extracting images from: #{file_path}\n")
 
 case ImageExtractor.extract_images(file_path) do
-  {:ok, images} ->
-    IO.puts("Found #{length(images)} image(s)\n")
+{:ok, images} ->
+IO.puts("Found #{length(images)} image(s)\n")
 
-    # Get image statistics
-    stats = ImageExtractor.get_image_stats(images)
-    IO.puts("=== Image Statistics ===")
-    IO.puts("Total images: #{stats.total_images}")
-    IO.puts("Total size: #{stats.total_bytes} bytes (#{div(stats.total_bytes, 1024)} KB)")
-    IO.puts("Average size: #{stats.avg_size} bytes")
-    IO.puts("Formats: #{inspect(stats.formats)}")
-    IO.puts("")
+# Get image statistics
+stats = ImageExtractor.get_image_stats(images)
+IO.puts("=== Image Statistics ===")
+IO.puts("Total images: #{stats.total_images}")
+IO.puts("Total size: #{stats.total_bytes} bytes (#{div(stats.total_bytes, 1024)} KB)")
+IO.puts("Average size: #{stats.avg_size} bytes")
+IO.puts("Formats: #{inspect(stats.formats)}")
+IO.puts("")
 
-    # Display individual image information
-    IO.puts("=== Individual Images ===")
-    Enum.with_index(images, 1) |> Enum.each(fn {image, idx} ->
-      IO.puts("Image #{idx}:")
-      IO.puts("  Format: #{image["format"]}")
-      IO.puts("  Size: #{image["size"]} bytes")
+# Display individual image information
+IO.puts("=== Individual Images ===")
+Enum.with_index(images, 1) |> Enum.each(fn {image, idx} ->
+  IO.puts("Image #{idx}:")
+  IO.puts("  Format: #{image["format"]}")
+  IO.puts("  Size: #{image["size"]} bytes")
 
-      # Optional: show dimensions if available
-      if image["width"] && image["height"] do
-        IO.puts("  Dimensions: #{image["width"]}x#{image["height"]} pixels")
-      end
+  # Optional: show dimensions if available
+  if image["width"] && image["height"] do
+    IO.puts("  Dimensions: #{image["width"]}x#{image["height"]} pixels")
+  end
 
-      # Optional: show DPI if available
-      if image["dpi"] do
-        IO.puts("  DPI: #{image["dpi"]}")
-      end
+  # Optional: show DPI if available
+  if image["dpi"] do
+    IO.puts("  DPI: #{image["dpi"]}")
+  end
 
-      IO.puts("")
-    end)
+  IO.puts("")
+end)
 
-    # Save images to disk
-    case ImageExtractor.save_images(images, "/tmp/extracted_images") do
-      results ->
-        successful = Enum.count(results, fn
-          {:ok, _path} -> true
-          _ -> false
-        end)
-        IO.puts("Saved #{successful}/#{length(results)} images to /tmp/extracted_images")
-    end
+# Save images to disk
+case ImageExtractor.save_images(images, "/tmp/extracted_images") do
+  results ->
+  successful = Enum.count(results, fn
+    {:ok, _path} -> true
+    _ -> false
+  end)
+  IO.puts("Saved #{successful}/#{length(results)} images to /tmp/extracted_images")
+end
 
-  {:error, reason} ->
-    IO.puts("Error extracting images: #{reason}")
+{:error, reason} ->
+IO.puts("Error extracting images: #{reason}")
 end
 ```

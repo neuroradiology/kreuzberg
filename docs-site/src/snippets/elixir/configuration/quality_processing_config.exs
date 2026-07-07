@@ -4,20 +4,20 @@ alias Xberg.ExtractionConfig
 # Configure quality processing settings
 # Enable noise removal and set minimum quality thresholds for extracted content
 config = %ExtractionConfig{
-  quality_processing: %{
-    "enabled" => true,
-    "min_quality_score" => 0.7,
-    "remove_noise" => true
-  },
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract"
-  },
-  chunking: %{
-    "max_characters" => 1000,
-    "overlap" => 100
-  },
-  use_cache: true
+quality_processing: %{
+"enabled" => true,
+"min_quality_score" => 0.7,
+"remove_noise" => true
+},
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract"
+},
+chunking: %{
+"max_characters" => 1000,
+"overlap" => 100
+},
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "noisy_document.pdf"}, config: config)

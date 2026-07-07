@@ -33,15 +33,15 @@ class McpServerProgram
         var server = new XbergMcpServer();
 
         server.RegisterTool("extract", new Dictionary<string, object>
-        {
-            { "description", "Extract text from a document file" },
-            { "parameters", new { path = "string" } }
+            {
+                { "description", "Extract text from a document file" },
+                { "parameters", new { path = "string" } }
         });
 
         server.RegisterTool("extract", new Dictionary<string, object>
-        {
-            { "description", "Extract text from document bytes" },
-            { "parameters", new { data = "string", mimeType = "string" } }
+            {
+                { "description", "Extract text from document bytes" },
+                { "parameters", new { data = "string", mimeType = "string" } }
         });
 
         await server.StartAsync();

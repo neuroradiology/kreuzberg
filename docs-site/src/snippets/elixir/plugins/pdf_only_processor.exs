@@ -61,37 +61,37 @@ Plugin.register_post_processor(:pdf_only_processor, MyApp.Plugins.PdfOnlyProcess
 
 # Example usage with PDF result
 pdf_result = %{
-  "content" => "PDF extracted content here",
-  "mime_type" => "application/pdf",
-  "metadata" => %{
-    "source" => "document.pdf",
-    "pages" => 5
-  }
+"content" => "PDF extracted content here",
+"mime_type" => "application/pdf",
+"metadata" => %{
+"source" => "document.pdf",
+"pages" => 5
+}
 }
 
 # Process PDF result
 case MyApp.Plugins.PdfOnlyProcessor.process(pdf_result, %{}) do
   {:ok, processed_result} ->
-    IO.puts("PDF processing complete")
-    IO.inspect(processed_result, label: "PDF Result")
+  IO.puts("PDF processing complete")
+  IO.inspect(processed_result, label: "PDF Result")
 
   {:error, reason} ->
-    IO.puts("PDF processing failed: #{reason}")
+  IO.puts("PDF processing failed: #{reason}")
 end
 
 # Example with non-PDF result (processor will skip processing)
 non_pdf_result = %{
-  "content" => "Image extracted content",
-  "mime_type" => "image/png",
-  "metadata" => %{}
+"content" => "Image extracted content",
+"mime_type" => "image/png",
+"metadata" => %{}
 }
 
 case MyApp.Plugins.PdfOnlyProcessor.process(non_pdf_result, %{}) do
   {:ok, processed_result} ->
-    IO.puts("Processing complete (skipped for non-PDF)")
-    IO.inspect(processed_result, label: "Non-PDF Result")
+  IO.puts("Processing complete (skipped for non-PDF)")
+  IO.inspect(processed_result, label: "Non-PDF Result")
 
   {:error, reason} ->
-    IO.puts("Processing failed: #{reason}")
+  IO.puts("Processing failed: #{reason}")
 end
 ```

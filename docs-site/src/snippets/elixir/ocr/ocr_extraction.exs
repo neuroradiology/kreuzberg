@@ -5,16 +5,16 @@ alias Xberg.ExtractionConfig
 # Tesseract processes the document and returns structured content
 
 config = %ExtractionConfig{
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract"
-  },
-  chunking: %{
-    "max_characters" => 1500,
-    "overlap" => 150
-  },
-  language_detection: %{"enabled" => true},
-  use_cache: true
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract"
+},
+chunking: %{
+"max_characters" => 1500,
+"overlap" => 150
+},
+language_detection: %{"enabled" => true},
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_invoice.pdf"}, config: config)

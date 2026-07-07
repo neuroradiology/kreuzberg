@@ -3,9 +3,7 @@ import type { Chunk, ExtractedImage, ExtractedDocument, Table } from "@xberg-io/
 function _isTable(obj: unknown): obj is Table {
   if (!obj || typeof obj !== "object") return false;
   const t = obj as Record<string, unknown>;
-  return (
-    Array.isArray(t.cells) && typeof t.markdown === "string" && typeof t.pageNumber === "number"
-  );
+  return Array.isArray(t.cells) && typeof t.markdown === "string" && typeof t.pageNumber === "number";
 }
 
 function _isChunk(obj: unknown): obj is Chunk {
@@ -22,9 +20,7 @@ function _isChunk(obj: unknown): obj is Chunk {
 function _isExtractedImage(obj: unknown): obj is ExtractedImage {
   if (!obj || typeof obj !== "object") return false;
   const i = obj as Record<string, unknown>;
-  return (
-    i.data instanceof Uint8Array && typeof i.format === "string" && typeof i.imageIndex === "number"
-  );
+  return i.data instanceof Uint8Array && typeof i.format === "string" && typeof i.imageIndex === "number";
 }
 
 function isExtractedDocument(obj: unknown): obj is ExtractedDocument {

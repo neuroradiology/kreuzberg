@@ -47,9 +47,9 @@ Console.WriteLine("\nRAKE Keywords:");
 if (rakeResult.ExtractedKeywords != null)
 {
     var topKeywords = rakeResult.ExtractedKeywords
-        .OrderByDescending(k => k.Score)
-        .Take(10)
-        .ToList();
+    .OrderByDescending(k => k.Score)
+    .Take(10)
+    .ToList();
 
     foreach (var keyword in topKeywords)
     {

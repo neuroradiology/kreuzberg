@@ -18,10 +18,10 @@ defmodule XbergAdvancedCLI do
     """
 
     defstruct [
-      :profiles,
-      :default_profile,
-      :cache_enabled,
-      :cache_dir
+    :profiles,
+    :default_profile,
+    :cache_enabled,
+    :cache_dir
     ]
 
     @doc """
@@ -43,26 +43,26 @@ defmodule XbergAdvancedCLI do
     defp load_yaml(path) do
       case File.read(path) do
         {:ok, content} ->
-          case :yamerl_constr.string(content, []) do
-            [config] -> {:ok, parse_config(config)}
-            error -> {:error, "Failed to parse YAML: #{inspect(error)}"}
-          end
+        case :yamerl_constr.string(content, []) do
+          [config] -> {:ok, parse_config(config)}
+          error -> {:error, "Failed to parse YAML: #{inspect(error)}"}
+        end
 
         {:error, reason} ->
-          {:error, "Failed to read config: #{inspect(reason)}"}
+        {:error, "Failed to read config: #{inspect(reason)}"}
       end
     end
 
     defp load_json(path) do
       case File.read(path) do
         {:ok, content} ->
-          case Jason.decode(content) do
-            {:ok, config} -> {:ok, parse_config(config)}
-            error -> {:error, "Failed to parse JSON: #{inspect(error)}"}
-          end
+        case Jason.decode(content) do
+          {:ok, config} -> {:ok, parse_config(config)}
+          error -> {:error, "Failed to parse JSON: #{inspect(error)}"}
+        end
 
         {:error, reason} ->
-          {:error, "Failed to read config: #{inspect(reason)}"}
+        {:error, "Failed to read config: #{inspect(reason)}"}
       end
     end
 
@@ -73,10 +73,10 @@ defmodule XbergAdvancedCLI do
 
     defp parse_config(raw_config) when is_map(raw_config) do
       %ConfigFile{
-        profiles: Map.get(raw_config, "profiles", %{}),
-        default_profile: Map.get(raw_config, "default_profile", "default"),
-        cache_enabled: Map.get(raw_config, "cache_enabled", true),
-        cache_dir: Map.get(raw_config, "cache_dir", "/tmp/xberg_cache")
+      profiles: Map.get(raw_config, "profiles", %{}),
+      default_profile: Map.get(raw_config, "default_profile", "default"),
+      cache_enabled: Map.get(raw_config, "cache_enabled", true),
+      cache_dir: Map.get(raw_config, "cache_dir", "/tmp/xberg_cache")
       }
     end
 
@@ -110,10 +110,10 @@ defmodule XbergAdvancedCLI do
 
       case ConfigFile.get_profile(config_file, profile_name) do
         {:ok, profile} ->
-          extract_with_config(file_path, profile, config_file, verbose)
+        extract_with_config(file_path, profile, config_file, verbose)
 
         {:error, reason} ->
-          {:error, reason}
+        {:error, reason}
       end
     end
 
@@ -140,80 +140,80 @@ defmodule XbergAdvancedCLI do
 
         case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: processed_file}, config: extraction_config) do
           {:ok, output} ->
-            result = List.first(output.results)
-            elapsed = System.monotonic_time(:millisecond) - start_time
+          result = List.first(output.results)
+          elapsed = System.monotonic_time(:millisecond) - start_time
 
-            # Post-process if configured
-            final_result = postprocess_if_needed(result, profile)
+          # Post-process if configured
+          final_result = postprocess_if_needed(result, profile)
 
-            print_results(final_result, elapsed, verbose)
-            cleanup_temp_files(processed_file, file_path)
-            {:ok, final_result}
+          print_results(final_result, elapsed, verbose)
+          cleanup_temp_files(processed_file, file_path)
+          {:ok, final_result}
 
           {:error, reason} ->
-            cleanup_temp_files(processed_file, file_path)
-            {:error, reason}
+          cleanup_temp_files(processed_file, file_path)
+          {:error, reason}
         end
       end
     end
 
     defp build_extraction_config(profile) do
       %Xberg.ExtractionConfig{
-        ocr: profile["ocr"],
-        chunking: profile["chunking"],
-        quality_processing: profile["quality_processing"],
-        language_detection: profile["language_detection"],
-        keyword_extraction: profile["keyword_extraction"],
-        images: profile["images"],
-        use_cache: true
+      ocr: profile["ocr"],
+      chunking: profile["chunking"],
+      quality_processing: profile["quality_processing"],
+      language_detection: profile["language_detection"],
+      keyword_extraction: profile["keyword_extraction"],
+      images: profile["images"],
+      use_cache: true
       }
     end
 
     defp preprocess_if_needed(file_path, profile, verbose) do
       case profile["preprocessing"] do
         nil ->
-          file_path
+        file_path
 
         preprocessing ->
-          IO.puts("Preprocessing enabled:")
-          temp_path = "/tmp/xberg_#{System.unique_integer([:positive])}"
+        IO.puts("Preprocessing enabled:")
+        temp_path = "/tmp/xberg_#{System.unique_integer([:positive])}"
 
-          # Apply preprocessing steps
-          preprocessing
-          |> Enum.reduce(file_path, fn step, path ->
-            apply_preprocessing_step(step, path, temp_path, verbose)
-          end)
+        # Apply preprocessing steps
+        preprocessing
+        |> Enum.reduce(file_path, fn step, path ->
+          apply_preprocessing_step(step, path, temp_path, verbose)
+        end)
       end
     end
 
     defp apply_preprocessing_step(step, input_path, _temp_path, verbose) do
       case step do
         %{"type" => "rotate", "degrees" => degrees} ->
-          if verbose, do: IO.puts("  - Rotating #{degrees} degrees")
-          input_path
+        if verbose, do: IO.puts("  - Rotating #{degrees} degrees")
+        input_path
 
         %{"type" => "normalize", "target_format" => format} ->
-          if verbose, do: IO.puts("  - Normalizing to #{format}")
-          input_path
+        if verbose, do: IO.puts("  - Normalizing to #{format}")
+        input_path
 
         %{"type" => "deskew"} ->
-          if verbose, do: IO.puts("  - Deskewing")
-          input_path
+        if verbose, do: IO.puts("  - Deskewing")
+        input_path
 
         _ ->
-          input_path
+        input_path
       end
     end
 
     defp postprocess_if_needed(result, profile) do
       case profile["postprocessing"] do
         nil ->
-          result
+        result
 
         postprocessing ->
-          Enum.reduce(postprocessing, result, fn step, acc_result ->
-            apply_postprocessing_step(step, acc_result)
-          end)
+        Enum.reduce(postprocessing, result, fn step, acc_result ->
+          apply_postprocessing_step(step, acc_result)
+        end)
       end
     end
 
@@ -221,8 +221,8 @@ defmodule XbergAdvancedCLI do
       case result.chunks do
         nil -> result
         chunks ->
-          filtered = Enum.filter(chunks, &(byte_size(&1) > 0))
-          %{result | chunks: filtered}
+        filtered = Enum.filter(chunks, &(byte_size(&1) > 0))
+        %{result | chunks: filtered}
       end
     end
 
@@ -230,8 +230,8 @@ defmodule XbergAdvancedCLI do
       case result.tables do
         nil -> result
         tables ->
-          limited = Enum.take(tables, max_tables)
-          %{result | tables: limited}
+        limited = Enum.take(tables, max_tables)
+        %{result | tables: limited}
       end
     end
 
@@ -285,14 +285,14 @@ defmodule XbergAdvancedCLI do
 
   defp parse_args(args) do
     {opts, args, _invalid} = OptionParser.parse(args,
-      switches: [
-        config: :string,
-        profile: :string,
-        output: :string,
-        verbose: :boolean,
-        list: :boolean
-      ],
-      aliases: [c: :config, p: :profile, o: :output, v: :verbose, l: :list]
+    switches: [
+    config: :string,
+    profile: :string,
+    output: :string,
+    verbose: :boolean,
+    list: :boolean
+    ],
+    aliases: [c: :config, p: :profile, o: :output, v: :verbose, l: :list]
     )
 
     {opts, args}
@@ -306,19 +306,19 @@ defmodule XbergAdvancedCLI do
   defp execute({opts, [command | rest]}) do
     case command do
       "extract" ->
-        execute_extract(rest, opts)
+      execute_extract(rest, opts)
 
       "profiles" ->
-        execute_list_profiles(opts)
+      execute_list_profiles(opts)
 
       "help" ->
-        print_help()
-        :ok
+      print_help()
+      :ok
 
       _ ->
-        IO.puts(:stderr, "Unknown command: #{command}")
-        print_usage()
-        :error
+      IO.puts(:stderr, "Unknown command: #{command}")
+      print_usage()
+      :error
     end
   end
 
@@ -330,28 +330,28 @@ defmodule XbergAdvancedCLI do
 
     case ConfigFile.load(config_path) do
       {:ok, config_file} ->
-        case args do
-          [] ->
-            IO.puts(:stderr, "Error: No file specified")
-            :error
+      case args do
+        [] ->
+        IO.puts(:stderr, "Error: No file specified")
+        :error
 
-          [file_path | _] ->
-            case Extractor.extract_with_profile(file_path, config_file, profile, verbose: verbose) do
-              {:ok, result} ->
-                if output_path do
-                  save_result(result, output_path)
-                end
-                :ok
+        [file_path | _] ->
+        case Extractor.extract_with_profile(file_path, config_file, profile, verbose: verbose) do
+          {:ok, result} ->
+          if output_path do
+            save_result(result, output_path)
+          end
+          :ok
 
-              {:error, reason} ->
-                IO.puts(:stderr, "Extraction failed: #{reason}")
-                :error
-            end
+          {:error, reason} ->
+          IO.puts(:stderr, "Extraction failed: #{reason}")
+          :error
         end
+      end
 
       {:error, reason} ->
-        IO.puts(:stderr, "Configuration error: #{reason}")
-        :error
+      IO.puts(:stderr, "Configuration error: #{reason}")
+      :error
     end
   end
 
@@ -360,37 +360,37 @@ defmodule XbergAdvancedCLI do
 
     case ConfigFile.load(config_path) do
       {:ok, config_file} ->
-        profiles = ConfigFile.list_profiles(config_file)
-        IO.puts("Available profiles:")
-        Enum.each(profiles, fn profile ->
-          IO.puts("  - #{profile}")
-        end)
-        :ok
+      profiles = ConfigFile.list_profiles(config_file)
+      IO.puts("Available profiles:")
+      Enum.each(profiles, fn profile ->
+        IO.puts("  - #{profile}")
+      end)
+      :ok
 
       {:error, reason} ->
-        IO.puts(:stderr, "Configuration error: #{reason}")
-        :error
+      IO.puts(:stderr, "Configuration error: #{reason}")
+      :error
     end
   end
 
   defp save_result(result, output_path) do
     output_data = %{
-      content: result.content,
-      mime_type: result.mime_type,
-      metadata: result.metadata,
-      tables: result.tables || [],
-      chunks: result.chunks || [],
-      images: result.images || [],
-      detected_languages: result.detected_languages || [],
-      extracted_at: DateTime.utc_now()
+    content: result.content,
+    mime_type: result.mime_type,
+    metadata: result.metadata,
+    tables: result.tables || [],
+    chunks: result.chunks || [],
+    images: result.images || [],
+    detected_languages: result.detected_languages || [],
+    extracted_at: DateTime.utc_now()
     }
 
     case File.write(output_path, Jason.encode!(output_data, pretty: true)) do
       :ok ->
-        IO.puts("Results saved to: #{output_path}")
+      IO.puts("Results saved to: #{output_path}")
 
       {:error, reason} ->
-        IO.puts(:stderr, "Failed to save results: #{inspect(reason)}")
+      IO.puts(:stderr, "Failed to save results: #{inspect(reason)}")
     end
   end
 

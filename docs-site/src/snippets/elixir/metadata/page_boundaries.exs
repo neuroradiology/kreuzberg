@@ -40,22 +40,22 @@ defmodule PageBoundaryUtils do
 
       case segments do
         [] ->
-          [%{page: page, content: text, chunks: [chunk]}]
+        [%{page: page, content: text, chunks: [chunk]}]
 
         [current | rest] ->
-          if current.page == page do
-            # Same page, append to current segment
-            updated = %{
-              current
-              | content: current.content <> " " <> text,
-                chunks: current.chunks ++ [chunk]
-            }
+        if current.page == page do
+          # Same page, append to current segment
+          updated = %{
+          current
+          | content: current.content <> " " <> text,
+          chunks: current.chunks ++ [chunk]
+          }
 
-            [updated | rest]
-          else
-            # New page, create new segment
-            [%{page: page, content: text, chunks: [chunk]}, current | rest]
-          end
+          [updated | rest]
+        else
+          # New page, create new segment
+          [%{page: page, content: text, chunks: [chunk]}, current | rest]
+        end
       end
     end)
     |> Enum.reverse()
@@ -71,9 +71,9 @@ defmodule PageBoundaryUtils do
     |> Enum.sort()
     |> then(fn pages ->
       %{
-        total_pages: length(pages),
-        page_numbers: pages,
-        gaps: find_page_gaps(pages)
+      total_pages: length(pages),
+      page_numbers: pages,
+      gaps: find_page_gaps(pages)
       }
     end)
   end
@@ -86,15 +86,15 @@ defmodule PageBoundaryUtils do
     |> Enum.group_by(&extract_page_number/1)
     |> Enum.map(fn {page, page_chunks} ->
       total_length =
-        page_chunks
-        |> Enum.map(&String.length(Map.get(&1, "text", "")))
-        |> Enum.sum()
+      page_chunks
+      |> Enum.map(&String.length(Map.get(&1, "text", "")))
+      |> Enum.sum()
 
       %{
-        page_number: page,
-        chunk_count: length(page_chunks),
-        total_text_length: total_length,
-        avg_chunk_size: if(length(page_chunks) > 0, do: div(total_length, length(page_chunks)), else: 0)
+      page_number: page,
+      chunk_count: length(page_chunks),
+      total_text_length: total_length,
+      avg_chunk_size: if(length(page_chunks) > 0, do: div(total_length, length(page_chunks)), else: 0)
       }
     end)
     |> Enum.sort_by(&Map.get(&1, :page_number))
@@ -118,10 +118,10 @@ defmodule PageBoundaryUtils do
     page_segments = identify_page_segments(chunks)
 
     segments_map =
-      page_segments
-      |> Enum.reduce(%{}, fn segment, acc ->
-        Map.put(acc, segment.page, segment)
-      end)
+    page_segments
+    |> Enum.reduce(%{}, fn segment, acc ->
+      Map.put(acc, segment.page, segment)
+    end)
 
     chunks
     |> Enum.map(fn chunk ->
@@ -129,17 +129,17 @@ defmodule PageBoundaryUtils do
       metadata = Map.get(chunk, "metadata", %{})
 
       updated_metadata =
-        case segments_map[page] do
-          nil ->
-            metadata
+      case segments_map[page] do
+        nil ->
+        metadata
 
-          segment ->
-            metadata
-            |> Map.put("page_number", page)
-            |> Map.put("is_first_on_page", hd(segment.chunks) == chunk)
-            |> Map.put("is_last_on_page", List.last(segment.chunks) == chunk)
-            |> Map.put("position_on_page", find_chunk_position(segment.chunks, chunk))
-        end
+        segment ->
+        metadata
+        |> Map.put("page_number", page)
+        |> Map.put("is_first_on_page", hd(segment.chunks) == chunk)
+        |> Map.put("is_last_on_page", List.last(segment.chunks) == chunk)
+        |> Map.put("position_on_page", find_chunk_position(segment.chunks, chunk))
+      end
 
       Map.put(chunk, "metadata", updated_metadata)
     end)
@@ -179,22 +179,22 @@ defmodule PageBoundaryUtils do
 
       # Extract first line or heading as TOC entry
       first_line =
-        text
-        |> String.split("\n")
-        |> hd()
-        |> String.trim()
-        |> then(fn line ->
-          if String.length(line) > 100 do
-            String.slice(line, 0, 100) <> "..."
-          else
-            line
-          end
-        end)
+      text
+      |> String.split("\n")
+      |> hd()
+      |> String.trim()
+      |> then(fn line ->
+        if String.length(line) > 100 do
+          String.slice(line, 0, 100) <> "..."
+        else
+          line
+        end
+      end)
 
       %{
-        page: page,
-        content: first_line,
-        content_type: detect_content_type(text)
+      page: page,
+      content: first_line,
+      content_type: detect_content_type(text)
       }
     end)
   end
@@ -209,8 +209,8 @@ defmodule PageBoundaryUtils do
   defp find_page_gaps(pages) do
     pages
     |> Enum.chunk_every(2, 1, :discard)
-    |> Enum.filter(fn [a, b] -> b - a > 1 end)
-    |> Enum.map(fn [a, b] -> {a, b} end)
+  |> Enum.filter(fn [a, b] -> b - a > 1 end)
+  |> Enum.map(fn [a, b] -> {a, b} end)
   end
 
   defp find_chunk_position(chunks, target_chunk) do
@@ -234,7 +234,7 @@ end
 
 # Example usage
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 1000}
+chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multipage_doc.pdf"}, config: config)

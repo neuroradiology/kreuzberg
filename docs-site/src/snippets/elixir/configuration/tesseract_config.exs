@@ -4,16 +4,16 @@ alias Xberg.ExtractionConfig
 # Configure Tesseract OCR settings
 # Includes language selection, page segmentation mode, OCR engine mode, and DPI settings
 config = %ExtractionConfig{
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract",
-    "language" => "eng",
-    "psm" => 3,
-    "oem" => 3,
-    "dpi" => 300
-  },
-  use_cache: true,
-  force_ocr: false
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract",
+"language" => "eng",
+"psm" => 3,
+"oem" => 3,
+"dpi" => 300
+},
+use_cache: true,
+force_ocr: false
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

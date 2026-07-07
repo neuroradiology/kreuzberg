@@ -12,6 +12,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 ```
+
 ```java title="Java - Markdown with Heading Context"
 import io.xberg.Xberg;
 import io.xberg.ExtractInput;

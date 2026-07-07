@@ -31,11 +31,7 @@ class MetadataEnricherPlugin implements Plugin {
   }
 }
 
-async function executePipeline(
-  bytes: Uint8Array,
-  mimeType: string,
-  plugins: Plugin[],
-): Promise<ExtractedDocument> {
+async function executePipeline(bytes: Uint8Array, mimeType: string, plugins: Plugin[]): Promise<ExtractedDocument> {
   await initWasm();
 
   const output = await extract({ kind: "bytes", bytes, mimeType: mimeType });

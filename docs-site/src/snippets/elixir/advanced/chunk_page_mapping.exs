@@ -1,7 +1,7 @@
 # Extract with chunking and track page boundaries
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 500},
-  track_page_boundaries: true
+chunking: %{"enabled" => true, "max_characters" => 500},
+track_page_boundaries: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

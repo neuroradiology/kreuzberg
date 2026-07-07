@@ -4,16 +4,16 @@ alias Xberg.ExtractionConfig
 # Configure PDF-specific extraction options
 # Extract annotations, metadata, and flatten forms for comprehensive document processing
 config = %ExtractionConfig{
-  pdf: %{
-    "extract_annotations" => true,
-    "extract_metadata" => true,
-    "flatten_forms" => true
-  },
-  chunking: %{
-    "max_characters" => 1500,
-    "overlap" => 150
-  },
-  use_cache: true
+pdf: %{
+"extract_annotations" => true,
+"extract_metadata" => true,
+"flatten_forms" => true
+},
+chunking: %{
+"max_characters" => 1500,
+"overlap" => 150
+},
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "form_document.pdf"}, config: config)

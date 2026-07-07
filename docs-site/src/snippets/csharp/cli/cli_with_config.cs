@@ -29,45 +29,45 @@ extractCommand.AddOption(forceOcr);
 extractCommand.AddOption(useCache);
 
 extractCommand.SetHandler(async (path, config, ocr, cache) =>
-{
-    try
     {
-        ExtractionConfig extractionConfig;
+        try
+        {
+            ExtractionConfig extractionConfig;
 
-        if (!string.IsNullOrEmpty(config))
-        {
-            var json = await System.IO.File.ReadAllTextAsync(config);
-            extractionConfig = JsonSerializer.Deserialize<ExtractionConfig>(json);
-        }
-        else
-        {
-            extractionConfig = new ExtractionConfig
+            if (!string.IsNullOrEmpty(config))
             {
-                UseCache = cache,
-                ForceOcr = ocr,
-            };
+                var json = await System.IO.File.ReadAllTextAsync(config);
+                extractionConfig = JsonSerializer.Deserialize<ExtractionConfig>(json);
+            }
+            else
+            {
+                extractionConfig = new ExtractionConfig
+                {
+                    UseCache = cache,
+                    ForceOcr = ocr,
+                };
+            }
+
+            Console.WriteLine("Extracting with configuration:");
+            Console.WriteLine($"  - File: {path}");
+            Console.WriteLine($"  - Force OCR: {extractionConfig.ForceOcr}");
+            Console.WriteLine($"  - Use Cache: {extractionConfig.UseCache}");
+
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), extractionConfig)).Results[0];
+
+            Console.WriteLine($"\nExtraction complete:");
+            Console.WriteLine($"  - Content length: {result.Content.Length}");
+            Console.WriteLine($"  - Format: {result.Metadata.FormatType}");
+            Console.WriteLine($"  - Languages: {string.Join(", ", result.DetectedLanguages)}");
+
+            Console.WriteLine($"\n{result.Content}");
         }
-
-        Console.WriteLine("Extracting with configuration:");
-        Console.WriteLine($"  - File: {path}");
-        Console.WriteLine($"  - Force OCR: {extractionConfig.ForceOcr}");
-        Console.WriteLine($"  - Use Cache: {extractionConfig.UseCache}");
-
-        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), extractionConfig)).Results[0];
-
-        Console.WriteLine($"\nExtraction complete:");
-        Console.WriteLine($"  - Content length: {result.Content.Length}");
-        Console.WriteLine($"  - Format: {result.Metadata.FormatType}");
-        Console.WriteLine($"  - Languages: {string.Join(", ", result.DetectedLanguages)}");
-
-        Console.WriteLine($"\n{result.Content}");
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"Error: {ex.Message}");
-        Environment.Exit(1);
-    }
-}, filePath, configPath, forceOcr, useCache);
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error: {ex.Message}");
+            Environment.Exit(1);
+        }
+    }, filePath, configPath, forceOcr, useCache);
 
 rootCommand.AddCommand(extractCommand);
 

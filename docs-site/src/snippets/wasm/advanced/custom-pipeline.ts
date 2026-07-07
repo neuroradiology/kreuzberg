@@ -6,11 +6,7 @@ interface ProcessingStep {
   process: (result: ExtractedDocument) => Promise<ExtractedDocument>;
 }
 
-async function createExtractionPipeline(
-  steps: ProcessingStep[],
-  bytes: Uint8Array,
-  mimeType: string,
-) {
+async function createExtractionPipeline(steps: ProcessingStep[], bytes: Uint8Array, mimeType: string) {
   await initWasm();
 
   const output = await extract({ kind: "bytes", bytes, mimeType: mimeType });

@@ -6,18 +6,18 @@ alias Xberg.ExtractionConfig
 # Combine language codes with '+' separator: "eng+fra+deu" for English, French, German
 
 config = %ExtractionConfig{
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract",
-    "language" => "eng+fra+deu"
-  },
-  chunking: %{
-    "max_characters" => 2000,
-    "overlap" => 200
-  },
-  language_detection: %{"enabled" => true},
-  use_cache: true,
-  force_ocr: true
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract",
+"language" => "eng+fra+deu"
+},
+chunking: %{
+"max_characters" => 2000,
+"overlap" => 200
+},
+language_detection: %{"enabled" => true},
+use_cache: true,
+force_ocr: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multilingual_document.pdf"}, config: config)

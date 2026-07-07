@@ -4,16 +4,16 @@ alias Xberg.ExtractionConfig
 # Configure token reduction for LLM context windows
 # Helps manage token usage when working with large language models
 config = %ExtractionConfig{
-  token_reduction: %{
-    "enabled" => true,
-    "target_tokens" => 4000,
-    "strategy" => "truncate"
-  },
-  ocr: %{
-    "enabled" => true,
-    "backend" => "tesseract"
-  },
-  use_cache: true
+token_reduction: %{
+"enabled" => true,
+"target_tokens" => 4000,
+"strategy" => "truncate"
+},
+ocr: %{
+"enabled" => true,
+"backend" => "tesseract"
+},
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "large_document.pdf"}, config: config)

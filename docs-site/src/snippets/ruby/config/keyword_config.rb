@@ -1,4 +1,4 @@
-require 'xberg'
+require "xberg"
 
 # Example 1: Basic YAKE configuration
 # Uses YAKE algorithm with default parameters and English stopword filtering
@@ -8,16 +8,16 @@ def basic_yake
       algorithm: :yake,
       max_keywords: 10,
       min_score: 0.0,
-      language: 'en',
+      language: "en",
       yake_params: nil,
       rake_params: nil
     )
   )
 
-  input = Xberg::ExtractInput.new(uri: 'document.pdf')
+  input = Xberg::ExtractInput.new(uri: "document.pdf")
   output = Xberg.extract(input, config)
   result = output.results.first
-  puts "Keywords: #{result.extracted_keywords&.map(&:text)&.join(', ')}"
+  puts("Keywords: #{result.extracted_keywords&.map(&:text)&.join(", ")}")
 end
 
 # Example 2: Advanced YAKE with custom parameters
@@ -28,7 +28,7 @@ def advanced_yake
       algorithm: :yake,
       max_keywords: 15,
       min_score: 0.1,
-      language: 'en',
+      language: "en",
       yake_params: Xberg::YakeParams.new(
         window_size: 1
       ),
@@ -36,10 +36,10 @@ def advanced_yake
     )
   )
 
-  input = Xberg::ExtractInput.new(uri: 'document.pdf')
+  input = Xberg::ExtractInput.new(uri: "document.pdf")
   output = Xberg.extract(input, config)
   result = output.results.first
-  puts "Keywords: #{result.extracted_keywords&.map(&:text)&.join(', ')}"
+  puts("Keywords: #{result.extracted_keywords&.map(&:text)&.join(", ")}")
 end
 
 # Example 3: RAKE configuration
@@ -50,7 +50,7 @@ def rake_config
       algorithm: :rake,
       max_keywords: 10,
       min_score: 5.0,
-      language: 'en',
+      language: "en",
       yake_params: nil,
       rake_params: Xberg::RakeParams.new(
         min_word_length: 1,
@@ -59,10 +59,10 @@ def rake_config
     )
   )
 
-  input = Xberg::ExtractInput.new(uri: 'document.pdf')
+  input = Xberg::ExtractInput.new(uri: "document.pdf")
   output = Xberg.extract(input, config)
   result = output.results.first
-  puts "Keywords: #{result.extracted_keywords&.map(&:text)&.join(', ')}"
+  puts("Keywords: #{result.extracted_keywords&.map(&:text)&.join(", ")}")
 end
 
 basic_yake if __FILE__ == $0

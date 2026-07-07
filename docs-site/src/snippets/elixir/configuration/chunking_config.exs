@@ -3,13 +3,13 @@ alias Xberg.ExtractionConfig
 
 # Example 1: Basic character-based chunking for RAG applications
 config = %ExtractionConfig{
-  chunking: %{
-    "enabled" => true,
-    "max_characters" => 1000,
-    "overlap" => 100,
-    "min_size" => 200,
-    "respect_boundaries" => true
-  }
+chunking: %{
+"enabled" => true,
+"max_characters" => 1000,
+"overlap" => 100,
+"min_size" => 200,
+"respect_boundaries" => true
+}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
@@ -26,14 +26,14 @@ end
 
 # Example 2: Markdown chunker with token-based sizing and heading context
 config2 = %ExtractionConfig{
-  chunking: %{
-    "enabled" => true,
-    "chunker_type" => "markdown",
-    "sizing" => %{
-      "type" => "tokenizer",
-      "model" => "Xenova/gpt-4o"
-    }
-  }
+chunking: %{
+"enabled" => true,
+"chunker_type" => "markdown",
+"sizing" => %{
+"type" => "tokenizer",
+"model" => "Xenova/gpt-4o"
+}
+}
 }
 
 {:ok, output2} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config: config2)
@@ -60,11 +60,11 @@ end
 
 # Example 3: Prepend heading context to chunk content
 config3 = %ExtractionConfig{
-  chunking: %{
-    "enabled" => true,
-    "chunker_type" => "markdown",
-    "prepend_heading_context" => true
-  }
+chunking: %{
+"enabled" => true,
+"chunker_type" => "markdown",
+"prepend_heading_context" => true
+}
 }
 
 {:ok, output3} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config: config3)

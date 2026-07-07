@@ -1,13 +1,16 @@
-require 'xberg'
+require "xberg"
 
 # Example 1: Basic hierarchy extraction
 # Enabled with default k_clusters=6 for standard H1-H6 heading hierarchy.
 # Extract bounding box information for spatial layout awareness.
 hierarchy_config_basic = Xberg::HierarchyConfig.new(
   enabled: true,
-  k_clusters: 6,  # Default: creates 6 font size clusters (H1-H6 structure)
-  include_bbox: true,  # Include bounding box coordinates
-  ocr_coverage_threshold: nil  # No OCR coverage threshold
+  # Default: creates 6 font size clusters (H1-H6 structure)
+  k_clusters: 6,
+  # Include bounding box coordinates
+  include_bbox: true,
+  # No OCR coverage threshold
+  ocr_coverage_threshold: nil
 )
 
 pdf_config_basic = Xberg::PdfConfig.new(
@@ -21,13 +24,13 @@ extraction_config_basic = Xberg::ExtractionConfig.new(
 # input = Xberg::ExtractInput.new(uri: "document.pdf")
 # result = Xberg.extract(input, extraction_config_basic)
 
-
 # Example 2: Custom k_clusters for minimal structure
 # Use 3 clusters for simpler hierarchy with minimal structure.
 # Useful when you only need major section divisions (Main, Subsection, Detail).
 hierarchy_config_minimal = Xberg::HierarchyConfig.new(
   enabled: true,
-  k_clusters: 3,  # Minimal clustering: just 3 levels
+  # Minimal clustering: just 3 levels
+  k_clusters: 3,
   include_bbox: true,
   ocr_coverage_threshold: nil
 )
@@ -43,7 +46,6 @@ extraction_config_minimal = Xberg::ExtractionConfig.new(
 # input = Xberg::ExtractInput.new(uri: "document.pdf")
 # result = Xberg.extract(input, extraction_config_minimal)
 
-
 # Example 3: With OCR coverage threshold
 # Trigger OCR if less than 50% of text has font data.
 # Useful for documents with mixed digital and scanned content.
@@ -51,7 +53,8 @@ hierarchy_config_ocr = Xberg::HierarchyConfig.new(
   enabled: true,
   k_clusters: 6,
   include_bbox: true,
-  ocr_coverage_threshold: 0.5  # Trigger OCR if text coverage < 50%
+  # Trigger OCR if text coverage < 50%
+  ocr_coverage_threshold: 0.5
 )
 
 pdf_config_ocr = Xberg::PdfConfig.new(
@@ -64,7 +67,6 @@ extraction_config_ocr = Xberg::ExtractionConfig.new(
 
 # input = Xberg::ExtractInput.new(uri: "document.pdf")
 # result = Xberg.extract(input, extraction_config_ocr)
-
 
 # Field descriptions:
 #

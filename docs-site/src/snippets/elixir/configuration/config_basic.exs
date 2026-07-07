@@ -2,11 +2,11 @@
 alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
-  ocr: %{"enabled" => true, "backend" => "tesseract"},
-  chunking: %{"max_characters" => 1000, "overlap" => 100},
-  language_detection: %{"enabled" => true},
-  use_cache: true,
-  force_ocr: false
+ocr: %{"enabled" => true, "backend" => "tesseract"},
+chunking: %{"max_characters" => 1000, "overlap" => 100},
+language_detection: %{"enabled" => true},
+use_cache: true,
+force_ocr: false
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

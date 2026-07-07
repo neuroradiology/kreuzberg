@@ -46,7 +46,7 @@ class Program
 
         Console.WriteLine($"  Words: {wordCount}");
 
-        await Task.Delay(10); 
+        await Task.Delay(10);
     }
 
     static List<string> ChunkContent(string content, int chunkSize)

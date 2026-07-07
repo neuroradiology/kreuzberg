@@ -14,8 +14,8 @@ defmodule MyApp.WordCountProcessor do
 
   def process(result, _config) do
     word_count = result.content
-      |> String.split()
-      |> Enum.count()
+    |> String.split()
+    |> Enum.count()
 
     metadata = Map.put(result.metadata || %{}, "word_count", word_count)
     %{result | metadata: metadata}

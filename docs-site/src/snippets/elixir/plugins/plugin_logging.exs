@@ -45,8 +45,8 @@ defmodule MyApp.Plugins.LoggingProcessor do
       mime_type = result["mime_type"] || "unknown"
 
       Logger.info("Processing extraction result",
-        mime_type: mime_type,
-        content_size: content_size
+      mime_type: mime_type,
+      content_size: content_size
       )
 
       # Perform processing
@@ -54,23 +54,23 @@ defmodule MyApp.Plugins.LoggingProcessor do
 
       metadata = Map.get(result, "metadata", %{})
       updated_metadata = metadata
-        |> Map.put("processed_at", DateTime.utc_now())
-        |> Map.put("original_size", content_size)
-        |> Map.put("processed_size", byte_size(processed_content))
+      |> Map.put("processed_at", DateTime.utc_now())
+      |> Map.put("original_size", content_size)
+      |> Map.put("processed_size", byte_size(processed_content))
 
       Logger.debug("Processing complete",
-        original_size: content_size,
-        processed_size: byte_size(processed_content)
+      original_size: content_size,
+      processed_size: byte_size(processed_content)
       )
 
       {:ok, Map.put(result, "metadata", updated_metadata)}
     rescue
       error ->
-        Logger.error("Processing error in LoggingProcessor",
-          error: inspect(error),
-          stacktrace: __STACKTRACE__
-        )
-        {:error, "Processing failed: #{inspect(error)}"}
+      Logger.error("Processing error in LoggingProcessor",
+      error: inspect(error),
+      stacktrace: __STACKTRACE__
+      )
+      {:error, "Processing failed: #{inspect(error)}"}
     end
   end
 
@@ -91,35 +91,35 @@ IO.puts("=== Plugin Logging Example ===\n")
 
 # Example usage
 result = %{
-  "content" => "  Sample   document    with    irregular    spacing  ",
-  "mime_type" => "application/pdf",
-  "metadata" => %{"source" => "document.pdf"}
+"content" => "  Sample   document    with    irregular    spacing  ",
+"mime_type" => "application/pdf",
+"metadata" => %{"source" => "document.pdf"}
 }
 
 Logger.info("Starting extraction processing example")
 
 case MyApp.Plugins.LoggingProcessor.process(result, %{}) do
   {:ok, processed_result} ->
-    IO.puts("\nProcessing succeeded!")
-    IO.inspect(processed_result, label: "Processed Result")
+  IO.puts("\nProcessing succeeded!")
+  IO.inspect(processed_result, label: "Processed Result")
 
   {:error, reason} ->
-    IO.puts("Processing failed: #{reason}")
+  IO.puts("Processing failed: #{reason}")
 end
 
 # Demonstrate error handling with logging
 Logger.info("Testing error handling")
 
 invalid_result = %{
-  "content" => nil,
-  "mime_type" => "application/pdf"
+"content" => nil,
+"mime_type" => "application/pdf"
 }
 
 case MyApp.Plugins.LoggingProcessor.process(invalid_result, %{}) do
   {:ok, _processed_result} ->
-    IO.puts("Processing succeeded")
+  IO.puts("Processing succeeded")
 
   {:error, reason} ->
-    IO.puts("Processing failed as expected: #{reason}")
+  IO.puts("Processing failed as expected: #{reason}")
 end
 ```

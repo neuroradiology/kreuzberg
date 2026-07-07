@@ -10,8 +10,8 @@ var config = new ExtractionConfig
     CacheConfig = new CacheConfig
     {
         CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "xberg_cache"),
-        MaxCacheSize = 1024 * 1024 * 500, 
-        CacheTtlSeconds = 86400 * 7,      
+        MaxCacheSize = 1024 * 1024 * 500,
+        CacheTtlSeconds = 86400 * 7,
         EnableCompression = true
     }
 };

@@ -7,7 +7,7 @@ config_path = Path.expand("~/.xberg/config.json")
 
 config = if File.exists?(config_path) do
   config_data = config_path |> File.read!() |> Jason.decode!()
-  struct(ExtractionConfig, Map.new(config_data, fn {k, v} -> {String.to_atom(k), v} end))
+struct(ExtractionConfig, Map.new(config_data, fn {k, v} -> {String.to_atom(k), v} end))
 else
   IO.puts("Config file not found at #{config_path}. Using defaults.")
   %ExtractionConfig{}

@@ -38,8 +38,8 @@ defmodule MyApp.Plugins.WordCountProcessor do
   def process(result, _options) do
     content = result["content"] || ""
     word_count = content
-      |> String.split(~r/\s+/, trim: true)
-      |> length()
+    |> String.split(~r/\s+/, trim: true)
+    |> length()
 
     # Update metadata with word count
     metadata = Map.get(result, "metadata", %{})
@@ -54,21 +54,21 @@ Plugin.register_post_processor(:word_count_processor, MyApp.Plugins.WordCountPro
 
 # Example usage
 result = %{
-  "content" => "The quick brown fox jumps over the lazy dog. This is a sample document with multiple words.",
-  "metadata" => %{
-    "source" => "document.pdf",
-    "pages" => 1
-  }
+"content" => "The quick brown fox jumps over the lazy dog. This is a sample document with multiple words.",
+"metadata" => %{
+"source" => "document.pdf",
+"pages" => 1
+}
 }
 
 case MyApp.Plugins.WordCountProcessor.process(result, %{}) do
   {:ok, processed_result} ->
-    word_count = processed_result["metadata"]["word_count"]
-    IO.puts("Word count added: #{word_count} words")
-    IO.inspect(processed_result, label: "Processed Result")
+  word_count = processed_result["metadata"]["word_count"]
+  IO.puts("Word count added: #{word_count} words")
+  IO.inspect(processed_result, label: "Processed Result")
 
   {:error, reason} ->
-    IO.puts("Processing failed: #{reason}")
+  IO.puts("Processing failed: #{reason}")
 end
 
 # List all registered post-processors

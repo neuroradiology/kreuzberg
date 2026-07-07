@@ -1,5 +1,5 @@
-use xberg::{extract, ExtractionConfig, ExtractInput};
-use xberg::keywords::{KeywordConfig, KeywordAlgorithm, YakeParams, RakeParams};
+use xberg::keywords::{KeywordAlgorithm, KeywordConfig, RakeParams, YakeParams};
+use xberg::{ExtractInput, ExtractionConfig, extract};
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
@@ -34,9 +34,7 @@ pub async fn advanced_yake() -> xberg::Result<()> {
             min_score: 0.1,
             ngram_range: (1, 2),
             language: Some("en".to_string()),
-            yake_params: Some(YakeParams {
-                window_size: 1,
-            }),
+            yake_params: Some(YakeParams { window_size: 1 }),
             rake_params: None,
         }),
         ..Default::default()

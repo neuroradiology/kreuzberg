@@ -1,10 +1,10 @@
 # Use all major features together
 config = %Xberg.ExtractionConfig{
-  ocr: %{"enabled" => true},
-  chunking: %{"enabled" => true, "max_characters" => 1000},
-  images: %{"extract" => true},
-  language_detection: %{"enabled" => true},
-  keyword_extraction: %{"enabled" => true}
+ocr: %{"enabled" => true},
+chunking: %{"enabled" => true, "max_characters" => 1000},
+images: %{"extract" => true},
+language_detection: %{"enabled" => true},
+keyword_extraction: %{"enabled" => true}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

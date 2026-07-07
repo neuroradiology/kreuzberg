@@ -17,16 +17,16 @@ defmodule PDFMetadataExtractor do
   """
   def extract_metadata(file_path) do
     config = %ExtractionConfig{
-      use_cache: true
+    use_cache: true
     }
 
     case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config) do
       {:ok, output} ->
-        result = List.first(output.results)
-        process_metadata(result.metadata || %{})
+      result = List.first(output.results)
+      process_metadata(result.metadata || %{})
 
       {:error, reason} ->
-        {:error, reason}
+      {:error, reason}
     end
   end
 
@@ -36,24 +36,24 @@ defmodule PDFMetadataExtractor do
   defp process_metadata(metadata) do
     case metadata["pdf"] do
       pdf_meta when is_map(pdf_meta) ->
-        {:ok,
-         %{
-           page_count: pdf_meta["page_count"] || 0,
-           title: pdf_meta["title"],
-           author: pdf_meta["author"],
-           subject: pdf_meta["subject"],
-           keywords: pdf_meta["keywords"],
-           creator: pdf_meta["creator"],
-           producer: pdf_meta["producer"],
-           creation_date: pdf_meta["creation_date"],
-           modification_date: pdf_meta["modification_date"],
-           version: pdf_meta["version"],
-           is_encrypted: pdf_meta["is_encrypted"] || false,
-           is_tagged: pdf_meta["is_tagged"] || false
-         }}
+      {:ok,
+      %{
+      page_count: pdf_meta["page_count"] || 0,
+      title: pdf_meta["title"],
+      author: pdf_meta["author"],
+      subject: pdf_meta["subject"],
+      keywords: pdf_meta["keywords"],
+      creator: pdf_meta["creator"],
+      producer: pdf_meta["producer"],
+      creation_date: pdf_meta["creation_date"],
+      modification_date: pdf_meta["modification_date"],
+      version: pdf_meta["version"],
+      is_encrypted: pdf_meta["is_encrypted"] || false,
+      is_tagged: pdf_meta["is_tagged"] || false
+      }}
 
       _ ->
-        {:error, "No PDF metadata found"}
+      {:error, "No PDF metadata found"}
     end
   end
 
@@ -88,22 +88,22 @@ file_path = "document.pdf"
 
 case PDFMetadataExtractor.extract_metadata(file_path) do
   {:ok, metadata} ->
-    IO.puts(PDFMetadataExtractor.format_metadata(metadata))
+  IO.puts(PDFMetadataExtractor.format_metadata(metadata))
 
-    # Perform metadata-driven operations
-    if metadata[:page_count] > 100 do
-      IO.puts("Note: Document is large (#{metadata[:page_count]} pages)")
-    end
+  # Perform metadata-driven operations
+  if metadata[:page_count] > 100 do
+    IO.puts("Note: Document is large (#{metadata[:page_count]} pages)")
+  end
 
-    if metadata[:is_encrypted] do
-      IO.puts("Note: Document is password-protected")
-    end
+  if metadata[:is_encrypted] do
+    IO.puts("Note: Document is password-protected")
+  end
 
-    if metadata[:is_tagged] do
-      IO.puts("Note: Document is accessible with tags")
-    end
+  if metadata[:is_tagged] do
+    IO.puts("Note: Document is accessible with tags")
+  end
 
   {:error, reason} ->
-    IO.puts("Error extracting metadata: #{reason}")
+  IO.puts("Error extracting metadata: #{reason}")
 end
 ```

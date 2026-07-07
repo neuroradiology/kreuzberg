@@ -18,35 +18,35 @@ class CloudOcrBackend : IOcrBackend
     public string Process(ReadOnlySpan<byte> imageBytes, OcrConfig? config)
     {
         return Task.Run(async () =>
-        {
-            try
             {
-                var bytes = imageBytes.ToArray();
-                using var content = new MultipartFormDataContent();
-                content.Add(new ByteArrayContent(bytes), "image");
-
-                var request = new HttpRequestMessage(
-                    HttpMethod.Post,
-                    "https://api.example.com/ocr"
-                )
+                try
                 {
-                    Content = content,
-                    Headers =
+                    var bytes = imageBytes.ToArray();
+                    using var content = new MultipartFormDataContent();
+                    content.Add(new ByteArrayContent(bytes), "image");
+
+                    var request = new HttpRequestMessage(
+                        HttpMethod.Post,
+                        "https://api.example.com/ocr"
+                    )
                     {
-                        { "Authorization", $"Bearer {_apiKey}" }
-                    }
-                };
+                        Content = content,
+                        Headers =
+                        {
+                            { "Authorization", $"Bearer {_apiKey}" }
+                        }
+                    };
 
-                var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
+                    var response = await _httpClient.SendAsync(request);
+                    response.EnsureSuccessStatusCode();
 
-                var jsonContent = await response.Content.ReadAsStringAsync();
-                return jsonContent;
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new XbergOcrException($"Cloud OCR service error: {ex.Message}");
-            }
+                    var jsonContent = await response.Content.ReadAsStringAsync();
+                    return jsonContent;
+                }
+                catch (HttpRequestException ex)
+                {
+                    throw new XbergOcrException($"Cloud OCR service error: {ex.Message}");
+                }
         }).GetAwaiter().GetResult();
     }
 

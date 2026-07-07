@@ -25,7 +25,7 @@ class Program
 
             var result2 = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
                 documentBytes), "application/pdf",
-                config
+            config
             )).Results[0];
 
             Console.WriteLine($"Quality score: {result2.QualityScore}");
@@ -38,19 +38,19 @@ class Program
             };
 
             var downloadTasks = urls.Select(async u =>
-            {
-                try
                 {
-                    var bytes = await httpClient.GetByteArrayAsync(u);
-                    return (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
-                        bytes), "application/pdf"
-                    )).Results[0];
-                }
-                catch (HttpRequestException ex)
-                {
-                    Console.WriteLine($"Download failed for {u}: {ex.Message}");
-                    return null;
-                }
+                    try
+                    {
+                        var bytes = await httpClient.GetByteArrayAsync(u);
+                        return (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                            bytes), "application/pdf"
+                        )).Results[0];
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        Console.WriteLine($"Download failed for {u}: {ex.Message}");
+                        return null;
+                    }
             });
 
             var results = await Task.WhenAll(downloadTasks);

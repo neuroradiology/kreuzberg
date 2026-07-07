@@ -29,16 +29,16 @@ class Program
         try
         {
             var config = new ExtractionConfig();
-            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 }; 
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
 
             var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
                 pdfBytes), "application/pdf",
-                config
+            config
             )).Results[0];
 
             var preview = result.Content.Length > 100
-                ? result.Content[..100] + "..."
-                : result.Content;
+            ? result.Content[..100] + "..."
+            : result.Content;
 
             Console.WriteLine($"Extracted: {preview}");
         }

@@ -6,15 +6,15 @@ defmodule MetadataUtils do
   def extract_standard_metadata(result) do
     metadata = Map.get(result, "metadata", %{})
     %{
-      title: Map.get(metadata, "title", "Unknown"),
-      author: Map.get(metadata, "author", "Unknown"),
-      creation_date: Map.get(metadata, "creation_date"),
-      modification_date: Map.get(metadata, "modification_date"),
-      language: Map.get(metadata, "language"),
-      page_count: Map.get(metadata, "page_count", 0),
-      format: Map.get(metadata, "format", "unknown")
+    title: Map.get(metadata, "title", "Unknown"),
+    author: Map.get(metadata, "author", "Unknown"),
+    creation_date: Map.get(metadata, "creation_date"),
+    modification_date: Map.get(metadata, "modification_date"),
+    language: Map.get(metadata, "language"),
+    page_count: Map.get(metadata, "page_count", 0),
+    format: Map.get(metadata, "format", "unknown")
     }
-    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+  |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Enum.into(%{})
   end
 
@@ -30,11 +30,11 @@ defmodule MetadataUtils do
         existing = Map.get(meta_acc, key, [])
 
         updated_value =
-          case existing do
-            [] -> [value]
-            list when is_list(list) -> list ++ [value]
-            single -> [single, value]
-          end
+        case existing do
+          [] -> [value]
+          list when is_list(list) -> list ++ [value]
+          single -> [single, value]
+        end
 
         Map.put(meta_acc, key, updated_value)
       end)
@@ -49,9 +49,9 @@ defmodule MetadataUtils do
       chunk_metadata = Map.get(chunk, "metadata", %{})
 
       enriched =
-        source_metadata
-        |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-        |> Enum.into(chunk_metadata)
+      source_metadata
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+      |> Enum.into(chunk_metadata)
 
       Map.put(chunk, "metadata", enriched)
     end)
@@ -70,14 +70,14 @@ defmodule MetadataUtils do
       text = Map.get(chunk, "text", "")
 
       context = %{
-        "chunk_index" => index,
-        "chunk_number" => index + 1,
-        "total_chunks" => total_chunks,
-        "position_percentage" => Float.round((index + 1) / total_chunks * 100, 2),
-        "text_length" => String.length(text),
-        "word_count" => String.split(text) |> length(),
-        "has_headings" => String.contains?(text, ~w[## # ===]),
-        "has_lists" => String.contains?(text, ["- ", "* "])
+      "chunk_index" => index,
+      "chunk_number" => index + 1,
+      "total_chunks" => total_chunks,
+      "position_percentage" => Float.round((index + 1) / total_chunks * 100, 2),
+      "text_length" => String.length(text),
+      "word_count" => String.split(text) |> length(),
+      "has_headings" => String.contains?(text, ~w[## # ===]),
+      "has_lists" => String.contains?(text, ["- ", "* "])
       }
 
       enriched_metadata = Map.merge(metadata, context)
@@ -92,9 +92,9 @@ defmodule MetadataUtils do
     metadata = Map.get(data, "metadata", %{})
 
     filtered =
-      metadata
-      |> Enum.filter(fn {key, _value} -> Enum.member?(allowed_keys, key) end)
-      |> Enum.into(%{})
+    metadata
+  |> Enum.filter(fn {key, _value} -> Enum.member?(allowed_keys, key) end)
+    |> Enum.into(%{})
 
     Map.put(data, "metadata", filtered)
   end
@@ -104,13 +104,13 @@ defmodule MetadataUtils do
   """
   def metadata_summary(chunks) do
     %{
-      total_chunks: length(chunks),
-      total_text_length: Enum.reduce(chunks, 0, fn chunk, acc ->
-        String.length(Map.get(chunk, "text", "")) + acc
-      end),
-      avg_chunk_size: calculate_avg_size(chunks),
-      metadata_fields: extract_all_metadata_fields(chunks),
-      enrichment_level: assess_enrichment(chunks)
+    total_chunks: length(chunks),
+    total_text_length: Enum.reduce(chunks, 0, fn chunk, acc ->
+      String.length(Map.get(chunk, "text", "")) + acc
+    end),
+    avg_chunk_size: calculate_avg_size(chunks),
+    metadata_fields: extract_all_metadata_fields(chunks),
+    enrichment_level: assess_enrichment(chunks)
     }
   end
 
@@ -140,14 +140,14 @@ defmodule MetadataUtils do
   defp calculate_avg_size(chunks) do
     case chunks do
       [] ->
-        0
+      0
 
       chunks ->
-        total = Enum.reduce(chunks, 0, fn chunk, acc ->
-          String.length(Map.get(chunk, "text", "")) + acc
-        end)
+      total = Enum.reduce(chunks, 0, fn chunk, acc ->
+        String.length(Map.get(chunk, "text", "")) + acc
+      end)
 
-        div(total, length(chunks))
+      div(total, length(chunks))
     end
   end
 
@@ -163,19 +163,19 @@ defmodule MetadataUtils do
 
   defp assess_enrichment(chunks) do
     avg_fields =
-      chunks
-      |> Enum.map(fn chunk ->
-        chunk
-        |> Map.get("metadata", %{})
-        |> map_size()
-      end)
-      |> then(fn sizes ->
-        if Enum.empty?(sizes) do
-          0
-        else
-          div(Enum.sum(sizes), length(sizes))
-        end
-      end)
+    chunks
+    |> Enum.map(fn chunk ->
+      chunk
+      |> Map.get("metadata", %{})
+      |> map_size()
+    end)
+    |> then(fn sizes ->
+      if Enum.empty?(sizes) do
+        0
+      else
+        div(Enum.sum(sizes), length(sizes))
+      end
+    end)
 
     case avg_fields do
       count when count >= 5 -> "high"
@@ -195,7 +195,7 @@ end
 
 # Example usage
 config = %Xberg.ExtractionConfig{
-  chunking: %{"enabled" => true, "max_characters" => 1000}
+chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)

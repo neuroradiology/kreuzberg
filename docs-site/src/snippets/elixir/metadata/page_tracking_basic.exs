@@ -5,8 +5,8 @@
 alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
-  # Standard extraction configuration
-  use_cache: true
+# Standard extraction configuration
+use_cache: true
 }
 
 {:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multi_page_document.pdf"}, config: config)
@@ -18,11 +18,11 @@ metadata = result.metadata || %{}
 # For PDF documents, metadata includes page tracking
 case metadata["pdf"] do
   pdf_meta when is_map(pdf_meta) ->
-    IO.puts("Total pages in document: #{pdf_meta["page_count"]}")
-    IO.puts("Document title: #{pdf_meta["title"]}")
-    IO.puts("Document author: #{pdf_meta["author"]}")
+  IO.puts("Total pages in document: #{pdf_meta["page_count"]}")
+  IO.puts("Document title: #{pdf_meta["title"]}")
+  IO.puts("Document author: #{pdf_meta["author"]}")
   _ ->
-    IO.puts("No PDF metadata available")
+  IO.puts("No PDF metadata available")
 end
 
 # When using chunks, track which content came from which page
@@ -49,9 +49,9 @@ Enum.with_index(tables, 1) |> Enum.each(fn {table, idx} ->
   # Table metadata may indicate source page
   case table["metadata"] do
     meta when is_map(meta) ->
-      IO.puts("  Page: #{meta["page"] || "Unknown"}")
+    IO.puts("  Page: #{meta["page"] || "Unknown"}")
     _ ->
-      IO.puts("  Page: Unknown")
+    IO.puts("  Page: Unknown")
   end
 end)
 

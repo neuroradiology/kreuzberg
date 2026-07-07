@@ -1,12 +1,4 @@
-import {
-  detectRuntime,
-  getWasmCapabilities,
-  initWasm,
-  isBrowser,
-  isBun,
-  isDeno,
-  isNode,
-} from "@xberg-io/xberg-wasm";
+import { detectRuntime, getWasmCapabilities, initWasm, isBrowser, isBun, isDeno, isNode } from "@xberg-io/xberg-wasm";
 
 async function setupForRuntime() {
   const runtime = detectRuntime();
