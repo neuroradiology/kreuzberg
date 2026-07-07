@@ -54,6 +54,4 @@ async def main():
         docker_client.stop_container()
 
 if __name__ == "__main__":
-    import asyncio
-from xberg import extract, ExtractInput, ExtractionConfig
     asyncio.run(main())

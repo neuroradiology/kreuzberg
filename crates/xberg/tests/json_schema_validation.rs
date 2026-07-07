@@ -1,5 +1,5 @@
 //! Validates that `render_json()` output conforms to the JSON Schema
-//! defined in `docs/schemas/document-content.schema.json`.
+//! defined in `schemas/document-content.schema.json`.
 
 use bytes::Bytes;
 use std::borrow::Cow;
@@ -9,7 +9,7 @@ use xberg::types::internal_builder::InternalDocumentBuilder;
 
 /// Load the JSON Schema once and return the parsed value.
 fn load_schema() -> serde_json::Value {
-    let raw = include_str!("../../../docs/schemas/document-content.schema.json");
+    let raw = include_str!("../../../schemas/document-content.schema.json");
     serde_json::from_str(raw).expect("schema is valid JSON")
 }
 
