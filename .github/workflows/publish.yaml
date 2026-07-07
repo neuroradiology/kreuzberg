@@ -3335,14 +3335,17 @@ jobs:
     # runs inline here via the publish-npm composite action (which executes in this job's
     # context) rather than delegating to a reusable workflow — otherwise npm's OIDC
     # trusted-publishing check sees the reusable workflow's filename, not publish.yaml.
-    # Decoupled from the main release: fires only on its own `cli-proxy-v*` release tag.
-    if: ${{ github.event_name == 'release' && startsWith(github.event.release.tag_name, 'cli-proxy-v') }}
+    # Fires on the main release tag alongside the PyPI CLI proxy publish (publish-cli-proxy).
+    needs: [prepare, check-cli]
+    if: ${{ needs.prepare.outputs.release_cli == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
       - uses: xberg-io/actions/publish-npm@v1
         with:
           package-dir: cli-proxy/npm
