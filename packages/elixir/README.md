@@ -96,7 +96,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:xberg, "~> 1.0.0-rc.12"}
+    {:xberg, "~> 1.0.0-rc.13"}
   ]
 end
 ```
@@ -121,7 +121,6 @@ mix deps.get
 Extract text, metadata, and structure from any supported document format:
 
 ```exs
-```elixir title="Elixir"
 # Basic document extraction workflow
 # Load file -> extract -> access results
 
@@ -135,8 +134,6 @@ IO.puts("\nMetadata:")
 IO.puts("Format: #{inspect(result.metadata.format)}")
 IO.puts("Tables found: #{length(result.tables)}")
 ```
-
-```text
 
 ### Common Use Cases
 
@@ -287,7 +284,6 @@ For detailed plugin documentation, visit [Plugin System Guide](https://docs.xber
 ### Plugin Example
 
 ```exs
-```elixir title="Elixir"
 alias Xberg.Plugin
 
 # Word Count Post-Processor Plugin
@@ -327,8 +323,8 @@ defmodule MyApp.Plugins.WordCountProcessor do
   def process(result, _options) do
     content = result["content"] || ""
     word_count = content
-      |> String.split(~r/\s+/, trim: true)
-      |> length()
+    |> String.split(~r/\s+/, trim: true)
+    |> length()
 
     # Update metadata with word count
     metadata = Map.get(result, "metadata", %{})
@@ -343,29 +339,27 @@ Plugin.register_post_processor(:word_count_processor, MyApp.Plugins.WordCountPro
 
 # Example usage
 result = %{
-  "content" => "The quick brown fox jumps over the lazy dog. This is a sample document with multiple words.",
-  "metadata" => %{
-    "source" => "document.pdf",
-    "pages" => 1
-  }
+"content" => "The quick brown fox jumps over the lazy dog. This is a sample document with multiple words.",
+"metadata" => %{
+"source" => "document.pdf",
+"pages" => 1
+}
 }
 
 case MyApp.Plugins.WordCountProcessor.process(result, %{}) do
   {:ok, processed_result} ->
-    word_count = processed_result["metadata"]["word_count"]
-    IO.puts("Word count added: #{word_count} words")
-    IO.inspect(processed_result, label: "Processed Result")
+  word_count = processed_result["metadata"]["word_count"]
+  IO.puts("Word count added: #{word_count} words")
+  IO.inspect(processed_result, label: "Processed Result")
 
   {:error, reason} ->
-    IO.puts("Processing failed: #{reason}")
+  IO.puts("Processing failed: #{reason}")
 end
 
 # List all registered post-processors
 {:ok, processors} = Plugin.list_post_processors()
 IO.inspect(processors, label: "Registered Post-Processors")
 ```
-
-```text
 
 ## Embeddings Support
 

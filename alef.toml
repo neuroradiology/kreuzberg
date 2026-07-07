@@ -119,9 +119,14 @@ extra_paths = [
 # ---------------------------------------------------------------------------
 [workspace.poly]
 # Ported from .oxlintrc.json ignorePatterns (injected/vendored/generated JS +
-# build output). docs/snippets, dist, node_modules, target are already excluded
-# by poly's default discovery set.
+# build output). dist, node_modules, target are already excluded by poly's
+# default discovery set. Doc snippets moved from docs/snippets (a poly default
+# exclude) to docs-site/src/snippets; that new path is not covered by the
+# defaults, so exclude it explicitly — snippets are illustrative examples
+# (print statements, unused demo vars) validated by `task docs:snippets:validate`,
+# not by poly lint.
 exclude = [
+    "docs-site/src/snippets/**",
     "**/_generated/**",
     "**/coverage/**",
     "**/pkg/**",
@@ -160,7 +165,6 @@ ake = "ake"
 algoritmos = "algoritmos"
 # Project / product / tool names
 kreuzberg = "kreuzberg"
-zensical = "zensical"
 tesseract = "tesseract"
 onnx = "onnx"
 surrealdb = "surrealdb"
@@ -169,8 +173,6 @@ markitdown = "markitdown"
 pymupdf = "pymupdf"
 openwebui = "openwebui"
 webui = "webui"
-mkdocs = "mkdocs"
-mkdocstrings = "mkdocstrings"
 rumdl = "rumdl"
 # Document-format domain terms
 opf = "opf"

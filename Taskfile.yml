@@ -93,6 +93,7 @@ tasks:
     cmds:
       - task: rust:install
       - alef setup
+      - command -v poly >/dev/null 2>&1 || brew install goldziher/tap/poly
       - poly hooks install
 
   # === Build ===
