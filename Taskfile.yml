@@ -289,7 +289,9 @@ tasks:
   alef:docs:
     desc: "Generate API reference documentation"
     cmds:
-      - alef docs --output docs/reference/
+      # Output path comes from alef.toml [workspace.docs] reference_output
+      # (docs-site/src/content/docs/reference) — no --output override.
+      - alef docs
 
   # === E2E tests ===
   e2e:generate:

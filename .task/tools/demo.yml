@@ -6,7 +6,7 @@ version: "3"
 # Generates a patched demo-dev.html (CDN URLs → localhost), then starts two
 # servers that reproduce the cross-origin scenario the CDN creates in prod:
 #
-#   Docs server  → http://localhost:8001  (serves docs/)
+#   Docs server  → http://localhost:8001  (serves docs-site/public/)
 #   Asset server → http://localhost:9000  (serves crates/xberg-wasm/)
 #
 # First-time setup:
@@ -35,7 +35,7 @@ tasks:
       - '[ "${SKIP_WASM_BUILD:-0}" = "1" ] || { pnpm run build:wasm:web && mkdir -p dist/pkg && cp pkg/web/xberg_wasm_bg.wasm dist/pkg/xberg_wasm_bg.wasm; }'
 
   dev:patch:
-    desc: "Generate docs/demo-dev.html with CDN URLs replaced by localhost:9000"
+    desc: "Generate docs-site/public/demo-dev.html with CDN URLs replaced by localhost:9000"
     cmds:
       - node scripts/task/patch-demo-dev.mjs
 
@@ -63,9 +63,9 @@ tasks:
       - task: dev:serve:assets
 
   dev:serve:docs:
-    desc: "Serve docs on http://localhost:8001"
+    desc: "Serve the demo (docs-site/public) on http://localhost:8001"
     cmds:
-      - uv run --no-sync --group doc zensical serve -a localhost:8001
+      - npx --yes serve docs-site/public --cors -l tcp://0.0.0.0:8001
 
   dev:serve:assets:
     desc: "Serve WASM assets on http://localhost:9000 (simulates CDN origin)"

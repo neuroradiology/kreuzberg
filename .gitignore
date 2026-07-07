@@ -268,8 +268,9 @@ pkg/
 
 
 # Local dev artifacts
-docs/demo-dev.html
-docs/serve.json
+docs-site/public/demo-dev.html
+docs-site/dist/
+docs-site/.astro/
 demo-loaded.png
 scratch/
 

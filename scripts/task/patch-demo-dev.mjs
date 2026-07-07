@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generates docs/demo-dev.html from docs/demo.html with CDN URLs replaced
+// Generates docs-site/public/demo-dev.html from docs-site/public/demo.html with CDN URLs replaced
 // by the local asset server so no manual editing of demo.html is ever needed.
 //
 // CDN pattern replaced:
@@ -19,8 +19,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const src = join(root, "docs", "demo.html");
-const dest = join(root, "docs", "demo-dev.html");
+const src = join(root, "docs-site", "public", "demo.html");
+const dest = join(root, "docs-site", "public", "demo-dev.html");
 const ASSET_PORT = process.env.ASSET_PORT ?? "9000";
 
 const cdnRe = /https:\/\/cdn\.jsdelivr\.net\/npm\/@xberg\/wasm@[^/'"]+/g;
@@ -36,7 +36,7 @@ const patched = readFileSync(src, "utf8")
   );
 
 writeFileSync(dest, patched, "utf8");
-console.log(`patch-demo-dev: docs/demo-dev.html → http://localhost:8001/demo-dev.html`);
+console.log(`patch-demo-dev: docs-site/public/demo-dev.html → http://localhost:8001/demo-dev.html`);
 console.log(`  assets served from http://localhost:${ASSET_PORT}`);
 
 // Patch pkg/web/xberg_wasm.js — strip bare "env" / "wasi_snapshot_preview1"
