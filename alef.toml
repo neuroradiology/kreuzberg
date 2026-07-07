@@ -69,9 +69,6 @@ async_wrappers = false
 [workspace.generate_overrides.kotlin_android]
 async_wrappers = false
 
-[workspace.format]
-enabled = false
-
 [workspace.docs]
 reference_output = "docs-site/src/content/docs/reference"
 
@@ -90,12 +87,6 @@ outputs = [".codex/skills", ".agents/skills", ".github/skills", ".claude/skills"
 
 [workspace.docs.snippets]
 dirs = ["docs-site/src/snippets"]
-
-# Disable the default format_generated pass for node (pnpm dlx oxfmt .) which runs
-# from the repo root and chokes on vendored HTML fixtures and deployment YAML.
-# Post-generation formatting is handled by [crates.lint.node] format command instead.
-[workspace.format_overrides.node]
-enabled = false
 
 # ---------------------------------------------------------------------------
 # Version synchronization
