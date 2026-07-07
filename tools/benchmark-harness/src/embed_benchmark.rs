@@ -205,6 +205,7 @@ fn config_for_preset(preset: &EmbeddingPreset, batch_size: usize) -> EmbeddingCo
         cache_dir: None,
         acceleration: None,
         max_embed_duration_secs: None,
+        max_sequence_length: None,
     }
 }
 
