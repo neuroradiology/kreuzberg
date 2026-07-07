@@ -96,7 +96,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:xberg, "~> 1.0.0-rc.11"}
+    {:xberg, "~> 1.0.0-rc.12"}
   ]
 end
 ```
@@ -108,6 +108,7 @@ mix deps.get
 ```
 
 ### System Requirements
+
 - **Elixir 1.14+** and **Erlang/OTP 26+** required
 - Pre-compiled NIFs bundled via `rustler_precompiled` for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -134,7 +135,8 @@ IO.puts("\nMetadata:")
 IO.puts("Format: #{inspect(result.metadata.format)}")
 IO.puts("Tables found: #{length(result.tables)}")
 ```
-```
+
+```text
 
 ### Common Use Cases
 
@@ -160,7 +162,8 @@ IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
-```
+
+```text
 
 #### Table Extraction
 
@@ -186,7 +189,8 @@ Enum.each(output.results, fn result ->
   IO.puts(result.content)
 end)
 ```
-```
+
+```text
 
 #### Async Processing
 
@@ -318,7 +322,8 @@ IO.puts("OCR Extracted content:")
 IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
-```
+
+```text
 
 ## Async Support
 
@@ -412,7 +417,8 @@ end
 {:ok, processors} = Plugin.list_post_processors()
 IO.inspect(processors, label: "Registered Post-Processors")
 ```
-```
+
+```text
 
 ## Embeddings Support
 
@@ -442,7 +448,8 @@ Enum.each(output.results, fn result ->
   IO.puts(result.content)
 end)
 ```
-```
+
+```text
 
 ## Configuration
 
