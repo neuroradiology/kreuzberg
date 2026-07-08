@@ -5,7 +5,7 @@ version = '4.0'
 name = 'Xberg'
 description = 'Rust document intelligence library with active Python, TypeScript/Node, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C FFI bindings'
 gitignore = true
-presets = ['claude', 'copilot', 'cursor', 'antigravity', 'codex']
+presets = ["claude", "codex"]
 builtins = [
     'rust',
     'python',

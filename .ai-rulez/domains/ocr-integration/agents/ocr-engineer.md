@@ -1,7 +1,7 @@
 ---
 name: ocr-engineer
 description: OCR pipeline development, backend integration, and table reconstruction
-model: haiku
+model: sonnet
 ---
 
 When working on OCR code:
