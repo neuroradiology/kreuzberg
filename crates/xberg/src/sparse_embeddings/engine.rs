@@ -17,6 +17,10 @@ use tokenizers::Tokenizer;
 use super::SparseEmbedding;
 
 /// Errors raised by the sparse-embedding engine.
+///
+/// Rust-only: the `Ort` variant wraps `ort::Error`, which has no faithful
+/// binding representation. Public callers receive `crate::XbergError` instead.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug)]
 pub enum SparseEmbedError {
     /// Tokenization failed with the given message.
@@ -36,6 +40,11 @@ impl From<ort::Error> for SparseEmbedError {
 }
 
 /// SPLADE sparse-embedding model with thread-safe inference.
+///
+/// Rust-only: an opaque ORT-backed handle with no faithful binding
+/// representation (mirrors `reranking::engine::RerankerEngine`). Bindings drive
+/// inference through the module-level functions, not this type.
+#[cfg_attr(alef, alef(skip))]
 pub struct SparseEmbeddingEngine {
     tokenizer: Tokenizer,
     session: Session,

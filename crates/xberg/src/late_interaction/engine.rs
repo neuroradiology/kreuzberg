@@ -23,6 +23,10 @@ use tokenizers::Tokenizer;
 use super::MultiVectorEmbedding;
 
 /// Errors raised by the late-interaction engine.
+///
+/// Rust-only: the `Ort` variant wraps `ort::Error`, which has no faithful
+/// binding representation. Public callers receive `crate::XbergError` instead.
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug)]
 pub enum LateInteractionError {
     /// Tokenization failed with the given message.
@@ -42,6 +46,11 @@ impl From<ort::Error> for LateInteractionError {
 }
 
 /// ColBERT late-interaction (multi-vector) model with thread-safe inference.
+///
+/// Rust-only: an opaque ORT-backed handle with no faithful binding
+/// representation (mirrors `reranking::engine::RerankerEngine`). Bindings drive
+/// inference through the module-level functions, not this type.
+#[cfg_attr(alef, alef(skip))]
 pub struct LateInteractionEngine {
     tokenizer: Tokenizer,
     session: Session,

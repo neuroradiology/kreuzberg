@@ -13,16 +13,27 @@
 //!
 //! Since v5.0.0.
 
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::LazyLock;
 
-use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
 
+// The ORT-backed engine (and its sync-primitive cache) only compiles under the
+// full `late-interaction` feature; a presets-only build (`wasm-target`,
+// `android-target`) keeps the pure-CPU MaxSim + type + preset surface but must
+// not pull in `ort`/`tokenizers` via `engine.rs`.
+#[cfg(feature = "late-interaction")]
 pub mod engine;
 
+#[cfg(feature = "late-interaction")]
+use std::sync::{Arc, RwLock};
+
+#[cfg(feature = "late-interaction")]
+use ahash::AHashMap;
+#[cfg(feature = "late-interaction")]
 use engine::LateInteractionEngine;
 
 /// Default ONNX file for a `Custom` ColBERT repo when none is specified.
+#[cfg(feature = "late-interaction")]
 const DEFAULT_MODEL_FILE: &str = "onnx/model.onnx";
 
 /// A ColBERT multi-vector embedding: one row per attention-live token.
@@ -46,12 +57,34 @@ pub struct MultiVectorEmbedding {
 }
 
 impl MultiVectorEmbedding {
+    /// Returns `true` if `data` holds exactly `num_tokens * dim` values — i.e.
+    /// the flat buffer matches the declared shape.
+    ///
+    /// All fields are `pub` and the type is `Deserialize`, so a value coming
+    /// from an untrusted source (FFI caller, JSON, a store row) may be
+    /// malformed. [`max_sim_score`] guards on this so a length-mismatched
+    /// buffer scores `0.0` rather than silently mis-scoring (a shorter `data`
+    /// would make [`rows`](Self::rows)' `chunks_exact` drop a trailing partial
+    /// chunk). Uses `checked_mul` so an overflowing `num_tokens * dim` is
+    /// reported as malformed instead of wrapping.
+    ///
+    /// Since v5.0.0.
+    pub fn is_well_formed(&self) -> bool {
+        (self.num_tokens as usize)
+            .checked_mul(self.dim as usize)
+            .is_some_and(|expected| expected == self.data.len())
+    }
+
     /// Iterate over this embedding's per-token vectors as `&[f32]` slices.
     ///
     /// Internal helper for MaxSim scoring; not part of the FFI-facing surface.
+    /// Panic-safe on `dim == 0` (`chunks_exact(0)` would panic): a zero-dim
+    /// value yields an empty iterator. Callers should still validate via
+    /// [`Self::is_well_formed`] to get a meaningful row count.
     pub(crate) fn rows(&self) -> impl Iterator<Item = &[f32]> {
         let dim = self.dim as usize;
-        self.data.chunks_exact(dim)
+        let (data, step): (&[f32], usize) = if dim == 0 { (&[], 1) } else { (&self.data, dim) };
+        data.chunks_exact(step)
     }
 }
 
@@ -102,6 +135,7 @@ pub static LATE_INTERACTION_PRESETS: LazyLock<Vec<LateInteractionPreset>> = Lazy
 ///
 /// Since v5.0.0.
 #[cfg(any(feature = "late-interaction-presets", feature = "late-interaction"))]
+#[cfg_attr(alef, alef(skip))] // not a binding free fn (parity with embeddings/reranker getters); bare name would collide with sparse_embeddings
 pub fn get_preset(name: &str) -> Option<LateInteractionPreset> {
     LATE_INTERACTION_PRESETS.iter().find(|p| p.name == name).cloned()
 }
@@ -110,6 +144,7 @@ pub fn get_preset(name: &str) -> Option<LateInteractionPreset> {
 ///
 /// Since v5.0.0.
 #[cfg(any(feature = "late-interaction-presets", feature = "late-interaction"))]
+#[cfg_attr(alef, alef(skip))] // not a binding free fn (parity with embeddings/reranker getters); bare name would collide with sparse_embeddings
 pub fn list_presets() -> Vec<String> {
     LATE_INTERACTION_PRESETS.iter().map(|p| p.name.clone()).collect()
 }
@@ -131,17 +166,28 @@ pub struct LateInteractionMatch {
 /// query token vector, take the maximum dot product against any document
 /// token vector, then sum across query tokens.
 ///
-/// Returns `0.0` if `query` and `doc` have mismatched dimensionality, or if
-/// either has zero tokens.
+/// Returns `0.0` if `query` and `doc` have mismatched dimensionality, if either
+/// has zero tokens, or if either is not well-formed per
+/// [`MultiVectorEmbedding::is_well_formed`] (its `data` length does not match
+/// `num_tokens * dim`).
 ///
 /// Pure CPU primitive — available without ONNX Runtime.
 ///
 /// Since v5.0.0.
 #[cfg(any(feature = "late-interaction-presets", feature = "late-interaction"))]
-pub fn max_sim_score(query: &MultiVectorEmbedding, doc: &MultiVectorEmbedding) -> f32 {
+pub fn max_sim_score(query: &MultiVectorEmbedding, doc: &MultiVectorEmbedding) -> f64 {
     // `dim == 0` guard is load-bearing: `rows()` uses `chunks_exact(dim)`, which
     // panics on a zero chunk size. FFI callers can construct a zero-dim value.
-    if query.dim != doc.dim || query.dim == 0 || query.num_tokens == 0 || doc.num_tokens == 0 {
+    // `is_well_formed` guards a `data` length that disagrees with the declared
+    // shape — otherwise `rows()` would silently drop a partial trailing chunk
+    // and under-score rather than fail.
+    if query.dim != doc.dim
+        || query.dim == 0
+        || query.num_tokens == 0
+        || doc.num_tokens == 0
+        || !query.is_well_formed()
+        || !doc.is_well_formed()
+    {
         return 0.0;
     }
 
@@ -152,7 +198,7 @@ pub fn max_sim_score(query: &MultiVectorEmbedding, doc: &MultiVectorEmbedding) -
                 .map(|d_row| q_row.iter().zip(d_row.iter()).map(|(a, b)| a * b).sum::<f32>())
                 .fold(f32::NEG_INFINITY, f32::max)
         })
-        .sum()
+        .sum::<f32>() as f64
 }
 
 /// Rank a set of documents against a query by MaxSim score, descending.
@@ -170,7 +216,7 @@ pub fn max_sim_rank(query: &MultiVectorEmbedding, docs: &[MultiVectorEmbedding])
         .enumerate()
         .map(|(index, doc)| LateInteractionMatch {
             index,
-            score: max_sim_score(query, doc),
+            score: max_sim_score(query, doc) as f32,
         })
         .collect();
 
@@ -344,6 +390,10 @@ fn map_engine_err(e: engine::LateInteractionError) -> crate::XbergError {
 /// is unavailable, or if a `Plugin` model is selected (not yet supported).
 ///
 /// Since v5.0.0.
+// Rust-only for now: language-binding exposure (concrete signature + per-language
+// wiring + e2e) is deferred to the dedicated binding-wiring phase. Skipped from
+// alef so the generic signature does not fail binding generation.
+#[cfg_attr(alef, alef(skip))]
 #[cfg(feature = "late-interaction")]
 pub fn embed_multi_vector<T: AsRef<str>>(
     texts: &[T],
@@ -485,6 +535,50 @@ mod tests {
             data: vec![1.0, 0.0],
         };
         assert_eq!(max_sim_score(&query, &doc), 0.0);
+    }
+
+    #[test]
+    fn is_well_formed_checks_data_length_against_shape() {
+        let ok = MultiVectorEmbedding {
+            num_tokens: 2,
+            dim: 3,
+            data: vec![0.0; 6],
+        };
+        assert!(ok.is_well_formed());
+
+        // data shorter than num_tokens * dim.
+        let short = MultiVectorEmbedding {
+            num_tokens: 2,
+            dim: 3,
+            data: vec![0.0; 5],
+        };
+        assert!(!short.is_well_formed());
+
+        // num_tokens * dim overflows usize -> reported malformed, not wrapped.
+        let overflow = MultiVectorEmbedding {
+            num_tokens: u32::MAX,
+            dim: u32::MAX,
+            data: vec![0.0; 1],
+        };
+        assert!(!overflow.is_well_formed());
+    }
+
+    #[test]
+    fn max_sim_score_zero_on_malformed_buffer() {
+        // Doc declares 2 tokens of dim 2 (needs 4 values) but carries only 3:
+        // without the well-formedness guard, `chunks_exact(2)` would silently
+        // drop the partial trailing value and score against a single row.
+        let query = MultiVectorEmbedding {
+            num_tokens: 1,
+            dim: 2,
+            data: vec![1.0, 0.0],
+        };
+        let malformed_doc = MultiVectorEmbedding {
+            num_tokens: 2,
+            dim: 2,
+            data: vec![1.0, 0.0, 0.6],
+        };
+        assert_eq!(max_sim_score(&query, &malformed_doc), 0.0);
     }
 
     #[test]

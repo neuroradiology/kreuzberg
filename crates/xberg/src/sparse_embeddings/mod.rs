@@ -10,16 +10,26 @@
 //!
 //! Since v5.0.0.
 
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::LazyLock;
 
-use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
 
+// The ORT-backed engine (and its sync-primitive cache) only compiles under the
+// full `sparse-embeddings` feature; a presets-only build (`wasm-target`,
+// `android-target`) must not pull in `ort`/`tokenizers` via `engine.rs`.
+#[cfg(feature = "sparse-embeddings")]
 pub mod engine;
 
+#[cfg(feature = "sparse-embeddings")]
+use std::sync::{Arc, RwLock};
+
+#[cfg(feature = "sparse-embeddings")]
+use ahash::AHashMap;
+#[cfg(feature = "sparse-embeddings")]
 use engine::SparseEmbeddingEngine;
 
 /// Default ONNX file for a `Custom` SPLADE repo when none is specified.
+#[cfg(feature = "sparse-embeddings")]
 const DEFAULT_MODEL_FILE: &str = "onnx/model.onnx";
 
 /// A sparse learned embedding: vocabulary term indices and their weights.
@@ -78,6 +88,7 @@ pub static SPARSE_EMBEDDING_PRESETS: LazyLock<Vec<SparseEmbeddingPreset>> = Lazy
 ///
 /// Since v5.0.0.
 #[cfg(any(feature = "sparse-embedding-presets", feature = "sparse-embeddings"))]
+#[cfg_attr(alef, alef(skip))] // not a binding free fn (parity with embeddings/reranker getters); bare name would collide with late_interaction
 pub fn get_preset(name: &str) -> Option<SparseEmbeddingPreset> {
     SPARSE_EMBEDDING_PRESETS.iter().find(|p| p.name == name).cloned()
 }
@@ -86,6 +97,7 @@ pub fn get_preset(name: &str) -> Option<SparseEmbeddingPreset> {
 ///
 /// Since v5.0.0.
 #[cfg(any(feature = "sparse-embedding-presets", feature = "sparse-embeddings"))]
+#[cfg_attr(alef, alef(skip))] // not a binding free fn (parity with embeddings/reranker getters); bare name would collide with late_interaction
 pub fn list_presets() -> Vec<String> {
     SPARSE_EMBEDDING_PRESETS.iter().map(|p| p.name.clone()).collect()
 }
@@ -227,6 +239,10 @@ fn map_engine_err(e: engine::SparseEmbedError) -> crate::XbergError {
 /// unavailable, or if a `Plugin` model is selected (not yet supported).
 ///
 /// Since v5.0.0.
+// Rust-only for now: language-binding exposure (concrete signature + per-language
+// wiring + e2e) is deferred to the dedicated binding-wiring phase. Skipped from
+// alef so the generic signature does not fail binding generation.
+#[cfg_attr(alef, alef(skip))]
 #[cfg(feature = "sparse-embeddings")]
 pub fn embed_sparse<T: AsRef<str>>(
     texts: &[T],
