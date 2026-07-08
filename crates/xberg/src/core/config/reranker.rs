@@ -111,6 +111,35 @@ impl Default for RerankerHead {
     }
 }
 
+/// Serialize the head as its serde `snake_case` tag.
+///
+/// The polyglot bindings represent this unit enum as a string when it appears
+/// as a field of the tagged [`RerankerModelType::Custom`] variant; the generated
+/// glue calls `.into()` to cross the FFI boundary, so both directions of the
+/// `String` conversion must exist.
+impl From<RerankerHead> for String {
+    fn from(head: RerankerHead) -> Self {
+        match head {
+            RerankerHead::CrossEncoder => "cross_encoder".to_string(),
+            RerankerHead::Qwen3Generative => "qwen3_generative".to_string(),
+        }
+    }
+}
+
+/// Parse the head from its serde `snake_case` tag.
+///
+/// Unknown values fall back to [`RerankerHead::CrossEncoder`] rather than
+/// erroring, matching the `.unwrap_or_default()` the binding glue applies. This
+/// is the inverse of [`From<RerankerHead>`] for [`String`].
+impl From<String> for RerankerHead {
+    fn from(value: String) -> Self {
+        match value.as_str() {
+            "qwen3_generative" => RerankerHead::Qwen3Generative,
+            _ => RerankerHead::CrossEncoder,
+        }
+    }
+}
+
 /// Reranker model types supported by Xberg.
 ///
 /// Since v5.0.0.

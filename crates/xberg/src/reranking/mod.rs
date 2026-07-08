@@ -1367,6 +1367,12 @@ mod tests {
         let turbo = by_name("jina-reranker-v1-turbo-en"); // Apache-2.0
         assert_eq!(turbo.model_repo, "jinaai/jina-reranker-v1-turbo-en");
         assert_eq!(turbo.model_file, "onnx/model.onnx");
+
+        let qwen3 = by_name("qwen3-reranker-0.6b"); // Apache-2.0; generative head
+        assert_eq!(qwen3.model_repo, "Qwen/Qwen3-Reranker-0.6B");
+        assert_eq!(qwen3.model_file, "onnx/model.onnx");
+        assert!(qwen3.additional_files.is_empty());
+        assert_eq!(qwen3.head, crate::core::config::reranker::RerankerHead::Qwen3Generative);
     }
 
     #[cfg(all(feature = "reranker", feature = "tokio-runtime"))]
