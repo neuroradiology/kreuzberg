@@ -68,7 +68,12 @@ office = [
     "dep:org",
     "dep:dbase",
     "html",
+    "notebook",
 ]
+# Jupyter notebook (.ipynb) extraction. Pure-Rust JSON parsing; needs the light
+# `html` dep for markdown/HTML cell output rendering. Split out of `office` so it
+# can be built standalone; `office` re-includes it for backward compatibility.
+notebook = ["html"]
 hwp = ["dep:cfb", "dep:flate2"]
 hwpx = ["dep:unhwp", "dep:zip"]
 iwork = ["dep:zip", "dep:snap"]
@@ -551,6 +556,7 @@ formats = [
     "pdf",
     "excel",
     "office",
+    "notebook",
     "hwp",
     "hwpx",
     "iwork",

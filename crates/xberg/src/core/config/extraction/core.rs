@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use super::super::acceleration::AccelerationConfig;
 use super::super::content_filter::ContentFilterConfig;
-use super::super::formats::OutputFormat;
+use super::super::formats::{JupyterCellRendering, OutputFormat};
 use super::super::ocr::OcrConfig;
 use super::super::page::PageConfig;
 use super::super::processing::{ChunkingConfig, PostProcessorConfig};
@@ -197,6 +197,17 @@ pub struct ExtractionConfig {
     /// when format conversion is applied.
     #[serde(default)]
     pub output_format: OutputFormat,
+
+    /// Controls how Jupyter notebook (`.ipynb`) code cells are rendered.
+    ///
+    /// - `Both` (default): code source plus the notebook's saved outputs
+    /// - `Source`: only the code source (fenced code blocks)
+    /// - `Outputs`: only the saved outputs
+    ///
+    /// Cells are never executed; `Outputs`/`Both` surface only outputs already
+    /// stored in the notebook.
+    #[serde(default)]
+    pub jupyter_cell_rendering: JupyterCellRendering,
 
     /// Layout detection configuration (None = layout detection disabled).
     ///
@@ -421,6 +432,7 @@ impl Default for ExtractionConfig {
             use_layout_for_markdown: false,
             result_format: crate::types::ResultFormat::Unified,
             output_format: OutputFormat::Plain,
+            jupyter_cell_rendering: JupyterCellRendering::Both,
             include_document_structure: false,
             acceleration: None,
             cache_namespace: None,

@@ -497,6 +497,42 @@ impl InternalDocumentBuilder {
         self.doc.push_element(element)
     }
 
+    /// Append every element from a sub-document into this builder in reading order.
+    ///
+    /// Tables, images, element relationships, and URIs are carried over, with
+    /// `table_index` / `image_index` and relationship element indices remapped into
+    /// this document's index space. Used to embed a fragment parsed by another
+    /// extractor (e.g. a Jupyter markdown cell parsed by the Markdown extractor)
+    /// without re-implementing its element construction. Document-level metadata on
+    /// `other` is ignored — only content is merged.
+    pub fn append_document(&mut self, other: InternalDocument) {
+        let table_offset = self.doc.tables.len() as u32;
+        let image_offset = self.doc.images.len() as u32;
+        let element_offset = self.doc.elements.len() as u32;
+
+        self.doc.tables.extend(other.tables);
+        self.doc.images.extend(other.images);
+        self.doc.uris.extend(other.uris);
+
+        for mut element in other.elements {
+            match &mut element.kind {
+                ElementKind::Table { table_index } => *table_index += table_offset,
+                ElementKind::Image { image_index } => *image_index += image_offset,
+                _ => {}
+            }
+            self.node_count += 1;
+            self.doc.push_element(element);
+        }
+
+        for mut relationship in other.relationships {
+            relationship.source += element_offset;
+            if let RelationshipTarget::Index(index) = &mut relationship.target {
+                *index += element_offset;
+            }
+            self.doc.relationships.push(relationship);
+        }
+    }
+
     // ========================================================================
     // Container Helpers (DRY start/end logic)
     // ========================================================================

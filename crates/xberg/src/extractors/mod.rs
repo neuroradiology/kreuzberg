@@ -164,7 +164,7 @@ pub mod rst;
 #[cfg(feature = "office")]
 pub mod latex;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 pub mod jupyter;
 
 #[cfg(feature = "office")]
@@ -267,7 +267,7 @@ pub use rst::RstExtractor;
 #[cfg(feature = "office")]
 pub use latex::LatexExtractor;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 pub use jupyter::JupyterExtractor;
 
 #[cfg(feature = "office")]
@@ -377,6 +377,9 @@ pub(crate) fn register_default_extractors() -> Result<()> {
 
     registry.register_internal(Arc::new(DjotExtractor::new()))?;
 
+    #[cfg(feature = "notebook")]
+    registry.register_internal(Arc::new(JupyterExtractor::new()))?;
+
     #[cfg(feature = "office")]
     {
         registry.register_internal(Arc::new(BibtexExtractor::new()))?;
@@ -386,7 +389,6 @@ pub(crate) fn register_default_extractors() -> Result<()> {
         registry.register_internal(Arc::new(RtfExtractor::new()))?;
         registry.register_internal(Arc::new(RstExtractor::new()))?;
         registry.register_internal(Arc::new(LatexExtractor::new()))?;
-        registry.register_internal(Arc::new(JupyterExtractor::new()))?;
         registry.register_internal(Arc::new(OrgModeExtractor::new()))?;
         registry.register_internal(Arc::new(OpmlExtractor::new()))?;
         registry.register_internal(Arc::new(TypstExtractor::new()))?;
@@ -496,9 +498,15 @@ mod tests {
             assert!(extractor_names.contains(&"excel-extractor".to_string()));
         }
 
+        #[cfg(feature = "notebook")]
+        {
+            expected_count += 1;
+            assert!(extractor_names.contains(&"jupyter-extractor".to_string()));
+        }
+
         #[cfg(feature = "office")]
         {
-            expected_count += 17;
+            expected_count += 16;
             assert!(extractor_names.contains(&"bibtex-extractor".to_string()));
             assert!(extractor_names.contains(&"citation-extractor".to_string()));
             assert!(extractor_names.contains(&"epub-extractor".to_string()));
@@ -506,7 +514,6 @@ mod tests {
             assert!(extractor_names.contains(&"rtf-extractor".to_string()));
             assert!(extractor_names.contains(&"rst-extractor".to_string()));
             assert!(extractor_names.contains(&"latex-extractor".to_string()));
-            assert!(extractor_names.contains(&"jupyter-extractor".to_string()));
             assert!(extractor_names.contains(&"orgmode-extractor".to_string()));
             assert!(extractor_names.contains(&"opml-extractor".to_string()));
             assert!(extractor_names.contains(&"typst-extractor".to_string()));

@@ -82,9 +82,104 @@ impl FromStr for OutputFormat {
     }
 }
 
+/// Controls how Jupyter notebook code cells are rendered during extraction.
+///
+/// A code cell carries both its **source** and any **outputs** that were saved in
+/// the notebook. Callers ingesting notebooks for AI agents want different slices of
+/// this depending on the task. Xberg never executes cells — `Outputs` and `Both`
+/// only surface outputs already stored in the `.ipynb`.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum JupyterCellRendering {
+    /// Render only the code source as a fenced code block; omit saved outputs.
+    Source,
+    /// Render only the saved cell outputs; omit the code source.
+    Outputs,
+    /// Render both the code source and the saved outputs (default; preserves the
+    /// historical behavior).
+    #[default]
+    Both,
+}
+
+impl JupyterCellRendering {
+    /// Whether the code cell's source should be rendered.
+    pub fn includes_source(self) -> bool {
+        matches!(self, Self::Source | Self::Both)
+    }
+
+    /// Whether the code cell's saved outputs should be rendered.
+    pub fn includes_outputs(self) -> bool {
+        matches!(self, Self::Outputs | Self::Both)
+    }
+}
+
+impl std::fmt::Display for JupyterCellRendering {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            JupyterCellRendering::Source => write!(f, "source"),
+            JupyterCellRendering::Outputs => write!(f, "outputs"),
+            JupyterCellRendering::Both => write!(f, "both"),
+        }
+    }
+}
+
+impl FromStr for JupyterCellRendering {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "source" | "code" => Ok(JupyterCellRendering::Source),
+            "outputs" | "output" => Ok(JupyterCellRendering::Outputs),
+            "both" => Ok(JupyterCellRendering::Both),
+            other => Err(format!("unknown Jupyter cell rendering: {other}")),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_jupyter_cell_rendering_default_is_both() {
+        assert_eq!(JupyterCellRendering::default(), JupyterCellRendering::Both);
+        assert!(JupyterCellRendering::Both.includes_source());
+        assert!(JupyterCellRendering::Both.includes_outputs());
+        assert!(JupyterCellRendering::Source.includes_source());
+        assert!(!JupyterCellRendering::Source.includes_outputs());
+        assert!(!JupyterCellRendering::Outputs.includes_source());
+        assert!(JupyterCellRendering::Outputs.includes_outputs());
+    }
+
+    #[test]
+    fn test_jupyter_cell_rendering_from_str_and_serde() {
+        assert_eq!(
+            "source".parse::<JupyterCellRendering>().unwrap(),
+            JupyterCellRendering::Source
+        );
+        assert_eq!(
+            "code".parse::<JupyterCellRendering>().unwrap(),
+            JupyterCellRendering::Source
+        );
+        assert_eq!(
+            "OUTPUTS".parse::<JupyterCellRendering>().unwrap(),
+            JupyterCellRendering::Outputs
+        );
+        assert_eq!(
+            "both".parse::<JupyterCellRendering>().unwrap(),
+            JupyterCellRendering::Both
+        );
+        assert!("nope".parse::<JupyterCellRendering>().is_err());
+        // serde renames to lowercase and round-trips.
+        assert_eq!(
+            serde_json::to_string(&JupyterCellRendering::Outputs).unwrap(),
+            "\"outputs\""
+        );
+        assert_eq!(
+            serde_json::from_str::<JupyterCellRendering>("\"source\"").unwrap(),
+            JupyterCellRendering::Source
+        );
+    }
 
     #[test]
     fn test_output_format_from_str_plain() {

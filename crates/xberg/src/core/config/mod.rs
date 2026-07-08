@@ -43,7 +43,7 @@ pub use extraction::{
     FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions, UrlExtractionConfig,
     UrlExtractionMode,
 };
-pub use formats::OutputFormat;
+pub use formats::{JupyterCellRendering, OutputFormat};
 #[cfg(feature = "html")]
 pub use html_output::{HtmlOutputConfig, HtmlTheme};
 #[cfg(feature = "layout-types")]

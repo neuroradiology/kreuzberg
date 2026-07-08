@@ -7,38 +7,36 @@
 //! - Cell outputs (text, HTML, images)
 //! - Cell metadata (execution_count, tags)
 //!
-//! Requires the `office` feature.
+//! Requires the `notebook` feature.
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use crate::Result;
-#[cfg(feature = "office")]
-use crate::core::config::ExtractionConfig;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
+use crate::core::config::{ExtractionConfig, JupyterCellRendering};
+#[cfg(feature = "notebook")]
 use crate::extractors::security::SecurityBudget;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use crate::plugins::{InternalDocumentExtractor, Plugin};
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use crate::types::internal::InternalDocument;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use crate::types::internal_builder::InternalDocumentBuilder;
-#[cfg(feature = "office")]
-use crate::types::uri::ExtractedUri;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use crate::types::{ExtractedImage, Metadata};
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use ahash::AHashMap;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use async_trait::async_trait;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use base64::Engine;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use bytes::Bytes;
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use serde_json::{Value, json};
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 use std::borrow::Cow;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 type NotebookContent = (String, AHashMap<Cow<'static, str>, Value>, Vec<ExtractedImage>, Value);
 
 /// Jupyter Notebook extractor.
@@ -49,10 +47,10 @@ type NotebookContent = (String, AHashMap<Cow<'static, str>, Value>, Vec<Extracte
 /// - Cell outputs (text, HTML, etc.)
 /// - Cell-level metadata (tags, execution counts)
 #[cfg_attr(alef, alef(skip))]
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 pub struct JupyterExtractor;
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 impl JupyterExtractor {
     /// Create a new Jupyter extractor.
     pub(crate) fn new() -> Self {
@@ -347,190 +345,6 @@ impl JupyterExtractor {
         Ok(())
     }
 
-    /// Scan markdown text for inline formatting patterns and produce
-    /// stripped text with annotations.
-    ///
-    /// Recognizes: `**bold**`, `*italic*`, `` `code` ``
-    fn scan_markdown_inline(text: &str) -> (String, Vec<crate::types::TextAnnotation>) {
-        use crate::types::TextAnnotation;
-        use crate::types::document_structure::AnnotationKind;
-
-        let mut out = String::with_capacity(text.len());
-        let mut annotations = Vec::new();
-        let bytes = text.as_bytes();
-        let len = bytes.len();
-        let mut i = 0;
-
-        while i < len {
-            if i + 1 < len && bytes[i] == b'*' && bytes[i + 1] == b'*' {
-                // Bold: **...**
-                if let Some(end) = Self::find_closing(bytes, i + 2, b"**") {
-                    let inner = &text[i + 2..end];
-                    let start = out.len() as u32;
-                    out.push_str(inner);
-                    let ann_end = out.len() as u32;
-                    annotations.push(TextAnnotation {
-                        start,
-                        end: ann_end,
-                        kind: AnnotationKind::Bold,
-                    });
-                    i = end + 2;
-                    continue;
-                }
-            }
-
-            if bytes[i] == b'*' && (i == 0 || bytes[i - 1] != b'*') {
-                // Italic: *...*  (but not **)
-                if i + 1 < len
-                    && bytes[i + 1] != b'*'
-                    && let Some(end) = Self::find_closing_single_star(bytes, i + 1)
-                {
-                    let inner = &text[i + 1..end];
-                    let start = out.len() as u32;
-                    out.push_str(inner);
-                    let ann_end = out.len() as u32;
-                    annotations.push(TextAnnotation {
-                        start,
-                        end: ann_end,
-                        kind: AnnotationKind::Italic,
-                    });
-                    i = end + 1;
-                    continue;
-                }
-            }
-
-            if bytes[i] == b'`' && (i + 1 >= len || bytes[i + 1] != b'`') {
-                // Inline code: `...`
-                if let Some(end) = Self::find_closing_byte(bytes, i + 1, b'`') {
-                    let inner = &text[i + 1..end];
-                    let start = out.len() as u32;
-                    out.push_str(inner);
-                    let ann_end = out.len() as u32;
-                    annotations.push(TextAnnotation {
-                        start,
-                        end: ann_end,
-                        kind: AnnotationKind::Code,
-                    });
-                    i = end + 1;
-                    continue;
-                }
-            }
-
-            out.push(bytes[i] as char);
-            i += 1;
-        }
-
-        (out, annotations)
-    }
-
-    /// Find position of a two-byte closing delimiter (e.g. `**`).
-    fn find_closing(bytes: &[u8], start: usize, delim: &[u8; 2]) -> Option<usize> {
-        let mut i = start;
-        while i + 1 < bytes.len() {
-            if bytes[i] == delim[0] && bytes[i + 1] == delim[1] {
-                return Some(i);
-            }
-            i += 1;
-        }
-        None
-    }
-
-    /// Find position of a closing single `*` that is not followed by another `*`.
-    fn find_closing_single_star(bytes: &[u8], start: usize) -> Option<usize> {
-        let mut i = start;
-        while i < bytes.len() {
-            if bytes[i] == b'*' && (i + 1 >= bytes.len() || bytes[i + 1] != b'*') {
-                return Some(i);
-            }
-            i += 1;
-        }
-        None
-    }
-
-    /// Find position of a closing single byte delimiter.
-    fn find_closing_byte(bytes: &[u8], start: usize, delim: u8) -> Option<usize> {
-        bytes[start..].iter().position(|&b| b == delim).map(|p| start + p)
-    }
-
-    /// Extract markdown-style links from text and return as URIs.
-    ///
-    /// Uses pulldown-cmark for robust parsing instead of hand-rolled byte scanning.
-    /// Recognizes both `[text](url)` hyperlinks and `![alt](url)` image links.
-    fn extract_markdown_links(text: &str) -> Vec<ExtractedUri> {
-        use pulldown_cmark::{Event, Parser, Tag, TagEnd};
-
-        let parser = Parser::new(text);
-        let mut uris = Vec::new();
-        let mut current_text = String::new();
-        let mut current_url: Option<String> = None;
-        let mut in_link = false;
-        let mut in_image = false;
-
-        for event in parser {
-            match event {
-                Event::Start(Tag::Link { dest_url, .. }) => {
-                    in_link = true;
-                    current_text.clear();
-                    current_url = Some(dest_url.into_string());
-                }
-                Event::Start(Tag::Image { dest_url, .. }) => {
-                    in_image = true;
-                    current_text.clear();
-                    current_url = Some(dest_url.into_string());
-                }
-                Event::Text(text) if in_link || in_image => {
-                    current_text.push_str(&text);
-                }
-                Event::End(TagEnd::Link) => {
-                    if let Some(url) = current_url.take()
-                        && !url.is_empty()
-                    {
-                        let label_opt = if current_text.is_empty() {
-                            None
-                        } else {
-                            Some(current_text.clone())
-                        };
-                        uris.push(ExtractedUri::hyperlink(&url, label_opt));
-                    }
-                    in_link = false;
-                    current_text.clear();
-                }
-                Event::End(TagEnd::Image) => {
-                    if let Some(url) = current_url.take()
-                        && !url.is_empty()
-                    {
-                        let label_opt = if current_text.is_empty() {
-                            None
-                        } else {
-                            Some(current_text.clone())
-                        };
-                        uris.push(ExtractedUri::image(&url, label_opt));
-                    }
-                    in_image = false;
-                    current_text.clear();
-                }
-                _ => {}
-            }
-        }
-
-        uris
-    }
-
-    /// Detect an ATX heading line (`# …`, `## …`, etc.) and return level + text.
-    fn parse_heading_line(line: &str) -> Option<(u8, &str)> {
-        let trimmed = line.trim_start();
-        let hashes = trimmed.bytes().take_while(|&b| b == b'#').count();
-        if hashes == 0 || hashes > 6 {
-            return None;
-        }
-        let rest = &trimmed[hashes..];
-        // ATX heading requires a space (or end-of-line) after the hashes
-        if !rest.is_empty() && !rest.starts_with(' ') {
-            return None;
-        }
-        Some((hashes as u8, rest.trim()))
-    }
-
     /// Collect `text/plain` content from a single notebook output object.
     fn collect_output_text(output: &Value) -> String {
         let mut text = String::new();
@@ -565,7 +379,7 @@ impl JupyterExtractor {
     ///
     /// Markdown cells are split into headings and paragraphs. Code cells
     /// become code blocks followed by any output paragraphs.
-    fn build_internal_document(notebook: &Value) -> Option<InternalDocument> {
+    fn build_internal_document(notebook: &Value, rendering: JupyterCellRendering) -> Option<InternalDocument> {
         let cells = notebook.get("cells")?.as_array()?;
 
         let kernel_lang = notebook
@@ -617,85 +431,66 @@ impl JupyterExtractor {
 
             match cell_type {
                 "markdown" => {
-                    // Extract markdown links as URIs
-                    let link_uris = Self::extract_markdown_links(trimmed);
-                    for uri in link_uris {
-                        builder.push_uri(uri);
-                    }
-
-                    // Parse line-by-line: headings become push_heading, other
-                    // lines are accumulated and flushed as paragraphs.
-                    let mut para_buf = String::new();
-                    for line in trimmed.lines() {
-                        if let Some((level, heading_text)) = Self::parse_heading_line(line) {
-                            // Flush accumulated paragraph text first
-                            let flushed = para_buf.trim();
-                            if !flushed.is_empty() {
-                                let (stripped, annotations) = Self::scan_markdown_inline(flushed);
-                                builder.push_paragraph(&stripped, annotations, None, None);
-                            }
-                            para_buf.clear();
-
-                            if !heading_text.is_empty() {
-                                builder.push_heading(level, heading_text, None, None);
-                            }
-                        } else {
-                            if !para_buf.is_empty() {
-                                para_buf.push('\n');
-                            }
-                            para_buf.push_str(line);
-                        }
-                    }
-                    // Flush remaining paragraph text
-                    let flushed = para_buf.trim();
-                    if !flushed.is_empty() {
-                        let (stripped, annotations) = Self::scan_markdown_inline(flushed);
-                        builder.push_paragraph(&stripped, annotations, None, None);
-                    }
+                    // Reuse the shared Markdown extractor so notebook prose renders
+                    // identically to standalone .md/.qmd (headings, lists, tables,
+                    // emphasis, math, links collected as URIs) instead of the old
+                    // line-by-line heuristic.
+                    let events: Vec<pulldown_cmark::Event> =
+                        pulldown_cmark::Parser::new_ext(trimmed, crate::extractors::markdown::markdown_options())
+                            .collect();
+                    let cell_doc =
+                        crate::extractors::markdown::MarkdownExtractor::build_internal_document(&events, &None);
+                    builder.append_document(cell_doc);
                 }
                 "code" => {
-                    let idx = builder.push_code(trimmed, kernel_lang, None, None);
-                    // Store execution_count and tags as element attributes
-                    let mut attrs = AHashMap::new();
-                    if let Some(exec_count) = cell.get("execution_count") {
-                        match exec_count {
-                            Value::Number(n) => {
-                                attrs.insert("execution_count".to_string(), n.to_string());
+                    // Render the code source unless the caller asked for outputs only.
+                    if rendering.includes_source() {
+                        let idx = builder.push_code(trimmed, kernel_lang, None, None);
+                        // Store execution_count and tags as element attributes
+                        let mut attrs = AHashMap::new();
+                        if let Some(exec_count) = cell.get("execution_count") {
+                            match exec_count {
+                                Value::Number(n) => {
+                                    attrs.insert("execution_count".to_string(), n.to_string());
+                                }
+                                Value::Null => {
+                                    attrs.insert("execution_count".to_string(), "null".to_string());
+                                }
+                                _ => {}
                             }
-                            Value::Null => {
-                                attrs.insert("execution_count".to_string(), "null".to_string());
+                        }
+                        if let Some(tags) = cell
+                            .get("metadata")
+                            .and_then(|m| m.get("tags"))
+                            .and_then(|t| t.as_array())
+                            && !tags.is_empty()
+                        {
+                            let tag_strs: Vec<&str> = tags.iter().filter_map(|v| v.as_str()).collect();
+                            attrs.insert("tags".to_string(), tag_strs.join(","));
+                        }
+                        if !attrs.is_empty() {
+                            builder.set_attributes(idx, attrs);
+                        }
+
+                        // Emit execution_count metadata as paragraph
+                        if let Some(exec_count) = cell.get("execution_count") {
+                            match exec_count {
+                                Value::Number(n) => {
+                                    builder.push_paragraph(&format!("execution_count: {}", n), vec![], None, None);
+                                }
+                                Value::Null => {
+                                    builder.push_paragraph("execution_count: null", vec![], None, None);
+                                }
+                                _ => {}
                             }
-                            _ => {}
                         }
                     }
-                    if let Some(tags) = cell
-                        .get("metadata")
-                        .and_then(|m| m.get("tags"))
-                        .and_then(|t| t.as_array())
-                        && !tags.is_empty()
+
+                    // Emit the notebook's saved outputs unless the caller asked for source
+                    // only. These are read from the .ipynb — cells are never executed.
+                    if rendering.includes_outputs()
+                        && let Some(outputs) = cell.get("outputs").and_then(|o| o.as_array())
                     {
-                        let tag_strs: Vec<&str> = tags.iter().filter_map(|v| v.as_str()).collect();
-                        attrs.insert("tags".to_string(), tag_strs.join(","));
-                    }
-                    if !attrs.is_empty() {
-                        builder.set_attributes(idx, attrs);
-                    }
-
-                    // Emit execution_count metadata as paragraph
-                    if let Some(exec_count) = cell.get("execution_count") {
-                        match exec_count {
-                            Value::Number(n) => {
-                                builder.push_paragraph(&format!("execution_count: {}", n), vec![], None, None);
-                            }
-                            Value::Null => {
-                                builder.push_paragraph("execution_count: null", vec![], None, None);
-                            }
-                            _ => {}
-                        }
-                    }
-
-                    // Emit cell outputs as paragraphs with type markers
-                    if let Some(outputs) = cell.get("outputs").and_then(|o| o.as_array()) {
                         for output in outputs {
                             let output_type = output.get("output_type").and_then(|t| t.as_str()).unwrap_or("unknown");
 
@@ -747,14 +542,14 @@ impl JupyterExtractor {
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 impl Default for JupyterExtractor {
     fn default() -> Self {
         Self::new()
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 impl Plugin for JupyterExtractor {
     fn name(&self) -> &str {
         "jupyter-extractor"
@@ -781,7 +576,7 @@ impl Plugin for JupyterExtractor {
     }
 }
 
-#[cfg(feature = "office")]
+#[cfg(feature = "notebook")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl InternalDocumentExtractor for JupyterExtractor {
@@ -822,7 +617,7 @@ impl InternalDocumentExtractor for JupyterExtractor {
         let images = extracted_images;
 
         // Build InternalDocument from already-parsed notebook (no re-parse)
-        let mut doc = Self::build_internal_document(&notebook_json)
+        let mut doc = Self::build_internal_document(&notebook_json, config.jupyter_cell_rendering)
             .unwrap_or_else(|| InternalDocumentBuilder::new("jupyter").build());
         doc.mime_type = mime_type.to_string();
 
@@ -848,6 +643,7 @@ impl InternalDocumentExtractor for JupyterExtractor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::internal::ElementKind;
 
     #[test]
     fn test_jupyter_extractor_plugin_interface() {
@@ -938,5 +734,91 @@ mod tests {
         );
         assert!(content.contains("Traceback:"), "Should contain traceback header");
         assert!(content.contains("Traceback line 1"), "Should contain traceback lines");
+    }
+
+    fn rendering_sample() -> Value {
+        serde_json::from_str(
+            r#"{
+            "cells": [
+                {
+                    "cell_type": "code",
+                    "source": ["print('hello world')"],
+                    "execution_count": 1,
+                    "outputs": [
+                        {"output_type": "stream", "name": "stdout", "text": ["hello world\n"]}
+                    ],
+                    "metadata": {}
+                }
+            ],
+            "metadata": {"kernelspec": {"name": "python3", "language": "python"}},
+            "nbformat": 4,
+            "nbformat_minor": 5
+        }"#,
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn test_rendering_source_emits_code_without_outputs() {
+        let doc = JupyterExtractor::build_internal_document(&rendering_sample(), JupyterCellRendering::Source).unwrap();
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::Code) && e.text.contains("print('hello world')")),
+            "source rendering keeps the code cell"
+        );
+        assert!(
+            !doc.elements.iter().any(|e| e.text.contains("[output_type:")),
+            "source rendering suppresses saved outputs"
+        );
+    }
+
+    #[test]
+    fn test_rendering_outputs_emits_outputs_without_code() {
+        let doc =
+            JupyterExtractor::build_internal_document(&rendering_sample(), JupyterCellRendering::Outputs).unwrap();
+        assert!(
+            !doc.elements.iter().any(|e| matches!(e.kind, ElementKind::Code)),
+            "outputs rendering suppresses the code source"
+        );
+        assert!(
+            doc.elements.iter().any(|e| e.text.contains("hello world")),
+            "outputs rendering keeps the saved output text"
+        );
+    }
+
+    #[test]
+    fn test_rendering_both_emits_code_and_outputs() {
+        let doc = JupyterExtractor::build_internal_document(&rendering_sample(), JupyterCellRendering::Both).unwrap();
+        assert!(
+            doc.elements.iter().any(|e| matches!(e.kind, ElementKind::Code)),
+            "both rendering keeps the code source"
+        );
+        assert!(
+            doc.elements.iter().any(|e| e.text.contains("[output_type: stream")),
+            "both rendering keeps the saved outputs"
+        );
+    }
+
+    #[test]
+    fn test_markdown_cell_reuses_shared_parser() {
+        let notebook: Value = serde_json::from_str(
+            r##"{
+            "cells": [
+                {"cell_type": "markdown", "source": ["# Heading\n\nSome **bold** prose."], "metadata": {}}
+            ],
+            "metadata": {},
+            "nbformat": 4,
+            "nbformat_minor": 5
+        }"##,
+        )
+        .unwrap();
+        let doc = JupyterExtractor::build_internal_document(&notebook, JupyterCellRendering::Both).unwrap();
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::Heading { .. }) && e.text.contains("Heading")),
+            "markdown cells render through the shared MarkdownExtractor (heading element present)"
+        );
     }
 }
