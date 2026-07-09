@@ -636,10 +636,10 @@ pub fn derive_extraction_result(
         Some(doc.uris)
     };
 
-    // FormatMetadata::Code is a unit variant — no tree-sitter ProcessResult payload
-    // attached. Code intelligence integration was removed because the upstream
+    // Code intelligence is surfaced through FormatMetadata::Code { chunks } (owned
+    // CodeChunkInfo payloads), not through this derive path — the upstream
     // ProcessResult type lives in an external crate that binding generators cannot
-    // resolve to a typed struct across all targets.
+    // resolve to a typed struct across all targets, so no payload is attached here.
     #[cfg(feature = "tree-sitter")]
     let code_intelligence: Option<serde_json::Value> = None;
 

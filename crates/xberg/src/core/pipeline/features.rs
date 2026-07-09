@@ -140,9 +140,12 @@ fn classify_code_chunk(node_types: &[String]) -> crate::types::extraction::Chunk
         return ChunkType::Class;
     }
 
-    let is_module = node_types
-        .iter()
-        .any(|t| matches!(t.as_str(), "module_definition" | "module" | "namespace_declaration" | "mod_item"));
+    let is_module = node_types.iter().any(|t| {
+        matches!(
+            t.as_str(),
+            "module_definition" | "module" | "namespace_declaration" | "mod_item"
+        )
+    });
     if is_module {
         return ChunkType::Module;
     }
@@ -174,7 +177,7 @@ fn try_code_chunks(result: &ExtractedDocument) -> Option<Vec<crate::types::extra
     use crate::types::extraction::{Chunk, ChunkMetadata};
     use crate::types::metadata::FormatMetadata;
 
-    let FormatMetadata::Code(code_chunks) = result.metadata.format.as_ref()? else {
+    let FormatMetadata::Code { chunks: code_chunks } = result.metadata.format.as_ref()? else {
         return None;
     };
 

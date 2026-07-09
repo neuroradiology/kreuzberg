@@ -210,7 +210,7 @@ async fn main() -> xberg::Result<()> {
 
 Xberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) to parse and analyze source code files across **306 programming languages**. When you extract a source code file, Xberg automatically detects the language and produces structured analysis including functions, classes, imports, exports, symbols, diagnostics, and semantic code chunks.
 
-Code intelligence data is available via the `metadata.format` field as a `FormatMetadata::Code` variant containing a `ProcessResult`.
+Code intelligence data is available via the `metadata.format` field as a `FormatMetadata::Code` variant carrying the structure-aware code chunks (each a `CodeChunkInfo`). Setting `chunk_max_size` enables tree-sitter chunking; without it the whole source is emitted as a single block.
 
 ```rust
 use xberg::{extract, ExtractInput, ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
@@ -223,8 +223,8 @@ async fn main() -> xberg::Result<()> {
                 structure: true,
                 imports: true,
                 exports: true,
-                comments: true,
-                docstrings: true,
+                // Enables structure-aware chunking (bytes). `None` = single block.
+                chunk_max_size: Some(2000),
                 ..Default::default()
             },
             ..Default::default()
@@ -235,18 +235,21 @@ async fn main() -> xberg::Result<()> {
     let output = extract(ExtractInput::from_uri("app.py"), &config).await?;
     let document = &output.results[0];
 
-    // Access code intelligence from format metadata
-    if let Some(xberg::types::FormatMetadata::Code(ref code)) = document.metadata.format {
-        println!("Language: {}", code.language);
-        println!("Functions/classes: {}", code.structure.len());
-        println!("Imports: {}", code.imports.len());
+    // Access the structural code chunks from format metadata.
+    if let Some(xberg::types::FormatMetadata::Code { ref chunks }) = document.metadata.format {
+        println!("Code chunks: {}", chunks.len());
 
-        for item in &code.structure {
-            println!("  {:?}: {:?} at line {}", item.kind, item.name, item.span.start_line);
-        }
-
-        for chunk in &code.chunks {
-            println!("Chunk ({} bytes): {}...", chunk.content.len(), &chunk.content[..50.min(chunk.content.len())]);
+        for chunk in chunks {
+            // `context_path` is the enclosing scope (e.g. ["MyClass", "my_method"]);
+            // `node_types` are the tree-sitter kinds at the chunk's top level.
+            println!(
+                "  {:?} {:?} ({}..{}): {}...",
+                chunk.node_types,
+                chunk.context_path,
+                chunk.byte_start,
+                chunk.byte_end,
+                &chunk.text[..50.min(chunk.text.len())]
+            );
         }
     }
 

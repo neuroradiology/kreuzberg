@@ -102,7 +102,7 @@ impl CodeExtractor {
 
         let mut doc = builder.build();
         doc.metadata = Metadata {
-            format: Some(FormatMetadata::Code(code_chunks)),
+            format: Some(FormatMetadata::Code { chunks: code_chunks }),
             ..Default::default()
         };
         doc.mime_type = SOURCE_CODE_MIME_TYPE.to_string();

@@ -112,8 +112,16 @@ pub enum FormatMetadata {
     /// class, and module boundaries) produced by the tree-sitter extractor, consumed by
     /// the chunking pipeline to emit structure-aware `Chunk`s instead of falling back to
     /// text-based splitting.
+    ///
+    /// Modelled as a struct variant (rather than `Code(Vec<CodeChunkInfo>)`) because
+    /// `FormatMetadata` is internally tagged (`#[serde(tag = "format_type")]`), and serde
+    /// cannot serialize an internally-tagged newtype variant that wraps a sequence — the
+    /// tag has no map to live in. A named `chunks` field gives serde a map to tag.
     #[cfg(feature = "tree-sitter")]
-    Code(Vec<CodeChunkInfo>),
+    Code {
+        /// Structural code chunks (function/class/module boundaries).
+        chunks: Vec<CodeChunkInfo>,
+    },
 }
 
 /// A single structurally-meaningful code chunk produced by tree-sitter parsing.
@@ -191,7 +199,7 @@ impl std::fmt::Display for FormatMetadata {
             #[cfg(feature = "transcription-types")]
             Self::Audio(_) => f.write_str("audio"),
             #[cfg(feature = "tree-sitter")]
-            Self::Code(_) => f.write_str("code"),
+            Self::Code { .. } => f.write_str("code"),
         }
     }
 }
@@ -1223,4 +1231,40 @@ pub struct AudioMetadata {
     /// Audio bitrate in kbps from the source file tags/properties.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bitrate: Option<u32>,
+}
+
+#[cfg(all(test, feature = "tree-sitter"))]
+mod code_metadata_serde_tests {
+    use super::{CodeChunkInfo, FormatMetadata};
+
+    /// `FormatMetadata` is internally tagged, so the `Code` variant must be a
+    /// struct variant — a newtype variant wrapping a `Vec` cannot be serialized
+    /// under internal tagging (serde errors: "cannot serialize tagged newtype
+    /// variant ... containing a sequence"). This guards that regression.
+    #[test]
+    fn code_variant_round_trips_through_json() {
+        let value = FormatMetadata::Code {
+            chunks: vec![CodeChunkInfo {
+                text: "fn main() {}".to_string(),
+                context_path: vec!["main".to_string()],
+                node_types: vec!["function_item".to_string()],
+                byte_start: 0,
+                byte_end: 12,
+            }],
+        };
+
+        let json = serde_json::to_string(&value).expect("Code metadata must serialize");
+        assert!(
+            json.contains("\"format_type\":\"code\""),
+            "internal tag present: {json}"
+        );
+        assert!(json.contains("\"chunks\""), "chunks field present: {json}");
+
+        let back: FormatMetadata = serde_json::from_str(&json).expect("Code metadata must deserialize");
+        let FormatMetadata::Code { chunks } = back else {
+            panic!("expected Code variant after round-trip");
+        };
+        assert_eq!(chunks.len(), 1);
+        assert_eq!(chunks[0].node_types, vec!["function_item".to_string()]);
+    }
 }
