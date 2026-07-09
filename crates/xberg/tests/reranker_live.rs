@@ -192,8 +192,8 @@ async fn bge_reranker_v2_m3_loads_via_additional_files() {
     assert_eq!(preset.model_file, "bge-reranker-v2-m3/model.onnx");
     assert_eq!(
         preset.additional_files,
-        vec!["model.onnx.data".to_string()],
-        "v2-m3 must declare its weight-blob sibling"
+        vec!["bge-reranker-v2-m3/model.onnx.data".to_string()],
+        "v2-m3 must declare its weight-blob sibling (full repo-relative path)"
     );
 
     let fixture = load_fixture();
@@ -276,6 +276,47 @@ async fn preset_and_custom_are_equivalent_for_same_repo() {
             "scores diverge: preset {p:?} vs custom {c:?}",
         );
     }
+}
+
+/// `qwen3-reranker-0.6b` is a generative reranker: a causal-LM yes/no head, not
+/// a BERT cross-encoder. This exercises the self-hosted custom ONNX export
+/// (`[batch, seq, vocab]` logits + `model.onnx.data` sibling), the last-real-token
+/// read under right-padding, and the tokenizer-driven yes/no id resolution — all
+/// the seams the synthetic unit tests can't cover. Scores are `P(yes)` in `[0, 1]`.
+#[tokio::test(flavor = "multi_thread")]
+async fn qwen3_reranker_generative_head_top_ranks_first() {
+    if should_skip() {
+        eprintln!("XBERG_SKIP_LIVE_HF=1, skipping");
+        return;
+    }
+
+    let preset = get_reranker_preset("qwen3-reranker-0.6b").expect("preset must exist");
+    assert_eq!(preset.model_repo, "xberg-io/reranker-models");
+    assert_eq!(preset.model_file, "qwen3-reranker-0.6b/model.onnx");
+    assert_eq!(
+        preset.additional_files,
+        vec!["qwen3-reranker-0.6b/model.onnx.data".to_string()],
+        "qwen3 must declare its weight-blob sibling (full repo-relative path)"
+    );
+
+    let fixture = load_fixture();
+    let suite = fixture
+        .suites
+        .iter()
+        .find(|s| s.id == "english_basic")
+        .expect("english_basic suite must exist");
+
+    let results = run_preset_inference("qwen3-reranker-0.6b", suite)
+        .await
+        .unwrap_or_else(|e| panic!("qwen3-reranker-0.6b download/inference failed: {e}"));
+
+    assert_eq!(
+        results.len(),
+        suite.documents.len(),
+        "result count must match input count"
+    );
+    assert_scores_in_unit_interval(&results, "qwen3-reranker-0.6b / english_basic");
+    assert_top_is_expected(&results, suite.expected_top_index, &suite.id, "qwen3-reranker-0.6b");
 }
 
 /// `top_k` truncates after sorting — verify the top result is still correct

@@ -165,11 +165,12 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
         // `jina-reranker-v1-turbo-en` above is retained: it is Apache-2.0.
         RerankerPreset {
             name: "qwen3-reranker-0.6b".to_string(),
-            // TODO(model-hosting): repoint at an xberg-io/* mirror once re-hosted.
-            // Qwen3-Reranker-0.6B is Apache-2.0 licensed.
-            model_repo: "Qwen/Qwen3-Reranker-0.6B".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
-            additional_files: Vec::new(),
+            // Self-hosted export of Qwen3-Reranker-0.6B (Apache-2.0): custom causal-LM
+            // ONNX (opset 18) emitting `[batch, seq, vocab]` logits, exactly the shape
+            // the generative head reads. Weights split into model.onnx + model.onnx.data.
+            model_repo: "xberg-io/reranker-models".to_string(),
+            model_file: "qwen3-reranker-0.6b/model.onnx".to_string(),
+            additional_files: vec!["qwen3-reranker-0.6b/model.onnx.data".to_string()],
             max_length: 512,
             description: "Qwen3 generative reranker (0.6B params, multilingual). Best for: \
                 instruction-aware relevance judgment via a causal-LM yes/no head, higher quality \
@@ -907,7 +908,7 @@ mod tests {
         use crate::core::config::reranker::RerankerHead;
 
         let preset = get_preset("qwen3-reranker-0.6b").expect("qwen3 preset must exist");
-        assert_eq!(preset.model_repo, "Qwen/Qwen3-Reranker-0.6B");
+        assert_eq!(preset.model_repo, "xberg-io/reranker-models");
         assert_eq!(preset.head, RerankerHead::Qwen3Generative);
 
         // All pre-existing presets must remain on the original cross-encoder head.
@@ -947,11 +948,11 @@ mod tests {
     #[cfg(feature = "reranker-presets")]
     #[test]
     fn catalog_paths_are_stable() {
-        // Lock the source repos/files to catch accidental drift. The mirrored
-        // presets are self-hosted on `xberg-io/reranker-models` (weights unmodified
-        // from their Apache-2.0/MIT upstreams, verified from cards) and pinned by
-        // the checked-in `presets.sha256sum`. `qwen3-reranker-0.6b` still points at
-        // upstream pending its ONNX export (needs-export; Iteration 2).
+        // Lock the source repos/files to catch accidental drift. All presets are
+        // self-hosted on `xberg-io/reranker-models` (cross-encoder weights unmodified
+        // from their Apache-2.0/MIT upstreams; `qwen3-reranker-0.6b` is our custom
+        // causal-LM ONNX export of the Apache-2.0 Qwen3-Reranker-0.6B) and pinned by
+        // the checked-in `presets.sha256sum`.
         let by_name = |n: &str| get_preset(n).expect(n);
 
         let base = by_name("bge-reranker-base"); // MIT
@@ -962,16 +963,22 @@ mod tests {
         let m3 = by_name("bge-reranker-v2-m3"); // Apache-2.0 (weights); mirror of BAAI
         assert_eq!(m3.model_repo, "xberg-io/reranker-models");
         assert_eq!(m3.model_file, "bge-reranker-v2-m3/model.onnx");
-        assert_eq!(m3.additional_files, vec!["bge-reranker-v2-m3/model.onnx.data".to_string()]);
+        assert_eq!(
+            m3.additional_files,
+            vec!["bge-reranker-v2-m3/model.onnx.data".to_string()]
+        );
 
         let turbo = by_name("jina-reranker-v1-turbo-en"); // Apache-2.0
         assert_eq!(turbo.model_repo, "xberg-io/reranker-models");
         assert_eq!(turbo.model_file, "jina-reranker-v1-turbo-en/model.onnx");
 
         let qwen3 = by_name("qwen3-reranker-0.6b"); // Apache-2.0; generative head
-        assert_eq!(qwen3.model_repo, "Qwen/Qwen3-Reranker-0.6B");
-        assert_eq!(qwen3.model_file, "onnx/model.onnx");
-        assert!(qwen3.additional_files.is_empty());
+        assert_eq!(qwen3.model_repo, "xberg-io/reranker-models");
+        assert_eq!(qwen3.model_file, "qwen3-reranker-0.6b/model.onnx");
+        assert_eq!(
+            qwen3.additional_files,
+            vec!["qwen3-reranker-0.6b/model.onnx.data".to_string()]
+        );
         assert_eq!(qwen3.head, crate::core::config::reranker::RerankerHead::Qwen3Generative);
     }
 
