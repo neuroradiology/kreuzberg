@@ -250,31 +250,6 @@ Pure-Rust VLM OCR via the `candle-glm-ocr` feature. Wraps the zai-org/GLM-OCR 0.
 
 Configure via `--ocr-backend candle-glm-ocr` or `ocr.backend = "candle-glm-ocr"` in config. Set layout mode and device via `backend_options`: `{"layout_mode":"paired"}`, `{"layout_mode":"whole_page"}`, `{"device":"metal"}`, `{"device":"cuda"}`.
 
-### Candle Hunyuan-OCR
-
-Pure-Rust VLM OCR via the `candle-hunyuan-ocr` feature. Tencent Hunyuan-OCR vision-language model with document layout understanding and multilingual support. No ONNX Runtime dependency.
-
-**Feature flag:** `candle-hunyuan-ocr`
-
-**Implies:** `candle-ocr`, `xberg-candle-ocr/hunyuan-ocr`
-
-**Deployment:**
-
-- **CPU & Metal (macOS)** — Full support
-- **CUDA (Linux/Windows with NVIDIA GPU)** — Full support
-- **WASM** — Excluded (candle not available on WASM)
-- **Android x86_64 emulator** — Excluded (no prebuilt candle targets)
-
-**Model & performance:**
-
-- Model size: ~2 GB, downloaded on first use from Tencent's official ModelScope release, checksum-verified, and cached under the xberg cache directory (`XBERG_CACHE_DIR` or the platform cache dir, e.g. `~/.cache/xberg/`)
-- Detects layout and text regions, outputs merged into reading-order markdown
-- CPU dtype: F32; CUDA dtype: F16
-
-Configure via `--ocr-backend candle-hunyuan-ocr` or `ocr.backend = "candle-hunyuan-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`. To use pre-staged or offline weights, set `{"model_path":"/path/to/hunyuan-ocr"}`.
-
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/xberg/blob/main/ATTRIBUTIONS.md).
-
 ### Candle DeepSeek-OCR
 
 Pure-Rust VLM OCR via the `candle-deepseek-ocr` feature. DeepSeek-OCR vision-language model combining SAM, CLIP, Qwen2, and DeepSeek-V2 MoE architecture. Advanced document understanding with multilingual support. No ONNX Runtime dependency.
@@ -327,7 +302,7 @@ Configure via `--ocr-backend candle-paddleocr-vl-15` or `ocr.backend = "candle-p
 
 ### Candle VLM-OCR Umbrella
 
-The `candle-vlm-ocr` feature aggregates all Candle VLM-OCR backends: `candle-hunyuan-ocr`, `candle-deepseek-ocr`, `candle-paddleocr-vl-15`, `candle-glm-ocr`, and `candle-trocr`. Use this aggregate to enable all pure-Rust vision-language OCR options in a single feature flag.
+The `candle-vlm-ocr` feature aggregates all Candle VLM-OCR backends: `candle-deepseek-ocr`, `candle-paddleocr-vl-15`, `candle-glm-ocr`, and `candle-trocr`. Use this aggregate to enable all pure-Rust vision-language OCR options in a single feature flag.
 
 ---
 

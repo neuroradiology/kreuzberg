@@ -347,47 +347,6 @@ Vision-language model combining SAM vision encoder, ViT/Qwen2, CLIP, and languag
 }
 ```
 
-### Candle Hunyuan-OCR
-
-Vision-language model for comprehensive document parsing. Supports CJK (Chinese, Japanese, Korean) and Latin scripts with multilingual capabilities.
-
-| Language | Code |
-|----------|------|
-| English | `eng` / `en` |
-| Chinese | `zho` / `zh` |
-| Japanese | `jpn` / `ja` |
-| Korean | `kor` / `ko` |
-| French | `fra` / `fr` |
-| German | `deu` / `de` |
-| Spanish | `spa` / `es` |
-| Italian | `ita` / `it` |
-| Portuguese | `por` / `pt` |
-| Russian | `rus` / `ru` |
-| Arabic | `ara` / `ar` |
-| Hindi | `hin` / `hi` |
-| Thai | `tha` / `th` |
-| Vietnamese | `vie` / `vi` |
-
-**Note:** Hunyuan-OCR is trained on multilingual data and accepts any language code.
-
-**Installation:** Enabled via `candle-ocr` or `full` feature.
-
-**Selection:** Use `--ocr-backend candle-hunyuan-ocr` with optional `--ocr-language`.
-
-**Configuration:** Requires a local model path:
-
-```json
-{
-  "ocr": {
-    "backend": "candle-hunyuan-ocr",
-    "backend_options": {
-      "device": "auto",
-      "model_path": "/path/to/hunyuan-ocr-model"
-    }
-  }
-}
-```
-
 ## Selecting Languages
 
 ### Configuration Precedence

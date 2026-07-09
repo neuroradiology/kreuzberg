@@ -66,9 +66,6 @@ pub enum XbergPipeline {
     /// Candle GLM-OCR: OCR with candle-based GLM-OCR vision-language backend
     #[serde(rename = "candle-glm-ocr")]
     CandleGlmOcr,
-    /// Candle Hunyuan-OCR: OCR with candle-based Hunyuan-OCR vision-language backend
-    #[serde(rename = "candle-hunyuan-ocr")]
-    CandleHunyuanOcr,
     /// Candle DeepSeek-OCR: OCR with candle-based DeepSeek-OCR vision-language backend
     #[serde(rename = "candle-deepseek-ocr")]
     CandleDeepseekOcr,
@@ -87,7 +84,6 @@ impl XbergPipeline {
             XbergPipeline::CandleTrocr => "candle-trocr",
             XbergPipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
             XbergPipeline::CandleGlmOcr => "candle-glm-ocr",
-            XbergPipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
             XbergPipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
             XbergPipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
         }
@@ -111,13 +107,12 @@ impl FromStr for XbergPipeline {
             "candle-trocr" | "candle_trocr" | "trocr" => Ok(XbergPipeline::CandleTrocr),
             "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Ok(XbergPipeline::CandlePaddleocrVl),
             "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Ok(XbergPipeline::CandleGlmOcr),
-            "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Ok(XbergPipeline::CandleHunyuanOcr),
             "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Ok(XbergPipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {
                 Ok(XbergPipeline::CandlePaddleocrVl15)
             }
             _ => Err(format!(
-                "unknown Xberg pipeline: {}. Valid: baseline, layout, paddle-ocr, candle-trocr, candle-paddleocr-vl, candle-glm-ocr, candle-hunyuan-ocr, candle-deepseek-ocr, candle-paddleocr-vl-15",
+                "unknown Xberg pipeline: {}. Valid: baseline, layout, paddle-ocr, candle-trocr, candle-paddleocr-vl, candle-glm-ocr, candle-deepseek-ocr, candle-paddleocr-vl-15",
                 s
             )),
         }

@@ -22,8 +22,7 @@
 //! `backend_options.model_path`, when present, always wins (offline / custom weights).
 //! Otherwise the backend auto-downloads `backend_options.model_id` (default
 //! `xberg-io/paddleocr-vl-1.6`, a checksum-pinned mirror of
-//! `PaddlePaddle/PaddleOCR-VL-1.6`) through [`super::model_stager`], the same
-//! auto-download path used by the Hunyuan-OCR backend.
+//! `PaddlePaddle/PaddleOCR-VL-1.6`) through [`super::model_stager`].
 
 use async_trait::async_trait;
 use std::borrow::Cow;

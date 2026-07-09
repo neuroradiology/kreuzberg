@@ -15,17 +15,11 @@ pub mod paddleocr_vl_backend;
 #[cfg(all(feature = "candle-glm-ocr", not(target_arch = "wasm32")))]
 pub mod glm_ocr_backend;
 
-#[cfg(all(feature = "candle-hunyuan-ocr", not(target_arch = "wasm32")))]
-pub mod hunyuan_ocr_backend;
-
-// Checksum-verified weight staging for candle VLM-OCR backends. Hunyuan-OCR needs this
-// because its checkpoint was pulled from the HF Hub upstream; PaddleOCR-VL 1.6 uses the
-// same staging path so the default `model_id` auto-downloads without requiring callers
-// to pre-stage a local `model_path`.
-#[cfg(any(
-    all(feature = "candle-hunyuan-ocr", not(target_arch = "wasm32")),
-    feature = "candle-paddleocr-vl"
-))]
+// Checksum-verified weight staging for candle VLM-OCR backends. PaddleOCR-VL 1.6 uses
+// this staging path so the default `model_id` auto-downloads via hf-hub, verified
+// against a checked-in sha256 manifest, without requiring callers to pre-stage a local
+// `model_path`.
+#[cfg(feature = "candle-paddleocr-vl")]
 mod model_stager;
 
 #[cfg(all(feature = "candle-deepseek-ocr", not(target_arch = "wasm32")))]
@@ -41,9 +35,6 @@ pub use paddleocr_vl_backend::PaddleOcrVlBackend;
 
 #[cfg(all(feature = "candle-glm-ocr", not(target_arch = "wasm32")))]
 pub use glm_ocr_backend::GlmOcrBackend;
-
-#[cfg(all(feature = "candle-hunyuan-ocr", not(target_arch = "wasm32")))]
-pub use hunyuan_ocr_backend::HunyuanOcrBackend;
 
 #[cfg(all(feature = "candle-deepseek-ocr", not(target_arch = "wasm32")))]
 pub use deepseek_ocr_backend::DeepseekOcrBackend;

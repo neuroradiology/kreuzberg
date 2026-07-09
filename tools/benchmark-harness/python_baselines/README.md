@@ -1,6 +1,6 @@
 # VLM-OCR Python Reference Baselines
 
-This directory scaffolds Python reference baseline pipelines for three VLM-OCR models used in Phase 6 benchmark-gate scoring.
+This directory scaffolds Python reference baseline pipelines for VLM-OCR models used in Phase 6 benchmark-gate scoring.
 
 ## Purpose
 
@@ -15,7 +15,6 @@ Phase 6 gates require comparing Rust candle backend output to Python reference i
 | Model | HF ID | Size | Requirements | Status |
 |-------|-------|------|--------------|--------|
 | **DeepSeek-OCR** | `deepseek-ai/DeepSeek-OCR` | ~2.7 GB | CUDA 12+, 8 GB VRAM | Scaffolded, not yet run |
-| **Hunyuan-OCR** | `tencent/Hunyuan-OCR` | ~13–15 GB | CUDA 12+, 24 GB VRAM | Scaffolded, not yet run |
 | **PaddleOCR-VL 1.5** | `paddlepaddle/paddleocr-v4` or `paddlex` | ~700 MB–2 GB | CPU OK, CUDA optional | Scaffolded, not yet run |
 
 ## Running the Baseline Scripts
@@ -32,7 +31,7 @@ pip install -r requirements.txt
 ### Generate All Baselines
 
 ```bash
-# Runs all three models against fixtures/ directory
+# Runs all models against fixtures/ directory
 bash run_all_baselines.sh
 
 # Or selectively (DeepSeek only):
@@ -53,11 +52,6 @@ Each script accepts `--fixtures` and `--output` arguments:
 python deepseek_ocr_baseline.py \
   --fixtures ../../fixtures \
   --output baselines/deepseek_ocr
-
-# Hunyuan: ~15 GB download, 60–120s/page on V100, requires 24+ GB VRAM
-python hunyuan_ocr_baseline.py \
-  --fixtures ../../fixtures \
-  --output baselines/hunyuan_ocr
 
 # PaddleOCR-VL: Lightweight, CPU feasible (2–5 min/page), CUDA optional
 python paddleocr_vl_baseline.py \
@@ -104,11 +98,11 @@ assert!(f1 >= 0.90, "Baseline F1 failed: {:.1}% (need ≥90%)", f1 * 100.0);
 ### Model Download Failures
 
 - Requires HuggingFace token for gated models (set `HF_TOKEN` env var).
-- Ensure sufficient disk space (30–50 GB recommended for all three).
+- Ensure sufficient disk space (10–15 GB recommended for all models).
 
 ### CUDA/Device Issues
 
-- **DeepSeek/Hunyuan** require CUDA 12+; fall back to CPU (very slow) by removing `device_map="cuda"`.
+- **DeepSeek** requires CUDA 12+; fall back to CPU (very slow) by removing `device_map="cuda"`.
 - **PaddleOCR-VL** works on CPU; CUDA optional.
 
 ### Per-Fixture Errors
@@ -141,9 +135,8 @@ Once baselines are generated and committed:
 - **Scaffolding** (this PR): Done ✓
 - **Baseline generation** (next PR, GPU box):
   - DeepSeek: ~90 min (157 fixtures × 30–60s + overhead)
-  - Hunyuan: ~3–4 hours (larger model, longer latency)
   - PaddleOCR-VL: ~30–60 min (lightweight, CPU feasible)
-- **Total**: ~5–6 hours on a single V100/A100 GPU
+- **Total**: ~2–3 hours on a single V100/A100 GPU
 
 ## Notes
 

@@ -105,8 +105,6 @@ pub enum Pipeline {
     CandleGlmOcrLayout,
     /// Candle-based GLM-OCR with layout detection + formula + chart understanding
     CandleGlmOcrLayoutChart,
-    /// Candle-based Hunyuan-OCR vision-language backend (force_ocr)
-    CandleHunyuanOcr,
     /// Candle-based DeepSeek-OCR vision-language backend (force_ocr)
     CandleDeepseekOcr,
     /// Candle-based PaddleOCR-VL 1.5 vision-language backend (force_ocr)
@@ -141,7 +139,6 @@ impl Pipeline {
             Pipeline::CandleGlmOcr => "candle-glm-ocr",
             Pipeline::CandleGlmOcrLayout => "candle-glm-ocr+layout",
             Pipeline::CandleGlmOcrLayoutChart => "candle-glm-ocr+layout+chart",
-            Pipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
             Pipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
             Pipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
         }
@@ -186,7 +183,6 @@ impl Pipeline {
             | "candle_glm_ocr_layout_chart"
             | "glm-ocr+layout+chart"
             | "glm-ocr-layout-chart" => Some(Pipeline::CandleGlmOcrLayoutChart),
-            "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Some(Pipeline::CandleHunyuanOcr),
             "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Some(Pipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {
                 Some(Pipeline::CandlePaddleocrVl15)
@@ -198,7 +194,7 @@ impl Pipeline {
     /// All pipelines that use xberg in-process extraction.
     ///
     /// `CandleTrocr`, `CandlePaddleocrVl`, and the new Candle VLM backends
-    /// (`CandleHunyuanOcr`, `CandleDeepseekOcr`, `CandlePaddleocrVl15`) are
+    /// (`CandleDeepseekOcr`, `CandlePaddleocrVl15`) are
     /// deliberately omitted from `all_xberg()`: they need large model
     /// downloads from HuggingFace and only build with their own feature flags,
     /// so default cross-pipeline runs do not include them.
@@ -554,15 +550,6 @@ pub fn build_extraction_config(pipeline: Pipeline) -> xberg::ExtractionConfig {
             }),
             layout: Some(LayoutDetectionConfig {
                 enable_chart_understanding: true,
-                ..Default::default()
-            }),
-            ..base
-        },
-        Pipeline::CandleHunyuanOcr => xberg::ExtractionConfig {
-            force_ocr: true,
-            ocr: Some(xberg::core::config::OcrConfig {
-                backend: "candle-hunyuan-ocr".to_string(),
-                language: vec!["en".to_string()],
                 ..Default::default()
             }),
             ..base
@@ -1514,7 +1501,6 @@ mod tests {
             "candle-trocr",
             "candle-paddleocr-vl",
             "candle-glm-ocr",
-            "candle-hunyuan-ocr",
             "candle-deepseek-ocr",
             "candle-paddleocr-vl-15",
         ];

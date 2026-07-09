@@ -133,12 +133,6 @@ tasks:
       - cargo build --locked -p benchmark-harness --features glm-ocr-bench --release
       - cargo run --locked -p benchmark-harness --features glm-ocr-bench --release -- pipeline-benchmark --fixtures "{{.FIXTURES_DIR}}"
 
-  candle-hunyuan-ocr:
-    desc: "Build and run benchmark harness with candle-hunyuan-ocr backend"
-    cmds:
-      - cargo build --locked -p benchmark-harness --features candle-hunyuan-ocr-bench --release
-      - cargo run --locked -p benchmark-harness --features candle-hunyuan-ocr-bench --release -- pipeline-benchmark --fixtures "{{.FIXTURES_DIR}}"
-
   candle-deepseek-ocr:
     desc: "Build and run benchmark harness with candle-deepseek-ocr backend"
     cmds:

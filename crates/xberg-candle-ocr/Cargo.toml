@@ -29,7 +29,6 @@ default = []
 trocr = []
 paddleocr-vl = []
 glm-ocr = []
-hunyuan-ocr = []
 deepseek-ocr = []
 
 # Device acceleration pass-throughs to candle.

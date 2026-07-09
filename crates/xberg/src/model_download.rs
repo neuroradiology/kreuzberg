@@ -14,7 +14,6 @@ use std::time::Duration;
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 use sha2::{Digest, Sha256};
@@ -23,7 +22,6 @@ use sha2::{Digest, Sha256};
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 use std::io::{BufReader, Read};
@@ -32,7 +30,6 @@ use std::io::{BufReader, Read};
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 use std::path::Path;
@@ -41,7 +38,6 @@ use std::path::Path;
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 use std::path::PathBuf;
@@ -124,7 +120,6 @@ where
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 fn download_lock(key: &str) -> std::sync::Arc<std::sync::Mutex<()>> {
@@ -149,7 +144,6 @@ fn download_lock(key: &str) -> std::sync::Arc<std::sync::Mutex<()>> {
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBuf, String> {
@@ -194,7 +188,6 @@ pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBu
 /// weight staging) so the format and validation live in one place.
 #[cfg(any(
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 pub(crate) fn parse_sha256_manifest(content: &str) -> Result<Vec<(String, String)>, String> {
@@ -231,7 +224,6 @@ pub(crate) fn parse_sha256_manifest(content: &str) -> Result<Vec<(String, String
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-hunyuan-ocr",
     feature = "candle-paddleocr-vl"
 ))]
 pub(crate) fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), String> {
@@ -345,7 +337,6 @@ mod tests {
 
     #[cfg(any(
         feature = "ner-onnx",
-        feature = "candle-hunyuan-ocr",
         feature = "candle-paddleocr-vl"
     ))]
     #[test]
@@ -365,7 +356,6 @@ mod tests {
 
     #[cfg(any(
         feature = "ner-onnx",
-        feature = "candle-hunyuan-ocr",
         feature = "candle-paddleocr-vl"
     ))]
     #[test]

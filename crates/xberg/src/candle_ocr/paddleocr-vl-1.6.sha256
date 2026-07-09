@@ -5,7 +5,7 @@
 #
 # PaddleOCR-VL 1.6 keeps the same architecture as 1.5 (SigLIP vision encoder + ERNIE
 # 4.5 text decoder) and ships weights as a single unsharded model.safetensors file, so
-# unlike Hunyuan-OCR there is no shard set to enumerate.
+# there is no shard set to enumerate.
 ce7f4565f8b1db78532ad5d1b9ebe55c2139d49bd4cb04778b580a08a598f171  config.json
 111872ab1e8bb7fd040ac5087bfced7ab8f011f02139b088cba294964c3b1d0e  preprocessor_config.json
 c8a215a59183d0d0781adc33bacd3ce6162716f7fd568fb30234a74d69803a7d  tokenizer.json

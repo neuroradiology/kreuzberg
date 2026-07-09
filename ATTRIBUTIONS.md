@@ -368,8 +368,8 @@ Rust-native VLM-OCR backends vendored into `crates/xberg-candle-ocr/`:
 - **License**: Apache-2.0
 - **Author**: jhqxxx
 - **Vendored Version**: `e29ddc589d089042afd66ab8ea76409d8d33f701` (jhqxxx/aha @ HEAD on 2026-06-17)
-- **Location**: `crates/xberg-candle-ocr/src/vendor/aha/` (shared infra), `crates/xberg-candle-ocr/src/models/hunyuan_ocr/` (Hunyuan-OCR), `crates/xberg-candle-ocr/src/models/deepseek_ocr/` (DeepSeek-OCR + Qwen2 decoder), `crates/xberg-candle-ocr/src/models/paddleocr_vl/` (PaddleOCR-VL 1.5 upgrade)
-- **Purpose**: Rust-native VLM-OCR backends (Hunyuan-OCR, PaddleOCR-VL 1.5, DeepSeek-OCR) including their Qwen2 decoder dependency and shared SigLIP/CLIP/MRoPE infrastructure subsets.
+- **Location**: `crates/xberg-candle-ocr/src/vendor/aha/` (shared infra), `crates/xberg-candle-ocr/src/models/deepseek_ocr/` (DeepSeek-OCR + Qwen2 decoder), `crates/xberg-candle-ocr/src/models/paddleocr_vl/` (PaddleOCR-VL 1.5 upgrade)
+- **Purpose**: Rust-native VLM-OCR backends (PaddleOCR-VL 1.5, DeepSeek-OCR) including their Qwen2 decoder dependency and shared SigLIP/CLIP/MRoPE infrastructure subsets.
 
 ### Vendored Files
 
@@ -387,9 +387,8 @@ Rust-native VLM-OCR backends vendored into `crates/xberg-candle-ocr/`:
 - Dead code blocks dropped (specific examples: aha `modules.rs:214-230, 265-266`)
 - `paddleocr_vl::model::get_rope_index`: vision-block position ids restored to aha's (t, h, w) mrope layout after the vendoring rewrite transposed the h index and dropped the t row (crashed on non-square grids); images always carry a single frame so the t row is constant
 - `paddleocr_vl::model::forward`: restored aha's seqlen_offset-based position continuation for cache_position-less decode steps (dropped during vendoring, failing every decode step with a dtype mismatch)
-- `paddleocr_vl::engine::generate`: rewritten from a full-sequence re-feed (which double-appended the KV cache each step and read the argmax at the wrong rank) to aha's prefill + cached single-token step loop, matching the Hunyuan-OCR engine
+- `paddleocr_vl::engine::generate`: rewritten from a full-sequence re-feed (which double-appended the KV cache each step and read the argmax at the wrong rank) to aha's prefill + cached single-token step loop
 - `paddleocr_vl::model::Ernie4_5Model::forward`: restored aha's causal attention mask for the multi-token prefill (dropped during vendoring; bidirectional prefill degenerated generation into single-token repetition)
-- `hunyuan_ocr::config::HunYuanVLConfig::tie_word_embeddings`: serde default `true` (later released-checkpoint revisions omit the field)
 
 ### License Compatibility
 

@@ -158,17 +158,6 @@ impl OcrBackendRegistry {
             tracing::info!("GLM-OCR backend registered successfully");
         }
 
-        #[cfg(all(feature = "candle-hunyuan-ocr", not(target_arch = "wasm32")))]
-        {
-            use crate::candle_ocr::HunyuanOcrBackend;
-            tracing::info!("Initializing Hunyuan-OCR backend");
-            let backend = HunyuanOcrBackend::new();
-            self.register(Arc::new(backend)).unwrap_or_else(|e| {
-                tracing::warn!("Failed to register Hunyuan-OCR backend: {e}");
-            });
-            tracing::info!("Hunyuan-OCR backend registered successfully");
-        }
-
         #[cfg(all(feature = "candle-deepseek-ocr", not(target_arch = "wasm32")))]
         {
             use crate::candle_ocr::DeepseekOcrBackend;

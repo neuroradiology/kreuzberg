@@ -292,8 +292,8 @@ impl PaddleOcrVlEngine {
     ///
     /// Prefills once with the full prompt (vision features injected), then feeds
     /// each new token back through the cached decode path at its absolute
-    /// position, mirroring the Hunyuan-OCR generation loop. Returns only the
-    /// newly generated tokens, so decoding the result never echoes the prompt.
+    /// position. Returns only the newly generated tokens, so decoding the
+    /// result never echoes the prompt.
     fn generate(
         &mut self,
         input_ids: &Tensor,

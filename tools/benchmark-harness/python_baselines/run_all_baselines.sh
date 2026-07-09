@@ -2,12 +2,12 @@
 # Run all VLM-OCR baseline generation scripts.
 #
 # Usage:
-#   ./run_all_baselines.sh              # Run all three models
+#   ./run_all_baselines.sh              # Run all models
 #   MODELS="deepseek" ./run_all_baselines.sh  # Run DeepSeek only
 #   FIXTURES=/path/to/fixtures ./run_all_baselines.sh
 #
 # Environment:
-#   MODELS          Space-separated model names (deepseek, hunyuan, paddleocr)
+#   MODELS          Space-separated model names (deepseek, paddleocr)
 #   FIXTURES        Path to fixtures directory (default: ../../fixtures)
 #   OUTPUT_BASE     Base output directory (default: baselines/)
 #   DEVICE          CUDA device or CPU (default: cuda)
@@ -20,7 +20,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # Configuration
-MODELS="${MODELS:-deepseek hunyuan paddleocr}"
+MODELS="${MODELS:-deepseek paddleocr}"
 FIXTURES="${FIXTURES:-../../fixtures}"
 OUTPUT_BASE="${OUTPUT_BASE:-baselines}"
 DEVICE="${DEVICE:-cuda}"
@@ -60,20 +60,6 @@ for model in $MODELS; do
       echo "✓ DeepSeek-OCR complete"
     else
       echo "✗ DeepSeek-OCR failed"
-      all_success=false
-    fi
-    ;;
-
-  hunyuan)
-    echo ""
-    echo ">>> Running Hunyuan-OCR baseline..."
-    output_dir="$OUTPUT_BASE/hunyuan_ocr"
-    if python hunyuan_ocr_baseline.py \
-      --fixtures "$FIXTURES" \
-      --output "$output_dir"; then
-      echo "✓ Hunyuan-OCR complete"
-    else
-      echo "✗ Hunyuan-OCR failed"
       all_success=false
     fi
     ;;

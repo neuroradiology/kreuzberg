@@ -106,14 +106,6 @@ pub fn create_xberg_adapter(
             args.push("--force-ocr".to_string());
             args.push("true".to_string());
         }
-        XbergPipeline::CandleHunyuanOcr => {
-            args.push("--ocr".to_string());
-            args.push("true".to_string());
-            args.push("--ocr-backend".to_string());
-            args.push("candle-hunyuan-ocr".to_string());
-            args.push("--force-ocr".to_string());
-            args.push("true".to_string());
-        }
         XbergPipeline::CandleDeepseekOcr => {
             args.push("--ocr".to_string());
             args.push("true".to_string());

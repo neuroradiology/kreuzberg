@@ -43,18 +43,18 @@ See the [OcrConfig reference](/reference/configuration/#ocrconfig) for all confi
 
 ## Backend Comparison
 
-Eight OCR backends — pick based on platform, accuracy needs, and language coverage.
+Seven OCR backends — pick based on platform, accuracy needs, and language coverage.
 
-|                  | **Tesseract**        | **PaddleOCR**                       | **Candle GLM-OCR** | **Candle TrOCR** | **Candle Hunyuan-OCR** | **Candle DeepSeek-OCR** | **Candle PaddleOCR-VL** | **VLM**                  |
-| ---------------- | -------------------- | ----------------------------------- | ------------------ | ---------------- | ---------------------- | ----------------------- | ----------------------- | ------------------------ |
-| **Speed**        | Fast                 | Very fast                           | Moderate           | Moderate         | Moderate               | Moderate                | Moderate                | Slow (API latency)       |
-| **Accuracy**     | Good                 | Excellent                           | Excellent          | Good             | Excellent              | Excellent               | Excellent               | Highest                  |
-| **Languages**    | 100+                 | 80+ (11 script families)            | All                | 100+             | 20+ (CJK + Latin)      | 20+ (CJK + Latin)       | 20+ (CJK + Latin)       | All (provider-dependent) |
-| **Installation** | System package       | Built-in (native) or Python package | Cargo feature      | Cargo feature    | Cargo feature          | Cargo feature           | Cargo feature           | API key only             |
-| **Model size**   | ~10 MB               | Mobile ~8 MB, Server ~120 MB        | ~3 GB              | ~250 MB          | ~3.5 GB                | ~4 GB                   | ~2.5 GB                 | None (cloud-hosted)      |
-| **GPU support**  | No                   | Yes                                 | Yes (Metal/CUDA)   | Yes (Metal/CUDA) | Yes (Metal/CUDA)       | Yes (Metal/CUDA)        | Yes (Metal/CUDA)        | N/A (server-side)        |
-| **Platform**     | All (including Wasm) | All except Wasm                     | Native only        | Native only      | Native only            | Native only             | Native only             | All                      |
-| **Cost**         | Free                 | Free                                | Free               | Free             | Free                   | Free                    | Free                    | Per-token API cost       |
+|                  | **Tesseract**        | **PaddleOCR**                       | **Candle GLM-OCR** | **Candle TrOCR** | **Candle DeepSeek-OCR** | **Candle PaddleOCR-VL** | **VLM**                  |
+| ---------------- | -------------------- | ----------------------------------- | ------------------ | ---------------- | ----------------------- | ----------------------- | ------------------------ |
+| **Speed**        | Fast                 | Very fast                           | Moderate           | Moderate         | Moderate                | Moderate                | Slow (API latency)       |
+| **Accuracy**     | Good                 | Excellent                           | Excellent          | Good             | Excellent               | Excellent               | Highest                  |
+| **Languages**    | 100+                 | 80+ (11 script families)            | All                | 100+             | 20+ (CJK + Latin)       | 20+ (CJK + Latin)       | All (provider-dependent) |
+| **Installation** | System package       | Built-in (native) or Python package | Cargo feature      | Cargo feature    | Cargo feature           | Cargo feature           | API key only             |
+| **Model size**   | ~10 MB               | Mobile ~8 MB, Server ~120 MB        | ~3 GB              | ~250 MB          | ~4 GB                   | ~2.5 GB                 | None (cloud-hosted)      |
+| **GPU support**  | No                   | Yes                                 | Yes (Metal/CUDA)   | Yes (Metal/CUDA) | Yes (Metal/CUDA)        | Yes (Metal/CUDA)        | N/A (server-side)        |
+| **Platform**     | All (including Wasm) | All except Wasm                     | Native only        | Native only      | Native only             | Native only             | All                      |
+| **Cost**         | Free                 | Free                                | Free               | Free             | Free                    | Free                    | Per-token API cost       |
 
 **When to use which:**
 
@@ -62,7 +62,6 @@ Eight OCR backends — pick based on platform, accuracy needs, and language cove
 - **PaddleOCR** — Best speed-to-accuracy ratio. Preferred for CJK languages. Mobile tier is fast; server tier maximizes accuracy with GPU.
 - **Candle GLM-OCR** — Excellent accuracy with VLM-level reasoning on 0.9B-param GLM model. Pure Rust, GPU-accelerated (Metal on macOS, CUDA on Linux). Region-aware layout dispatch. First download ~3 GB.
 - **Candle TrOCR** — Smaller model footprint (~250 MB) with solid accuracy across languages. Pure Rust, GPU-accelerated. Good balance of speed and quality.
-- **Candle Hunyuan-OCR** — Tencent Hunyuan-OCR with comprehensive document parsing and multilingual support including CJK and Latin scripts. Pure Rust, GPU-accelerated. First download ~3.5 GB.
 - **Candle DeepSeek-OCR** — Deep learning-based OCR combining SAM + CLIP + Qwen2 + DeepSeek MoE. Multilingual with strong CJK coverage. Pure Rust, GPU-accelerated. First download ~4 GB.
 - **Candle PaddleOCR-VL** — SigLIP vision encoder + Ernie-4.5 text decoder. Lightweight multilingual model with CJK and Latin support. Pure Rust, GPU-accelerated. First download ~2.5 GB.
 - **VLM** — Best for handwritten text, poor scans, Arabic/Farsi, and complex layouts. Requires an API key and incurs per-token costs. See [LLM Integration](/guides/llm-integration/) for full details.
@@ -505,107 +504,6 @@ let _result_whole_page = &whole_page_output.results[0];
 | `layout_mode` | `"paired"` (default), `"whole_page"` | Paired: dispatch per-region via PP-DocLayout-V3. Whole-page: single OCR pass on entire page. |
 | `task` | `"ocr"` (default), `"table"`, `"formula"`, `"chart"`, `"caption"` | Task prompt for whole-page mode only; ignored in paired mode where the region type determines the prompt. |
 | `device` | `"auto"` (default), `"cpu"`, `"metal"`, `"cuda"` | Device selection. Auto detects Metal on macOS, CUDA on Linux, CPU fallback. |
-
-### Candle Hunyuan-OCR
-
-Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing with markdown output and multilingual support.
-
-<Tabs syncKey="lang">
-<TabItem label="Native bindings (Rust, Go, TypeScript, Node.js, Java, C#, Ruby, PHP, Elixir)">
-
-Built in via the `candle-hunyuan-ocr` feature flag or the `candle-vlm-ocr` umbrella feature. The weights (~2 GB) download automatically on first use from Tencent's official ModelScope release, are checksum-verified, and cached under the xberg cache directory (`XBERG_CACHE_DIR`, or the platform cache dir, e.g. `~/.cache/xberg/` on Linux). To use pre-staged or offline weights, set `model_path` in `backend_options` to a local model directory.
-
-```toml title="Cargo.toml (Rust example)"
-[dependencies]
-xberg = { version = "5", features = ["candle-hunyuan-ocr"] }
-```
-
-**GPU support:**
-
-- **Metal** (macOS) — Default, F32 dtype
-- **CUDA** (Linux/Windows with NVIDIA GPU) — Auto-detected
-- **CPU fallback** — Slowest, but always available
-
-</TabItem>
-</Tabs>
-
-### Using Candle Hunyuan-OCR
-
-<Tabs syncKey="lang">
-<TabItem label="Python">
-
-```python title="candle_hunyuan_ocr.py"
-from xberg import ExtractInput, ExtractionConfig, OcrConfig, extract
-
-config = ExtractionConfig(
-    force_ocr=True,
-    ocr=OcrConfig(
-        backend="candle-hunyuan-ocr",
-        language="en",
-        backend_options={"device": "auto", "model_path": "~/.cache/huggingface/"},
-    ),
-)
-output = await extract(ExtractInput(kind="uri", uri="document.pdf"), config=config)
-result = output.results[0]
-print(result.content)
-```
-
-</TabItem>
-<TabItem label="TypeScript">
-
-```typescript title="candle-hunyuan-ocr.ts"
-import { ExtractInputKind, extract } from '@xberg-io/xberg';
-
-const output = await extract(
-  { kind: ExtractInputKind.Uri, uri: 'document.pdf' },
-  {
-    forceOcr: true,
-    ocr: {
-      backend: 'candle-hunyuan-ocr',
-      language: 'en',
-      backendOptions: { device: 'auto', model_path: '~/.cache/huggingface/' },
-    },
-  },
-);
-const result = output.results[0];
-console.log(result.content);
-```
-
-</TabItem>
-<TabItem label="Rust">
-
-```rust title="candle_hunyuan_ocr.rs"
-use xberg::{extract, ExtractInput, ExtractionConfig, OcrConfig};
-use serde_json::json;
-
-let config = ExtractionConfig {
-    force_ocr: true,
-    ocr: Some(OcrConfig {
-        backend: "candle-hunyuan-ocr".into(),
-        language: "en".into(),
-        backend_options: Some(json!({"device": "auto", "model_path": "~/.cache/huggingface/"})),
-        ..Default::default()
-    }),
-    ..Default::default()
-};
-let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
-let result = &output.results[0];
-println!("{}", result.content);
-```
-
-</TabItem>
-<TabItem label="CLI">
-
-```bash title="Terminal"
-xberg extract document.pdf --force-ocr true --ocr-backend candle-hunyuan-ocr --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
-```
-
-</TabItem>
-</Tabs>
-
-**Supported languages:** English, Chinese, Japanese, Korean, French, German, Spanish, Italian, Portuguese, Russian, Arabic, Hindi, Thai, Vietnamese, and others.
-
-**Model source:** Download from [Hugging Face Hub](https://huggingface.co/models?search=hunyuan-ocr).
 
 ### Candle DeepSeek-OCR
 
