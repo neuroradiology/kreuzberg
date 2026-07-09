@@ -1314,6 +1314,62 @@ for element in result.ocr_elements.iter().flatten() {
 </TabItem>
 </Tabs>
 
+## PP-OCRv6
+
+PP-OCRv6 is the default PaddleOCR model generation (`model_version` defaults to `"pp-ocrv6"`). It adds a unified CJK+Latin+Japanese/Korean recognition model with three size tiers, selected via `model_tier`:
+
+| Tier | Notes |
+| --- | --- |
+| `medium` | Default. |
+| `small` | Smaller/faster, lower accuracy. |
+| `tiny` | Smallest/fastest, lowest accuracy. |
+
+`model_tier` defaults to `"mobile"`, which auto-resolves to the v6 `"medium"` tier — you don't need to set `model_tier` explicitly to get v6's default behavior. A legacy `"mobile"`/`"server"` tier value under v6 also falls back to `"medium"`.
+
+Scripts outside v6's unified coverage — Arabic, Cyrillic, Devanagari, Greek, Tamil, Telugu, and Thai — transparently fall back to the PP-OCRv5 per-script recognition models; no configuration change is needed to use those languages under v6.
+
+To pin the legacy PP-OCRv5 fleet (per-script + unified recognition models, `mobile`/`server` tiers), set `model_version` to `"pp-ocrv5"` explicitly:
+
+<Tabs syncKey="lang">
+<TabItem label="Python">
+
+```python title="pin_pp_ocrv5.py"
+from xberg import ExtractInput, ExtractionConfig, OcrConfig, extract
+
+config = ExtractionConfig(
+    ocr=OcrConfig(
+        backend="paddleocr",
+        backend_options={"model_version": "pp-ocrv5", "model_tier": "mobile"},
+    ),
+)
+output = await extract(ExtractInput(kind="uri", uri="scanned.pdf"), config=config)
+```
+
+</TabItem>
+<TabItem label="Rust">
+
+```rust title="pin_pp_ocrv5.rs"
+use xberg::{extract, ExtractInput, ExtractionConfig, OcrConfig};
+use serde_json::json;
+
+let config = ExtractionConfig {
+    ocr: Some(OcrConfig {
+        backend: "paddleocr".into(),
+        backend_options: Some(json!({"model_version": "pp-ocrv5", "model_tier": "mobile"})),
+        ..Default::default()
+    }),
+    ..Default::default()
+};
+let output = extract(ExtractInput::from_uri("scanned.pdf"), &config).await?;
+```
+
+</TabItem>
+</Tabs>
+
+### PaddleOCR-VL 1.6 (candle backend)
+
+The `candle-paddleocr-vl` backend now defaults to PaddleOCR-VL 1.6 (SigLIP vision encoder + Ernie-4.5 text decoder), auto-downloading `xberg-io/paddleocr-vl-1.6` — a checksum-pinned mirror of `PaddlePaddle/PaddleOCR-VL-1.6` — on first use. It runs one of four tasks via `backend_options.task`: `ocr` (default), `table`, `formula`, or `chart`. See [Candle PaddleOCR-VL](#candle-paddleocr-vl) above for installation and usage.
+
 ## PaddleOCR Script Families
 
 80+ languages across 11 script families (PP-OCRv5). Recognition models are downloaded on demand from HuggingFace:
