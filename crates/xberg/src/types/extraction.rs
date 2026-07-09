@@ -482,6 +482,12 @@ pub enum ChunkType {
     Formula,
     /// Code block or preformatted content.
     CodeBlock,
+    /// Function or method definition (tree-sitter structured code chunking).
+    Function,
+    /// Class, struct, interface, or trait definition (tree-sitter structured code chunking).
+    Class,
+    /// Module, namespace, or top-level file scope (tree-sitter structured code chunking).
+    Module,
     /// Embedded or referenced image content.
     Image,
     /// Organizational chart or hierarchy diagram.

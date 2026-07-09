@@ -16,7 +16,6 @@ version: "3"
 #   task e2e:all       -> generate + build + run e2e tests for all bindings
 #   task test:cov      -> tests with coverage
 #   task format        -> format Rust code
-#   task alef:format   -> format Alef-managed generated output
 #   task lint          -> lint via poly
 #   task update        -> compatible dependency updates (minor versions only)
 #   task upgrade       -> breaking dependency upgrades (latest versions)
@@ -276,11 +275,6 @@ tasks:
     desc: "Build all language bindings"
     cmds:
       - alef build
-
-  alef:format:
-    desc: "Format Alef-managed generated output"
-    cmds:
-      - alef fmt
 
   alef:sync:
     desc: "Sync version from Cargo.toml to all manifests"

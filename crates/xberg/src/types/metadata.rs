@@ -108,10 +108,34 @@ pub enum FormatMetadata {
     /// Metadata extracted from an audio or video file.
     #[cfg(feature = "transcription-types")]
     Audio(AudioMetadata),
-    /// Code (tree-sitter analyzable source). The structured analysis result is exposed
-    /// via `ExtractedDocument::code_intelligence`; this variant only tags the format.
+    /// Code (tree-sitter analyzable source). Carries the structural chunks (function,
+    /// class, and module boundaries) produced by the tree-sitter extractor, consumed by
+    /// the chunking pipeline to emit structure-aware `Chunk`s instead of falling back to
+    /// text-based splitting.
     #[cfg(feature = "tree-sitter")]
-    Code,
+    Code(Vec<CodeChunkInfo>),
+}
+
+/// A single structurally-meaningful code chunk produced by tree-sitter parsing.
+///
+/// Purpose-built payload owned by xberg — deliberately does not expose the upstream
+/// `tree_sitter_language_pack` types, so binding generators never need to resolve an
+/// external crate's types across FFI/language boundaries.
+#[cfg(feature = "tree-sitter")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+pub struct CodeChunkInfo {
+    /// The raw source text of this chunk.
+    pub text: String,
+    /// Hierarchical path of enclosing structural items (e.g. `["MyClass", "my_method"]`).
+    pub context_path: Vec<String>,
+    /// Tree-sitter node kinds that appear at the top level of this chunk (e.g.
+    /// `"function_definition"`, `"class_definition"`).
+    pub node_types: Vec<String>,
+    /// Inclusive start byte offset of this chunk in the original source.
+    pub byte_start: usize,
+    /// Exclusive end byte offset of this chunk in the original source.
+    pub byte_end: usize,
 }
 
 impl Default for FormatMetadata {
@@ -167,7 +191,7 @@ impl std::fmt::Display for FormatMetadata {
             #[cfg(feature = "transcription-types")]
             Self::Audio(_) => f.write_str("audio"),
             #[cfg(feature = "tree-sitter")]
-            Self::Code => f.write_str("code"),
+            Self::Code(_) => f.write_str("code"),
         }
     }
 }

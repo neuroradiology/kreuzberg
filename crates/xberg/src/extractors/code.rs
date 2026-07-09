@@ -18,7 +18,7 @@ use crate::internal_builder::InternalDocumentBuilder;
 use crate::plugins::InternalDocumentExtractor;
 use crate::plugins::Plugin;
 use crate::types::internal::InternalDocument;
-use crate::types::metadata::{FormatMetadata, Metadata};
+use crate::types::metadata::{CodeChunkInfo, FormatMetadata, Metadata};
 #[cfg_attr(alef, alef(skip))]
 /// Source code extractor using tree-sitter language pack.
 ///
@@ -59,6 +59,7 @@ impl CodeExtractor {
         })?;
 
         let mut builder = InternalDocumentBuilder::new("code");
+        let mut code_chunks: Vec<CodeChunkInfo> = Vec::with_capacity(result.chunks.len());
 
         if result.chunks.is_empty() {
             // No TSLP chunks (chunk_max_size not configured): emit entire source as a single code block.
@@ -84,12 +85,24 @@ impl CodeExtractor {
 
                 // Emit code block with language annotation.
                 builder.push_code(&chunk.content, Some(language), None, None);
+
+                // Collect the structured payload for the chunking pipeline. This preserves
+                // the tree-sitter node types and context path so `try_code_chunks` can map
+                // function/class/module boundaries onto `Chunk`s without falling back to
+                // text-based splitting.
+                code_chunks.push(CodeChunkInfo {
+                    text: chunk.content.clone(),
+                    context_path: chunk.metadata.context_path.clone(),
+                    node_types: chunk.metadata.node_types.clone(),
+                    byte_start: chunk.start_byte,
+                    byte_end: chunk.end_byte,
+                });
             }
         }
 
         let mut doc = builder.build();
         doc.metadata = Metadata {
-            format: Some(FormatMetadata::Code),
+            format: Some(FormatMetadata::Code(code_chunks)),
             ..Default::default()
         };
         doc.mime_type = SOURCE_CODE_MIME_TYPE.to_string();

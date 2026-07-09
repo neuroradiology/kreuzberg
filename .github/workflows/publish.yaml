@@ -1912,6 +1912,10 @@ jobs:
           name: dart-package
           path: packages/dart
           retention-days: 14
+          # upload-artifact@v4+ drops dotfiles by default, which silently loses
+          # packages/dart/.pubignore. Without it, `dart pub publish` bundles the staged
+          # native libs (blobs/ android/ ios/ = ~270MB) and exceeds pub.dev's 100MB cap.
+          include-hidden-files: true
 
   swift-artifactbundle:
     name: Build Swift artifact bundle
@@ -2980,6 +2984,9 @@ jobs:
           name: dart-package-assembled
           path: packages/dart
           retention-days: 7
+          # Preserve .pubignore through the assembled bundle too (see dart-package upload):
+          # this is the artifact the pub.dev publish workflow actually publishes from.
+          include-hidden-files: true
 
   trigger-pubdev:
     name: Trigger pub.dev publish workflow

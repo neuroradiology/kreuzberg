@@ -113,17 +113,99 @@ pub(crate) fn clamp_boundaries_to_text(boundaries: &[PageBoundary], text: &str) 
         .collect()
 }
 
+/// Classify a tree-sitter code chunk's structural role from its node types.
+///
+/// Inspects the top-level tree-sitter node kinds captured for the chunk and maps
+/// them onto the closest [`ChunkType`](crate::types::extraction::ChunkType) variant.
+/// Falls back to [`ChunkType::CodeBlock`](crate::types::extraction::ChunkType::CodeBlock)
+/// when no node type matches a known structural category.
+#[cfg(all(feature = "tree-sitter", feature = "chunking"))]
+fn classify_code_chunk(node_types: &[String]) -> crate::types::extraction::ChunkType {
+    use crate::types::extraction::ChunkType;
+
+    let is_class = node_types.iter().any(|t| {
+        matches!(
+            t.as_str(),
+            "class_definition"
+                | "class_declaration"
+                | "struct_item"
+                | "struct_declaration"
+                | "interface_declaration"
+                | "trait_item"
+                | "enum_item"
+                | "enum_declaration"
+        )
+    });
+    if is_class {
+        return ChunkType::Class;
+    }
+
+    let is_module = node_types
+        .iter()
+        .any(|t| matches!(t.as_str(), "module_definition" | "module" | "namespace_declaration" | "mod_item"));
+    if is_module {
+        return ChunkType::Module;
+    }
+
+    let is_function = node_types.iter().any(|t| {
+        matches!(
+            t.as_str(),
+            "function_definition"
+                | "function_declaration"
+                | "function_item"
+                | "method_definition"
+                | "method_declaration"
+        )
+    });
+    if is_function {
+        return ChunkType::Function;
+    }
+
+    ChunkType::CodeBlock
+}
+
 /// Map TSLP `CodeChunk`s directly to xberg `Chunk`s, bypassing text-splitter.
 ///
 /// When the extraction result contains code intelligence with non-empty chunks,
 /// those chunks already represent semantically meaningful code boundaries produced
 /// by tree-sitter. Using text-splitter would break these boundaries.
 #[cfg(all(feature = "tree-sitter", feature = "chunking"))]
-fn try_code_chunks(_result: &ExtractedDocument) -> Option<Vec<crate::types::extraction::Chunk>> {
-    // FormatMetadata::Code is a unit variant — the structured ProcessResult payload
-    // is no longer attached. Code extractions fall back to standard text-based
-    // chunking via the default pipeline.
-    None
+fn try_code_chunks(result: &ExtractedDocument) -> Option<Vec<crate::types::extraction::Chunk>> {
+    use crate::types::extraction::{Chunk, ChunkMetadata};
+    use crate::types::metadata::FormatMetadata;
+
+    let FormatMetadata::Code(code_chunks) = result.metadata.format.as_ref()? else {
+        return None;
+    };
+
+    if code_chunks.is_empty() {
+        return None;
+    }
+
+    let total_chunks = code_chunks.len();
+    let chunks = code_chunks
+        .iter()
+        .enumerate()
+        .map(|(chunk_index, chunk)| Chunk {
+            content: chunk.text.clone(),
+            chunk_type: classify_code_chunk(&chunk.node_types),
+            embedding: None,
+            metadata: ChunkMetadata {
+                byte_start: chunk.byte_start,
+                byte_end: chunk.byte_end,
+                token_count: None,
+                chunk_index,
+                total_chunks,
+                first_page: None,
+                last_page: None,
+                heading_context: None,
+                heading_path: chunk.context_path.clone(),
+                image_indices: Vec::new(),
+            },
+        })
+        .collect();
+
+    Some(chunks)
 }
 
 /// Execute chunking if configured.
