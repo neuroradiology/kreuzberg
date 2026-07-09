@@ -215,15 +215,14 @@ fn get_or_init_engine(
 
     crate::ort_discovery::ensure_ort_available();
 
-    let files =
-        crate::onnx::download_model_files(
-            repo_name,
-            model_file,
-            additional_files,
-            &cache_directory,
-            Some(SPARSE_EMBEDDING_SHA256_MANIFEST),
-            sparse_err,
-        )?;
+    let files = crate::onnx::download_model_files(
+        repo_name,
+        model_file,
+        additional_files,
+        &cache_directory,
+        Some(SPARSE_EMBEDDING_SHA256_MANIFEST),
+        sparse_err,
+    )?;
     let tokenizer = crate::onnx::load_tokenizer(&files, max_length, sparse_err)?;
     let session = crate::onnx::build_session(&files.model, accel.as_ref(), sparse_err)?;
 

@@ -157,15 +157,13 @@ impl EmbeddingEngine {
         let pooled = match self.pooling {
             Pooling::Cls => cls_pool(&tensor)?,
             Pooling::Mean => {
-                let mask = attention_mask_for_pooling.ok_or_else(|| {
-                    EmbedError::Shape("mean pooling requires the attention mask".to_string())
-                })?;
+                let mask = attention_mask_for_pooling
+                    .ok_or_else(|| EmbedError::Shape("mean pooling requires the attention mask".to_string()))?;
                 mean_pool(&tensor, mask)?
             }
             Pooling::Last => {
-                let mask = attention_mask_for_pooling.ok_or_else(|| {
-                    EmbedError::Shape("last-token pooling requires the attention mask".to_string())
-                })?;
+                let mask = attention_mask_for_pooling
+                    .ok_or_else(|| EmbedError::Shape("last-token pooling requires the attention mask".to_string()))?;
                 last_pool(&tensor, mask)?
             }
         };
@@ -257,18 +255,21 @@ fn last_pool(tensor: &ArrayView<f32, Dim<IxDynImpl>>, attention_mask: Array2<i64
     let (batch, seq_len, hidden) = tensor3.dim();
     let mut pooled = Array2::<f32>::zeros((batch, hidden));
     for b in 0..batch {
-        let last_index = (0..seq_len).rev().find(|&t| attention_mask[[b, t]] != 0).unwrap_or_else(|| {
-            // A fully-masked row should never reach here — `embed_texts` rejects
-            // empty inputs and the tokenizer always emits at least one content
-            // token. If it does, fall back to the final position but warn, since
-            // the pooled vector is then a padding token's embedding (silently
-            // plausible but wrong) rather than a real representation.
-            tracing::warn!(
-                batch_row = b,
-                "last-token pooling saw an all-zero attention mask; falling back to the final position"
-            );
-            seq_len - 1
-        });
+        let last_index = (0..seq_len)
+            .rev()
+            .find(|&t| attention_mask[[b, t]] != 0)
+            .unwrap_or_else(|| {
+                // A fully-masked row should never reach here — `embed_texts` rejects
+                // empty inputs and the tokenizer always emits at least one content
+                // token. If it does, fall back to the final position but warn, since
+                // the pooled vector is then a padding token's embedding (silently
+                // plausible but wrong) rather than a real representation.
+                tracing::warn!(
+                    batch_row = b,
+                    "last-token pooling saw an all-zero attention mask; falling back to the final position"
+                );
+                seq_len - 1
+            });
         pooled.row_mut(b).assign(&tensor3.slice(s![b, last_index, ..]));
     }
     Ok(pooled)
@@ -533,9 +534,21 @@ mod tests {
         let pooled = last_pool(&view, mask).unwrap();
 
         assert_eq!(pooled.dim(), (3, 2));
-        assert_eq!(pooled.row(0).to_vec(), vec![20.0, 21.0], "right-pad: last real token is index 1, not the pad at 2");
-        assert_eq!(pooled.row(1).to_vec(), vec![40.0, 41.0], "left-pad: last real token is index 2");
-        assert_eq!(pooled.row(2).to_vec(), vec![70.0, 71.0], "no pad: last token is index 2");
+        assert_eq!(
+            pooled.row(0).to_vec(),
+            vec![20.0, 21.0],
+            "right-pad: last real token is index 1, not the pad at 2"
+        );
+        assert_eq!(
+            pooled.row(1).to_vec(),
+            vec![40.0, 41.0],
+            "left-pad: last real token is index 2"
+        );
+        assert_eq!(
+            pooled.row(2).to_vec(),
+            vec![70.0, 71.0],
+            "no pad: last token is index 2"
+        );
     }
 
     /// last_pool passes a 2D (already-pooled) tensor through unchanged.

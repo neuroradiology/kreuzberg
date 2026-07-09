@@ -66,7 +66,10 @@ fn arctic_embed_m_v2_preset_embeds_768_dim_with_external_data() {
     assert_eq!(preset.model_file, "arctic-embed-m-v2.0/model.onnx");
     // Large fp32 export: weights live in an external-data sibling that must be
     // downloaded alongside the graph or ORT fails to build the session.
-    assert_eq!(preset.additional_files, vec!["arctic-embed-m-v2.0/model.onnx.data".to_string()]);
+    assert_eq!(
+        preset.additional_files,
+        vec!["arctic-embed-m-v2.0/model.onnx.data".to_string()]
+    );
     // Asymmetric model: queries get a "query: " prefix (applied by the RAG query path).
     assert_eq!(preset.query_prefix.as_deref(), Some("query: "));
 

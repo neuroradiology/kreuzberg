@@ -1115,13 +1115,19 @@ mod tests {
         assert_eq!(arctic.query_prefix.as_deref(), Some("query: "));
         assert_eq!(arctic.pooling, "cls");
         assert_eq!(arctic.dimensions, 768);
-        assert_eq!(arctic.additional_files, vec!["arctic-embed-m-v2.0/model.onnx.data".to_string()]);
+        assert_eq!(
+            arctic.additional_files,
+            vec!["arctic-embed-m-v2.0/model.onnx.data".to_string()]
+        );
 
         let qwen3 = get_preset("qwen3-embedding-0.6b").expect("qwen3-embedding preset must exist");
         assert_eq!(qwen3.query_prefix, None);
         assert_eq!(qwen3.pooling, "last");
         assert_eq!(qwen3.dimensions, 1024);
-        assert_eq!(qwen3.additional_files, vec!["qwen3-embedding-0.6b/model.onnx.data".to_string()]);
+        assert_eq!(
+            qwen3.additional_files,
+            vec!["qwen3-embedding-0.6b/model.onnx.data".to_string()]
+        );
     }
 
     #[test]
