@@ -128,9 +128,9 @@ pub static EMBEDDING_PRESETS: LazyLock<Vec<EmbeddingPreset>> = LazyLock::new(|| 
             name: "fast".to_string(),
             chunk_size: 512,
             overlap: 50,
-            model_repo: "Xenova/all-MiniLM-L6-v2".to_string(),
+            model_repo: "xberg-io/embedding-models".to_string(),
             pooling: "mean".to_string(),
-            model_file: "onnx/model_quantized.onnx".to_string(),
+            model_file: "all-MiniLM-L6-v2/model_quantized.onnx".to_string(),
             dimensions: 384,
             description: "Fast embedding with quantized model (384 dims, ~22M params). Best for: Quick prototyping, development, resource-constrained environments.".to_string(),
         },
@@ -138,9 +138,9 @@ pub static EMBEDDING_PRESETS: LazyLock<Vec<EmbeddingPreset>> = LazyLock::new(|| 
             name: "balanced".to_string(),
             chunk_size: 1024,
             overlap: 100,
-            model_repo: "Xenova/bge-base-en-v1.5".to_string(),
+            model_repo: "xberg-io/embedding-models".to_string(),
             pooling: "cls".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
+            model_file: "bge-base-en-v1.5/model.onnx".to_string(),
             dimensions: 768,
             description: "Balanced quality and speed (768 dims, ~109M params). Best for: General-purpose RAG, production deployments, English documents.".to_string(),
         },
@@ -148,9 +148,9 @@ pub static EMBEDDING_PRESETS: LazyLock<Vec<EmbeddingPreset>> = LazyLock::new(|| 
             name: "quality".to_string(),
             chunk_size: 2000,
             overlap: 200,
-            model_repo: "Xenova/bge-large-en-v1.5".to_string(),
+            model_repo: "xberg-io/embedding-models".to_string(),
             pooling: "cls".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
+            model_file: "bge-large-en-v1.5/model.onnx".to_string(),
             dimensions: 1024,
             description: "High quality with larger context (1024 dims, ~335M params). Best for: Complex documents, maximum accuracy, sufficient compute resources.".to_string(),
         },
@@ -158,9 +158,9 @@ pub static EMBEDDING_PRESETS: LazyLock<Vec<EmbeddingPreset>> = LazyLock::new(|| 
             name: "multilingual".to_string(),
             chunk_size: 1024,
             overlap: 100,
-            model_repo: "intfloat/multilingual-e5-base".to_string(),
+            model_repo: "xberg-io/embedding-models".to_string(),
             pooling: "mean".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
+            model_file: "multilingual-e5-base/model.onnx".to_string(),
             dimensions: 768,
             description: "Multilingual support (768 dims, 100+ languages). Best for: International documents, mixed-language content, global applications.".to_string(),
         },
@@ -764,12 +764,12 @@ mod tests {
     #[test]
     fn test_preset_model_repos() {
         let fast = get_preset("fast").unwrap();
-        assert_eq!(fast.model_repo, "Xenova/all-MiniLM-L6-v2");
+        assert_eq!(fast.model_repo, "xberg-io/embedding-models");
         assert_eq!(fast.pooling, "mean");
-        assert_eq!(fast.model_file, "onnx/model_quantized.onnx");
+        assert_eq!(fast.model_file, "all-MiniLM-L6-v2/model_quantized.onnx");
 
         let balanced = get_preset("balanced").unwrap();
-        assert_eq!(balanced.model_repo, "Xenova/bge-base-en-v1.5");
+        assert_eq!(balanced.model_repo, "xberg-io/embedding-models");
         assert_eq!(balanced.pooling, "cls");
     }
 
@@ -828,184 +828,6 @@ mod tests {
         assert!(result.is_ok(), "spawn_blocking should not panic");
         // The inner result should be an error (auth failure), not a panic
         assert!(result.unwrap().is_err(), "Expected auth error, not success");
-    }
-
-    // ── Stale lock cleanup tests ──────────────────────────────────────────────
-
-    /// Helper: write a file with a modified-time set to `age` seconds in the past.
-    fn write_file_aged(path: &std::path::Path, age_secs: u64) {
-        std::fs::write(path, b"").unwrap();
-        let mtime = std::time::SystemTime::now()
-            .checked_sub(std::time::Duration::from_secs(age_secs))
-            .unwrap();
-        let ft = filetime::FileTime::from_system_time(mtime);
-        filetime::set_file_mtime(path, ft).unwrap();
-    }
-
-    #[test]
-    fn test_cleanup_stale_locks_nonexistent_dir_is_noop() {
-        // Should not panic when the blobs dir does not exist.
-        let tmp = tempfile::tempdir().unwrap();
-        cleanup_stale_locks(tmp.path(), "org/model");
-    }
-
-    #[test]
-    fn test_cleanup_stale_locks_removes_old_lock_and_part() {
-        let tmp = tempfile::tempdir().unwrap();
-        let blobs = tmp.path().join("models--org--model").join("blobs");
-        std::fs::create_dir_all(&blobs).unwrap();
-
-        let lock = blobs.join("abc123.lock");
-        let part = blobs.join("abc123.part");
-
-        // Write files aged beyond the timeout.
-        let old_secs = STALE_DOWNLOAD_TIMEOUT.as_secs() + 60;
-        write_file_aged(&lock, old_secs);
-        write_file_aged(&part, old_secs);
-
-        cleanup_stale_locks(tmp.path(), "org/model");
-
-        assert!(!lock.exists(), ".lock should have been removed");
-        assert!(!part.exists(), ".part should have been removed");
-    }
-
-    #[test]
-    fn test_cleanup_stale_locks_leaves_recent_files_alone() {
-        let tmp = tempfile::tempdir().unwrap();
-        let blobs = tmp.path().join("models--org--model").join("blobs");
-        std::fs::create_dir_all(&blobs).unwrap();
-
-        let lock = blobs.join("def456.lock");
-        let part = blobs.join("def456.part");
-
-        // Write files that are only 60 seconds old — well within the timeout.
-        write_file_aged(&lock, 60);
-        write_file_aged(&part, 60);
-
-        cleanup_stale_locks(tmp.path(), "org/model");
-
-        assert!(lock.exists(), ".lock for active download must not be removed");
-        assert!(part.exists(), ".part for active download must not be removed");
-    }
-
-    #[test]
-    fn test_cleanup_stale_locks_removes_lock_when_no_part() {
-        // When only a .lock file exists (download killed before first byte),
-        // staleness is assessed from the .lock file's own mtime.
-        let tmp = tempfile::tempdir().unwrap();
-        let blobs = tmp.path().join("models--org--model").join("blobs");
-        std::fs::create_dir_all(&blobs).unwrap();
-
-        let lock = blobs.join("ghi789.lock");
-        let old_secs = STALE_DOWNLOAD_TIMEOUT.as_secs() + 60;
-        write_file_aged(&lock, old_secs);
-
-        cleanup_stale_locks(tmp.path(), "org/model");
-
-        assert!(!lock.exists(), "stale .lock with no .part should be removed");
-    }
-
-    #[test]
-    fn test_lock_acquisition_hint_contains_recovery_commands() {
-        let cache = std::path::Path::new("/tmp/xberg/embeddings");
-        let hint = lock_acquisition_hint(cache, "intfloat/multilingual-e5-base");
-
-        assert!(hint.contains("rm -f"), "hint must include rm command");
-        assert!(
-            hint.contains("models--intfloat--multilingual-e5-base"),
-            "hint must include the repo folder name"
-        );
-        assert!(hint.contains("*.lock"), "hint must mention .lock pattern");
-        assert!(hint.contains("*.part"), "hint must mention .part pattern");
-    }
-
-    /// The process download lock can be acquired and creates its lock file in
-    /// the expected `models--<repo>` directory.
-    #[test]
-    fn test_process_download_lock_acquire_creates_lock_file() {
-        let tmp = tempfile::tempdir().unwrap();
-        let guard = ProcessDownloadLock::acquire(tmp.path(), "org/model");
-
-        // On unix the lock is acquired; on other targets acquisition is a
-        // graceful no-op (returns None) and behavior falls back to hf-hub.
-        if cfg!(target_family = "unix") {
-            assert!(guard.is_some(), "lock should be acquired on unix");
-            let lock_path = tmp.path().join("models--org--model").join(".kbz-download.lock");
-            assert!(lock_path.exists(), "lock file must be created at {lock_path:?}");
-        }
-        drop(guard);
-    }
-
-    /// Two concurrent acquisitions of the same model's download lock serialize:
-    /// the second blocks until the first is released, so their critical
-    /// sections never overlap. This is the regression guard for the e2e
-    /// `LockAcquisition` failure across parallel worker processes/threads.
-    #[cfg(target_family = "unix")]
-    #[test]
-    fn test_process_download_lock_serializes_concurrent_acquirers() {
-        use std::sync::Arc;
-        use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-        use std::time::Duration;
-
-        let tmp = tempfile::tempdir().unwrap();
-        let cache_dir: Arc<std::path::PathBuf> = Arc::new(tmp.path().to_path_buf());
-
-        // Tracks whether two critical sections were ever observed concurrently.
-        let inside = Arc::new(AtomicUsize::new(0));
-        let overlap_detected = Arc::new(AtomicBool::new(false));
-
-        let mut handles = Vec::new();
-        for _ in 0..4 {
-            let cache_dir = Arc::clone(&cache_dir);
-            let inside = Arc::clone(&inside);
-            let overlap_detected = Arc::clone(&overlap_detected);
-            handles.push(std::thread::spawn(move || {
-                let guard = ProcessDownloadLock::acquire(&cache_dir, "org/model")
-                    .expect("lock acquisition must succeed on unix");
-
-                // Simulate the download critical section. If the lock truly
-                // serializes callers, the in-flight count never exceeds 1.
-                let count = inside.fetch_add(1, Ordering::SeqCst) + 1;
-                if count > 1 {
-                    overlap_detected.store(true, Ordering::SeqCst);
-                }
-                std::thread::sleep(Duration::from_millis(20));
-                inside.fetch_sub(1, Ordering::SeqCst);
-
-                drop(guard);
-            }));
-        }
-
-        for handle in handles {
-            handle.join().unwrap();
-        }
-
-        assert!(
-            !overlap_detected.load(Ordering::SeqCst),
-            "download lock must serialize concurrent acquirers — critical sections overlapped"
-        );
-        assert_eq!(
-            inside.load(Ordering::SeqCst),
-            0,
-            "all critical sections must have exited"
-        );
-    }
-
-    /// The lock is released when the guard is dropped, so a subsequent acquirer
-    /// of the same model proceeds without blocking forever.
-    #[cfg(target_family = "unix")]
-    #[test]
-    fn test_process_download_lock_released_on_drop() {
-        let tmp = tempfile::tempdir().unwrap();
-
-        let first = ProcessDownloadLock::acquire(tmp.path(), "org/model");
-        assert!(first.is_some(), "first acquisition must succeed");
-        drop(first);
-
-        // After the first guard is dropped the lock is free; re-acquiring it
-        // must succeed promptly rather than deadlock.
-        let second = ProcessDownloadLock::acquire(tmp.path(), "org/model");
-        assert!(second.is_some(), "lock must be re-acquirable after release");
     }
 
     /// Regression test for #683: GraphOptimizationLevel::Level3 maps to

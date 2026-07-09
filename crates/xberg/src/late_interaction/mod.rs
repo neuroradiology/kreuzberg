@@ -114,14 +114,14 @@ pub struct LateInteractionPreset {
 
 /// Bundled ColBERT presets.
 ///
-// TODO(model-hosting): repoint `model_repo` at the re-hosted `xberg-io/*` mirror
-// once the ONNX export + sha256 manifest lands (see the "Model hosting" task).
-// `answerdotai/answerai-colbert-small-v1` is Apache-2.0 and ships `onnx/model.onnx`.
+/// Self-hosted on `xberg-io/late-interaction-models` (mirror of the Apache-2.0
+/// `answerdotai/answerai-colbert-small-v1`, weights unmodified); pinned via the
+/// checked-in `presets.sha256sum` manifest.
 pub static LATE_INTERACTION_PRESETS: LazyLock<Vec<LateInteractionPreset>> = LazyLock::new(|| {
     vec![LateInteractionPreset {
         name: "colbert".to_string(),
-        model_repo: "answerdotai/answerai-colbert-small-v1".to_string(),
-        model_file: "onnx/model.onnx".to_string(),
+        model_repo: "xberg-io/late-interaction-models".to_string(),
+        model_file: "colbert-small-v1/model.onnx".to_string(),
         additional_files: Vec::new(),
         max_length: 512,
         query_max_length: 32,
@@ -458,7 +458,8 @@ mod tests {
         assert!(!LATE_INTERACTION_PRESETS.is_empty());
         assert!(list_presets().contains(&"colbert".to_string()));
         let p = get_preset("colbert").expect("colbert preset present");
-        assert_eq!(p.model_file, "onnx/model.onnx");
+        assert_eq!(p.model_repo, "xberg-io/late-interaction-models");
+        assert_eq!(p.model_file, "colbert-small-v1/model.onnx");
         assert_eq!(p.query_max_length, 32);
         assert!(get_preset("does-not-exist").is_none());
     }

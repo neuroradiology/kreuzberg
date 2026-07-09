@@ -126,8 +126,8 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
     vec![
         RerankerPreset {
             name: "bge-reranker-base".to_string(),
-            model_repo: "BAAI/bge-reranker-base".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
+            model_repo: "xberg-io/reranker-models".to_string(),
+            model_file: "bge-reranker-base/model.onnx".to_string(),
             additional_files: Vec::new(),
             max_length: 512,
             description: "BGE cross-encoder base (~278M params, EN + ZH). Best for: \
@@ -137,9 +137,9 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
         },
         RerankerPreset {
             name: "bge-reranker-v2-m3".to_string(),
-            model_repo: "rozgo/bge-reranker-v2-m3".to_string(),
-            model_file: "model.onnx".to_string(),
-            additional_files: vec!["model.onnx.data".to_string()],
+            model_repo: "xberg-io/reranker-models".to_string(),
+            model_file: "bge-reranker-v2-m3/model.onnx".to_string(),
+            additional_files: vec!["bge-reranker-v2-m3/model.onnx.data".to_string()],
             max_length: 8192,
             description: "BGE cross-encoder v2 M3 (568M params, 100+ languages, 8192 max-len). \
                 Best for: international documents, mixed-language retrieval. \
@@ -149,8 +149,8 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
         },
         RerankerPreset {
             name: "jina-reranker-v1-turbo-en".to_string(),
-            model_repo: "jinaai/jina-reranker-v1-turbo-en".to_string(),
-            model_file: "onnx/model.onnx".to_string(),
+            model_repo: "xberg-io/reranker-models".to_string(),
+            model_file: "jina-reranker-v1-turbo-en/model.onnx".to_string(),
             additional_files: Vec::new(),
             max_length: 8192,
             description: "Jina reranker v1 turbo English (~37M params, 8192 max-len). \
@@ -947,25 +947,26 @@ mod tests {
     #[cfg(feature = "reranker-presets")]
     #[test]
     fn catalog_paths_are_stable() {
-        // Lock the source repos/files to catch accidental drift. These currently
-        // mirror upstream permissive repos; at vendoring time (model-hosting task)
-        // they repoint to xberg-io/* mirrors and this test switches to a sha256
-        // manifest. All entries here are Apache-2.0 or MIT (verified from cards).
+        // Lock the source repos/files to catch accidental drift. The mirrored
+        // presets are self-hosted on `xberg-io/reranker-models` (weights unmodified
+        // from their Apache-2.0/MIT upstreams, verified from cards) and pinned by
+        // the checked-in `presets.sha256sum`. `qwen3-reranker-0.6b` still points at
+        // upstream pending its ONNX export (needs-export; Iteration 2).
         let by_name = |n: &str| get_preset(n).expect(n);
 
         let base = by_name("bge-reranker-base"); // MIT
-        assert_eq!(base.model_repo, "BAAI/bge-reranker-base");
-        assert_eq!(base.model_file, "onnx/model.onnx");
+        assert_eq!(base.model_repo, "xberg-io/reranker-models");
+        assert_eq!(base.model_file, "bge-reranker-base/model.onnx");
         assert!(base.additional_files.is_empty());
 
-        let m3 = by_name("bge-reranker-v2-m3"); // Apache-2.0 (weights); rozgo ONNX mirror
-        assert_eq!(m3.model_repo, "rozgo/bge-reranker-v2-m3");
-        assert_eq!(m3.model_file, "model.onnx");
-        assert_eq!(m3.additional_files, vec!["model.onnx.data".to_string()]);
+        let m3 = by_name("bge-reranker-v2-m3"); // Apache-2.0 (weights); mirror of BAAI
+        assert_eq!(m3.model_repo, "xberg-io/reranker-models");
+        assert_eq!(m3.model_file, "bge-reranker-v2-m3/model.onnx");
+        assert_eq!(m3.additional_files, vec!["bge-reranker-v2-m3/model.onnx.data".to_string()]);
 
         let turbo = by_name("jina-reranker-v1-turbo-en"); // Apache-2.0
-        assert_eq!(turbo.model_repo, "jinaai/jina-reranker-v1-turbo-en");
-        assert_eq!(turbo.model_file, "onnx/model.onnx");
+        assert_eq!(turbo.model_repo, "xberg-io/reranker-models");
+        assert_eq!(turbo.model_file, "jina-reranker-v1-turbo-en/model.onnx");
 
         let qwen3 = by_name("qwen3-reranker-0.6b"); // Apache-2.0; generative head
         assert_eq!(qwen3.model_repo, "Qwen/Qwen3-Reranker-0.6B");

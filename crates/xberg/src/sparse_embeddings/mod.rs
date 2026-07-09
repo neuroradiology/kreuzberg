@@ -70,14 +70,14 @@ pub struct SparseEmbeddingPreset {
 
 /// Bundled SPLADE presets.
 ///
-// TODO(model-hosting): repoint `model_repo` at the re-hosted `xberg-io/*` mirror
-// once the ONNX export + sha256 manifest lands (see the "Model hosting" task).
-// `prithivida/Splade_PP_en_v1` is Apache-2.0 and ships `onnx/model.onnx`.
+/// Self-hosted on `xberg-io/sparse-embeddings` (mirror of the Apache-2.0
+/// `prithivida/Splade_PP_en_v1`, weights unmodified); pinned via the checked-in
+/// `presets.sha256sum` manifest.
 pub static SPARSE_EMBEDDING_PRESETS: LazyLock<Vec<SparseEmbeddingPreset>> = LazyLock::new(|| {
     vec![SparseEmbeddingPreset {
         name: "splade".to_string(),
-        model_repo: "prithivida/Splade_PP_en_v1".to_string(),
-        model_file: "onnx/model.onnx".to_string(),
+        model_repo: "xberg-io/sparse-embeddings".to_string(),
+        model_file: "splade/model.onnx".to_string(),
         additional_files: Vec::new(),
         max_length: 256,
         description: "SPLADE++ EN v1 — English learned sparse retrieval (Apache-2.0).".to_string(),
@@ -303,7 +303,8 @@ mod tests {
         assert!(!SPARSE_EMBEDDING_PRESETS.is_empty());
         assert!(list_presets().contains(&"splade".to_string()));
         let p = get_preset("splade").expect("splade preset present");
-        assert_eq!(p.model_file, "onnx/model.onnx");
+        assert_eq!(p.model_repo, "xberg-io/sparse-embeddings");
+        assert_eq!(p.model_file, "splade/model.onnx");
         assert!(get_preset("does-not-exist").is_none());
     }
 
