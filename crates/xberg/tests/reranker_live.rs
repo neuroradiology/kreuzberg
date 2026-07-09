@@ -169,6 +169,37 @@ async fn jina_reranker_v1_turbo_en_english_top_ranks_first() {
     }
 }
 
+#[tokio::test(flavor = "multi_thread")]
+async fn ettin_reranker_150m_english_top_ranks_first() {
+    if should_skip() {
+        eprintln!("XBERG_SKIP_LIVE_HF=1, skipping");
+        return;
+    }
+
+    let fixture = load_fixture();
+    let suites = pick_suites(&fixture.suites, &["en"]);
+    assert!(!suites.is_empty(), "must have English fixtures");
+
+    let preset = get_reranker_preset("ettin-reranker-150m").expect("preset must exist");
+    assert_eq!(preset.model_repo, "xberg-io/reranker-models");
+    assert_eq!(preset.model_file, "ettin-reranker-150m/model.onnx");
+    assert!(preset.additional_files.is_empty(), "ettin ships as a single model.onnx");
+
+    for suite in suites {
+        let results = run_preset_inference("ettin-reranker-150m", suite)
+            .await
+            .unwrap_or_else(|e| panic!("ettin-reranker-150m on {}: {e}", suite.id));
+
+        assert_eq!(
+            results.len(),
+            suite.documents.len(),
+            "result count must match input count"
+        );
+        assert_scores_in_unit_interval(&results, &format!("ettin-reranker-150m / {}", suite.id));
+        assert_top_is_expected(&results, suite.expected_top_index, &suite.id, "ettin-reranker-150m");
+    }
+}
+
 // The `jina-reranker-v2-base-multilingual` preset was removed (CC-BY-NC license);
 // its multilingual coverage is served by the Apache/MIT `bge-reranker-v2-m3`
 // preset exercised below and aliased as `multilingual`.

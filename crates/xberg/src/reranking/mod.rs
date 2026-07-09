@@ -178,6 +178,21 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
                 .to_string(),
             head: crate::core::config::reranker::RerankerHead::Qwen3Generative,
         },
+        RerankerPreset {
+            name: "ettin-reranker-150m".to_string(),
+            // Self-hosted export of cross-encoder/ettin-reranker-150m-v1 (Apache-2.0):
+            // a ModernBERT-based cross-encoder whose trained head is a sentence-transformers
+            // Dense→LayerNorm→Dense chain (768→768→1), exported to ONNX (opset 17) emitting
+            // `[batch, 1]` logits — the classic cross-encoder shape.
+            model_repo: "xberg-io/reranker-models".to_string(),
+            model_file: "ettin-reranker-150m/model.onnx".to_string(),
+            additional_files: Vec::new(),
+            max_length: 7999,
+            description: "Ettin cross-encoder (150M params, ModernBERT long-context, EN). Best for: \
+                high-quality English reranking with long documents at cross-encoder latency."
+                .to_string(),
+            head: crate::core::config::reranker::RerankerHead::CrossEncoder,
+        },
     ]
 });
 
@@ -192,7 +207,10 @@ pub static RERANKER_PRESETS: LazyLock<Vec<RerankerPreset>> = LazyLock::new(|| {
 #[cfg(feature = "reranker-presets")]
 const PRESET_ALIASES: &[(&str, &str)] = &[
     ("fast", "jina-reranker-v1-turbo-en"),
-    ("balanced", "bge-reranker-base"),
+    // Default reranker. Evolved to the 2026-gen Apache-2.0 ettin cross-encoder
+    // (ModernBERT, long-context, higher quality per param than bge-base, which
+    // remains available under its own catalog name `bge-reranker-base`).
+    ("balanced", "ettin-reranker-150m"),
     ("quality", "bge-reranker-v2-m3"),
     // Was jina-reranker-v2-base-multilingual (CC-BY-NC, removed) — now the
     // Apache-2.0 bge-reranker-v2-m3, which is also 100+ languages.
@@ -218,7 +236,7 @@ pub(crate) fn get_preset(name: &str) -> Option<RerankerPreset> {
 /// List all available reranker preset names (owned clones for FFI compatibility).
 ///
 /// Returns the catalog short-names followed by the friendly aliases, so
-/// `list_presets()[..4]` is the catalog and `list_presets()[4..]` is aliases.
+/// `list_presets()[..5]` is the catalog and `list_presets()[5..]` is aliases.
 ///
 /// Since v5.0.0.
 #[cfg(feature = "reranker-presets")]
@@ -296,11 +314,20 @@ fn resolve_answer_token_id(tokenizer: &tokenizers::Tokenizer, word: &str) -> Opt
 /// would indicate an incompatible checkpoint.
 #[cfg(feature = "reranker")]
 fn resolve_qwen3_token_ids(tokenizer: &tokenizers::Tokenizer) -> crate::Result<(u32, u32)> {
-    let true_id = resolve_answer_token_id(tokenizer, "yes")
-        .ok_or_else(|| crate::XbergError::reranking("Qwen3 tokenizer cannot resolve a single-token id for \"yes\""))?;
-    let false_id = resolve_answer_token_id(tokenizer, "no")
-        .ok_or_else(|| crate::XbergError::reranking("Qwen3 tokenizer cannot resolve a single-token id for \"no\""))?;
+    let true_id = resolve_answer_token_id(tokenizer, "yes").ok_or_else(|| unresolved_answer_token_error("yes"))?;
+    let false_id = resolve_answer_token_id(tokenizer, "no").ok_or_else(|| unresolved_answer_token_error("no"))?;
     Ok((true_id, false_id))
+}
+
+/// Build the error returned when an answer word cannot be resolved to a single vocabulary token.
+#[cfg(feature = "reranker")]
+fn unresolved_answer_token_error(word: &str) -> crate::XbergError {
+    crate::XbergError::reranking(format!(
+        "Qwen3 generative-reranker head could not resolve \"{word}\" to exactly one token in this \
+         tokenizer's vocabulary (no direct vocab match and encoding it did not yield a single token id) \
+         — this usually means the loaded checkpoint/tokenizer is incompatible with the Qwen3 \
+         generative-reranker head (wrong tokenizer, or a merged/multi-token \"yes\"/\"no\")"
+    ))
 }
 
 /// Get or initialize a reranker engine from cache.
@@ -887,7 +914,7 @@ mod tests {
     #[test]
     fn preset_list_exposes_catalog_plus_aliases() {
         let presets = list_presets();
-        // 4 catalog (3 cross-encoders + 1 Qwen3 generative) + 4 friendly aliases.
+        // 5 catalog (4 cross-encoders + 1 Qwen3 generative) + 4 friendly aliases.
         assert_eq!(presets.len(), RERANKER_PRESETS.len() + PRESET_ALIASES.len());
         // Catalog names present (all permissive-licensed).
         assert!(presets.iter().any(|n| n == "bge-reranker-base"));
@@ -980,6 +1007,101 @@ mod tests {
             vec!["qwen3-reranker-0.6b/model.onnx.data".to_string()]
         );
         assert_eq!(qwen3.head, crate::core::config::reranker::RerankerHead::Qwen3Generative);
+    }
+
+    #[cfg(feature = "reranker")]
+    fn build_wordlevel_tokenizer(vocab: &[(&str, u32)], lowercase: bool) -> tokenizers::Tokenizer {
+        use tokenizers::models::wordlevel::WordLevel;
+        use tokenizers::normalizers::utils::Lowercase;
+        use tokenizers::{AddedToken, Tokenizer};
+
+        let vocab: ahash::AHashMap<String, u32> = vocab.iter().map(|(k, v)| (k.to_string(), *v)).collect();
+
+        let model = WordLevel::builder()
+            .vocab(vocab)
+            .unk_token("[UNK]".to_string())
+            .build()
+            .expect("build WordLevel model");
+        let mut tokenizer = Tokenizer::new(model);
+        let _ = tokenizer.add_special_tokens([AddedToken::from("[UNK]", true)]);
+        tokenizer.with_pre_tokenizer(Some(tokenizers::pre_tokenizers::whitespace::Whitespace {}));
+        if lowercase {
+            let _ = tokenizer.with_normalizer(Some(Lowercase));
+        }
+        tokenizer
+    }
+
+    #[cfg(feature = "reranker")]
+    #[test]
+    fn resolve_qwen3_token_ids_uses_direct_vocab_when_present() {
+        // "yes" and "no" are direct vocab entries — the direct-lookup path must win.
+        let tokenizer = build_wordlevel_tokenizer(&[("[UNK]", 0), ("yes", 1), ("no", 2)], false);
+
+        let (true_id, false_id) = resolve_qwen3_token_ids(&tokenizer).expect("must resolve both ids");
+
+        assert_eq!(true_id, 1, "\"yes\" must resolve to its direct vocab id");
+        assert_eq!(false_id, 2, "\"no\" must resolve to its direct vocab id");
+    }
+
+    #[cfg(feature = "reranker")]
+    #[test]
+    fn resolve_answer_token_id_falls_back_to_encoding_when_no_direct_vocab_entry() {
+        // Vocab only contains lowercase "yes"/"no"; a `Lowercase` normalizer is
+        // attached so `encode` (which runs the normalizer) can still resolve the
+        // capitalized query word to the lowercase vocab entry, but `token_to_id`
+        // (a raw, unnormalized vocab lookup used by the direct-lookup variants)
+        // cannot, since none of the direct variants (`Yes`, `Ġyes`, `▁yes`, plain
+        // `yes` vs the queried `Yes`/`No`) match the raw uppercase input. This
+        // forces resolution through the encode-fallback path exclusively.
+        let tokenizer = build_wordlevel_tokenizer(&[("[UNK]", 0), ("yes", 7), ("no", 9)], true);
+
+        // Sanity check: none of the direct-lookup variants for "Yes"/"No" exist
+        // as raw vocab keys, so a hit can only come from the encode fallback.
+        assert!(tokenizer.token_to_id("Yes").is_none());
+        assert!(tokenizer.token_to_id("Ġyes").is_none());
+        assert!(tokenizer.token_to_id("\u{2581}yes").is_none());
+        assert!(tokenizer.token_to_id("YES").is_none());
+
+        let true_id = resolve_answer_token_id(&tokenizer, "Yes").expect("encode fallback must resolve \"Yes\"");
+        let false_id = resolve_answer_token_id(&tokenizer, "No").expect("encode fallback must resolve \"No\"");
+
+        assert_eq!(
+            true_id, 7,
+            "\"Yes\" must resolve via the encode fallback to the lowercase vocab id"
+        );
+        assert_eq!(
+            false_id, 9,
+            "\"No\" must resolve via the encode fallback to the lowercase vocab id"
+        );
+    }
+
+    #[cfg(feature = "reranker")]
+    #[test]
+    fn resolve_qwen3_token_ids_errors_with_actionable_message_when_word_is_unresolvable() {
+        // "yes" is entirely absent from the vocab (and there's no other single-token
+        // way to reach it, including via encoding). WordLevel's whitespace
+        // pre-tokenizer splits "yes" into no sub-words, so encoding an absent word
+        // maps it to a single `[UNK]` id — not a genuine "multi-token" failure.
+        // To force the encode fallback to reject the word, the vocab contains
+        // neither "yes" nor `[UNK]`, so `tokenizer.encode` fails outright and
+        // `resolve_answer_token_id` returns `None`.
+        let tokenizer = build_wordlevel_tokenizer(&[("no", 1)], false);
+
+        let error = resolve_qwen3_token_ids(&tokenizer).expect_err("\"yes\" is unresolvable and must error");
+        let message = error.to_string();
+
+        assert!(
+            message.contains("\"yes\""),
+            "error message must name the word that failed to resolve: {message}"
+        );
+        assert!(
+            message.contains("Qwen3 generative-reranker head"),
+            "error message must mention the Qwen3 generative-reranker head: {message}"
+        );
+        assert!(
+            message.contains("incompatible"),
+            "error message must suggest the checkpoint/tokenizer is incompatible: {message}"
+        );
     }
 
     #[cfg(all(feature = "reranker", feature = "tokio-runtime"))]
