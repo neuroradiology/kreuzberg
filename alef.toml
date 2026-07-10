@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.34.5"
+alef_version = "0.34.6"
 # -D warnings (emitted into every generated Rust binding as #![allow(...)]).
 extra_clippy_allows = ["redundant_field_names"]
 languages = [
@@ -120,6 +120,7 @@ kreuzberg = "kreuzberg"
 tesseract = "tesseract"
 onnx = "onnx"
 surrealdb = "surrealdb"
+tbe = "tbe"
 docling = "docling"
 markitdown = "markitdown"
 pymupdf = "pymupdf"
@@ -183,6 +184,9 @@ traineddata = "traineddata"
 
 [workspace.poly.per-file-ignores]
 "**/text_repair.rs" = ["typo"]
+# Executable CI helper (git mode 100755); poly runs ruff via stdin and cannot
+# see the exec bit, so EXE001 always false-fires on shebang'd scripts.
+"scripts/ci/docker/test_docker.py" = ["EXE001"]
 "crates/xberg-node/index.js" = ["no-unused-vars"]
 "crates/xberg-node/format-metadata-wrapper.js" = ["no-unused-vars"]
 "docker/**" = ["DL3006", "DL3059"]
@@ -3540,7 +3544,7 @@ path = "../../packages/swift"
 path = "../../packages/zig"
 
 [crates.e2e.registry.packages.zig]
-hash = "xberg-1.0.0-rc.20-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "xberg-1.0.0-rc.21-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 [crates.e2e.packages.wasm]
 name = "@xberg-io/xberg-wasm"

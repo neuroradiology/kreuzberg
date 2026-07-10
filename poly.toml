@@ -159,9 +159,6 @@ WebUI = "WebUI"
 traineddata = "traineddata"
 
 [per-file-ignores]
-# Executable CI helper (git mode 100755); poly runs ruff via stdin and cannot
-# see the exec bit, so EXE001 always false-fires on shebang'd scripts.
-"scripts/ci/docker/test_docker.py" = ["EXE001"]
 "**/api.py" = ["F401", "I001", "TC006", "UP035"]
 "**/*.pyi" = ["A002", "F401", "I001", "PYI033", "TC006", "UP035"]
 "**/options.py" = ["F401", "I001", "RUF100"]
@@ -322,6 +319,7 @@ traineddata = "traineddata"
     "SIM115",
     "T201",
 ]
+"scripts/ci/docker/test_docker.py" = ["EXE001"]
 "tools/benchmark-harness/python_baselines/*.py" = [
     "ANN001",
     "ANN201",
