@@ -1428,6 +1428,7 @@ mod tests {
         assert!(result.is_err());
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_identity() {
         let data: Vec<u8> = (0..18).collect();
@@ -1437,6 +1438,7 @@ mod tests {
         assert_eq!(h, 3);
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_180() {
         let data = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -1446,6 +1448,7 @@ mod tests {
         assert_eq!(out, vec![10, 11, 12, 7, 8, 9, 4, 5, 6, 1, 2, 3]);
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_90_swaps_dimensions() {
         let data: Vec<u8> = (0..18).collect();
@@ -1454,6 +1457,7 @@ mod tests {
         assert_eq!(h, 2);
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_270_swaps_dimensions() {
         let data: Vec<u8> = (0..18).collect();
@@ -1462,6 +1466,7 @@ mod tests {
         assert_eq!(h, 2);
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_90_then_270_is_identity() {
         let data: Vec<u8> = (0..18).collect();
@@ -1472,6 +1477,7 @@ mod tests {
         assert_eq!(back, data);
     }
 
+    #[cfg(feature = "auto-rotate")]
     #[test]
     fn test_rotate_rgb_image_data_unsupported_angle() {
         let data: Vec<u8> = (0..12).collect();
