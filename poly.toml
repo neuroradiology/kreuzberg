@@ -35,6 +35,9 @@ exclude = [
     "**/*.diff",
     "**/*.patch",
     "**/frb_generated.rs",
+    "crates/xberg-ffi/include/xberg.h",
+    "packages/dart/lib/src/xberg_bridge_generated/**",
+    "packages/go/include/xberg.h",
 ]
 
 [lint.markdown.rumdl]
@@ -432,6 +435,9 @@ lint = { exclude = [
     "**/*.diff",
     "**/*.patch",
     "**/frb_generated.rs",
+    "crates/xberg-ffi/include/xberg.h",
+    "packages/dart/lib/src/xberg_bridge_generated/**",
+    "packages/go/include/xberg.h",
 ] }
 fmt = { exclude = [
     "**/*.freezed.dart",
@@ -469,6 +475,9 @@ fmt = { exclude = [
     "**/*.diff",
     "**/*.patch",
     "**/frb_generated.rs",
+    "crates/xberg-ffi/include/xberg.h",
+    "packages/dart/lib/src/xberg_bridge_generated/**",
+    "packages/go/include/xberg.h",
 ] }
 file_safety = { exclude = [
     "**/*.freezed.dart",
@@ -506,6 +515,9 @@ file_safety = { exclude = [
     "**/*.diff",
     "**/*.patch",
     "**/frb_generated.rs",
+    "crates/xberg-ffi/include/xberg.h",
+    "packages/dart/lib/src/xberg_bridge_generated/**",
+    "packages/go/include/xberg.h",
 ] }
 cargo = true
 commit = { stages = ["commit-msg"] }

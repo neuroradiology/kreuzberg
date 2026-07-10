@@ -238,6 +238,7 @@ defmodule E2e.PluginApiTest do
     test "register_embedding_backend_trait_bridge" do
       {:ok, registerembeddingbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterEmbeddingBackendTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_embedding_backend("test-embedding-backend") end)
       result = Xberg.register_embedding_backend(registerembeddingbackendtraitbridge_pid, "test-embedding-backend")
     end
   end
@@ -246,6 +247,7 @@ defmodule E2e.PluginApiTest do
     test "register_ocr_backend_trait_bridge" do
       {:ok, registerocrbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterOcrBackendTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_ocr_backend("test-backend") end)
       result = Xberg.register_ocr_backend(registerocrbackendtraitbridge_pid, "test-backend")
     end
   end
@@ -254,6 +256,7 @@ defmodule E2e.PluginApiTest do
     test "register_post_processor_trait_bridge" do
       {:ok, registerpostprocessortraitbridge_pid} = E2e.TestStubs.TestStubRegisterPostProcessorTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_post_processor("test-processor") end)
       result = Xberg.register_post_processor(registerpostprocessortraitbridge_pid, "test-processor")
     end
   end
@@ -262,6 +265,7 @@ defmodule E2e.PluginApiTest do
     test "register_reranker_backend_trait_bridge" do
       {:ok, registerrerankerbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterRerankerBackendTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_reranker_backend("test-reranker-backend") end)
       result = Xberg.register_reranker_backend(registerrerankerbackendtraitbridge_pid, "test-reranker-backend")
     end
   end
@@ -270,6 +274,7 @@ defmodule E2e.PluginApiTest do
     test "register_tokenizer_backend_trait_bridge" do
       {:ok, registertokenizerbackendtraitbridge_pid} = E2e.TestStubs.TestStubRegisterTokenizerBackendTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_tokenizer_backend("test-tokenizer-backend") end)
       result = Xberg.register_tokenizer_backend(registertokenizerbackendtraitbridge_pid, "test-tokenizer-backend")
     end
   end
@@ -278,6 +283,7 @@ defmodule E2e.PluginApiTest do
     test "register_validator_trait_bridge" do
       {:ok, registervalidatortraitbridge_pid} = E2e.TestStubs.TestStubRegisterValidatorTraitBridgeGenServer.start_link(nil)
 
+      on_exit(fn -> Xberg.unregister_validator("test-validator") end)
       result = Xberg.register_validator(registervalidatortraitbridge_pid, "test-validator")
     end
   end
