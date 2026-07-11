@@ -511,7 +511,10 @@ jobs:
       matrix:
         include:
           - { os: macos-15, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, target: x86_64-apple-darwin }
+          # x86_64-apple-darwin (Intel macOS) intentionally omitted: Microsoft
+          # ships no x86_64-macOS ONNX Runtime prebuilt, so the .node cannot
+          # vendor a relocatable ORT. Kept in sync with alef's
+          # [crates.node].exclude_platforms=["darwin-x64"].
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
     steps:
       - uses: actions/checkout@v6
