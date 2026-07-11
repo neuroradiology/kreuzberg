@@ -44,7 +44,6 @@ const tryLoadBinding = () => {
     ["linux", "arm64", "gnu", "./xberg-node.linux-arm64-gnu.node", "@xberg-io/xberg-linux-arm64-gnu"],
     ["linux", "x64", "musl", "./xberg-node.linux-x64-musl.node", "@xberg-io/xberg-linux-x64-musl"],
     ["linux", "arm64", "musl", "./xberg-node.linux-arm64-musl.node", "@xberg-io/xberg-linux-arm64-musl"],
-    ["darwin", "x64", null, "./xberg-node.darwin-x64.node", "@xberg-io/xberg-darwin-x64"],
     ["darwin", "arm64", null, "./xberg-node.darwin-arm64.node", "@xberg-io/xberg-darwin-arm64"],
     ["win32", "x64", null, "./xberg-node.win32-x64-msvc.node", "@xberg-io/xberg-win32-x64-msvc"],
     ["win32", "arm64", null, "./xberg-node.win32-arm64-msvc.node", "@xberg-io/xberg-win32-arm64-msvc"],

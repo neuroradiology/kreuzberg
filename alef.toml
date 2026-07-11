@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.34.12"
+alef_version = "0.35.0"
 # -D warnings (emitted into every generated Rust binding as #![allow(...)]).
 extra_clippy_allows = ["redundant_field_names"]
 languages = [
@@ -477,6 +477,11 @@ default_features = false
 
 [crates.node]
 package_name = "@xberg-io/xberg"
+# Intel macOS (darwin-x64) is dropped: Microsoft ships no x86_64-macOS ONNX
+# Runtime prebuilt, so CI provisions ORT via Homebrew, whose bottle links a
+# non-relocatable abseil closure that cannot be vendored into a portable .node.
+# Intel Mac users run the arm64 binding under Rosetta or use the WASM package.
+exclude_platforms = ["darwin-x64"]
 exclude_types = ["StreamReader", "PooledString"]
 exclude_functions = [
     "calculate_quality_score",
@@ -3544,7 +3549,7 @@ path = "../../packages/swift"
 path = "../../packages/zig"
 
 [crates.e2e.registry.packages.zig]
-hash = "xberg-1.0.0-rc.22-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "xberg-1.0.0-rc.23-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 [crates.e2e.packages.wasm]
 name = "@xberg-io/xberg-wasm"
