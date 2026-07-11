@@ -161,11 +161,14 @@ pub(crate) async fn extract_bytes(
 
     #[cfg(not(feature = "tokio-runtime"))]
     let result = {
+        // Without a tokio runtime (e.g. the WASM build) there is no timer to
+        // enforce a timeout, but the default ExtractionConfig sets
+        // extraction_timeout_secs, so erroring here would reject every default
+        // call. Ignore the unenforceable limit and run the extraction instead.
         if config.extraction_timeout_secs.is_some() {
-            return Err(crate::XbergError::Validation {
-                message: "extraction_timeout_secs requires the 'tokio-runtime' feature to be enabled".to_string(),
-                source: None,
-            });
+            tracing::debug!(
+                "extraction_timeout_secs is ignored without the 'tokio-runtime' feature; running without a timeout"
+            );
         }
         extraction_future.await
     };
