@@ -1657,7 +1657,11 @@ jobs:
           working-directory: dist/dart-release
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
-          assets: xberg-dart-*.tar.gz
+          # Include the .sha256 sidecars: native_loader.dart verifies the
+          # downloaded tarball against them before extracting, so a bare
+          # xberg-dart-*.tar.gz pattern (no trailing *) would ship natives the
+          # loader then refuses to install.
+          assets: xberg-dart-*.tar.gz*
 
   swift-artifactbundle:
     name: Build Swift artifact bundle
