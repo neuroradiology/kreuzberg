@@ -25,6 +25,12 @@ struct HfModel {
     manifest: &'static str,
 }
 
+/// SHA-256 manifest pinning every hosted PaddleOCR-VL 1.6 file, checked in as the single
+/// source of truth. Trust attaches to the manifest, not the host — a changed or tampered
+/// upstream file fails staging instead of feeding wrong weights into inference.
+#[cfg(feature = "candle-paddleocr-vl")]
+pub(crate) const PADDLEOCR_VL_16_SHA256_MANIFEST: &str = include_str!("paddleocr-vl-1.6.sha256");
+
 /// PaddleOCR-VL 1.6 — re-hosted at `xberg-io/paddleocr-vl-1.6` (byte-identical mirror
 /// of `PaddlePaddle/PaddleOCR-VL-1.6`, Apache-2.0). The upstream repo is public, but we
 /// mirror it anyway so the backend's default `model_id` resolves to a checksum-pinned
@@ -33,7 +39,7 @@ struct HfModel {
 #[cfg(feature = "candle-paddleocr-vl")]
 const PADDLEOCR_VL_16: HfModel = HfModel {
     repo: "xberg-io/paddleocr-vl-1.6",
-    manifest: include_str!("paddleocr-vl-1.6.sha256"),
+    manifest: PADDLEOCR_VL_16_SHA256_MANIFEST,
 };
 
 /// Parse the model manifest into an ordered `(filename, sha256)` list, requiring at

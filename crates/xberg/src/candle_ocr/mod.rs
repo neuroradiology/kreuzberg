@@ -16,7 +16,7 @@ pub mod paddleocr_vl_backend;
 pub mod glm_ocr_backend;
 
 #[cfg(feature = "candle-paddleocr-vl")]
-mod model_stager;
+pub(crate) mod model_stager;
 
 #[cfg(all(feature = "candle-deepseek-ocr", not(target_arch = "wasm32")))]
 pub mod deepseek_ocr_backend;

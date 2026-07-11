@@ -24,7 +24,11 @@ use super::backend::NerBackend;
 /// Hugging Face repository that stores xberg-managed GLiNER ONNX exports.
 pub const GLINER_MODELS_REPO: &str = "xberg-io/gliner-models";
 
-const CHECKSUMS_FILE: &str = "checksums.sha256";
+/// SHA-256 manifest pinning every hosted GLiNER model/tokenizer file, checked in as the
+/// single source of truth. Trust attaches to the manifest, not the host — a changed or
+/// tampered upstream file fails verification instead of feeding wrong weights into
+/// inference.
+pub(crate) const GLINER_SHA256_MANIFEST: &str = include_str!("gliner-models.sha256");
 
 /// Default xberg GLiNER model alias.
 pub const DEFAULT_MODEL_NAME: &str = "balanced";
@@ -125,7 +129,7 @@ pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> Result<PathBuf>
 fn ensure_model(name: &str, cache_dir: Option<PathBuf>) -> Result<GlinerModelFiles> {
     let definition = resolve_model(name)?;
     let base_dir = cache_dir.unwrap_or_else(|| crate::cache_dir::resolve_cache_dir("ner"));
-    let checksums = load_gliner_checksums(&base_dir)?;
+    let checksums = load_gliner_checksums()?;
     let model_sha256 = required_checksum(&checksums, definition.model_file)?;
     let tokenizer_sha256 = required_checksum(&checksums, definition.tokenizer_file)?;
     let model_dir = base_dir
@@ -222,12 +226,7 @@ fn ensure_model(name: &str, cache_dir: Option<PathBuf>) -> Result<GlinerModelFil
 /// Returns the GLiNER files expected by `xberg cache manifest`.
 #[cfg_attr(alef, alef(skip))]
 pub fn manifest() -> Vec<GlinerManifestEntry> {
-    let mut entries = vec![GlinerManifestEntry {
-        relative_path: format!("ner/gliner/{CHECKSUMS_FILE}"),
-        sha256: String::new(),
-        size_bytes: 0,
-        source_url: format!("https://huggingface.co/{GLINER_MODELS_REPO}/resolve/main/{CHECKSUMS_FILE}"),
-    }];
+    let mut entries = Vec::new();
 
     for definition in GLINER_MODELS {
         let cache_prefix = format!(
@@ -256,42 +255,8 @@ pub fn manifest() -> Vec<GlinerManifestEntry> {
     entries
 }
 
-fn load_gliner_checksums(base_dir: &Path) -> Result<HashMap<String, String>> {
-    let checksums_dir = base_dir.join("gliner");
-    let checksums_path = checksums_dir.join(CHECKSUMS_FILE);
-    if checksums_path.exists() {
-        return read_gliner_checksums(&checksums_path);
-    }
-
-    let path = crate::model_download::hf_download(GLINER_MODELS_REPO, CHECKSUMS_FILE).map_err(|error| {
-        crate::XbergError::Plugin {
-            message: format!("Failed to download GLiNER checksums from {GLINER_MODELS_REPO}: {error}"),
-            plugin_name: "ner-gliner".to_string(),
-        }
-    })?;
-    let checksums = read_gliner_checksums(&path)?;
-    std::fs::create_dir_all(&checksums_dir).map_err(|error| crate::XbergError::Plugin {
-        message: format!(
-            "Failed to create GLiNER checksums cache dir '{}': {error}",
-            checksums_dir.display()
-        ),
-        plugin_name: "ner-gliner".to_string(),
-    })?;
-    atomic_publish(&path, &checksums_path, &checksums_dir, "", "ner-gliner-checksums").map_err(|error| {
-        crate::XbergError::Plugin {
-            message: error,
-            plugin_name: "ner-gliner".to_string(),
-        }
-    })?;
-    Ok(checksums)
-}
-
-fn read_gliner_checksums(path: &Path) -> Result<HashMap<String, String>> {
-    let content = std::fs::read_to_string(path).map_err(|error| crate::XbergError::Plugin {
-        message: format!("Failed to read GLiNER checksums '{}': {error}", path.display()),
-        plugin_name: "ner-gliner".to_string(),
-    })?;
-    parse_checksums(&content)
+fn load_gliner_checksums() -> Result<HashMap<String, String>> {
+    parse_checksums(GLINER_SHA256_MANIFEST)
 }
 
 fn parse_checksums(content: &str) -> Result<HashMap<String, String>> {
@@ -742,13 +707,8 @@ mod tests {
     }
 
     #[test]
-    fn manifest_includes_gliner_models_and_checksums() {
+    fn manifest_includes_gliner_models() {
         let entries = manifest();
-        assert!(
-            entries
-                .iter()
-                .any(|entry| entry.relative_path == "ner/gliner/checksums.sha256")
-        );
         assert!(entries.iter().any(|entry| {
             entry.relative_path == "ner/gliner/gliner_medium-v2.5/span/fp32/model.onnx"
                 && entry.source_url.contains(GLINER_MODELS_REPO)
@@ -760,21 +720,36 @@ mod tests {
     }
 
     #[test]
-    fn load_gliner_checksums_reads_warmed_cache_without_network() {
-        let temp_dir = tempfile::tempdir().expect("tempdir");
-        let checksums_dir = temp_dir.path().join("gliner");
-        std::fs::create_dir_all(&checksums_dir).expect("checksums dir");
-        std::fs::write(
-            checksums_dir.join(CHECKSUMS_FILE),
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  models/gliner_medium-v2.5/span/fp32/model.onnx\n",
-        )
-        .expect("write checksums");
-
-        let checksums = load_gliner_checksums(temp_dir.path()).expect("checksums");
+    fn load_gliner_checksums_reads_vendored_manifest_without_network() {
+        let checksums = load_gliner_checksums().expect("checksums");
         assert_eq!(
             required_checksum(&checksums, "models/gliner_medium-v2.5/span/fp32/model.onnx").expect("checksum"),
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            "014f8d7185ccd3e1d37af3932a7ade31bea20016359924eb25f35efb8572cc06"
         );
+    }
+
+    /// Every declared model's ONNX and tokenizer files must be pinned in the vendored
+    /// manifest, and the manifest must contain exactly the fleet's six entries — no
+    /// stale or missing artifacts.
+    #[test]
+    fn every_gliner_model_file_is_pinned_in_manifest() {
+        let manifest = crate::model_download::parse_sha256_manifest(GLINER_SHA256_MANIFEST).unwrap();
+        assert_eq!(manifest.len(), 6, "expected exactly 6 pinned GLiNER artifacts");
+        let pinned: std::collections::HashSet<&str> = manifest.iter().map(|(p, _)| p.as_str()).collect();
+        for definition in GLINER_MODELS {
+            assert!(
+                pinned.contains(definition.model_file),
+                "GLiNER model {} model_file {} is not pinned in gliner-models.sha256",
+                definition.id,
+                definition.model_file
+            );
+            assert!(
+                pinned.contains(definition.tokenizer_file),
+                "GLiNER model {} tokenizer_file {} is not pinned in gliner-models.sha256",
+                definition.id,
+                definition.tokenizer_file
+            );
+        }
     }
 
     #[test]

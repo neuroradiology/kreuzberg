@@ -263,6 +263,72 @@ pub(crate) fn resolve_cache_dir(module: &str) -> PathBuf {
     crate::cache_dir::resolve_cache_dir(module)
 }
 
+/// Central registry of every vendored, checked-in SHA-256 manifest across model
+/// families, paired with a short family name.
+///
+/// Each family's manifest const is only reachable when its module is compiled, so
+/// every entry is pushed under its own `#[cfg]` matching that module's feature gate.
+/// Returns an empty `Vec` when no relevant feature is enabled — callers must not
+/// assume non-empty. Used by the coverage test below and available for future
+/// tooling (e.g. `xberg cache manifest`) that wants a single source of truth for
+/// "which families are checksum-pinned right now".
+#[cfg_attr(not(test), allow(dead_code))]
+#[allow(unused_mut)]
+// Every push below is individually `#[cfg]`-gated on its family's feature, so the
+// entries cannot be expressed as a single `vec![]` literal.
+#[allow(clippy::vec_init_then_push)]
+pub(crate) fn vendored_model_manifests() -> Vec<(&'static str, &'static str)> {
+    let mut manifests = Vec::new();
+
+    // The `embeddings` module (and therefore its manifest const) is only compiled
+    // under `embedding-presets`; the const itself further requires `embeddings`,
+    // non-wasm `static-embeddings`, or `test`.
+    #[cfg(all(
+        feature = "embedding-presets",
+        any(
+            feature = "embeddings",
+            all(feature = "static-embeddings", not(target_arch = "wasm32")),
+            test
+        )
+    ))]
+    manifests.push(("embeddings", crate::embeddings::EMBEDDING_SHA256_MANIFEST));
+
+    #[cfg(all(
+        any(feature = "sparse-embedding-presets", feature = "sparse-embeddings"),
+        any(feature = "sparse-embeddings", test)
+    ))]
+    manifests.push((
+        "sparse_embeddings",
+        crate::sparse_embeddings::SPARSE_EMBEDDING_SHA256_MANIFEST,
+    ));
+
+    #[cfg(all(
+        any(feature = "late-interaction-presets", feature = "late-interaction"),
+        any(feature = "late-interaction", test)
+    ))]
+    manifests.push((
+        "late_interaction",
+        crate::late_interaction::LATE_INTERACTION_SHA256_MANIFEST,
+    ));
+
+    #[cfg(all(
+        any(feature = "reranker-presets", feature = "reranker"),
+        any(feature = "reranker", test)
+    ))]
+    manifests.push(("reranking", crate::reranking::RERANKER_SHA256_MANIFEST));
+
+    #[cfg(feature = "ner-onnx")]
+    manifests.push(("gliner", crate::text::ner::gline::GLINER_SHA256_MANIFEST));
+
+    #[cfg(feature = "candle-paddleocr-vl")]
+    manifests.push((
+        "paddleocr-vl",
+        crate::candle_ocr::model_stager::PADDLEOCR_VL_16_SHA256_MANIFEST,
+    ));
+
+    manifests
+}
+
 /// Tests for the always-compiled download watchdog. Deliberately network-free: they exercise the
 /// deadline machinery with plain closures so the guard's behavior is provable in CI without any
 /// HuggingFace connectivity.
@@ -384,5 +450,79 @@ mod tests {
             1,
             "same-key critical sections must not overlap"
         );
+    }
+}
+
+/// Central coverage test for [`vendored_model_manifests`], covering every model
+/// family from one place instead of duplicating the well-formedness checks per
+/// family. `parse_sha256_manifest` is only reachable under the feature union below
+/// (matching every family that can populate the registry), so the assertion body is
+/// gated the same way. Under a build with none of those features the registry itself
+/// still compiles and returns an empty `Vec` (see the always-on smoke test below).
+#[cfg(all(
+    test,
+    any(
+        feature = "ner-onnx",
+        feature = "candle-paddleocr-vl",
+        feature = "onnx-runtime",
+        all(feature = "static-embeddings", not(target_arch = "wasm32"))
+    )
+))]
+mod vendored_manifest_tests {
+    use super::*;
+
+    /// Fail-closed guarantee across every model family: whichever vendored checksum
+    /// manifests are reachable under the current feature set must each parse cleanly,
+    /// declare at least one entry, have no duplicate paths, and use well-formed
+    /// SHA-256 hex.
+    #[test]
+    fn every_vendored_manifest_is_well_formed_and_deduplicated() {
+        let manifests = vendored_model_manifests();
+
+        for (family, content) in &manifests {
+            let entries = parse_sha256_manifest(content)
+                .unwrap_or_else(|error| panic!("[{family}] manifest failed to parse: {error}"));
+            assert!(!entries.is_empty(), "[{family}] manifest declares no entries");
+
+            let mut seen_paths = std::collections::HashSet::new();
+            for (path, checksum) in &entries {
+                assert!(
+                    seen_paths.insert(path.as_str()),
+                    "[{family}] duplicate path in manifest: {path}"
+                );
+                assert_eq!(
+                    checksum.len(),
+                    64,
+                    "[{family}] checksum for {path} is not 64 hex chars: {checksum}"
+                );
+                assert!(
+                    checksum
+                        .bytes()
+                        .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()),
+                    "[{family}] checksum for {path} is not lowercase hex: {checksum}"
+                );
+            }
+        }
+
+        eprintln!(
+            "vendored_model_manifests: checked {} famil{} ({})",
+            manifests.len(),
+            if manifests.len() == 1 { "y" } else { "ies" },
+            manifests.iter().map(|(name, _)| *name).collect::<Vec<_>>().join(", ")
+        );
+    }
+}
+
+/// Always-on smoke test: [`vendored_model_manifests`] itself must compile and run
+/// under any feature combination, including none, and must not panic when the
+/// registry comes back empty.
+#[cfg(test)]
+mod vendored_manifest_registry_tests {
+    use super::*;
+
+    #[test]
+    fn registry_never_panics_even_when_empty() {
+        let manifests = vendored_model_manifests();
+        assert!(manifests.len() <= 6, "registry declares more families than expected");
     }
 }
