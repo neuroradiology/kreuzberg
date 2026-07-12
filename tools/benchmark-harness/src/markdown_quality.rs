@@ -587,9 +587,10 @@ pub fn score_structural_quality_diagnostic(
 
     let (match_results, all_matches) = match_blocks_global(&gt_blocks, &ext_blocks);
 
-    let structural_f1 = compute_weighted_sf1_from_matches(&gt_blocks, &ext_blocks, &match_results);
+    let base_structural_f1 = compute_weighted_sf1_from_matches(&gt_blocks, &ext_blocks, &match_results);
     let per_type = derive_per_type_scores(&gt_blocks, &ext_blocks, &match_results);
     let order_score = compute_order_score(&all_matches);
+    let structural_f1 = fold_order_into_sf1(base_structural_f1, order_score, match_results.len());
 
     let ext_tokens = tokenize(extracted_md);
     let gt_tokens = tokenize(ground_truth_md);
@@ -669,11 +670,12 @@ fn score_structural_quality_impl(extracted_md: &str, ground_truth_md: &str) -> S
 
     let (match_results, all_matches) = match_blocks_global(&gt_blocks, &ext_blocks);
 
-    let structural_f1 = compute_weighted_sf1_from_matches(&gt_blocks, &ext_blocks, &match_results);
+    let base_structural_f1 = compute_weighted_sf1_from_matches(&gt_blocks, &ext_blocks, &match_results);
 
     let per_type = derive_per_type_scores(&gt_blocks, &ext_blocks, &match_results);
 
     let order_score = compute_order_score(&all_matches);
+    let structural_f1 = fold_order_into_sf1(base_structural_f1, order_score, match_results.len());
 
     let ext_tokens = tokenize(extracted_md);
     let gt_tokens = tokenize(ground_truth_md);
@@ -1159,6 +1161,21 @@ fn derive_per_type_scores(
 }
 
 /// Compute reading order score using longest increasing subsequence.
+/// Minimum SF1 multiplier when reading order is fully scrambled. The structural metric is defined
+/// over block structure AND reading order (LIS); a perfectly-ordered document keeps its full score,
+/// a fully-scrambled one is penalized by at most `1 - ORDER_SCORE_FLOOR`. Kept modest so ordering
+/// refines, rather than dominates, the content-structure score.
+const ORDER_SCORE_FLOOR: f64 = 0.8;
+
+/// Fold the LIS reading-order score into the block-structure SF1. Skipped when fewer than three
+/// blocks matched, since order is not meaningful for one or two blocks.
+fn fold_order_into_sf1(base_sf1: f64, order_score: f64, matched_blocks: usize) -> f64 {
+    if matched_blocks < 3 {
+        return base_sf1;
+    }
+    base_sf1 * (ORDER_SCORE_FLOOR + (1.0 - ORDER_SCORE_FLOOR) * order_score)
+}
+
 fn compute_order_score(matches: &[(usize, usize)]) -> f64 {
     if matches.is_empty() {
         return 0.0;
@@ -1793,5 +1810,32 @@ mod tests {
         );
         // And both should retain substantial credit (not the old ~0.44 merge penalty).
         assert!(merge_sf1 >= 0.6, "merge should keep substantial credit, got {merge_sf1}");
+    }
+
+    // --- Bug 3: reading order (LIS) must actually influence SF1 ---
+
+    #[test]
+    fn test_scrambled_reading_order_lowers_sf1() {
+        // Identical blocks and content — only reading order differs. Order is part of the
+        // structural metric (LIS), so a scrambled extraction must score below an in-order one.
+        let gt = "# Alpha\n\n## Beta\n\n## Gamma\n\n## Delta\n\n## Epsilon\n";
+        let scrambled = "## Epsilon\n\n## Delta\n\n## Gamma\n\n## Beta\n\n# Alpha\n";
+        let ordered_sf1 = score_structural_quality(gt, gt).structural_f1;
+        let scrambled_sf1 = score_structural_quality(scrambled, gt).structural_f1;
+        assert!(ordered_sf1 >= 0.99, "in-order identical doc should be ~1.0: {ordered_sf1}");
+        assert!(
+            scrambled_sf1 < ordered_sf1 - 0.1,
+            "scrambled reading order must score meaningfully lower: scrambled={scrambled_sf1} ordered={ordered_sf1}"
+        );
+    }
+
+    #[test]
+    fn test_order_penalty_skipped_for_few_blocks() {
+        // With <3 matched blocks, order is not meaningful and must not be penalized.
+        assert_eq!(fold_order_into_sf1(0.9, 0.0, 2), 0.9);
+        assert_eq!(fold_order_into_sf1(0.9, 0.0, 1), 0.9);
+        // With >=3 blocks a fully-scrambled order applies the floor penalty.
+        assert!((fold_order_into_sf1(1.0, 0.0, 5) - ORDER_SCORE_FLOOR).abs() < 1e-9);
+        assert!((fold_order_into_sf1(1.0, 1.0, 5) - 1.0).abs() < 1e-9);
     }
 }
