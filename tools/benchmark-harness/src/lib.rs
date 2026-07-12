@@ -50,6 +50,7 @@ pub mod embed_benchmark;
 pub mod error;
 pub mod field_quality;
 pub mod fixture;
+pub mod gap_report;
 pub mod groups;
 pub mod json_quality;
 pub mod markdown_quality;
@@ -68,6 +69,7 @@ pub mod sizes;
 pub mod split_benchmark;
 pub mod stats;
 pub mod survey;
+pub mod system_load;
 pub mod types;
 pub mod validate_gt;
 

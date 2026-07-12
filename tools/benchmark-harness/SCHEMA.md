@@ -167,11 +167,17 @@ Contains all cross-framework rankings split by output format for quality metrics
   "cpu_ranking": [
     /* RankedFramework[] */
   ],
-  "quality_ranking": [
-    /* RankedFramework[] */
+  "quality_ranking_markdown": [
+    /* RankedFramework[] — markdown-only (combined quality with SF1 term) */
   ],
-  "pdf_quality_ranking": [
-    /* RankedFramework[] */
+  "quality_ranking_plaintext": [
+    /* RankedFramework[] — plaintext-only (combined quality, no SF1 term) */
+  ],
+  "pdf_quality_ranking_markdown": [
+    /* RankedFramework[] — markdown-only, never plaintext */
+  ],
+  "pdf_quality_ranking_plaintext": [
+    /* RankedFramework[] — plaintext-only */
   ],
   "pdf_tf1_ranking_markdown": [
     /* RankedFramework[] — markdown-only */

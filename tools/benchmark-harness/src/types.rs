@@ -46,6 +46,26 @@ fn default_output_format() -> OutputFormat {
     OutputFormat::Markdown
 }
 
+/// Per-stage cold-start timing breakdown parsed from an xberg CLI JSON envelope's
+/// `stage_timings` field (see `crates/xberg-cli/src/output.rs::StageTimings`).
+///
+/// Field names and semantics mirror the CLI struct exactly; this is a plain-data mirror rather
+/// than a shared type because the benchmark harness does not depend on the `xberg-cli` crate.
+/// Only populated when the harness invokes the CLI with `XBERG_EMIT_STAGE_TIMING` set.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub struct StageTimings {
+    /// Time from CLI process start to the point extraction begins (arg parsing, logging setup,
+    /// config load/merge), in milliseconds.
+    pub process_init_ms: f64,
+    /// Wall-clock time for the core library's extraction call to return, in milliseconds.
+    pub first_parse_ms: f64,
+    /// Coarse approximation of ONNX Runtime session-creation-plus-first-inference cost, present
+    /// only when a layout/OCR configuration that uses ORT was active. See the CLI-side
+    /// `StageTimings` doc comment for why this is not an independently measured sub-stage.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub ort_session_and_inference_ms: Option<f64>,
+}
+
 /// Xberg extraction pipeline variant
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -238,6 +258,15 @@ pub struct BenchmarkResult {
     /// Not serialized to output JSON to save space
     #[serde(skip)]
     pub extracted_text: Option<String>,
+
+    /// System load captured at measurement time.
+    ///
+    /// Recorded so local timing comparisons can be qualified: throughput and
+    /// cold-start numbers taken under heavy background load are not comparable
+    /// to those taken on an idle machine. `None` for results that predate this
+    /// field or were constructed outside a measurement path.
+    #[serde(default)]
+    pub system_load: Option<crate::system_load::SystemLoad>,
 }
 
 impl BenchmarkResult {
@@ -438,4 +467,58 @@ pub struct DurationStatistics {
 
     /// Number of iterations included in statistics
     pub sample_count: usize,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stage_timings_round_trips_with_ort_field_present() {
+        let timings = StageTimings {
+            process_init_ms: 12.5,
+            first_parse_ms: 1150.25,
+            ort_session_and_inference_ms: Some(1150.25),
+        };
+
+        let json = serde_json::to_string(&timings).expect("serialize StageTimings");
+        let parsed: StageTimings = serde_json::from_str(&json).expect("deserialize StageTimings");
+
+        assert_eq!(parsed.process_init_ms, 12.5);
+        assert_eq!(parsed.first_parse_ms, 1150.25);
+        assert_eq!(parsed.ort_session_and_inference_ms, Some(1150.25));
+    }
+
+    #[test]
+    fn stage_timings_omits_ort_field_when_absent() {
+        let timings = StageTimings {
+            process_init_ms: 8.0,
+            first_parse_ms: 235.0,
+            ort_session_and_inference_ms: None,
+        };
+
+        let json = serde_json::to_string(&timings).expect("serialize StageTimings");
+
+        assert!(
+            !json.contains("ort_session_and_inference_ms"),
+            "expected ort_session_and_inference_ms to be skipped when None, got: {json}"
+        );
+    }
+
+    #[test]
+    fn stage_timings_parses_from_cli_json_shape() {
+        // Mirrors the exact JSON shape emitted by `xberg-cli`'s `output::StageTimings` when
+        // XBERG_EMIT_STAGE_TIMING is set and layout/OCR is active.
+        let raw = r#"{
+            "process_init_ms": 4.2,
+            "first_parse_ms": 1171.0,
+            "ort_session_and_inference_ms": 1171.0
+        }"#;
+
+        let parsed: StageTimings = serde_json::from_str(raw).expect("parse CLI stage_timings JSON");
+
+        assert_eq!(parsed.process_init_ms, 4.2);
+        assert_eq!(parsed.first_parse_ms, 1171.0);
+        assert_eq!(parsed.ort_session_and_inference_ms, Some(1171.0));
+    }
 }

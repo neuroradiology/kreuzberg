@@ -108,6 +108,19 @@ pub struct FrameworkExtensionStats {
     pub avg_throughput_mbps: f64,
     /// Average peak memory in MB
     pub avg_peak_memory_mb: f64,
+    /// Mean text token F1 / TF1 (0.0-1.0), successful extractions only
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub avg_f1_text: Option<f64>,
+    /// Mean numeric token F1 (0.0-1.0), successful extractions only
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub avg_f1_numeric: Option<f64>,
+    /// Mean layout/structural F1 / SF1 (0.0-1.0), successful extractions only.
+    /// `None` when no result in this group reported a layout score (e.g. plaintext mode).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub avg_f1_layout: Option<f64>,
+    /// Mean combined quality score (0.0-1.0), successful extractions only
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub avg_quality_score: Option<f64>,
 }
 
 /// Analysis of results grouped by file extension
@@ -279,6 +292,40 @@ fn calculate_framework_stats(results: &[&BenchmarkResult]) -> FrameworkExtension
         0.0
     };
 
+    let mean = |values: &[f64]| -> Option<f64> {
+        if values.is_empty() {
+            None
+        } else {
+            Some(values.iter().sum::<f64>() / values.len() as f64)
+        }
+    };
+
+    let f1_texts: Vec<f64> = successful_results
+        .iter()
+        .filter_map(|r| r.quality.as_ref().map(|q| q.f1_score_text))
+        .filter(|v| !v.is_nan() && v.is_finite())
+        .collect();
+    let f1_numerics: Vec<f64> = successful_results
+        .iter()
+        .filter_map(|r| r.quality.as_ref().map(|q| q.f1_score_numeric))
+        .filter(|v| !v.is_nan() && v.is_finite())
+        .collect();
+    let f1_layouts: Vec<f64> = successful_results
+        .iter()
+        .filter_map(|r| r.quality.as_ref().and_then(|q| q.f1_score_layout))
+        .filter(|v| !v.is_nan() && v.is_finite())
+        .collect();
+    let quality_scores: Vec<f64> = successful_results
+        .iter()
+        .filter_map(|r| r.quality.as_ref().map(|q| q.quality_score))
+        .filter(|v| !v.is_nan() && v.is_finite())
+        .collect();
+
+    let avg_f1_text = mean(&f1_texts);
+    let avg_f1_numeric = mean(&f1_numerics);
+    let avg_f1_layout = mean(&f1_layouts);
+    let avg_quality_score = mean(&quality_scores);
+
     FrameworkExtensionStats {
         count,
         successful,
@@ -296,6 +343,10 @@ fn calculate_framework_stats(results: &[&BenchmarkResult]) -> FrameworkExtension
         p95_extraction_duration_ms,
         avg_throughput_mbps,
         avg_peak_memory_mb,
+        avg_f1_text,
+        avg_f1_numeric,
+        avg_f1_layout,
+        avg_quality_score,
     }
 }
 
@@ -322,7 +373,7 @@ pub fn write_by_extension_analysis(results: &[BenchmarkResult], output_path: &Pa
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{FrameworkCapabilities, OcrStatus, OutputFormat, PerformanceMetrics};
+    use crate::types::{FrameworkCapabilities, OcrStatus, OutputFormat, PerformanceMetrics, QualityMetrics};
     use std::path::PathBuf;
     use std::time::Duration;
     use tempfile::TempDir;
@@ -366,6 +417,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
             output_format: OutputFormat::Markdown,
         }
     }
@@ -402,6 +454,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
             output_format: OutputFormat::Markdown,
         }];
 
@@ -622,5 +675,96 @@ mod tests {
 
         assert!(framework_stats.avg_extraction_duration_ms.is_some());
         assert_eq!(framework_stats.avg_extraction_duration_ms.unwrap(), 80.0);
+    }
+
+    #[test]
+    fn test_framework_stats_quality_absent_when_no_quality_metrics() {
+        let result = create_benchmark_result("framework1", true, 100, Some(80), 1_000_000.0, 10_000_000);
+        let results = vec![&result];
+
+        let stats = calculate_framework_stats(&results);
+
+        assert!(stats.avg_f1_text.is_none());
+        assert!(stats.avg_f1_numeric.is_none());
+        assert!(stats.avg_f1_layout.is_none());
+        assert!(stats.avg_quality_score.is_none());
+    }
+
+    #[test]
+    fn test_framework_stats_preserves_mean_tf1_and_sf1() {
+        let mut result1 = create_benchmark_result("framework1", true, 100, Some(80), 1_000_000.0, 10_000_000);
+        result1.quality = Some(QualityMetrics {
+            f1_score_text: 0.80,
+            f1_score_numeric: 0.90,
+            f1_score_layout: Some(0.60),
+            quality_score: 0.75,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: false,
+        });
+
+        let mut result2 = create_benchmark_result("framework1", true, 150, Some(120), 1_000_000.0, 10_000_000);
+        result2.quality = Some(QualityMetrics {
+            f1_score_text: 0.90,
+            f1_score_numeric: 0.95,
+            f1_score_layout: Some(0.70),
+            quality_score: 0.85,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: true,
+        });
+
+        let results = vec![&result1, &result2];
+        let stats = calculate_framework_stats(&results);
+
+        assert!((stats.avg_f1_text.unwrap() - 0.85).abs() < 1e-9);
+        assert!((stats.avg_f1_numeric.unwrap() - 0.925).abs() < 1e-9);
+        assert!((stats.avg_f1_layout.unwrap() - 0.65).abs() < 1e-9);
+        assert!((stats.avg_quality_score.unwrap() - 0.80).abs() < 1e-9);
+    }
+
+    #[test]
+    fn test_framework_stats_layout_none_when_no_result_reports_it() {
+        let mut result = create_benchmark_result("framework1", true, 100, Some(80), 1_000_000.0, 10_000_000);
+        result.quality = Some(QualityMetrics {
+            f1_score_text: 0.80,
+            f1_score_numeric: 0.90,
+            f1_score_layout: None,
+            quality_score: 0.75,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: false,
+        });
+
+        let results = vec![&result];
+        let stats = calculate_framework_stats(&results);
+
+        assert!(stats.avg_f1_text.is_some());
+        assert!(stats.avg_f1_layout.is_none());
+    }
+
+    #[test]
+    fn test_framework_stats_quality_excludes_failed_results() {
+        let mut result1 = create_benchmark_result("framework1", true, 100, Some(80), 1_000_000.0, 10_000_000);
+        result1.quality = Some(QualityMetrics {
+            f1_score_text: 0.80,
+            f1_score_numeric: 0.90,
+            f1_score_layout: Some(0.60),
+            quality_score: 0.75,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: false,
+        });
+
+        // Failed result: create_benchmark_result forces quality to None for failures anyway,
+        // but assert explicitly that it never contributes to the mean.
+        let result2 = create_benchmark_result("framework1", false, 0, None, 0.0, 0);
+
+        let results = vec![&result1, &result2];
+        let stats = calculate_framework_stats(&results);
+
+        assert_eq!(stats.count, 2);
+        assert_eq!(stats.successful, 1);
+        assert!((stats.avg_f1_text.unwrap() - 0.80).abs() < 1e-9);
     }
 }

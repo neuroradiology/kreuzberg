@@ -100,11 +100,18 @@ pub struct ComparisonData {
     pub throughput_ranking: Vec<RankedFramework>,
     /// Frameworks ranked by median memory usage (lowest first)
     pub memory_ranking: Vec<RankedFramework>,
-    /// Frameworks ranked by quality score (highest first)
-    pub quality_ranking: Vec<RankedFramework>,
-    /// PDF-only: frameworks ranked by overall quality score (highest first)
+    /// Frameworks ranked by quality score (highest first) — markdown only. Plaintext-only
+    /// frameworks are never scored against layout-inclusive quality, so they are excluded
+    /// here (see module-level docs).
+    pub quality_ranking_markdown: Vec<RankedFramework>,
+    /// Frameworks ranked by quality score (highest first) — plaintext only.
+    pub quality_ranking_plaintext: Vec<RankedFramework>,
+    /// PDF-only: frameworks ranked by overall quality score (highest first) — markdown only
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pdf_quality_ranking: Vec<RankedFramework>,
+    pub pdf_quality_ranking_markdown: Vec<RankedFramework>,
+    /// PDF-only: frameworks ranked by overall quality score (highest first) — plaintext only
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pdf_quality_ranking_plaintext: Vec<RankedFramework>,
     /// PDF-only: frameworks ranked by text F1 / TF1 (highest first) — markdown only
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pdf_tf1_ranking_markdown: Vec<RankedFramework>,
@@ -289,8 +296,10 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
             comparison: ComparisonData {
                 throughput_ranking: Vec::new(),
                 memory_ranking: Vec::new(),
-                quality_ranking: Vec::new(),
-                pdf_quality_ranking: Vec::new(),
+                quality_ranking_markdown: Vec::new(),
+                quality_ranking_plaintext: Vec::new(),
+                pdf_quality_ranking_markdown: Vec::new(),
+                pdf_quality_ranking_plaintext: Vec::new(),
                 pdf_tf1_ranking_markdown: Vec::new(),
                 pdf_tf1_ranking_plaintext: Vec::new(),
                 pdf_sf1_ranking_markdown: Vec::new(),
@@ -740,6 +749,128 @@ fn parse_aggregate_key(key: &str) -> (&str, &str) {
     (framework, mode)
 }
 
+/// Weighted mean of `(value, weight)` pairs, ignoring non-finite values. Returns `NaN` if no
+/// finite-weighted contribution exists (e.g. every value was non-finite, or the slice was empty).
+fn weighted_avg(items: &[(f64, usize)]) -> f64 {
+    let finite: Vec<(f64, usize)> = items.iter().copied().filter(|(v, _)| v.is_finite()).collect();
+    let total_weight: usize = finite.iter().map(|(_, w)| w).sum();
+    if total_weight == 0 {
+        f64::NAN
+    } else {
+        finite.iter().map(|(v, w)| v * (*w as f64)).sum::<f64>() / total_weight as f64
+    }
+}
+
+/// Build the overall (all-file-types) quality ranking for one output format, restricted to a
+/// **shared corpus** and counting fully-failed buckets against the framework.
+///
+/// # Semantics (Bug A: mismatched per-framework corpora)
+///
+/// Frameworks in real benchmark runs attempt wildly different sets of file types (e.g.
+/// `liteparse` is PDF-only, `docling` never attempts `json`/`txt`, `xberg` runs the full
+/// corpus). Naively weighting each framework's own quality mean by whatever file types *it*
+/// happened to attempt makes the "overall" ranking compare non-comparable bases — a framework
+/// that only ever attempted its best file type would look artificially strong.
+///
+/// The fix: restrict the overall ranking to the **intersection of file types every candidate
+/// framework (of this output format) attempted** — "attempted" meaning `total_sample_count > 0`
+/// in at least one of `no_ocr`/`with_ocr` for that file type, regardless of success. Only that
+/// shared set feeds the weighted mean, so every ranked framework is scored on the same corpus.
+///
+/// With a single candidate framework for a format, the "intersection" is trivially that
+/// framework's own attempted file types — there is nothing to restrict against, so it is ranked
+/// on everything it ran (rank 1 by construction). The shared-corpus restriction only bites once
+/// two or more frameworks of the same format disagree on which file types they attempted.
+///
+/// Judgment call: if the shared set is empty (no candidates, or candidates share no file type at
+/// all), there is no meaningful "overall" comparison to make — this function returns an empty
+/// ranking rather than fabricating one from a partial/non-shared basis. Callers should treat an
+/// empty result as "no shared-corpus overall ranking available for this format" and rely on the
+/// per-file-type (e.g. `pdf_*`) rankings instead.
+///
+/// # Semantics (Bug B: 0-success buckets silently dropped)
+///
+/// Within the shared file-type set, a bucket a framework *attempted but completely failed*
+/// (`successful_sample_count == 0`, `total_sample_count > 0`) must drag its mean down — it is
+/// not neutral, it is a failure. Such buckets contribute a quality value of `0.0`, weighted by
+/// the bucket's `total_sample_count` (samples attempted, not just those that happened to
+/// succeed). This is distinct from a file type the framework never attempted at all, which is
+/// excluded entirely by the shared-corpus restriction above (that's not a failure, it's missing
+/// data, and including it would penalize frameworks for corpora they were never run against).
+fn build_shared_corpus_quality_ranking(
+    by_framework_mode: &HashMap<String, FrameworkModeAggregation>,
+    format: OutputFormat,
+) -> Vec<RankedFramework> {
+    let candidates: Vec<(&String, &FrameworkModeAggregation)> = by_framework_mode
+        .iter()
+        .filter(|(_, agg)| agg.output_format == format)
+        .collect();
+
+    if candidates.is_empty() {
+        return Vec::new();
+    }
+
+    // Shared corpus: file types every candidate framework attempted (any total_sample_count > 0
+    // in no_ocr or with_ocr), intersected across all candidates.
+    let mut shared_file_types: Option<std::collections::HashSet<&str>> = None;
+    for (_, agg) in &candidates {
+        let attempted: std::collections::HashSet<&str> = agg
+            .by_file_type
+            .iter()
+            .filter(|(_, ft)| {
+                [&ft.no_ocr, &ft.with_ocr]
+                    .into_iter()
+                    .flatten()
+                    .any(|perf| perf.total_sample_count > 0)
+            })
+            .map(|(file_type, _)| file_type.as_str())
+            .collect();
+        shared_file_types = Some(match shared_file_types {
+            Some(existing) => existing.intersection(&attempted).copied().collect(),
+            None => attempted,
+        });
+    }
+    let shared_file_types = shared_file_types.unwrap_or_default();
+
+    if shared_file_types.is_empty() {
+        return Vec::new();
+    }
+
+    let mut qual: Vec<(String, f64)> = Vec::new();
+    for (key, agg) in candidates {
+        let mut contributions: Vec<(f64, usize)> = Vec::new();
+        for file_type in &shared_file_types {
+            let Some(ft) = agg.by_file_type.get(*file_type) else {
+                continue;
+            };
+            for perf in [&ft.no_ocr, &ft.with_ocr].into_iter().flatten() {
+                if perf.total_sample_count == 0 {
+                    continue;
+                }
+                let weight = perf.total_sample_count;
+                let value = perf.quality.as_ref().map(|q| q.quality_score_p50).unwrap_or(0.0);
+                contributions.push((value, weight));
+            }
+        }
+        let mean = weighted_avg(&contributions);
+        if mean.is_finite() {
+            qual.push((key.clone(), mean));
+        }
+    }
+
+    qual.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    let baseline_qual = qual.first().map(|r| r.1).unwrap_or(1.0);
+    qual.iter()
+        .enumerate()
+        .map(|(i, (k, v))| RankedFramework {
+            framework_mode: k.clone(),
+            rank: i + 1,
+            value: *v,
+            relative: if baseline_qual > 0.0 { *v / baseline_qual } else { 1.0 },
+        })
+        .collect()
+}
+
 /// Build cross-framework comparison rankings from aggregated data
 ///
 /// Metrics are weighted by successful_sample_count so that file types with more
@@ -747,12 +878,11 @@ fn parse_aggregate_key(key: &str) -> (&str, &str) {
 /// (e.g., 1 BMP). This prevents frameworks that handle more file types or do OCR
 /// from being unfairly penalized in the overall ranking.
 fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation>) -> ComparisonData {
-    let mut metrics: Vec<(String, f64, f64, f64)> = Vec::new();
+    let mut metrics: Vec<(String, f64, f64, OutputFormat)> = Vec::new();
 
     for (key, agg) in by_framework_mode {
         let mut throughputs: Vec<(f64, usize)> = Vec::new();
         let mut memories: Vec<(f64, usize)> = Vec::new();
-        let mut qualities: Vec<(f64, usize)> = Vec::new();
 
         for ft in agg.by_file_type.values() {
             for perf in [&ft.no_ocr, &ft.with_ocr].into_iter().flatten() {
@@ -762,9 +892,6 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
                 let weight = perf.successful_sample_count;
                 throughputs.push((perf.throughput.p50, weight));
                 memories.push((perf.memory.p50, weight));
-                if let Some(q) = &perf.quality {
-                    qualities.push((q.quality_score_p50, weight));
-                }
             }
         }
 
@@ -772,21 +899,11 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
             continue;
         }
 
-        let weighted_avg = |items: &[(f64, usize)]| -> f64 {
-            let finite: Vec<(f64, usize)> = items.iter().copied().filter(|(v, _)| v.is_finite()).collect();
-            let total_weight: usize = finite.iter().map(|(_, w)| w).sum();
-            if total_weight == 0 {
-                f64::NAN
-            } else {
-                finite.iter().map(|(v, w)| v * (*w as f64)).sum::<f64>() / total_weight as f64
-            }
-        };
-
         metrics.push((
             key.clone(),
             weighted_avg(&throughputs),
             weighted_avg(&memories),
-            weighted_avg(&qualities),
+            agg.output_format,
         ));
     }
 
@@ -820,20 +937,8 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
         })
         .collect();
 
-    let mut qual = metrics.clone();
-    qual.retain(|m| m.3.is_finite());
-    qual.sort_by(|a, b| b.3.partial_cmp(&a.3).unwrap_or(std::cmp::Ordering::Equal));
-    let baseline_qual = qual.first().map(|r| r.3).unwrap_or(1.0);
-    let quality_ranking: Vec<RankedFramework> = qual
-        .iter()
-        .enumerate()
-        .map(|(i, (k, _, _, v))| RankedFramework {
-            framework_mode: k.clone(),
-            rank: i + 1,
-            value: *v,
-            relative: if baseline_qual > 0.0 { *v / baseline_qual } else { 1.0 },
-        })
-        .collect();
+    let quality_ranking_markdown = build_shared_corpus_quality_ranking(by_framework_mode, OutputFormat::Markdown);
+    let quality_ranking_plaintext = build_shared_corpus_quality_ranking(by_framework_mode, OutputFormat::Plaintext);
 
     let mut deltas_vs_baseline = HashMap::new();
     if let Some(baseline) = metrics
@@ -864,6 +969,11 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
         }
     }
 
+    // Bug B: a PDF bucket a framework *attempted but completely failed*
+    // (`successful_sample_count == 0`, `total_sample_count > 0`) must count against it — quality
+    // contribution 0.0, weighted by samples attempted (not just those that succeeded) — instead
+    // of being silently dropped (which let e.g. a framework failing 100% of PDFs escape any
+    // quality penalty). TF1/SF1 use the same 0.0-on-full-failure treatment for consistency.
     let mut pdf_metrics: Vec<(String, f64, f64, f64, OutputFormat)> = Vec::new();
     for (key, agg) in by_framework_mode {
         if let Some(pdf_ft) = agg.by_file_type.get("pdf") {
@@ -871,27 +981,26 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
             let mut tf1s: Vec<(f64, usize)> = Vec::new();
             let mut sf1s: Vec<(f64, usize)> = Vec::new();
             for perf in [&pdf_ft.no_ocr, &pdf_ft.with_ocr].into_iter().flatten() {
-                if perf.successful_sample_count == 0 {
+                if perf.total_sample_count == 0 {
                     continue;
                 }
-                if let Some(q) = &perf.quality {
-                    let w = perf.successful_sample_count;
-                    qualities.push((q.quality_score_p50, w));
-                    tf1s.push((q.f1_text_p50, w));
-                    if let Some(layout) = q.f1_layout_p50 {
-                        sf1s.push((layout, w));
-                    }
+                let w = perf.total_sample_count;
+                let (quality_value, tf1_value, sf1_value) = match &perf.quality {
+                    Some(q) => (q.quality_score_p50, q.f1_text_p50, q.f1_layout_p50),
+                    None => (0.0, 0.0, None),
+                };
+                qualities.push((quality_value, w));
+                tf1s.push((tf1_value, w));
+                // SF1 has no defined "failure" value for plaintext-only frameworks (they never
+                // carry a layout term at all), so a missing layout score only contributes 0.0
+                // when the bucket was a genuine failure (no quality at all), not when the
+                // framework is plaintext-only and layout is simply not applicable.
+                match sf1_value {
+                    Some(layout) => sf1s.push((layout, w)),
+                    None if perf.quality.is_none() => sf1s.push((0.0, w)),
+                    None => {}
                 }
             }
-            let weighted_avg = |items: &[(f64, usize)]| -> f64 {
-                let finite: Vec<(f64, usize)> = items.iter().copied().filter(|(v, _)| v.is_finite()).collect();
-                let total_weight: usize = finite.iter().map(|(_, w)| w).sum();
-                if total_weight == 0 {
-                    f64::NAN
-                } else {
-                    finite.iter().map(|(v, w)| v * (*w as f64)).sum::<f64>() / total_weight as f64
-                }
-            };
             let q = weighted_avg(&qualities);
             let t = weighted_avg(&tf1s);
             let s = weighted_avg(&sf1s);
@@ -917,7 +1026,19 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
             .collect()
     };
 
-    let mut pdf_qual_items: Vec<(String, f64)> = pdf_metrics.iter().map(|(k, q, _, _, _)| (k.clone(), *q)).collect();
+    // As with the all-file-types quality ranking above, PDF quality must also be split by
+    // output format — plaintext-only frameworks never carry an SF1 term and must never be
+    // pooled against markdown frameworks' layout-inclusive quality score.
+    let mut pdf_qual_markdown: Vec<(String, f64)> = pdf_metrics
+        .iter()
+        .filter(|(_, _, _, _, fmt)| *fmt == OutputFormat::Markdown)
+        .map(|(k, q, _, _, _)| (k.clone(), *q))
+        .collect();
+    let mut pdf_qual_plaintext: Vec<(String, f64)> = pdf_metrics
+        .iter()
+        .filter(|(_, _, _, _, fmt)| *fmt == OutputFormat::Plaintext)
+        .map(|(k, q, _, _, _)| (k.clone(), *q))
+        .collect();
     let mut pdf_tf1_markdown: Vec<(String, f64)> = pdf_metrics
         .iter()
         .filter(|(_, _, _, _, fmt)| *fmt == OutputFormat::Markdown)
@@ -934,7 +1055,8 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
         .map(|(k, _, _, s, _)| (k.clone(), *s))
         .collect();
 
-    let pdf_quality_ranking = build_ranking(&mut pdf_qual_items);
+    let pdf_quality_ranking_markdown = build_ranking(&mut pdf_qual_markdown);
+    let pdf_quality_ranking_plaintext = build_ranking(&mut pdf_qual_plaintext);
     let pdf_tf1_ranking_markdown = build_ranking(&mut pdf_tf1_markdown);
     let pdf_tf1_ranking_plaintext = build_ranking(&mut pdf_tf1_plaintext);
     let pdf_sf1_ranking_markdown = build_ranking(&mut pdf_sf1_markdown);
@@ -942,8 +1064,10 @@ fn build_comparison(by_framework_mode: &HashMap<String, FrameworkModeAggregation
     ComparisonData {
         throughput_ranking,
         memory_ranking,
-        quality_ranking,
-        pdf_quality_ranking,
+        quality_ranking_markdown,
+        quality_ranking_plaintext,
+        pdf_quality_ranking_markdown,
+        pdf_quality_ranking_plaintext,
         pdf_tf1_ranking_markdown,
         pdf_tf1_ranking_plaintext,
         pdf_sf1_ranking_markdown,
@@ -994,6 +1118,7 @@ mod tests {
             ocr_status,
             output_format: OutputFormat::Markdown,
             extracted_text: None,
+            system_load: None,
         }
     }
 
@@ -1186,6 +1311,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
             output_format: OutputFormat::Markdown,
         }];
 
@@ -1230,6 +1356,7 @@ mod tests {
                 pdf_metadata: None,
                 ocr_status: OcrStatus::NotUsed,
                 extracted_text: None,
+                system_load: None,
                 output_format: OutputFormat::Markdown,
             },
             BenchmarkResult {
@@ -1259,6 +1386,7 @@ mod tests {
                 pdf_metadata: None,
                 ocr_status: OcrStatus::NotUsed,
                 extracted_text: None,
+                system_load: None,
                 output_format: OutputFormat::Markdown,
             },
         ];
@@ -1474,6 +1602,94 @@ mod tests {
         assert!(ext_dur.p99 > ext_dur.p95);
     }
 
+    /// Regression test for the plaintext/markdown quality-ranking pooling bug.
+    ///
+    /// A plaintext-only framework (scored with no structural/SF1 term) must never be pooled
+    /// into a markdown (layout-inclusive) quality ranking alongside frameworks that carry a
+    /// structural penalty. See module-level docs ("Output format support") for the contract.
+    #[test]
+    fn test_quality_ranking_never_pools_plaintext_into_markdown() {
+        let mut markdown_result = create_test_result(
+            "xberg-markdown-baseline",
+            "pdf",
+            OcrStatus::NotUsed,
+            100,
+            1_000_000.0,
+            10_000_000,
+        );
+        markdown_result.output_format = OutputFormat::Markdown;
+        markdown_result.quality = Some(crate::types::QualityMetrics {
+            f1_score_text: 0.7,
+            f1_score_numeric: 0.7,
+            f1_score_layout: Some(0.5),
+            quality_score: 0.5 * 0.7 + 0.2 * 0.7 + 0.3 * 0.5,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: false,
+        });
+
+        // A plaintext-only competitor (e.g. Apache Tika): higher raw quality_score because it
+        // never incurs the structural (SF1) penalty markdown frameworks carry.
+        let mut plaintext_result =
+            create_test_result("apache-tika", "pdf", OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000);
+        plaintext_result.output_format = OutputFormat::Plaintext;
+        plaintext_result.quality = Some(crate::types::QualityMetrics {
+            f1_score_text: 0.95,
+            f1_score_numeric: 0.95,
+            f1_score_layout: None,
+            quality_score: 0.6 * 0.95 + 0.4 * 0.95,
+            missing_tokens: vec![],
+            extra_tokens: vec![],
+            correct: false,
+        });
+
+        let results = vec![markdown_result, plaintext_result];
+        let aggregated = aggregate_new_format(&results);
+
+        let markdown_keys: std::collections::HashSet<&str> = aggregated
+            .comparison
+            .quality_ranking_markdown
+            .iter()
+            .map(|r| r.framework_mode.as_str())
+            .collect();
+        let plaintext_keys: std::collections::HashSet<&str> = aggregated
+            .comparison
+            .quality_ranking_plaintext
+            .iter()
+            .map(|r| r.framework_mode.as_str())
+            .collect();
+
+        assert!(
+            !markdown_keys.iter().any(|k| k.contains("apache-tika")),
+            "plaintext-only framework 'apache-tika' must never appear in the markdown \
+             (layout-inclusive) quality ranking, found in: {:?}",
+            markdown_keys
+        );
+        assert!(
+            markdown_keys.iter().any(|k| k.contains("xberg-markdown-baseline")),
+            "markdown framework should appear in the markdown quality ranking, found: {:?}",
+            markdown_keys
+        );
+        assert!(
+            plaintext_keys.iter().any(|k| k.contains("apache-tika")),
+            "plaintext framework should appear in the plaintext quality ranking, found: {:?}",
+            plaintext_keys
+        );
+
+        // Also verify the PDF-specific split ranking honors the same contract.
+        let pdf_markdown_keys: std::collections::HashSet<&str> = aggregated
+            .comparison
+            .pdf_quality_ranking_markdown
+            .iter()
+            .map(|r| r.framework_mode.as_str())
+            .collect();
+        assert!(
+            !pdf_markdown_keys.iter().any(|k| k.contains("apache-tika")),
+            "plaintext-only framework must never appear in pdf_quality_ranking_markdown, found: {:?}",
+            pdf_markdown_keys
+        );
+    }
+
     #[test]
     fn test_calculate_percentiles_extraction_duration_no_extraction_some_failed() {
         let result1_failed = BenchmarkResult {
@@ -1503,6 +1719,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::NotUsed,
             extracted_text: None,
+            system_load: None,
             output_format: OutputFormat::Markdown,
         };
 
@@ -1513,5 +1730,135 @@ mod tests {
 
         assert!(percentiles.extraction_duration.is_none());
         assert_eq!(percentiles.success_rate_percent, 50.0);
+    }
+
+    fn result_with_quality(framework: &str, file_ext: &str, quality_score: f64, success: bool) -> BenchmarkResult {
+        let mut result = create_test_result(framework, file_ext, OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000);
+        result.success = success;
+        if success {
+            result.quality = Some(crate::types::QualityMetrics {
+                f1_score_text: quality_score,
+                f1_score_numeric: quality_score,
+                f1_score_layout: Some(quality_score),
+                quality_score,
+                missing_tokens: vec![],
+                extra_tokens: vec![],
+                correct: false,
+            });
+        } else {
+            result.error_message = Some("extraction failed".to_string());
+            result.error_kind = ErrorKind::FrameworkError;
+        }
+        result
+    }
+
+    /// Regression test for Bug A: the overall quality ranking must only compare frameworks on
+    /// the file types they *all* attempted (shared corpus), not on whatever subset each
+    /// framework happened to run.
+    ///
+    /// `framework-partial` only ever attempts `pdf`, scoring high (0.9) there. `framework-full`
+    /// attempts `pdf` (scoring lower, 0.6) plus `json` (scoring very low, 0.1) — a file type
+    /// `framework-partial` never touched. Before the fix, `framework-full`'s overall mean would
+    /// be dragged down by `json` while `framework-partial` was judged on `pdf` alone, an
+    /// apples-to-oranges comparison. After the fix, both are ranked on the shared corpus (`pdf`
+    /// only), so `framework-partial` (0.9) correctly outranks `framework-full` (0.6) — and
+    /// `framework-full`'s `json` score must not appear in the shared-corpus mean at all.
+    #[test]
+    fn test_quality_ranking_restricted_to_shared_corpus() {
+        let results = vec![
+            result_with_quality("framework-partial", "pdf", 0.9, true),
+            result_with_quality("framework-full", "pdf", 0.6, true),
+            result_with_quality("framework-full", "json", 0.1, true),
+        ];
+
+        let aggregated = aggregate_new_format(&results);
+        let ranking = &aggregated.comparison.quality_ranking_markdown;
+
+        let partial = ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-partial"))
+            .expect("framework-partial should be present in the shared-corpus ranking");
+        let full = ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-full"))
+            .expect("framework-full should be present in the shared-corpus ranking");
+
+        assert!(
+            (partial.value - 0.9).abs() < 1e-9,
+            "framework-partial's shared-corpus (pdf-only) mean should be 0.9, got {}",
+            partial.value
+        );
+        assert!(
+            (full.value - 0.6).abs() < 1e-9,
+            "framework-full's shared-corpus mean must only reflect pdf (0.6), not be diluted by \
+             its json-only score; got {}",
+            full.value
+        );
+        assert_eq!(
+            partial.rank, 1,
+            "framework-partial (0.9) should outrank framework-full (0.6) on shared pdf corpus"
+        );
+        assert_eq!(full.rank, 2);
+    }
+
+    /// Regression test for Bug B: a framework that attempted a file type but failed on every
+    /// sample must rank BELOW a framework that succeeded on that same file type, not be
+    /// silently excluded from the comparison as if it had never run at all.
+    ///
+    /// `framework-ok` succeeds on all its `pdf` samples (quality 0.8). `framework-crashed`
+    /// attempts the same `pdf` file type but fails on every sample (mirrors docling failing
+    /// 100% of a PDF corpus). Before the fix, `framework-crashed`'s zero-success pdf bucket was
+    /// dropped entirely, so it would not appear in the ranking (or would be silently absent from
+    /// the comparison) despite having completely failed. After the fix, `framework-crashed`
+    /// contributes a quality value of 0.0 for that bucket and must rank strictly below
+    /// `framework-ok`.
+    #[test]
+    fn test_fully_failed_bucket_ranks_below_succeeding_framework() {
+        let results = vec![
+            result_with_quality("framework-ok", "pdf", 0.8, true),
+            result_with_quality("framework-ok", "pdf", 0.8, true),
+            result_with_quality("framework-crashed", "pdf", 0.0, false),
+            result_with_quality("framework-crashed", "pdf", 0.0, false),
+        ];
+
+        let aggregated = aggregate_new_format(&results);
+        let ranking = &aggregated.comparison.quality_ranking_markdown;
+
+        let ok = ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-ok"))
+            .expect("framework-ok should be present");
+        let crashed = ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-crashed"))
+            .expect(
+                "framework-crashed must appear in the ranking (as a 0.0 contribution), not be \
+                 silently dropped for having zero successes",
+            );
+
+        assert!(
+            crashed.value < ok.value,
+            "a fully-failed framework must score below a succeeding one: crashed={}, ok={}",
+            crashed.value,
+            ok.value
+        );
+        assert!(
+            (crashed.value - 0.0).abs() < 1e-9,
+            "fully-failed bucket should contribute 0.0, got {}",
+            crashed.value
+        );
+        assert!(ok.rank < crashed.rank, "framework-ok must outrank framework-crashed");
+
+        // Also verify the PDF-specific ranking (Bug B's other call site) applies the same rule.
+        let pdf_ranking = &aggregated.comparison.pdf_quality_ranking_markdown;
+        let pdf_crashed = pdf_ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-crashed"))
+            .expect("framework-crashed must appear in pdf_quality_ranking_markdown as a 0.0 entry");
+        let pdf_ok = pdf_ranking
+            .iter()
+            .find(|r| r.framework_mode.contains("framework-ok"))
+            .expect("framework-ok must appear in pdf_quality_ranking_markdown");
+        assert!(pdf_ok.rank < pdf_crashed.rank);
     }
 }

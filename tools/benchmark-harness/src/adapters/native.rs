@@ -268,6 +268,7 @@ impl FrameworkAdapter for NativeAdapter {
                 pdf_metadata: None,
                 ocr_status: OcrStatus::Unknown,
                 extracted_text: None,
+                system_load: None,
             });
         }
 
@@ -317,6 +318,7 @@ impl FrameworkAdapter for NativeAdapter {
             pdf_metadata: None,
             ocr_status,
             extracted_text: Some(extraction_result.content),
+            system_load: None,
         })
     }
 
@@ -411,6 +413,7 @@ impl FrameworkAdapter for NativeAdapter {
                         pdf_metadata: None,
                         ocr_status: OcrStatus::Unknown,
                         extracted_text: None,
+                        system_load: None,
                     }
                 })
                 .collect();
@@ -493,6 +496,7 @@ impl FrameworkAdapter for NativeAdapter {
                     pdf_metadata: None,
                     ocr_status: determine_ocr_status(extraction_result, &config),
                     extracted_text: Some(extraction_result.content.clone()),
+                    system_load: None,
                 }
             })
             .collect();

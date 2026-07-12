@@ -13,6 +13,20 @@ use crate::{
 use std::path::PathBuf;
 use which::which;
 
+/// Environment variable that requests per-stage cold-start timing from the xberg CLI (must
+/// match `crates/xberg-cli/src/commands/extract.rs::STAGE_TIMING_ENV_VAR`).
+///
+/// Passed unconditionally to every xberg subprocess invocation this adapter spawns. This is
+/// cheap for the CLI to check (a single `std::env::var` read gated behind an `if`) and lets
+/// `xberg extract --format json` include a `stage_timings` object that the harness can parse
+/// out of the subprocess's stdout for cold-start attribution (see
+/// `tools/benchmark-harness/src/types.rs::StageTimings`).
+///
+/// Note: parsing `stage_timings` out of the subprocess's JSON stdout happens in
+/// `SubprocessAdapter::parse_output` (`adapters/subprocess.rs`), which is out of scope for this
+/// change — see the module-level TODO below.
+const STAGE_TIMING_ENV_VAR: &str = "XBERG_EMIT_STAGE_TIMING";
+
 /// Creates a Xberg adapter for the given pipeline and configuration.
 ///
 /// # Arguments
@@ -133,10 +147,12 @@ pub fn create_xberg_adapter(
     .map(|s| s.to_string())
     .collect();
 
+    let env = vec![(STAGE_TIMING_ENV_VAR.to_string(), "1".to_string())];
+
     let adapter = if batch {
-        SubprocessAdapter::with_batch_support(&framework_name, cli_path, args, vec![], supported_formats)
+        SubprocessAdapter::with_batch_support(&framework_name, cli_path, args, env, supported_formats)
     } else {
-        SubprocessAdapter::new(&framework_name, cli_path, args, vec![], supported_formats)
+        SubprocessAdapter::new(&framework_name, cli_path, args, env, supported_formats)
     };
 
     Ok(adapter)

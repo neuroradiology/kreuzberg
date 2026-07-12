@@ -8,6 +8,7 @@ use crate::config::{BenchmarkConfig, BenchmarkMode};
 use crate::fixture::FixtureManager;
 use crate::registry::AdapterRegistry;
 use crate::stats::percentile_r7;
+use crate::system_load::SystemLoad;
 use crate::types::{
     BenchmarkResult, DiskSizeInfo, DurationStatistics, ErrorKind, IterationResult, OutputFormat, PerformanceMetrics,
 };
@@ -182,6 +183,46 @@ pub struct BenchmarkRunner {
     output_format: OutputFormat,
 }
 
+/// Resolve the installation size to report for a benchmark result framework.
+///
+/// Competitors (liteparse, docling, ...) name their benchmark row identically to
+/// their size-map key, so they resolve by a direct lookup (after stripping the
+/// `-batch`/`-sync`/`-async` mode suffix).
+///
+/// Xberg benchmark rows are named `xberg-<format>-<pipeline>` (e.g.
+/// `xberg-markdown-baseline`, `xberg-markdown-layout`) and are *not* size-map
+/// keys, so they map onto the measured native `xberg-rust` footprint:
+/// - heuristic pipelines (baseline/plaintext) ship without ML models, so they
+///   report the shipped binary+dylibs only (`package_bytes`) — the fair
+///   comparison against model-free tools like LiteParse;
+/// - ML pipelines (layout/paddle/candle) additionally require the on-demand
+///   model cache, so they report `package_bytes + model_bytes`.
+fn resolve_installation_size(framework: &str, sizes: &HashMap<String, DiskSizeInfo>) -> Option<DiskSizeInfo> {
+    let base_name = framework
+        .trim_end_matches("-batch")
+        .trim_end_matches("-sync")
+        .trim_end_matches("-async");
+
+    if let Some(size_info) = sizes.get(base_name) {
+        return Some(size_info.clone());
+    }
+
+    if base_name.starts_with("xberg-") {
+        let base = sizes.get("xberg-rust")?;
+        let uses_models = ["layout", "paddle", "candle"].iter().any(|m| base_name.contains(m));
+        let mut info = base.clone();
+        if uses_models {
+            info.size_bytes = base.package_bytes + base.model_bytes;
+        } else {
+            info.size_bytes = base.package_bytes;
+            info.model_bytes = 0;
+        }
+        return Some(info);
+    }
+
+    None
+}
+
 impl BenchmarkRunner {
     /// Create a new benchmark runner
     pub fn new(config: BenchmarkConfig, registry: AdapterRegistry) -> Self {
@@ -254,14 +295,8 @@ impl BenchmarkRunner {
     /// # Arguments
     /// * `result` - Mutable reference to benchmark result to enrich
     fn enrich_with_framework_size(&self, result: &mut BenchmarkResult) {
-        let base_name = result
-            .framework
-            .trim_end_matches("-batch")
-            .trim_end_matches("-sync")
-            .trim_end_matches("-async");
-
-        if let Some(size_info) = self.framework_sizes.get(base_name) {
-            result.framework_capabilities.installation_size = Some(size_info.clone());
+        if let Some(size_info) = resolve_installation_size(&result.framework, &self.framework_sizes) {
+            result.framework_capabilities.installation_size = Some(size_info);
         }
     }
 
@@ -426,6 +461,7 @@ impl BenchmarkRunner {
                 .next()
                 .ok_or_else(|| Error::Benchmark("Failed to retrieve single iteration result".to_string()))?;
             result.cold_start_duration = cold_start_duration;
+            result.system_load = Some(SystemLoad::capture());
             return Ok(result);
         }
 
@@ -517,6 +553,7 @@ impl BenchmarkRunner {
             pdf_metadata: first_result.pdf_metadata.clone(),
             ocr_status: first_result.ocr_status,
             extracted_text: first_result.extracted_text.clone(),
+            system_load: Some(SystemLoad::capture()),
         })
     }
 
@@ -564,8 +601,10 @@ impl BenchmarkRunner {
                 .into_iter()
                 .next()
                 .ok_or_else(|| Error::Benchmark("Failed to retrieve single batch iteration result".to_string()))?;
+            let system_load = Some(SystemLoad::capture());
             for r in &mut result {
                 r.cold_start_duration = cold_start_duration;
+                r.system_load = system_load;
             }
             return Ok(result);
         }
@@ -655,6 +694,7 @@ impl BenchmarkRunner {
                 pdf_metadata: first_result.pdf_metadata.clone(),
                 ocr_status: first_result.ocr_status,
                 extracted_text: first_result.extracted_text.clone(),
+                system_load: Some(SystemLoad::capture()),
             });
         }
 
@@ -976,6 +1016,76 @@ impl BenchmarkRunner {
 mod tests {
     use super::*;
 
+    fn disk_size(size: u64, package: u64, model: u64) -> DiskSizeInfo {
+        DiskSizeInfo {
+            size_bytes: size,
+            package_bytes: package,
+            system_deps_bytes: 0,
+            model_bytes: model,
+            method: "binary_size".to_string(),
+            description: "test".to_string(),
+            system_deps_detail: HashMap::new(),
+        }
+    }
+
+    fn xberg_size_map() -> HashMap<String, DiskSizeInfo> {
+        let mut sizes = HashMap::new();
+        // shipped binary+dylibs = 40 MB, on-demand model cache = 525 MB.
+        sizes.insert("xberg-rust".to_string(), disk_size(565, 40, 525));
+        sizes.insert("liteparse".to_string(), disk_size(35, 35, 0));
+        sizes
+    }
+
+    #[test]
+    fn should_resolve_competitor_size_by_direct_name() {
+        let sizes = xberg_size_map();
+        let info = resolve_installation_size("liteparse", &sizes).unwrap();
+        assert_eq!(info.size_bytes, 35);
+    }
+
+    #[test]
+    fn should_strip_batch_suffix_for_competitor_lookup() {
+        let sizes = xberg_size_map();
+        let info = resolve_installation_size("liteparse-batch", &sizes).unwrap();
+        assert_eq!(info.size_bytes, 35);
+    }
+
+    #[test]
+    fn should_report_shipped_only_for_xberg_heuristic_rows() {
+        let sizes = xberg_size_map();
+        // Baseline/plaintext heuristic pipelines ship without ML models.
+        for name in [
+            "xberg-markdown-baseline",
+            "xberg-plaintext-baseline",
+            "xberg-markdown-baseline-batch",
+        ] {
+            let info = resolve_installation_size(name, &sizes).unwrap();
+            assert_eq!(info.size_bytes, 40, "{name} should report shipped-only size");
+            assert_eq!(info.model_bytes, 0, "{name} should not count model cache");
+        }
+    }
+
+    #[test]
+    fn should_include_models_for_xberg_ml_rows() {
+        let sizes = xberg_size_map();
+        for name in [
+            "xberg-markdown-layout",
+            "xberg-markdown-layout-batch",
+            "xberg-markdown-paddle-ocr",
+        ] {
+            let info = resolve_installation_size(name, &sizes).unwrap();
+            assert_eq!(info.size_bytes, 565, "{name} should include model cache");
+            assert_eq!(info.model_bytes, 525);
+        }
+    }
+
+    #[test]
+    fn should_return_none_when_xberg_rust_unmeasured() {
+        let sizes = HashMap::new();
+        assert!(resolve_installation_size("xberg-markdown-baseline", &sizes).is_none());
+        assert!(resolve_installation_size("unknown-framework", &sizes).is_none());
+    }
+
     #[tokio::test]
     async fn test_benchmark_runner_creation() {
         let config = BenchmarkConfig::default();
@@ -1077,6 +1187,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
         };
 
         let mut result_async = BenchmarkResult {
@@ -1100,6 +1211,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
         };
 
         let mut result_batch = BenchmarkResult {
@@ -1123,6 +1235,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
         };
 
         assert!(result_sync.framework_capabilities.installation_size.is_none());

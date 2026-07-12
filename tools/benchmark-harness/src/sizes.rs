@@ -12,7 +12,7 @@ use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 /// Information about a framework's disk size
@@ -137,6 +137,19 @@ pub fn measure_framework_sizes() -> Result<FrameworkSizes> {
             continue;
         }
 
+        // The native xberg CLI is measured with a shipped-vs-model breakdown so
+        // benchmark rows can report install size fairly (heuristic rows exclude
+        // the on-demand model cache; ML rows include it).
+        if *name == "xberg-rust" {
+            match measure_xberg_framework_size(description) {
+                Some(fs) => {
+                    sizes.insert(name.to_string(), fs);
+                }
+                None => eprintln!("Size measurement: xberg-rust - binary not found, skipping"),
+            }
+            continue;
+        }
+
         match measure_framework(name, method) {
             Ok(Some(pkg_size)) => {
                 sizes.insert(
@@ -178,6 +191,16 @@ pub fn measure_framework_sizes_strict() -> Result<FrameworkSizes> {
             continue;
         }
 
+        if *name == "xberg-rust" {
+            match measure_xberg_framework_size(description) {
+                Some(fs) => {
+                    sizes.insert(name.to_string(), fs);
+                }
+                None => errors.push(format!("{} ({})", name, method)),
+            }
+            continue;
+        }
+
         match measure_framework(name, method) {
             Ok(Some(pkg_size)) => {
                 sizes.insert(
@@ -216,13 +239,9 @@ fn measure_framework(name: &str, method: &str) -> Result<Option<u64>> {
     match method {
         "pip_package" => measure_pip_package(extract_package_name(name)),
         "npm_package" => measure_npm_package(extract_package_name(name)),
-        "binary_size" => {
-            if name == "xberg-rust" {
-                measure_xberg_binary_release()
-            } else {
-                measure_binary(name)
-            }
-        }
+        // Note: `xberg-rust` is measured separately via `measure_xberg_framework_size`
+        // (shipped-vs-model breakdown) before this generic dispatch is reached.
+        "binary_size" => measure_binary(name),
         "jar_size" => measure_jar(name),
         "gem_package" => measure_gem_package(extract_package_name(name)),
         "wasm_bundle" => measure_wasm_bundle(name),
@@ -430,47 +449,93 @@ fn measure_npm_package(package: &str) -> Result<Option<u64>> {
     Ok(None)
 }
 
-/// Measure Xberg CLI release binary and bundled artifacts.
+/// Measure the native xberg CLI install footprint, split so benchmark rows can
+/// report install size fairly against competitors.
 ///
-/// Builds/measures the actual xberg-cli release binary with a representative
-/// feature set (ocr, paddle-ocr, layout-detection, embeddings). Includes:
-/// - The compiled binary (target/release/xberg-cli or xberg)
-/// - Any bundled native libraries (tesseract, ONNX Runtime, tree-sitter)
-/// - Cached ML models (if pre-downloaded; otherwise just the binary)
-fn measure_xberg_binary_release() -> Result<Option<u64>> {
-    let binary_paths = [
+/// - `package_bytes` = shipped footprint: the compiled `xberg`/`xberg-cli`
+///   release binary plus any bundled native libraries (ONNX Runtime, tesseract,
+///   tree-sitter). This is what a heuristic-only (no-ML) run needs on disk, and
+///   the fair comparison point against model-free tools like LiteParse.
+/// - `model_bytes` = the on-demand ML model cache (platform cache dir), pulled on
+///   first use by the layout/OCR/embedding paths. Comparable to how Docling's
+///   auto-downloaded models are reported separately.
+/// - `size_bytes` = `package_bytes + model_bytes` (total, matching the
+///   convention used for third-party frameworks).
+///
+/// Returns `None` if no binary is present.
+fn measure_xberg_framework_size(description: &str) -> Option<FrameworkSize> {
+    let binary_size = [
         "target/release/xberg",
         "target/release/xberg-cli",
         "target/debug/xberg",
         "target/debug/xberg-cli",
-    ];
+    ]
+    .iter()
+    .find_map(|path| fs::metadata(path).ok().map(|m| m.len()))
+    .filter(|size| *size > 0)?;
 
-    for path in binary_paths.iter() {
-        if let Ok(metadata) = fs::metadata(path) {
-            let binary_size = metadata.len();
+    let ffi_size = measure_native_ffi_libs();
 
-            let ffi_size = measure_native_ffi_libs();
+    let model_size = xberg_cache_base()
+        .filter(|dir| dir.exists())
+        .map(|dir| dir_size(&dir))
+        .unwrap_or(0);
 
-            let home = std::env::var("HOME").unwrap_or_else(|_| "/root".to_string());
-            let model_cache = Path::new(&home).join(".cache/xberg");
-            let model_size = if model_cache.exists() {
-                dir_size(&model_cache)
-            } else {
-                0
-            };
+    let package_bytes = binary_size + ffi_size;
+    eprintln!(
+        "Xberg measurement: binary={} bytes, ffi_libs={} bytes, cached_models={} bytes (shipped={}, total={})",
+        binary_size,
+        ffi_size,
+        model_size,
+        package_bytes,
+        package_bytes + model_size,
+    );
 
-            let total = binary_size + ffi_size + model_size;
-            if binary_size > 0 {
-                eprintln!(
-                    "Xberg measurement: binary={} bytes, ffi_libs={} bytes, cached_models={} bytes, total={}",
-                    binary_size, ffi_size, model_size, total
-                );
-                return Ok(Some(total));
-            }
+    Some(FrameworkSize {
+        size_bytes: package_bytes + model_size,
+        package_bytes,
+        system_deps_bytes: 0,
+        model_bytes: model_size,
+        method: "binary_size".to_string(),
+        description: description.to_string(),
+        system_deps_detail: HashMap::new(),
+    })
+}
+
+/// Resolve the xberg model cache base directory, mirroring the core's
+/// `cache_dir::resolve_cache_base`: honor `XBERG_CACHE_DIR`, else the
+/// platform-appropriate global cache dir (`dirs::cache_dir()/xberg`).
+///
+/// This must match the core, or the measured `model_bytes` is wrong — notably
+/// on macOS the cache lives at `~/Library/Caches/xberg`, not `~/.cache/xberg`.
+fn xberg_cache_base() -> Option<PathBuf> {
+    if let Ok(env_path) = std::env::var("XBERG_CACHE_DIR") {
+        return Some(PathBuf::from(env_path));
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Ok(home) = std::env::var("HOME") {
+            return Some(Path::new(&home).join("Library/Caches/xberg"));
+        }
+    }
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(local) = std::env::var("LOCALAPPDATA") {
+            return Some(Path::new(&local).join("xberg"));
+        }
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        if let Ok(xdg) = std::env::var("XDG_CACHE_HOME") {
+            return Some(Path::new(&xdg).join("xberg"));
+        }
+        if let Ok(home) = std::env::var("HOME") {
+            return Some(Path::new(&home).join(".cache/xberg"));
         }
     }
 
-    Ok(None)
+    None
 }
 
 /// Measure binary size

@@ -36,10 +36,28 @@ fn extract_json_from_stdout(raw: &str) -> &str {
     }
 }
 
+/// Marker printed by our extraction scripts (e.g. `docling_extract.py`,
+/// `markitdown_extract.py`) to stderr when the *framework itself* raises during
+/// extraction: `print(f"Error extracting with {Framework}: {e}", file=sys.stderr)`
+/// followed by a non-zero exit. This is a framework-side crash, not ours — see
+/// [`error_to_error_kind`].
+const FRAMEWORK_CRASH_STDERR_MARKER: &str = "error extracting with";
+
 /// Map a harness `Error` to the appropriate `ErrorKind`.
 ///
 /// Detects config/setup errors (missing dependencies, environment issues) vs
-/// actual harness infrastructure failures.
+/// actual harness infrastructure failures vs framework-side crashes.
+///
+/// Subprocess non-zero exits are wrapped as `Error::Benchmark` regardless of
+/// *why* the subprocess died, so the message text (which embeds captured
+/// stderr — see `execute_subprocess`/`execute_subprocess_batch`) is inspected
+/// here to distinguish three cases:
+/// 1. The framework crashed while extracting (our extraction scripts print
+///    `"Error extracting with {Framework}: ..."` to stderr before exiting
+///    non-zero) → `FrameworkError`, not our fault.
+/// 2. A missing dependency/model/library (config/setup issue) → `ConfigSetupError`.
+/// 3. Anything else (spawn failure, our own panics, unexpected subprocess death)
+///    → `HarnessError`, potentially our fault.
 fn error_to_error_kind(e: &Error) -> ErrorKind {
     match e {
         Error::Timeout(_) => ErrorKind::Timeout,
@@ -62,6 +80,8 @@ fn error_to_error_kind(e: &Error) -> ErrorKind {
                     && (msg_lower.contains("model") || msg_lower.contains("library")))
             {
                 ErrorKind::ConfigSetupError
+            } else if msg_lower.contains(FRAMEWORK_CRASH_STDERR_MARKER) {
+                ErrorKind::FrameworkError
             } else {
                 ErrorKind::HarnessError
             }
@@ -591,6 +611,7 @@ impl SubprocessAdapter {
             pdf_metadata: None,
             ocr_status: OcrStatus::Unknown,
             extracted_text: None,
+            system_load: None,
         }
     }
 
@@ -851,6 +872,7 @@ impl FrameworkAdapter for SubprocessAdapter {
             pdf_metadata,
             ocr_status,
             extracted_text,
+            system_load: None,
         })
     }
 
@@ -960,6 +982,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                             pdf_metadata: None,
                             ocr_status: OcrStatus::Unknown,
                             extracted_text: None,
+                            system_load: None,
                         }
                     })
                     .collect();
@@ -1133,6 +1156,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                     pdf_metadata: None,
                     ocr_status,
                     extracted_text: batch_contents.get(idx).cloned().flatten(),
+                    system_load: None,
                 }
             })
             .collect();
@@ -1352,6 +1376,27 @@ mod tests {
             error_to_error_kind(&Error::Config("Module not installed".into())),
             ErrorKind::ConfigSetupError
         );
+    }
+
+    /// Regression test for Bug C: a framework-emitted crash (captured in the subprocess's
+    /// stderr and embedded into the `Error::Benchmark` message by `execute_subprocess`) must be
+    /// classified as `FrameworkError`, not `HarnessError` — the framework failed, not the
+    /// harness. Uses the exact stderr shape `docling_extract.py` produces on an uncaught
+    /// exception: `Error extracting with Docling: Unsupported configuration: ...`.
+    #[test]
+    fn test_error_to_error_kind_framework_crash_stderr_is_framework_error() {
+        let msg = "Subprocess failed with exit code Some(1)\nstderr: Error extracting with Docling: \
+                    Unsupported configuration: torch.PP-OCRv6.det.small"
+            .to_string();
+        assert_eq!(error_to_error_kind(&Error::Benchmark(msg)), ErrorKind::FrameworkError);
+    }
+
+    /// A genuine harness-side failure (e.g. we failed to spawn the subprocess at all) must stay
+    /// `HarnessError` — the framework-crash heuristic must not over-reach.
+    #[test]
+    fn test_error_to_error_kind_harness_spawn_failure_stays_harness_error() {
+        let msg = "Failed to spawn subprocess 'docling-cli' with args []: No such file or directory".to_string();
+        assert_eq!(error_to_error_kind(&Error::Benchmark(msg)), ErrorKind::HarnessError);
     }
 
     #[test]

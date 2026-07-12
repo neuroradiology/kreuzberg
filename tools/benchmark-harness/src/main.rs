@@ -132,6 +132,33 @@ enum Commands {
         output: PathBuf,
     },
 
+    /// Build a per-document gap report from a `run` result set.
+    ///
+    /// Pivots `results.json` by document and ranks the documents where
+    /// competitors beat our heuristics path, split by text (TF1) vs structure
+    /// (SF1). Writes `per_document.json` + `gaps.md`.
+    GapReport {
+        /// Directory containing `results.json` (as produced by `run`)
+        #[arg(short, long, default_value = "results")]
+        results: PathBuf,
+
+        /// Output directory for `per_document.json` + `gaps.md` (defaults to the results dir)
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Our model-free heuristics-path framework row
+        #[arg(long, default_value = "xberg-markdown-baseline")]
+        baseline: String,
+
+        /// Our routed ML-layout framework row
+        #[arg(long, default_value = "xberg-markdown-layout")]
+        layout: String,
+
+        /// Competitor frameworks to rank against (comma-separated)
+        #[arg(long, value_delimiter = ',', default_value = "liteparse,docling")]
+        competitors: Vec<String>,
+    },
+
     /// Compare extraction pipelines on document corpus with quality scoring
     Compare {
         /// Directory containing fixture JSON files
@@ -1065,6 +1092,23 @@ async fn main() -> Result<()> {
             save_framework_sizes(&sizes, &output)?;
             println!("\nSizes written to: {}", output.display());
 
+            Ok(())
+        }
+
+        Commands::GapReport {
+            results,
+            output,
+            baseline,
+            layout,
+            competitors,
+        } => {
+            let output_dir = output.unwrap_or_else(|| results.clone());
+            let config = benchmark_harness::gap_report::GapConfig {
+                baseline,
+                layout,
+                competitors,
+            };
+            benchmark_harness::gap_report::generate(&results, &output_dir, &config)?;
             Ok(())
         }
     }

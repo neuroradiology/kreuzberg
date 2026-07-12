@@ -94,6 +94,7 @@ mod tests {
             pdf_metadata: None,
             ocr_status: Default::default(),
             extracted_text: None,
+            system_load: None,
             output_format: OutputFormat::Markdown,
         }
     }
