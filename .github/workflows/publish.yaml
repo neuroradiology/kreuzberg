@@ -991,15 +991,24 @@ jobs:
           target: ${{ matrix.target }}
           extra-cargo-args: ${{ matrix.extra_cargo_args || '--features mcp,mcp-http,api' }}
 
+      # Stage ONNX Runtime for Intel macOS after the build so the ort-dynamic
+      # compile is unaffected; this exports ORT_DYLIB_PATH for the vendor step.
+      # pyke ships no x86_64-apple-darwin build, so the macOS setup script pins
+      # Microsoft's last x86_64 release (1.23.2, self-contained).
+      - name: Setup ONNX Runtime (Intel macOS)
+        if: matrix.target == 'x86_64-apple-darwin'
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: "1.23.2"
+          arch-id: x64
+          dest-dir: crates/xberg-cli
+
       - name: Vendor ONNX Runtime dylib (Intel macOS)
         if: matrix.target == 'x86_64-apple-darwin'
         shell: bash
         run: |
           set -euxo pipefail
-          # This target loads ONNX Runtime at runtime (ort-dynamic) rather than
-          # static-linking: pyke ships no x86_64-apple-darwin build. Vendor the
-          # dylib setup-onnx-runtime staged (Microsoft's last x86_64 release,
-          # 1.23.2, self-contained) next to the binary.
+          # Bundle the dylib the setup step staged next to the binary.
           test -f "$ORT_DYLIB_PATH"
           echo "ORT_VENDOR_LIB=$ORT_DYLIB_PATH" >> "$GITHUB_ENV"
 
