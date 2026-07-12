@@ -152,18 +152,42 @@ pub fn tokenize(text: &str) -> Vec<String> {
         .filter(|w| !w.is_empty())
         .map(|token| {
             let digit_count = token.chars().filter(|c| c.is_ascii_digit()).count();
-            if digit_count <= 15 {
-                if let Ok(num) = token.parse::<f64>() {
-                    let normalized = format!("{num}");
-                    if normalized != token { normalized } else { token }
-                } else {
-                    token
-                }
+            if digit_count == 0 || digit_count > 15 {
+                return token;
+            }
+            // Normalize thousands separators ("1,000" -> "1000") before the numeric parse so a
+            // grouped number and its bare form become the same token. Only strip commas that form
+            // well-shaped 3-digit groups, to avoid corrupting European decimals like "3,14".
+            let candidate = if is_thousands_grouped(&token) {
+                token.replace(',', "")
+            } else {
+                token.clone()
+            };
+            if let Ok(num) = candidate.parse::<f64>() {
+                let normalized = format!("{num}");
+                if normalized != token { normalized } else { token }
             } else {
                 token
             }
         })
         .collect()
+}
+
+/// Whether a numeric token uses `,` as a thousands separator in well-formed 3-digit groups
+/// (e.g. `1,000`, `12,345,678`, `1,234.56`) — as opposed to a European decimal comma (`3,14`),
+/// which must be left untouched.
+fn is_thousands_grouped(token: &str) -> bool {
+    let Some(int_part) = token.split('.').next() else {
+        return false;
+    };
+    let groups: Vec<&str> = int_part.split(',').collect();
+    if groups.len() < 2 {
+        return false;
+    }
+    if groups[0].is_empty() || groups[0].len() > 3 || !groups[0].bytes().all(|b| b.is_ascii_digit()) {
+        return false;
+    }
+    groups[1..].iter().all(|g| g.len() == 3 && g.bytes().all(|b| b.is_ascii_digit()))
 }
 
 /// Check whether either text has any numeric tokens (used to decide scoring formula).
@@ -388,5 +412,15 @@ mod tests {
             vec!["12345678901234"],
             "15-digit number with trailing .0 should still normalize"
         );
+    }
+
+    #[test]
+    fn test_thousands_separators_normalize_to_bare_number() {
+        // "1,000" and "1000" must tokenize identically (previously "1,000" failed f64 parse).
+        assert_eq!(tokenize("1,000"), tokenize("1000"));
+        assert_eq!(tokenize("12,345,678"), tokenize("12345678"));
+        assert_eq!(tokenize("1,234.56"), tokenize("1234.56"));
+        // A European-decimal comma (2-digit group) must NOT be treated as a thousands separator.
+        assert_eq!(tokenize("3,14"), vec!["3,14"]);
     }
 }
