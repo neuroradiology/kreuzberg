@@ -121,10 +121,10 @@ To use this package via `go get`:
 
 ```bash
 # Get the latest release
-go get github.com/xberg-io/xberg@latest
+go get github.com/xberg-io/xberg/packages/go@latest
 
 # Or a specific version
-go get github.com/xberg-io/xberg@v1.0.0-rc.25
+go get github.com/xberg-io/xberg/packages/go@v1.0.0-rc.25
 ```
 
 You'll need to provide the static library at build time. See [Building with Static Libraries](#building-with-static-libraries) below.
@@ -211,7 +211,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/xberg"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 func main() {
@@ -330,7 +330,7 @@ func init() {
 
 ## API Reference
 
-- **GoDoc**: [pkg.go.dev/github.com/xberg-io/xberg](<https://pkg.go.dev/github.com/xberg-io/xberg>)
+- **GoDoc**: [pkg.go.dev/github.com/xberg-io/xberg/packages/go](<https://pkg.go.dev/github.com/xberg-io/xberg/packages/go>)
 - **Full documentation**: [xberg.io](https://xberg.io) (configuration, formats, OCR backends)
 
 ## Troubleshooting

@@ -1869,7 +1869,7 @@ options_type = "ExtractionConfig"
 result_enum_fields = { outputFormat = "OutputFormat", "metadata.format" = "FormatMetadata" }
 
 [crates.e2e.call.overrides.go]
-module = "github.com/xberg-io/xberg"
+module = "github.com/xberg-io/xberg/packages/go"
 function = "Extract"
 alias = "xberg"
 options_type = "ExtractionConfig"
@@ -3512,7 +3512,7 @@ name = "@xberg-io/xberg"
 path = "../../crates/xberg-node"
 
 [crates.e2e.packages.go]
-module = "github.com/xberg-io/xberg"
+module = "github.com/xberg-io/xberg/packages/go"
 path = "../../packages/go"
 
 [crates.e2e.packages.csharp]
@@ -3654,7 +3654,7 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 template = "go.md"
 output_path = "packages/go/README.md"
 name = "Go"
-package_name = "github.com/xberg-io/xberg"
+package_name = "github.com/xberg-io/xberg/packages/go"
 badge_url = "https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 97 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance."
