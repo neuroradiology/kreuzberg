@@ -78,6 +78,7 @@ use input::{
 };
 use serde_json::json;
 use std::path::PathBuf;
+use std::time::Instant;
 use xberg::{OutputFormat as ContentOutputFormat, detect_mime_type};
 
 /// Xberg document intelligence CLI
@@ -539,6 +540,11 @@ impl From<ContentOutputFormatArg> for ContentOutputFormat {
 }
 
 fn main() -> Result<()> {
+    // Captured as early as feasible for the optional per-stage cold-start timing breakdown (see
+    // `commands::extract::stage_timing_requested`). Gated on the env var so the timing path is
+    // fully zero-cost (no `Instant::now()` call, no state) when stage timing isn't requested.
+    let process_start = commands::extract::stage_timing_requested().then(Instant::now);
+
     let cli = Cli::parse();
 
     let env_filter = logging::build_env_filter(cli.log_level.as_deref());
@@ -572,7 +578,7 @@ fn main() -> Result<()> {
             apply_json_overrides(&mut config, config_json, config_json_base64)?;
             overrides.apply(&mut config);
 
-            extract_command(input, config, mime_type, format, output_dir)?;
+            extract_command(input, config, mime_type, format, output_dir, process_start)?;
         }
 
         Commands::Batch {

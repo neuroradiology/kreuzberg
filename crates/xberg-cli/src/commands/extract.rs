@@ -15,9 +15,48 @@ use xberg::{
 
 use crate::{
     WireFormat,
-    output::{BatchEnvelope, ExtractEnvelope},
+    output::{BatchEnvelope, ExtractEnvelope, StageTimings},
     style,
 };
+
+/// Environment variable that enables per-stage cold-start timing in `xberg extract --format json`.
+///
+/// Set to `1` (or any non-empty value) to include a `stage_timings` object in the JSON output
+/// envelope. Disabled by default so the timing path costs nothing (no extra `Instant::now()`
+/// calls, no allocation) when not requested.
+pub const STAGE_TIMING_ENV_VAR: &str = "XBERG_EMIT_STAGE_TIMING";
+
+/// Returns `true` when [`STAGE_TIMING_ENV_VAR`] is set to a non-empty value.
+///
+/// Checked once per invocation; callers should cache the result rather than re-reading the
+/// environment on every stage boundary.
+pub fn stage_timing_requested() -> bool {
+    std::env::var(STAGE_TIMING_ENV_VAR).is_ok_and(|v| !v.is_empty())
+}
+
+/// Builds the [`StageTimings`] breakdown for a completed extraction.
+///
+/// `process_start` is the [`Instant`] captured in `main()` (or `None` if unavailable);
+/// `extraction_start` is the [`Instant`] captured immediately before the extraction call;
+/// `extraction_time_ms` is the already-computed wall-clock duration of that call.
+///
+/// `ort_session_and_inference_ms` is populated (as a coarse approximation — see the field's doc
+/// comment on [`StageTimings`]) whenever the extraction config has layout or OCR enabled, since
+/// both may invoke ONNX Runtime.
+fn build_stage_timings(
+    process_start: Option<Instant>,
+    extraction_start: Instant,
+    extraction_time_ms: f64,
+    config: &ExtractionConfig,
+) -> StageTimings {
+    let process_init_ms = process_start.map(|start| extraction_start.duration_since(start).as_secs_f64() * 1000.0);
+    let ort_active = config.layout.is_some() || config.ocr.is_some();
+    StageTimings {
+        process_init_ms: process_init_ms.unwrap_or(0.0),
+        first_parse_ms: extraction_time_ms,
+        ort_session_and_inference_ms: ort_active.then_some(extraction_time_ms),
+    }
+}
 
 /// Input source for single-document extraction.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,17 +110,28 @@ fn write_extracted_images(images: &[ExtractedImage], output_dir: &Path) -> Resul
     Ok(())
 }
 
-/// Execute single document extraction command
+/// Execute single document extraction command.
+///
+/// `process_start` is the [`Instant`] captured as early as feasible in `main()`. It is used only
+/// to compute `process_init_ms` for the optional stage-timing breakdown (see
+/// [`stage_timing_requested`]); pass `None` to skip that measurement entirely (e.g. from tests
+/// that construct this call directly).
 pub fn extract_command(
     input: ExtractInputSource,
     config: ExtractionConfig,
     mime_type: Option<String>,
     format: WireFormat,
     output_dir: Option<PathBuf>,
+    process_start: Option<Instant>,
 ) -> Result<()> {
+    let emit_stage_timing = stage_timing_requested();
+
     let t0 = Instant::now();
     let result = extract_input_sync(input, mime_type.as_deref(), &config)?;
-    let extraction_time_ms = t0.elapsed().as_secs_f64() * 1000.0;
+    let elapsed = t0.elapsed();
+    let extraction_time_ms = elapsed.as_secs_f64() * 1000.0;
+
+    let stage_timings = emit_stage_timing.then(|| build_stage_timings(process_start, t0, extraction_time_ms, &config));
 
     match format {
         WireFormat::Text => {
@@ -95,6 +145,7 @@ pub fn extract_command(
             let envelope = ExtractEnvelope {
                 result,
                 extraction_time_ms,
+                stage_timings,
             };
             println!(
                 "{}",
@@ -356,6 +407,110 @@ mod tests {
     use std::borrow::Cow;
     use tempfile::tempdir;
     use xberg::ExtractedImage;
+
+    /// Lock around `STAGE_TIMING_ENV_VAR` to keep these tests deterministic in the
+    /// multi-threaded test runner, following the same pattern as
+    /// `commands::overrides::tests::with_env_var`.
+    static STAGE_TIMING_ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+    #[allow(unsafe_code)]
+    fn with_stage_timing_env<R>(value: Option<&str>, f: impl FnOnce() -> R) -> R {
+        let _guard = STAGE_TIMING_ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let previous = std::env::var(STAGE_TIMING_ENV_VAR).ok();
+        unsafe {
+            match value {
+                Some(v) => std::env::set_var(STAGE_TIMING_ENV_VAR, v),
+                None => std::env::remove_var(STAGE_TIMING_ENV_VAR),
+            }
+        }
+        let result = f();
+        unsafe {
+            match previous {
+                Some(v) => std::env::set_var(STAGE_TIMING_ENV_VAR, v),
+                None => std::env::remove_var(STAGE_TIMING_ENV_VAR),
+            }
+        }
+        result
+    }
+
+    #[test]
+    fn stage_timing_requested_is_false_when_env_var_unset() {
+        with_stage_timing_env(None, || {
+            assert!(!stage_timing_requested());
+        });
+    }
+
+    #[test]
+    fn stage_timing_requested_is_false_when_env_var_empty() {
+        with_stage_timing_env(Some(""), || {
+            assert!(!stage_timing_requested());
+        });
+    }
+
+    #[test]
+    fn stage_timing_requested_is_true_when_env_var_set() {
+        with_stage_timing_env(Some("1"), || {
+            assert!(stage_timing_requested());
+        });
+    }
+
+    #[test]
+    fn build_stage_timings_reports_process_init_and_first_parse() {
+        let process_start = Instant::now();
+        std::thread::sleep(std::time::Duration::from_millis(5));
+        let extraction_start = Instant::now();
+        let config = ExtractionConfig::default();
+
+        let timings = build_stage_timings(Some(process_start), extraction_start, 42.0, &config);
+
+        assert!(
+            timings.process_init_ms >= 5.0,
+            "expected process_init_ms >= 5.0 (slept 5ms before extraction_start), got {}",
+            timings.process_init_ms
+        );
+        assert_eq!(timings.first_parse_ms, 42.0);
+        assert_eq!(
+            timings.ort_session_and_inference_ms, None,
+            "default ExtractionConfig has no layout/ocr, so ORT sub-stage should be absent"
+        );
+    }
+
+    #[test]
+    fn build_stage_timings_reports_zero_process_init_when_process_start_missing() {
+        let extraction_start = Instant::now();
+        let config = ExtractionConfig::default();
+
+        let timings = build_stage_timings(None, extraction_start, 10.0, &config);
+
+        assert_eq!(timings.process_init_ms, 0.0);
+        assert_eq!(timings.first_parse_ms, 10.0);
+    }
+
+    #[test]
+    fn build_stage_timings_populates_ort_field_when_layout_active() {
+        let extraction_start = Instant::now();
+        let config = ExtractionConfig {
+            layout: Some(xberg::LayoutDetectionConfig::default()),
+            ..ExtractionConfig::default()
+        };
+
+        let timings = build_stage_timings(None, extraction_start, 1171.0, &config);
+
+        assert_eq!(timings.ort_session_and_inference_ms, Some(1171.0));
+    }
+
+    #[test]
+    fn build_stage_timings_populates_ort_field_when_ocr_active() {
+        let extraction_start = Instant::now();
+        let config = ExtractionConfig {
+            ocr: Some(xberg::OcrConfig::default()),
+            ..ExtractionConfig::default()
+        };
+
+        let timings = build_stage_timings(None, extraction_start, 500.0, &config);
+
+        assert_eq!(timings.ort_session_and_inference_ms, Some(500.0));
+    }
 
     fn make_image(index: u32, format: &'static str, data: &[u8]) -> ExtractedImage {
         ExtractedImage {

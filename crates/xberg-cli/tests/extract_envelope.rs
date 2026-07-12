@@ -193,6 +193,88 @@ fn test_pdf_backend_invalid_value_exits_nonzero() {
 }
 
 #[test]
+fn test_extract_json_omits_stage_timings_by_default() {
+    build_binary();
+
+    let pdf = pdf_fixture();
+    if !fixture_exists(&pdf) {
+        eprintln!("SKIP: PDF fixture not found at {}", pdf.display());
+        return;
+    }
+
+    let output = Command::new(xberg_bin())
+        .args(["extract", &pdf.to_string_lossy(), "--format", "json"])
+        .env_remove("XBERG_EMIT_STAGE_TIMING")
+        .output()
+        .expect("failed to run xberg extract");
+
+    assert!(
+        output.status.success(),
+        "extract exited non-zero: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).expect("stdout is not valid JSON");
+    assert!(
+        json.get("stage_timings").is_none(),
+        "stage_timings must be absent when XBERG_EMIT_STAGE_TIMING is unset"
+    );
+}
+
+#[test]
+fn test_extract_json_includes_stage_timings_when_requested() {
+    build_binary();
+
+    let pdf = pdf_fixture();
+    if !fixture_exists(&pdf) {
+        eprintln!("SKIP: PDF fixture not found at {}", pdf.display());
+        return;
+    }
+
+    let output = Command::new(xberg_bin())
+        .args(["extract", &pdf.to_string_lossy(), "--format", "json"])
+        .env("XBERG_EMIT_STAGE_TIMING", "1")
+        .output()
+        .expect("failed to run xberg extract");
+
+    assert!(
+        output.status.success(),
+        "extract exited non-zero: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).expect("stdout is not valid JSON");
+    let stage_timings = json
+        .get("stage_timings")
+        .expect("stage_timings must be present when XBERG_EMIT_STAGE_TIMING=1");
+
+    let process_init_ms = stage_timings
+        .get("process_init_ms")
+        .and_then(|v| v.as_f64())
+        .expect("'stage_timings.process_init_ms' must be a number");
+    assert!(
+        process_init_ms >= 0.0,
+        "process_init_ms must be non-negative, got {process_init_ms}"
+    );
+
+    let first_parse_ms = stage_timings
+        .get("first_parse_ms")
+        .and_then(|v| v.as_f64())
+        .expect("'stage_timings.first_parse_ms' must be a number");
+    assert!(
+        first_parse_ms > 0.0,
+        "first_parse_ms must be positive, got {first_parse_ms}"
+    );
+
+    // Default extraction config (no --ocr/--layout flags) has neither OCR nor layout enabled,
+    // so the coarse ORT sub-stage field must be absent.
+    assert!(
+        stage_timings.get("ort_session_and_inference_ms").is_none(),
+        "ort_session_and_inference_ms must be absent when layout/OCR are not active"
+    );
+}
+
+#[test]
 fn test_pdf_backend_valid_value_succeeds() {
     build_binary();
 
