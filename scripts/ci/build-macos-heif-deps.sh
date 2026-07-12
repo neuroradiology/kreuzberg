@@ -89,9 +89,16 @@ main() {
     "https://github.com/strukturag/libde265/releases/download/v$LIBDE265_VERSION/libde265-$LIBDE265_VERSION.tar.gz" \
     -DENABLE_SDL=OFF
 
+  # The macos-15-intel runner ships a nasm libaom's test_nasm rejects
+  # ("multipass optimization not supported"), which aborts configure. This is a
+  # decode-only build on an EOL arch, so drop to the generic (pure-C) CPU target
+  # on x86_64 to bypass nasm entirely. arm64 keeps its NEON SIMD.
+  aom_cpu_arg=""
+  [ "$(uname -m)" = "x86_64" ] && aom_cpu_arg="-DAOM_TARGET_CPU=generic"
   build_dep libaom "$LIBAOM_VERSION" \
     "https://storage.googleapis.com/aom-releases/libaom-$LIBAOM_VERSION.tar.gz" \
-    -DCONFIG_AV1_ENCODER=0 -DENABLE_EXAMPLES=0 -DENABLE_TESTS=0 -DENABLE_DOCS=0 -DENABLE_TOOLS=0
+    -DCONFIG_AV1_ENCODER=0 -DENABLE_EXAMPLES=0 -DENABLE_TESTS=0 -DENABLE_DOCS=0 -DENABLE_TOOLS=0 \
+    ${aom_cpu_arg}
 
   # Pin dependency discovery to this prefix so no Homebrew library leaks in.
   PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig" build_dep libheif "$LIBHEIF_VERSION" \
