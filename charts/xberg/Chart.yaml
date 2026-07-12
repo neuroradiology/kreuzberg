@@ -21,9 +21,10 @@ keywords:
 maintainers:
   - name: xberg-dev
     url: https://github.com/xberg-io
-icon: https://raw.githubusercontent.com/xberg-io/xberg/main/docs/assets/logo.svg
+icon: https://cdn.jsdelivr.net/gh/xberg-io/assets@v1/favicon/android-chrome-512x512.png
 annotations:
   artifacthub.io/license: MIT
+  artifacthub.io/provider: Kreuzberg, Inc.
   artifacthub.io/prerelease: "true"
   artifacthub.io/category: integration-delivery
   artifacthub.io/links: |

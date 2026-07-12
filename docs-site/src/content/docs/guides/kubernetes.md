@@ -15,6 +15,21 @@ helm install xberg oci://ghcr.io/xberg-io/charts/xberg --version 1.0.0-rc.25
 
 This runs the full image (`ghcr.io/xberg-io/xberg`) in API-server mode on port 8000, exposed through a ClusterIP `Service` on port 80.
 
+The chart is also listed on [Artifact Hub](https://artifacthub.io/packages/helm/xberg-core/xberg), where you can browse every version, its values, and the generated values schema.
+
+## Verify the chart
+
+Every published chart is signed with [cosign](https://docs.sigstore.dev/) using keyless signing (Sigstore OIDC + the Rekor transparency log). Verify a release before installing:
+
+```bash title="Terminal"
+cosign verify \
+  ghcr.io/xberg-io/charts/xberg:1.0.0-rc.25 \
+  --certificate-identity-regexp '^https://github.com/xberg-io/xberg/.github/workflows/publish-helm.yaml@.*$' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+The identity certificate ties each signature to the `publish-helm.yaml` workflow in this repository, so a successful verification proves the chart was built and pushed by Xberg's release pipeline.
+
 ## Configure
 
 Override defaults with a `values.yaml` file:
@@ -92,7 +107,7 @@ The cache PVC carries `helm.sh/resource-policy: keep`, so it survives an uninsta
 | HorizontalPodAutoscaler | CPU/memory-based autoscaling | `autoscaling.enabled` |
 | PodDisruptionBudget | Availability during voluntary disruptions | `podDisruptionBudget.enabled` |
 
-All values are documented in the chart's [`values.yaml`](https://github.com/xberg-io/xberg/blob/main/charts/xberg/values.yaml).
+All values are documented in the chart's [`values.yaml`](https://github.com/xberg-io/xberg/blob/main/charts/xberg/values.yaml) and validated on install against the bundled [`values.schema.json`](https://github.com/xberg-io/xberg/blob/main/charts/xberg/values.schema.json), so a malformed override fails fast with a clear error.
 
 ## Next steps
 

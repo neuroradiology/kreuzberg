@@ -31,6 +31,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      # Required for cosign keyless signing (Sigstore OIDC token).
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -84,3 +86,39 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           dry-run: ${{ steps.meta.outputs.dry_run }}
+
+      - name: Install cosign
+        if: steps.meta.outputs.dry_run != 'true'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Install oras
+        if: steps.meta.outputs.dry_run != 'true'
+        uses: oras-project/setup-oras@v1
+
+      - name: Registry login
+        if: steps.meta.outputs.dry_run != 'true'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | oras login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      # Sign the pushed chart with cosign keyless (Sigstore OIDC + Rekor) so
+      # Artifact Hub shows the "Signed" label. Signing by digest, not tag.
+      - name: Sign chart (cosign keyless)
+        if: steps.meta.outputs.dry_run != 'true'
+        env:
+          COSIGN_YES: "true"
+        run: |
+          DIGEST="$(oras manifest fetch --descriptor \
+            ghcr.io/xberg-io/charts/xberg:${{ steps.meta.outputs.version }} | jq -r .digest)"
+          echo "Signing ghcr.io/xberg-io/charts/xberg@${DIGEST}"
+          cosign sign "ghcr.io/xberg-io/charts/xberg@${DIGEST}"
+
+      # Push the Artifact Hub repository metadata so the repository is marked as
+      # a Verified Publisher. Idempotent — re-pushing overwrites the same tag.
+      - name: Publish Artifact Hub repository metadata
+        if: steps.meta.outputs.dry_run != 'true'
+        run: |
+          oras push \
+            ghcr.io/xberg-io/charts/xberg:artifacthub.io \
+            --config /dev/null:application/vnd.cncf.artifacthub.config.v1+yaml \
+            artifacthub-repo.yml:application/vnd.cncf.artifacthub.repository-metadata.layer.v1.yaml
