@@ -11,6 +11,9 @@
 [![Go](https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6)](https://github.com/xberg-io/xberg/tree/main/packages/go)
 [![C#](https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Xberg/)
 
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white)](https://github.com/xberg-io/xberg/pkgs/container/xberg)
+[![Helm chart](https://img.shields.io/badge/Helm-chart-007ec6?logo=helm&logoColor=white)](https://docs.xberg.io/guides/kubernetes/)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-007ec6)](https://www.opensource.org/licenses/MIT)
 [![Documentation](https://img.shields.io/badge/Docs-xberg-007ec6)](https://xberg.io/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Xberg-007ec6)](https://huggingface.co/xberg-io)

@@ -2,6 +2,9 @@
 
 [![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/xberg-io/alef)
 
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white)](https://github.com/xberg-io/xberg/pkgs/container/xberg)
+[![Helm chart](https://img.shields.io/badge/Helm-chart-007ec6?logo=helm&logoColor=white)](https://docs.xberg.io/guides/kubernetes/)
+
 Command-line interface for the Xberg document intelligence library.
 
 ## Overview

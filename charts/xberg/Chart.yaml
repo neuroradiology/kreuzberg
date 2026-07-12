@@ -5,8 +5,8 @@ description: >-
   a Rust core. Extract text, metadata, images, and structured information from
   PDFs, Office documents, images, and 91+ formats.
 type: application
-version: 1.0.0-rc.24
-appVersion: "1.0.0-rc.24"
+version: 1.0.0-rc.25
+appVersion: "1.0.0-rc.25"
 home: https://xberg.io
 sources:
   - https://github.com/xberg-io/xberg
@@ -22,3 +22,22 @@ maintainers:
   - name: xberg-dev
     url: https://github.com/xberg-io
 icon: https://raw.githubusercontent.com/xberg-io/xberg/main/docs/assets/logo.svg
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/prerelease: "true"
+  artifacthub.io/category: integration-delivery
+  artifacthub.io/links: |
+    - name: Homepage
+      url: https://xberg.io
+    - name: Source
+      url: https://github.com/xberg-io/xberg
+    - name: Documentation
+      url: https://docs.xberg.io/guides/kubernetes/
+    - name: Support
+      url: https://github.com/xberg-io/xberg/issues
+  artifacthub.io/images: |
+    - name: xberg
+      image: ghcr.io/xberg-io/xberg:1.0.0-rc.25
+  artifacthub.io/maintainers: |
+    - name: xberg-dev
+      email: dev@xberg.io

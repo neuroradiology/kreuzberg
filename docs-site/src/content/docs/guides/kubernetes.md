@@ -10,7 +10,7 @@ Deploy the Xberg REST API server (`xberg serve`) on Kubernetes with the official
 The chart is published as an OCI artifact to GitHub Container Registry:
 
 ```bash title="Terminal"
-helm install xberg oci://ghcr.io/xberg-io/charts/xberg --version 1.0.0-rc.24
+helm install xberg oci://ghcr.io/xberg-io/charts/xberg --version 1.0.0-rc.25
 ```
 
 This runs the full image (`ghcr.io/xberg-io/xberg`) in API-server mode on port 8000, exposed through a ClusterIP `Service` on port 80.
@@ -59,7 +59,7 @@ autoscaling:
 
 ```bash title="Terminal"
 helm install xberg oci://ghcr.io/xberg-io/charts/xberg \
-  --version 1.0.0-rc.24 \
+  --version 1.0.0-rc.25 \
   -f values.yaml
 ```
 
@@ -74,7 +74,7 @@ A `ReadWriteOnce` volume can only attach to one node, so the chart defaults to `
 ## Upgrade and uninstall
 
 ```bash title="Terminal"
-helm upgrade xberg oci://ghcr.io/xberg-io/charts/xberg --version 1.0.0-rc.24 -f values.yaml
+helm upgrade xberg oci://ghcr.io/xberg-io/charts/xberg --version 1.0.0-rc.25 -f values.yaml
 helm uninstall xberg
 ```
 
